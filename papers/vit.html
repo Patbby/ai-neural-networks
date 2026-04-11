@@ -1,0 +1,711 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Vision Transformer - An Image is Worth 16x16 Words | 2020</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: #0a0a0f;
+            color: #e0e0ff;
+            line-height: 1.7;
+        }
+        
+        nav {
+            background: rgba(20, 20, 35, 0.95);
+            padding: 15px 30px;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            backdrop-filter: blur(10px);
+            border-bottom: 1px solid rgba(99, 102, 241, 0.2);
+        }
+        
+        nav a {
+            color: #8888aa;
+            text-decoration: none;
+            margin-right: 25px;
+            transition: color 0.3s;
+        }
+        
+        nav a:hover {
+            color: #6366f1;
+        }
+        
+        .paper-hero {
+            background: linear-gradient(135deg, rgba(245,158,11,0.15) 0%, rgba(236,72,153,0.1) 100%);
+            padding: 60px 20px;
+            text-align: center;
+            border-bottom: 1px solid rgba(245, 158, 11, 0.2);
+        }
+        
+        .paper-hero h1 {
+            font-size: 2.2rem;
+            background: linear-gradient(135deg, #f59e0b 0%, #ec4899 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 20px;
+            max-width: 900px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+        
+        .paper-meta {
+            color: #8888aa;
+            font-size: 1rem;
+            margin-bottom: 25px;
+        }
+        
+        .paper-meta span {
+            margin: 0 15px;
+        }
+        
+        .badges {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            flex-wrap: wrap;
+        }
+        
+        .badge {
+            background: rgba(245, 158, 11, 0.2);
+            color: #fcd34d;
+            padding: 8px 20px;
+            border-radius: 20px;
+            font-size: 0.9rem;
+            text-decoration: none;
+            border: 1px solid rgba(245, 158, 11, 0.3);
+            transition: all 0.3s;
+        }
+        
+        .badge:hover {
+            background: rgba(245, 158, 11, 0.3);
+            transform: translateY(-2px);
+        }
+        
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 40px 20px;
+        }
+        
+        h2 {
+            color: #fff;
+            margin: 50px 0 25px;
+            font-size: 1.8rem;
+            border-left: 4px solid #f59e0b;
+            padding-left: 20px;
+        }
+        
+        h3 {
+            color: #fcd34d;
+            margin: 30px 0 15px;
+            font-size: 1.3rem;
+        }
+        
+        p {
+            margin-bottom: 20px;
+            color: #b0b0cc;
+        }
+        
+        .highlight-box {
+            background: rgba(245, 158, 11, 0.1);
+            border: 1px solid rgba(245, 158, 11, 0.3);
+            border-radius: 10px;
+            padding: 20px;
+            margin: 25px 0;
+        }
+        
+        .highlight-box strong {
+            color: #fcd34d;
+        }
+        
+        .problem-box {
+            background: rgba(239, 68, 68, 0.1);
+            border: 1px solid rgba(239, 68, 68, 0.3);
+            border-radius: 10px;
+            padding: 20px;
+            margin: 25px 0;
+        }
+        
+        .problem-box strong {
+            color: #fca5a5;
+        }
+        
+        .solution-box {
+            background: rgba(16, 185, 129, 0.1);
+            border: 1px solid rgba(16, 185, 129, 0.3);
+            border-radius: 10px;
+            padding: 20px;
+            margin: 25px 0;
+        }
+        
+        .solution-box strong {
+            color: #6ee7b7;
+        }
+        
+        .formula {
+            background: rgba(168, 85, 247, 0.1);
+            border-radius: 8px;
+            padding: 20px 30px;
+            margin: 25px 0;
+            text-align: center;
+            font-family: 'Times New Roman', serif;
+            font-size: 1.4rem;
+            color: #e0e0ff;
+        }
+        
+        .viz-container {
+            background: rgba(20, 20, 35, 0.6);
+            border: 1px solid rgba(245, 158, 11, 0.3);
+            border-radius: 15px;
+            padding: 30px;
+            margin: 30px 0;
+            text-align: center;
+        }
+        
+        .viz-container h4 {
+            color: #fff;
+            margin-bottom: 20px;
+            font-size: 1.1rem;
+        }
+        
+        .code-block {
+            background: #111118;
+            border-radius: 10px;
+            padding: 20px;
+            margin: 20px 0;
+            font-family: 'Fira Code', monospace;
+            font-size: 0.85rem;
+            overflow-x: auto;
+            border-left: 3px solid #f59e0b;
+        }
+        
+        .code-block .comment { color: #6b7280; }
+        .code-block .keyword { color: #c084fc; }
+        .code-block .function { color: #60a5fa; }
+        .code-block .string { color: #86efac; }
+        .code-block .number { color: #fcd34d; }
+        
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin: 30px 0;
+        }
+        
+        .stat-card {
+            background: rgba(20, 20, 35, 0.8);
+            border: 1px solid rgba(245, 158, 11, 0.3);
+            border-radius: 10px;
+            padding: 20px;
+            text-align: center;
+        }
+        
+        .stat-card .number {
+            font-size: 2rem;
+            font-weight: bold;
+            color: #f59e0b;
+        }
+        
+        .stat-card .label {
+            color: #8888aa;
+            font-size: 0.9rem;
+            margin-top: 5px;
+        }
+        
+        .comparison-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 25px 0;
+        }
+        
+        .comparison-table th, .comparison-table td {
+            border: 1px solid rgba(245, 158, 11, 0.3);
+            padding: 12px;
+            text-align: left;
+        }
+        
+        .comparison-table th {
+            background: rgba(245, 158, 11, 0.2);
+            color: #fcd34d;
+        }
+        
+        .comparison-table tr:nth-child(even) {
+            background: rgba(245, 158, 11, 0.05);
+        }
+        
+        footer {
+            text-align: center;
+            padding: 40px;
+            color: #555577;
+            border-top: 1px solid rgba(245, 158, 11, 0.1);
+            margin-top: 60px;
+        }
+    </style>
+</head>
+<body>
+    <nav>
+        <a href="../index.html">← Home</a>
+        <a href="../papers.html">Papers</a>
+        <a href="../cnn.html">CNN</a>
+        <a href="../gnn.html">GNN</a>
+        <a href="../gat.html">GAT</a>
+    </nav>
+
+    <div class="paper-hero">
+        <h1>An Image is Worth 16x16 Words:<br>Transformers for Image Recognition at Scale</h1>
+        <div class="paper-meta">
+            <span>📄 ICLR 2021</span>
+            <span>👤 Alexey Dosovitskiy, Lucas Beyer, Alexander Kolesnikov, et al.</span>
+            <span>🏢 Google Research</span>
+        </div>
+        <div class="badges">
+            <a href="https://arxiv.org/abs/2010.11929" class="badge" target="_blank">📑 arXiv</a>
+            <a href="https://github.com/google-research/vision_transformer" class="badge" target="_blank">💻 Code</a>
+            <a href="https://openreview.net/forum?id=YicbFdNTTy" class="badge" target="_blank">📄 ICLR</a>
+            <span class="badge">🔥 50,000+ Citations</span>
+        </div>
+    </div>
+
+    <div class="container">
+        <h2>🎯 核心问题</h2>
+        
+        <div class="problem-box">
+            <strong>CNN在视觉领域的垄断地位：</strong><br><br>
+            在ViT之前，卷积神经网络(CNN)主导了计算机视觉领域超过8年(AlexNet 2012 - ViT 2020)。<br><br>
+            Transformer在自然语言处理(NLP)领域取得了巨大成功，但将其应用于图像识别时，因为<strong>缺乏CNN的归纳偏置</strong>(局部性、平移不变性)，效果一直不如CNN。<br><br>
+            核心挑战：如何将2D图像转换为Transformer可以处理的序列形式？
+        </div>
+
+        <h2>💡 解决方案：图像分块</h2>
+
+        <div class="solution-box">
+            <strong>ViT的创新：</strong> 将图像分割成固定大小的 patches (如 16×16 像素)，然后将每个 patch 展平并通过线性投影映射为向量，就像NLP中的"单词"(token)一样。<br><br>
+            <strong>核心洞察：</strong> 只要数据足够大(如ImageNet-21k或JFT-300M)，纯Transformer架构可以不依赖CNN的归纳偏置，直接在图像分类任务上取得SOTA性能。
+        </div>
+
+        <h2>🏗️ ViT架构详解</h2>
+
+        <div class="viz-container">
+            <h4>Vision Transformer 完整流程</h4>
+            <svg width="850" height="450" viewBox="0 0 850 450">
+                <defs>
+                    <marker id="arrow-orange" markerWidth="10" markerHeight="10" refX="9" refY="3" orient="auto">
+                        <polygon points="0 0, 10 3, 0 6" fill="#f59e0b"/>
+                    </marker>
+                    <marker id="arrow-pink" markerWidth="10" markerHeight="10" refX="9" refY="3" orient="auto">
+                        <polygon points="0 0, 10 3, 0 6" fill="#ec4899"/>
+                    </marker>
+                </defs>
+                
+                <!-- Input Image -->
+                <rect x="20" y="180" width="80" height="80" fill="#2d2d44" stroke="#f59e0b" stroke-width="2" rx="5"/>
+                <text x="60" y="225" fill="#fff" font-size="11" text-anchor="middle">224×224</text>
+                <text x="60" y="280" fill="#8888aa" font-size="10" text-anchor="middle">Input</text>
+                <text x="60" y="295" fill="#8888aa" font-size="10" text-anchor="middle">Image</text>
+                
+                <!-- Arrow to patches -->
+                <line x1="105" y1="220" x2="140" y2="220" stroke="#f59e0b" stroke-width="2" marker-end="url(#arrow-orange)"/>
+                
+                <!-- Image divided into patches -->
+                <g transform="translate(150, 140)">
+                    <rect x="0" y="0" width="40" height="40" fill="#2d2d44" stroke="#6366f1" stroke-width="1" rx="2"/>
+                    <rect x="42" y="0" width="40" height="40" fill="#2d2d44" stroke="#6366f1" stroke-width="1" rx="2"/>
+                    <rect x="84" y="0" width="40" height="40" fill="#2d2d44" stroke="#6366f1" stroke-width="1" rx="2"/>
+                    <rect x="0" y="42" width="40" height="40" fill="#2d2d44" stroke="#6366f1" stroke-width="1" rx="2"/>
+                    <rect x="42" y="42" width="40" height="40" fill="#2d2d44" stroke="#6366f1" stroke-width="1" rx="2"/>
+                    <rect x="84" y="42" width="40" height="40" fill="#2d2d44" stroke="#6366f1" stroke-width="1" rx="2"/>
+                    <rect x="0" y="84" width="40" height="40" fill="#2d2d44" stroke="#6366f1" stroke-width="1" rx="2"/>
+                    <rect x="42" y="84" width="40" height="40" fill="#2d2d44" stroke="#6366f1" stroke-width="1" rx="2"/>
+                    <rect x="84" y="84" width="40" height="40" fill="#2d2d44" stroke="#6366f1" stroke-width="1" rx="2"/>
+                    <text x="60" y="145" fill="#8888aa" font-size="10" text-anchor="middle">16×16 Patches</text>
+                    <text x="60" y="160" fill="#8888aa" font-size="10" text-anchor="middle">(14×14 = 196)</text>
+                </g>
+                
+                <!-- Arrow to embedding -->
+                <line x1="300" y1="220" x2="330" y2="220" stroke="#f59e0b" stroke-width="2" marker-end="url(#arrow-orange)"/>
+                
+                <!-- Patch Embedding -->
+                <g transform="translate(340, 50)">
+                    <text x="40" y="-10" fill="#a5b4fc" font-size="11" text-anchor="middle">Linear</text>
+                    <text x="40" y="5" fill="#a5b4fc" font-size="11" text-anchor="middle">Projection</text>
+                    
+                    <!-- Embeddings as vertical bars -->
+                    <rect x="5" y="20" width="12" height="300" fill="rgba(99,102,241,0.3)" stroke="#6366f1" stroke-width="1"/>
+                    <rect x="22" y="20" width="12" height="300" fill="rgba(99,102,241,0.3)" stroke="#6366f1" stroke-width="1"/>
+                    <rect x="39" y="20" width="12" height="300" fill="rgba(99,102,241,0.3)" stroke="#6366f1" stroke-width="1"/>
+                    <rect x="56" y="20" width="12" height="300" fill="rgba(99,102,241,0.3)" stroke="#6366f1" stroke-width="1"/>
+                    <text x="40" y="340" fill="#8888aa" font-size="8" text-anchor="middle">...</text>
+                    
+                    <!-- CLASS token (highlighted) -->
+                    <rect x="-18" y="20" width="15" height="300" fill="rgba(16,185,129,0.4)" stroke="#10b981" stroke-width="2"/>
+                    <text x="-10" y="335" fill="#10b981" font-size="9" text-anchor="middle">[CLS]</text>
+                </g>
+                
+                <!-- Arrow to Transformer -->
+                <line x1="430" y1="220" x2="460" y2="220" stroke="#ec4899" stroke-width="2" marker-end="url(#arrow-pink)"/>
+                
+                <!-- Transformer Encoder Stack -->
+                <g transform="translate(470, 30)">
+                    <text x="75" y="-5" fill="#ec4899" font-size="12" font-weight="bold" text-anchor="middle">Transformer Encoder</text>
+                    
+                    <!-- Layer 1 -->
+                    <rect x="10" y="20" width="130" height="70" fill="rgba(236,72,153,0.1)" stroke="#ec4899" stroke-width="2" rx="5"/>
+                    <text x="75" y="45" fill="#fbcfe8" font-size="10" text-anchor="middle">Multi-Head</text>
+                    <text x="75" y="60" fill="#fbcfe8" font-size="10" text-anchor="middle">Self-Attention</text>
+                    <text x="75" y="78" fill="#8888aa" font-size="9" text-anchor="middle">+ MLP + LayerNorm</text>
+                    
+                    <!-- Dots -->
+                    <text x="75" y="110" fill="#8888aa" font-size="14" text-anchor="middle">⋮</text>
+                    
+                    <!-- Layer L -->
+                    <rect x="10" y="130" width="130" height="70" fill="rgba(236,72,153,0.1)" stroke="#ec4899" stroke-width="2" rx="5"/>
+                    <text x="75" y="155" fill="#fbcfe8" font-size="10" text-anchor="middle">Multi-Head</text>
+                    <text x="75" y="170" fill="#fbcfe8" font-size="10" text-anchor="middle">Self-Attention</text>
+                    <text x="75" y="188" fill="#8888aa" font-size="9" text-anchor="middle">+ MLP + LayerNorm</text>
+                    
+                    <!-- L label -->
+                    <text x="-5" y="175" fill="#8888aa" font-size="10">L×</text>
+                </g>
+                
+                <!-- Arrow to MLP Head -->
+                <line x1="620" y1="220" x2="650" y2="220" stroke="#10b981" stroke-width="2" marker-end="url(#arrow-orange)"/>
+                
+                <!-- MLP Head -->
+                <g transform="translate(660, 180)">
+                    <rect x="0" y="0" width="100" height="80" fill="rgba(16,185,129,0.2)" stroke="#10b981" stroke-width="2" rx="5"/>
+                    <text x="50" y="30" fill="#6ee7b7" font-size="11" text-anchor="middle">MLP Head</text>
+                    <text x="50" y="50" fill="#8888aa" font-size="9" text-anchor="middle">Classification</text>
+                    <text x="50" y="65" fill="#8888aa" font-size="9" text-anchor="middle">Layer</text>
+                </g>
+                
+                <!-- Arrow to Output -->
+                <line x1="765" y1="220" x2="790" y2="220" stroke="#10b981" stroke-width="2" marker-end="url(#arrow-orange)"/>
+                
+                <!-- Output -->
+                <text x="820" y="225" fill="#fff" font-size="12" text-anchor="middle">Class</text>
+                
+                <!-- Position Embeddings (side note) -->
+                <rect x="150" y="380" width="400" height="50" fill="rgba(168,85,247,0.1)" stroke="#a855f7" stroke-width="1" stroke-dasharray="4,2" rx="5"/>
+                <text x="350" y="410" fill="#d8b4fe" font-size="11" text-anchor="middle">+ Position Embeddings (learnable 1D embeddings added to patch embeddings)</text>
+            </svg>
+            <p style="color: #8888aa; font-size: 0.9rem; margin-top: 15px;">ViT将图像分块后通过线性投影嵌入，添加位置编码后输入Transformer编码器，仅使用[CLS]token进行分类</p>
+        </div>
+
+        <h3>关键组件详解</h3>
+
+        <div class="formula">
+            z₀ = [x<sub>class</sub>; x¹<sub>p</sub>E; x²<sub>p</sub>E; ...; xᴺ<sub>p</sub>E] + E<sub>pos</sub>
+        </div>
+
+        <p><strong>Patch Embedding：</strong> 将每个 16×16 的图像块展平为 768 维向量 (16×16×3=768)。对于224×224的图像，得到 14×14=196 个patch。</p>
+
+        <p><strong>Class Token：</strong> 与BERT类似，在序列开头添加一个可学习的 [CLS] token，其最终状态作为图像表示用于分类。</p>
+
+        <p><strong>Position Embedding：</strong> 使用标准的1D可学习位置编码，给每个patch位置信息。</p>
+
+        <div class="viz-container">
+            <h4>Self-Attention 在图像上的可视化</h4>
+            <svg width="700" height="320" viewBox="0 0 700 320">
+                <!-- Left: Input Image Grid -->
+                <g transform="translate(30, 30)">
+                    <text x="75" y="-10" fill="#fff" font-size="12" text-anchor="middle">Input Image (Patches)</text>
+                    
+                    <!-- Grid of patches -->
+                    <g opacity="0.7">
+                        <rect x="0" y="20" width="25" height="25" fill="none" stroke="#6366f1" stroke-width="1"/>
+                        <rect x="28" y="20" width="25" height="25" fill="none" stroke="#6366f1" stroke-width="1"/>
+                        <rect x="56" y="20" width="25" height="25" fill="none" stroke="#6366f1" stroke-width="1"/>
+                        <rect x="84" y="20" width="25" height="25" fill="none" stroke="#6366f1" stroke-width="1"/>
+                        <rect x="112" y="20" width="25" height="25" fill="none" stroke="#6366f1" stroke-width="1"/>
+                        
+                        <rect x="0" y="48" width="25" height="25" fill="none" stroke="#6366f1" stroke-width="1"/>
+                        <rect x="28" y="48" width="25" height="25" fill="none" stroke="#6366f1" stroke-width="1"/>
+                        <rect x="56" y="48" width="25" height="25" fill="none" stroke="#6366f1" stroke-width="1"/>
+                        <rect x="84" y="48" width="25" height="25" fill="none" stroke="#6366f1" stroke-width="1"/>
+                        <rect x="112" y="48" width="25" height="25" fill="none" stroke="#6366f1" stroke-width="1"/>
+                        
+                        <rect x="0" y="76" width="25" height="25" fill="none" stroke="#6366f1" stroke-width="1"/>
+                        <rect x="28" y="76" width="25" height="25" fill="none" stroke="#6366f1" stroke-width="1"/>
+                        <rect x="56" y="76" width="25" height="25" fill="none" stroke="#6366f1" stroke-width="1"/>
+                        <rect x="84" y="76" width="25" height="25" fill="none" stroke="#6366f1" stroke-width="1"/>
+                        <rect x="112" y="76" width="25" height="25" fill="none" stroke="#6366f1" stroke-width="1"/>
+                        
+                        <rect x="0" y="104" width="25" height="25" fill="none" stroke="#6366f1" stroke-width="1"/>
+                        <rect x="28" y="104" width="25" height="25" fill="none" stroke="#6366f1" stroke-width="1"/>
+                        <rect x="56" y="104" width="25" height="25" fill="none" stroke="#6366f1" stroke-width="1"/>
+                        <rect x="84" y="104" width="25" height="25" fill="none" stroke="#6366f1" stroke-width="1"/>
+                        <rect x="112" y="104" width="25" height="25" fill="none" stroke="#6366f1" stroke-width="1"/>
+                        
+                        <rect x="0" y="132" width="25" height="25" fill="none" stroke="#6366f1" stroke-width="1"/>
+                        <rect x="28" y="132" width="25" height="25" fill="none" stroke="#6366f1" stroke-width="1"/>
+                        <rect x="56" y="132" width="25" height="25" fill="none" stroke="#6366f1" stroke-width="1"/>
+                        <rect x="84" y="132" width="25" height="25" fill="none" stroke="#6366f1" stroke-width="1"/>
+                        <rect x="112" y="132" width="25" height="25" fill="none" stroke="#6366f1" stroke-width="1"/>
+                    </g>
+                    
+                    <!-- Query patch (highlighted) -->
+                    <rect x="56" y="76" width="25" height="25" fill="#f59e0b" stroke="#f59e0b" stroke-width="2" opacity="0.8"/>
+                    <text x="68" y="93" fill="#fff" font-size="10" text-anchor="middle">Q</text>
+                </g>
+                
+                <!-- Arrow -->
+                <text x="200" y="160" fill="#8888aa" font-size="12">Self-Attention</text>
+                <line x1="190" y1="140" x2="190" y2="100" stroke="#8888aa" stroke-width="1"/>
+                <polygon points="190,95 187,102 193,102" fill="#8888aa"/>
+                
+                <!-- Right: Attention Map -->
+                <g transform="translate(260, 30)">
+                    <text x="200" y="-10" fill="#fff" font-size="12" text-anchor="middle">Attention Map (Head Visualization)</text>
+                    
+                    <!-- Attention heatmap -->
+                    <g>
+                        <!-- Row 1 -->
+                        <rect x="0" y="20" width="40" height="25" fill="#ef4444" opacity="0.2"/>
+                        <rect x="42" y="20" width="40" height="25" fill="#ef4444" opacity="0.1"/>
+                        <rect x="84" y="20" width="40" height="25" fill="#ef4444" opacity="0.15"/>
+                        <rect x="126" y="20" width="40" height="25" fill="#ef4444" opacity="0.1"/>
+                        <rect x="168" y="20" width="40" height="25" fill="#ef4444" opacity="0.1"/>
+                        
+                        <!-- Row 2 -->
+                        <rect x="0" y="48" width="40" height="25" fill="#ef4444" opacity="0.15"/>
+                        <rect x="42" y="48" width="40" height="25" fill="#ef4444" opacity="0.3"/>
+                        <rect x="84" y="48" width="40" height="25" fill="#ef4444" opacity="0.2"/>
+                        <rect x="126" y="48" width="40" height="25" fill="#ef4444" opacity="0.1"/>
+                        <rect x="168" y="48" width="40" height="25" fill="#ef4444" opacity="0.1"/>
+                        
+                        <!-- Row 3 (query row, stronger attention) -->
+                        <rect x="0" y="76" width="40" height="25" fill="#ef4444" opacity="0.1"/>
+                        <rect x="42" y="76" width="40" height="25" fill="#ef4444" opacity="0.2"/>
+                        <rect x="84" y="76" width="40" height="25" fill="#ef4444" opacity="0.8" stroke="#f59e0b" stroke-width="2"/> <!-- self attention -->
+                        <rect x="126" y="76" width="40" height="25" fill="#ef4444" opacity="0.5"/>
+                        <rect x="168" y="76" width="40" height="25" fill="#ef4444" opacity="0.15"/>
+                        
+                        <!-- Row 4 -->
+                        <rect x="0" y="104" width="40" height="25" fill="#ef4444" opacity="0.1"/>
+                        <rect x="42" y="104" width="40" height="25" fill="#ef4444" opacity="0.15"/>
+                        <rect x="84" y="104" width="40" height="25" fill="#ef4444" opacity="0.4"/>
+                        <rect x="126" y="104" width="40" height="25" fill="#ef4444" opacity="0.25"/>
+                        <rect x="168" y="104" width="40" height="25" fill="#ef4444" opacity="0.1"/>
+                        
+                        <!-- Row 5 -->
+                        <rect x="0" y="132" width="40" height="25" fill="#ef4444" opacity="0.05"/>
+                        <rect x="42" y="132" width="40" height="25" fill="#ef4444" opacity="0.1"/>
+                        <rect x="84" y="132" width="40" height="25" fill="#ef4444" opacity="0.2"/>
+                        <rect x="126" y="132" width="40" height="25" fill="#ef4444" opacity="0.15"/>
+                        <rect x="168" y="132" width="40" height="25" fill="#ef4444" opacity="0.05"/>
+                    </g>
+                    
+                    <!-- Color scale -->
+                    <text x="0" y="180" fill="#8888aa" font-size="9">Low</text>
+                    <rect x="30" y="172" width="100" height="10" fill="url(#heat-gradient)"/>
+                    <defs>
+                        <linearGradient id="heat-gradient" x1="0%" y1="0%" x2="100%" y2="0%">
+                            <stop offset="0%" style="stop-color:#ef4444;stop-opacity:0.05"/>
+                            <stop offset="100%" style="stop-color:#ef4444;stop-opacity:0.9"/>
+                        </linearGradient>
+                    </defs>
+                    <text x="135" y="180" fill="#8888aa" font-size="9">High</text>
+                </g>
+                
+                <!-- Labels -->
+                <text x="350" y="200" fill="#fcd34d" font-size="10" text-anchor="middle"> brighter = stronger attention</text>
+            </svg>
+            <p style="color: #8888aa; font-size: 0.9rem; margin-top: 15px;">ViT的Self-Attention可以关注图像中任意位置的patch，学习全局依赖关系</p>
+        </div>
+
+        <h2>📊 实验结果与模型变体</h2>
+
+        <table class="comparison-table">
+            <tr>
+                <th>Model</th>
+                <th>Layers</th>
+                <th>Hidden Dim</th>
+                <th>MLP Dim</th>
+                <th>Heads</th>
+                <th>Params</th>
+                <th>ImageNet Top-1</th>
+            </tr>
+            <tr>
+                <td>ViT-Base</td>
+                <td>12</td>
+                <td>768</td>
+                <td>3072</td>
+                <td>12</td>
+                <td>86M</td>
+                <td>77.9%</td>
+            </tr>
+            <tr>
+                <td>ViT-Large</td>
+                <td>24</td>
+                <td>1024</td>
+                <td>4096</td>
+                <td>16</td>
+                <td>304M</td>
+                <td>76.5%</td>
+            </tr>
+            <tr>
+                <td>ViT-Huge</td>
+                <td>32</td>
+                <td>1280</td>
+                <td>5120</td>
+                <td>16</td>
+                <td>632M</td>
+                <td>-</td>
+            </tr>
+            <tr style="background: rgba(16,185,129,0.15);">
+                <td>ViT-L/16 (JFT-300M)</td>
+                <td>24</td>
+                <td>1024</td>
+                <td>4096</td>
+                <td>16</td>
+                <td>304M</td>
+                <td><strong>87.76%</strong></td>
+            </tr>
+        </table>
+
+        <div class="stats-grid">
+            <div class="stat-card">
+                <div class="number">632M</div>
+                <div class="label">最大模型参数量</div>
+            </div>
+            <div class="stat-card">
+                <div class="number">87.76%</div>
+                <div class="label">ImageNet Top-1 (JFT)</div>
+            </div>
+            <div class="stat-card">
+                <div class="number">196</div>
+                <div class="label">输入 Patches 数量</div>
+            </div>
+            <div class="stat-card">
+                <div class="number">2.9x</div>
+                <div class="label">训练速度 vs ResNet</div>
+            </div>
+        </div>
+
+        <div class="highlight-box">
+            <strong>关键发现：</strong> ViT在小数据集(ImageNet)上表现不如ResNet，但在大数据集(ImageNet-21k或JFT-300M)上显著超越CNN。这说明<strong>数据规模比归纳偏置更重要</strong>。
+        </div>
+
+        <h2>💻 PyTorch 实现</h2>
+
+        <div class="code-block">
+<span class="keyword">import</span> torch
+<span class="keyword">import</span> torch.nn <span class="keyword">as</span> nn
+<span class="keyword">import</span> torchvision.models <span class="keyword">as</span> models
+
+<span class="keyword">class</span> <span class="function">PatchEmbedding</span>(nn.Module):
+    <span class="comment">"""图像分块并嵌入为向量"""</span>
+    <span class="keyword">def</span> <span class="function">__init__</span>(self, img_size=<span class="number">224</span>, patch_size=<span class="number">16</span>, in_chans=<span class="number">3</span>, embed_dim=<span class="number">768</span>):
+        super().__init__()
+        self.img_size = img_size
+        self.patch_size = patch_size
+        self.n_patches = (img_size // patch_size) ** <span class="number">2</span>
+        
+        <span class="comment"># 将patch展平并通过线性投影</span>
+        self.proj = nn.Conv2d(in_chans, embed_dim, 
+                             kernel_size=patch_size, stride=patch_size)
+    
+    <span class="keyword">def</span> <span class="function">forward</span>(self, x):
+        <span class="comment"># x: [B, 3, 224, 224]</span>
+        x = self.proj(x)  <span class="comment"># [B, 768, 14, 14]</span>
+        x = x.flatten(<span class="number">2</span>)  <span class="comment"># [B, 768, 196]</span>
+        x = x.transpose(<span class="number">1</span>, <span class="number">2</span>)  <span class="comment"># [B, 196, 768]</span>
+        <span class="keyword">return</span> x
+
+<span class="keyword">class</span> <span class="function">VisionTransformer</span>(nn.Module):
+    <span class="keyword">def</span> <span class="function">__init__</span>(self, img_size=<span class="number">224</span>, patch_size=<span class="number">16</span>, num_classes=<span class="number">1000</span>, 
+                 embed_dim=<span class="number">768</span>, depth=<span class="number">12</span>, num_heads=<span class="number">12</span>, mlp_ratio=<span class="number">4</span>):
+        super().__init__()
+        self.patch_embed = PatchEmbedding(img_size, patch_size, embed_dim=embed_dim)
+        num_patches = self.patch_embed.n_patches
+        
+        <span class="comment"># [CLS] token</span>
+        self.cls_token = nn.Parameter(torch.zeros(<span class="number">1</span>, <span class="number">1</span>, embed_dim))
+        
+        <span class="comment"># 位置编码</span>
+        self.pos_embed = nn.Parameter(torch.zeros(<span class="number">1</span>, num_patches + <span class="number">1</span>, embed_dim))
+        
+        <span class="comment"># Transformer编码器</span>
+        encoder_layer = nn.TransformerEncoderLayer(
+            d_model=embed_dim, nhead=num_heads, 
+            dim_feedforward=mlp_ratio*embed_dim, dropout=<span class="number">0.1</span>
+        )
+        self.transformer = nn.TransformerEncoder(encoder_layer, num_layers=depth)
+        
+        <span class="comment"># 分类头</span>
+        self.mlp_head = nn.Linear(embed_dim, num_classes)
+    
+    <span class="keyword">def</span> <span class="function">forward</span>(self, x):
+        B = x.shape[<span class="number">0</span>]
+        x = self.patch_embed(x)
+        
+        <span class="comment"># 添加[CLS] token</span>
+        cls_tokens = self.cls_token.expand(B, -<span class="number">1</span>, -<span class="number">1</span>)
+        x = torch.cat([cls_tokens, x], dim=<span class="number">1</span>)
+        
+        <span class="comment"># 添加位置编码</span>
+        x = x + self.pos_embed
+        
+        <span class="comment"># Transformer</span>
+        x = self.transformer(x)
+        
+        <span class="comment"># 使用[CLS] token进行分类</span>
+        x = self.mlp_head(x[:, <span class="number">0</span>])
+        <span class="keyword">return</span> x
+
+<span class="comment"># 使用预训练模型</span>vits = models.vit_b_16(pretrained=<span class="keyword">True</span>)
+vitl = models.vit_l_16(pretrained=<span class="keyword">True</span>)
+        </div>
+
+        <h2>🌍 影响与意义</h2>
+
+        <p>ViT的出现标志着计算机视觉领域的范式转变：</p>
+
+        <div class="highlight-box">
+            <strong>统一架构：</strong> 证明了同一个架构(Transformer)可以同时在NLP和CV领域取得SOTA，推动了多模态研究的发展<br><br>
+            <strong>数据优先：</strong> 当数据足够大时，架构的归纳偏置变得不那么重要<br><br>
+            <strong>可扩展性：</strong> ViT展示了与NLP类似的scaling laws，更大的模型+更多数据=更好的性能<br><br>
+            <strong>计算效率：</strong> 相比CNN，ViT在TPU/GPU上的并行训练效率更高
+        </div>
+
+        <h3>后续发展</h3>
+
+        <ul style="color: #b0b0cc; margin-left: 20px; margin-bottom: 20px;">
+            <li><strong>DeiT (2020):</strong> 通过知识蒸馏，让小模型也能高效训练</li>
+            <li><strong>Swin Transformer (2021):</strong> 引入层次化特征和移位窗口，结合CNN的局部性和Transformer的全局性</li>
+            <li><strong>MAE (2021):</strong> 基于ViT的掩码自编码器，推动了视觉预训练的发展</li>
+            <li><strong>DINO (2021):</strong> 自监督学习的视觉Transformer，涌现出类人的注意力模式</li>
+            <li><strong>CLIP (2021):</strong> 使用ViT作为视觉编码器，实现视觉-语言联合学习</li>
+            <li><strong>SAM (2023):</strong> Segment Anything Model，基于ViT的图像分割基础模型</li>
+        </ul>
+
+        <h2>📚 关键启示</h2>
+
+        <div class="solution-box">
+            <strong>ViT给我们的三个启示：</strong><br><br>
+            1. <strong>统一架构：</strong> Transformer是通用的计算模块，不限于NLP<br><br>
+            2. <strong>数据规模：</strong> 足够的数据可以弥补归纳偏置的缺失<br><br>
+            3. <strong>灵活性：</strong> 自注意力机制提供了处理任意长度序列的灵活性
+        </div>
+
+        <div style="text-align: center; margin: 50px 0;">
+            <a href="../index.html" style="display: inline-block; background: linear-gradient(135deg, #f59e0b 0%, #ec4899 100%); color: white; padding: 15px 40px; border-radius: 30px; text-decoration: none; font-size: 1.1rem;">
+                ← 返回首页
+            </a>
+        </div>
+    </div>
+
+    <footer>
+        <p>Paper explanation by Kimi Claw | <a href="https://github.com/Patbby/ai-neural-networks" style="color:#f59e0b">GitHub</a></p>
+    </footer>
+</body>
+</html>
