@@ -169,6 +169,7 @@
             padding: 30px;
             margin: 30px 0;
             text-align: center;
+            overflow-x: auto;
         }
         
         .viz-container h4 {
@@ -182,7 +183,7 @@
             border-radius: 10px;
             padding: 20px;
             margin: 20px 0;
-            font-family: 'Fira Code', monospace;
+            font-family: 'Fira Code', 'Consolas', monospace;
             font-size: 0.85rem;
             overflow-x: auto;
             border-left: 3px solid #6366f1;
@@ -192,6 +193,7 @@
         .code-block .keyword { color: #c084fc; }
         .code-block .function { color: #60a5fa; }
         .code-block .string { color: #86efac; }
+        .code-block .number { color: #fbbf24; }
         
         .stats-grid {
             display: grid;
@@ -220,6 +222,91 @@
             margin-top: 5px;
         }
         
+        .comparison-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 25px 0;
+            font-size: 0.95rem;
+        }
+        
+        .comparison-table th {
+            background: rgba(99, 102, 241, 0.2);
+            padding: 12px 15px;
+            text-align: left;
+            color: #a5b4fc;
+            border-bottom: 2px solid rgba(99, 102, 241, 0.3);
+        }
+        
+        .comparison-table td {
+            padding: 12px 15px;
+            border-bottom: 1px solid rgba(99, 102, 241, 0.1);
+            color: #b0b0cc;
+        }
+        
+        .comparison-table tr:hover {
+            background: rgba(99, 102, 241, 0.05);
+        }
+        
+        .timeline {
+            position: relative;
+            margin: 30px 0;
+            padding-left: 30px;
+        }
+        
+        .timeline::before {
+            content: '';
+            position: absolute;
+            left: 8px;
+            top: 0;
+            bottom: 0;
+            width: 2px;
+            background: linear-gradient(to bottom, #6366f1, #a855f7);
+        }
+        
+        .timeline-item {
+            position: relative;
+            margin-bottom: 25px;
+        }
+        
+        .timeline-item::before {
+            content: '';
+            position: absolute;
+            left: -26px;
+            top: 5px;
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            background: #6366f1;
+            border: 2px solid #0a0a0f;
+        }
+        
+        .timeline-item .year {
+            color: #6366f1;
+            font-weight: bold;
+            font-size: 0.9rem;
+        }
+        
+        .timeline-item .title {
+            color: #fff;
+            font-weight: 600;
+            margin: 5px 0;
+        }
+        
+        .timeline-item .desc {
+            color: #8888aa;
+            font-size: 0.9rem;
+        }
+        
+        ul {
+            color: #b0b0cc;
+            margin-left: 20px;
+            margin-bottom: 20px;
+        }
+        
+        ul li {
+            margin-bottom: 8px;
+        }
+        
         footer {
             text-align: center;
             padding: 40px;
@@ -227,15 +314,30 @@
             border-top: 1px solid rgba(99, 102, 241, 0.1);
             margin-top: 60px;
         }
+        
+        .back-link {
+            display: inline-block;
+            background: linear-gradient(135deg, #6366f1 0%, #a855f7 100%);
+            color: white;
+            padding: 15px 40px;
+            border-radius: 30px;
+            text-decoration: none;
+            font-size: 1.1rem;
+            transition: transform 0.3s;
+        }
+        
+        .back-link:hover {
+            transform: translateY(-3px);
+        }
     </style>
 </head>
 <body>
     <nav>
-        <a href="index.html">← Home</a>
-        <a href="papers.html">Papers</a>
-        <a href="cnn.html">CNN</a>
-        <a href="gnn.html">GNN</a>
-        <a href="gat.html">GAT</a>
+        <a href="../index.html">← Home</a>
+        <a href="../papers.html">Papers</a>
+        <a href="../cnn.html">CNN</a>
+        <a href="../gnn.html">GNN</a>
+        <a href="../gat.html">GAT</a>
     </nav>
 
     <div class="paper-hero">
@@ -254,23 +356,97 @@
     </div>
 
     <div class="container">
-        <h2>🎯 核心问题</h2>
+        <h2>🎯 核心问题：退化问题 (Degradation Problem)</h2>
         
         <div class="problem-box">
-            <strong>退化问题 (Degradation Problem)：</strong><br><br>
+            <strong>退化问题：</strong><br><br>
             随着神经网络深度增加，训练准确率反而饱和甚至下降。这不是过拟合——训练误差和测试误差都变差了。<br><br>
             56层网络的训练误差和测试误差<strong>都高于</strong>20层网络，尽管56层网络有更大的容量。
         </div>
 
+        <div class="viz-container">
+            <h4>退化问题可视化：普通网络 vs ResNet</h4>
+            <svg width="700" height="320" viewBox="0 0 700 320">
+                <!-- Grid lines -->
+                <g stroke="#2a2a3e" stroke-width="1">
+                    <line x1="80" y1="50" x2="80" y2="270"/>
+                    <line x1="80" y1="270" x2="680" y2="270"/>
+                    <!-- Horizontal grid lines -->
+                    <line x1="80" y1="90" x2="680" y2="90" stroke-dasharray="4"/>
+                    <line x1="80" y1="130" x2="680" y2="130" stroke-dasharray="4"/>
+                    <line x1="80" y1="170" x2="680" y2="170" stroke-dasharray="4"/>
+                    <line x1="80" y1="210" x2="680" y2="210" stroke-dasharray="4"/>
+                </g>
+                
+                <!-- Y-axis labels -->
+                <g fill="#8888aa" font-size="11" text-anchor="end">
+                    <text x="70" y="55">Training Error</text>
+                    <text x="70" y="95">↓ Lower is better</text>
+                    <text x="70" y="135">↑</text>
+                    <text x="70" y="175">↑</text>
+                    <text x="70" y="215">↑</text>
+                    <text x="70" y="275">0%</text>
+                </g>
+                
+                <!-- X-axis labels -->
+                <g fill="#8888aa" font-size="11" text-anchor="middle">
+                    <text x="180" y="295">20 layers</text>
+                    <text x="380" y="295">56 layers</text>
+                    <text x="580" y="295">152 layers</text>
+                    <text x="380" y="315">Network Depth →</text>
+                </g>
+                
+                <!-- Plain Network - degrades -->
+                <g>
+                    <text x="520" y="80" fill="#ef4444" font-size="12" font-weight="bold">Plain Network</text>
+                    <line x1="180" y1="120" x2="380" y2="80" stroke="#ef4444" stroke-width="3"/>
+                    <line x1="380" y1="80" x2="580" y2="70" stroke="#ef4444" stroke-width="3" stroke-dasharray="8,4"/>
+                    <circle cx="180" cy="120" r="6" fill="#ef4444"/>
+                    <circle cx="380" cy="80" r="6" fill="#ef4444"/>
+                    <circle cx="580" cy="70" r="6" fill="#ef4444" opacity="0.5"/>
+                    <!-- Degradation label -->
+                    <text x="480" y="55" fill="#ef4444" font-size="11">Degradation!</text>
+                    <path d="M460 60 L440 75" stroke="#ef4444" stroke-width="1.5" marker-end="url(#arrowRed)"/>
+                </g>
+                
+                <!-- ResNet - improves -->
+                <g>
+                    <text x="520" y="200" fill="#10b981" font-size="12" font-weight="bold">ResNet</text>
+                    <line x1="180" y1="120" x2="380" y2="170" stroke="#10b981" stroke-width="3"/>
+                    <line x1="380" y1="170" x2="580" y2="220" stroke="#10b981" stroke-width="3"/>
+                    <circle cx="180" cy="120" r="6" fill="#10b981"/>
+                    <circle cx="380" cy="170" r="6" fill="#10b981"/>
+                    <circle cx="580" cy="220" r="6" fill="#10b981"/>
+                    <!-- Improvement label -->
+                    <text x="480" y="245" fill="#10b981" font-size="11">Deeper = Better!</text>
+                </g>
+                
+                <!-- Legend -->
+                <g transform="translate(100, 20)">
+                    <rect x="0" y="0" width="12" height="12" fill="#ef4444"/>
+                    <text x="20" y="11" fill="#8888aa" font-size="11">Plain Net: Deeper → Worse</text>
+                    <rect x="180" y="0" width="12" height="12" fill="#10b981"/>
+                    <text x="200" y="11" fill="#8888aa" font-size="11">ResNet: Deeper → Better</text>
+                </g>
+                
+                <defs>
+                    <marker id="arrowRed" markerWidth="8" markerHeight="8" refX="7" refY="3" orient="auto">
+                        <polygon points="0 0, 8 3, 0 6" fill="#ef4444"/>
+                    </marker>
+                </defs>
+            </svg>
+            <p style="color: #8888aa; font-size: 0.9rem; margin-top: 10px;">普通网络越深性能越差，ResNet越深性能越好</p>
+        </div>
+
         <p>传统观点认为深层网络难以优化是因为梯度消失/爆炸。但Batch Normalization很大程度上解决了这个问题。ResNet揭示了一个更深层的问题：</p>
 
-        <div class="highlight-box"
+        <div class="highlight-box">
             <strong>核心洞察：</strong> 让网络直接学习恒等映射(identity mapping)是非常困难的。如果多层非线性层渐进地逼近恒等映射，其残差(residual)会趋近于零，这比直接学习恒等映射更容易。
         </div>
 
-        <h2>💡 解决方案：残差学习</h2>
+        <h2>💡 解决方案：残差学习框架</h2>
 
-        <div class="solution-box"
+        <div class="solution-box">
             <strong>ResNet的创新：</strong> 不再让网络学习期望的底层映射 H(x)，而是学习残差 F(x) = H(x) - x。原始映射变为 F(x) + x。
         </div>
 
@@ -280,11 +456,11 @@
 
         <p>其中 F(x, {Wᵢ}) 表示要学习的残差映射。x 是跳跃连接(skip connection)提供的恒等映射。</p>
 
-        <h2>🏗️ 残差块架构</h2>
+        <h2>🏗️ 残差块架构详解</h2>
 
         <div class="viz-container">
             <h4>残差块结构对比：普通块 vs 残差块</h4>
-            <svg width="800" height="400" viewBox="0 0 800 400">
+            <svg width="800" height="420" viewBox="0 0 800 420">
                 <!-- Left side: Plain Block -->
                 <g transform="translate(50, 50)">
                     <text x="150" y="0" fill="#8888aa" font-size="16" text-anchor="middle" font-weight="bold">普通块 (Plain Block)</text>
@@ -294,7 +470,7 @@
                     <text x="150" y="55" fill="#fff" font-size="14" text-anchor="middle">x</text>
                     
                     <!-- Arrow -->
-                    <line x1="150" y1="70" x2="150" y2="100" stroke="#6366f1" stroke-width="2" marker-end="url(#arrow)"/>
+                    <line x1="150" y1="70" x2="150" y2="100" stroke="#6366f1" stroke-width="2" marker-end="url(#arrowhead)"/>
                     
                     <!-- Conv 3x3 -->
                     <rect x="75" y="105" width="150" height="50" fill="#1e1e2e" stroke="#6366f1" stroke-width="2" rx="5"/>
@@ -302,7 +478,7 @@
                     <text x="150" y="142" fill="#8888aa" font-size="10" text-anchor="middle">BN → ReLU</text>
                     
                     <!-- Arrow -->
-                    <line x1="150" y1="155" x2="150" y2="185" stroke="#6366f1" stroke-width="2" marker-end="url(#arrow)"/>
+                    <line x1="150" y1="155" x2="150" y2="185" stroke="#6366f1" stroke-width="2" marker-end="url(#arrowhead)"/>
                     
                     <!-- Conv 3x3 -->
                     <rect x="75" y="190" width="150" height="50" fill="#1e1e2e" stroke="#6366f1" stroke-width="2" rx="5"/>
@@ -310,16 +486,16 @@
                     <text x="150" y="227" fill="#8888aa" font-size="10" text-anchor="middle">BN</text>
                     
                     <!-- Arrow -->
-                    <line x1="150" y1="240" x2="150" y2="270" stroke="#6366f1" stroke-width="2" marker-end="url(#arrow)"/>
+                    <line x1="150" y1="240" x2="150" y2="270" stroke="#6366f1" stroke-width="2" marker-end="url(#arrowhead)"/>
                     
                     <!-- ReLU -->
                     <rect x="100" y="275" width="100" height="35" fill="#1e1e2e" stroke="#ef4444" stroke-width="2" rx="5"/>
                     <text x="150" y="297" fill="#fca5a5" font-size="12" text-anchor="middle">ReLU</text>
                     
                     <!-- Output -->
-                    <arrow stroke="#6366f1" stroke-width="2" marker-end="url(#arrow)"/>
-                    <rect x="100" y="325" width="100" height="40" fill="#2d2d44" stroke="#6366f1" stroke-width="2" rx="5"/>
-                    <text x="150" y="350" fill="#fff" font-size="14" text-anchor="middle">H(x)</text>
+                    <line x1="150" y1="310" x2="150" y2="330" stroke="#6366f1" stroke-width="2" marker-end="url(#arrowhead)"/>
+                    <rect x="100" y="335" width="100" height="40" fill="#2d2d44" stroke="#6366f1" stroke-width="2" rx="5"/>
+                    <text x="150" y="360" fill="#fff" font-size="14" text-anchor="middle">H(x)</text>
                 </g>
 
                 <!-- Right side: Residual Block -->
@@ -331,7 +507,7 @@
                     <text x="150" y="55" fill="#fff" font-size="14" text-anchor="middle">x</text>
                     
                     <!-- Arrow down main path -->
-                    <line x1="150" y1="70" x2="150" y2="100" stroke="#6366f1" stroke-width="2" marker-end="url(#arrow)"/>
+                    <line x1="150" y1="70" x2="150" y2="100" stroke="#6366f1" stroke-width="2" marker-end="url(#arrowhead)"/>
                     
                     <!-- Conv 3x3 -->
                     <rect x="75" y="105" width="150" height="50" fill="#1e1e2e" stroke="#6366f1" stroke-width="2" rx="5"/>
@@ -339,7 +515,7 @@
                     <text x="150" y="142" fill="#8888aa" font-size="10" text-anchor="middle">BN → ReLU</text>
                     
                     <!-- Arrow -->
-                    <line x1="150" y1="155" x2="150" y2="185" stroke="#6366f1" stroke-width="2" marker-end="url(#arrow)"/>
+                    <line x1="150" y1="155" x2="150" y2="185" stroke="#6366f1" stroke-width="2" marker-end="url(#arrowhead)"/>
                     
                     <!-- Conv 3x3 -->
                     <rect x="75" y="190" width="150" height="50" fill="#1e1e2e" stroke="#6366f1" stroke-width="2" rx="5"/>
@@ -350,34 +526,31 @@
                     <text x="235" y="218" fill="#a5b4fc" font-size="14" font-weight="bold">F(x)</text>
                     
                     <!-- Skip connection (identity) -->
-                    <path d="M70 50 L50 50 L50 245 L70 245" stroke="#10b981" stroke-width="3" fill="none"/>
-                    
-                    <text x="30" y="150" fill="#10b981" font-size="12" font-weight="bold">Identity</text>
-                    
-                    <text x="30" y="165" fill="#10b981" font-size="12" font-weight="bold">Skip</text>
+                    <path d="M70 50 L50 50 L50 280 L70 280" stroke="#10b981" stroke-width="3" fill="none"/>
+                    <text x="25" y="165" fill="#10b981" font-size="11" font-weight="bold">Identity</text>
+                    <text x="25" y="180" fill="#10b981" font-size="11" font-weight="bold">Skip</text>
                     
                     <!-- Plus circle -->
-                    <circle cx="150" cy="265" r="20" fill="#10b981"/>
-                    <text x="150" y="272" fill="#fff" font-size="20" font-weight="bold" text-anchor="middle">+</text>
+                    <circle cx="150" cy="290" r="20" fill="#10b981"/>
+                    <text x="150" y="297" fill="#fff" font-size="20" font-weight="bold" text-anchor="middle">+</text>
                     
                     <!-- Arrow to ReLU -->
-                    <line x1="150" y1="285" x2="150" y2="300" stroke="#6366f1" stroke-width="2" marker-end="url(#arrow)"/>
+                    <line x1="150" y1="310" x2="150" y2="325" stroke="#6366f1" stroke-width="2" marker-end="url(#arrowhead)"/>
                     
                     <!-- ReLU -->
-                    <rect x="100" y="305" width="100" height="35" fill="#1e1e2e" stroke="#ef4444" stroke-width="2" rx="5"/>
-                    <text x="150" y="327" fill="#fca5a5" font-size="12" text-anchor="middle">ReLU</text>
+                    <rect x="100" y="330" width="100" height="35" fill="#1e1e2e" stroke="#ef4444" stroke-width="2" rx="5"/>
+                    <text x="150" y="352" fill="#fca5a5" font-size="12" text-anchor="middle">ReLU</text>
                     
                     <!-- Output -->
-                    <line x1="150" y1="340" x2="150" y2="355" stroke="#6366f1" stroke-width="2" marker-end="url(#arrow)"/>
-                    
-                    <rect x="100" y="360" width="100" height="40" fill="#2d2d44" stroke="#10b981" stroke-width="3" rx="5"/>
-                    <text x="150" y="385" fill="#fff" font-size="14" text-anchor="middle">F(x)+x</text>
+                    <line x1="150" y1="365" x2="150" y2="380" stroke="#6366f1" stroke-width="2" marker-end="url(#arrowhead)"/>
+                    <rect x="100" y="385" width="100" height="40" fill="#2d2d44" stroke="#10b981" stroke-width="3" rx="5"/>
+                    <text x="150" y="410" fill="#fff" font-size="14" text-anchor="middle">F(x)+x</text>
                 </g>
 
                 <defs>
-                    <marker id="arrow" markerWidth="10" markerHeight="10" refX="9" refY="3" orient="auto">
+                    <marker id="arrowhead" markerWidth="10" markerHeight="10" refX="9" refY="3" orient="auto">
                         <polygon points="0 0, 10 3, 0 6" fill="#6366f1"/>
-                    㰯marker>
+                    </marker>
                 </defs>
             </svg>
         </div>
@@ -390,56 +563,68 @@
 
         <div class="viz-container">
             <h4>Bottleneck 结构 (ResNet-50+)</h4>
-            <svg width="300" height="350" viewBox="0 0 300 350">
+            <svg width="400" height="400" viewBox="0 0 400 400">
                 <!-- Bottleneck visualization -->
-                <g transform="translate(75, 20)">
+                <g transform="translate(125, 20)">
                     <!-- Input -->
                     <rect x="25" y="0" width="100" height="35" fill="#2d2d44" stroke="#6366f1" stroke-width="2" rx="5"/>
                     <text x="75" y="22" fill="#fff" font-size="12" text-anchor="middle">256-d</text>
                     
                     <!-- Arrow -->
-                    <line x1="75" y1="35" x2="75" y2="60" stroke="#6366f1" stroke-width="2"/>
+                    <line x1="75" y1="35" x2="75" y2="55" stroke="#6366f1" stroke-width="2" marker-end="url(#arrowhead2)"/>
                     
                     <!-- 1x1 conv -->
-                    <rect x="0" y="65" width="150" height="40" fill="#1e1e2e" stroke="#f59e0b" stroke-width="2" rx="5"/>
-                    <text x="75" y="82" fill="#fcd34d" font-size="11" text-anchor="middle">Conv 1×1, 64</text>
-                    <text x="75" y="97" fill="#8888aa" font-size="9" text-anchor="middle">降维到 64-d</text>
+                    <rect x="0" y="60" width="150" height="45" fill="#1e1e2e" stroke="#f59e0b" stroke-width="2" rx="5"/>
+                    <text x="75" y="78" fill="#fcd34d" font-size="11" text-anchor="middle">Conv 1×1, 64</text>
+                    <text x="75" y="95" fill="#8888aa" font-size="9" text-anchor="middle">降维到 64-d</text>
                     
                     <!-- Arrow -->
-                    <line x1="75" y1="105" x2="75" y2="125" stroke="#6366f1" stroke-width="2"/>
+                    <line x1="75" y1="105" x2="75" y2="120" stroke="#6366f1" stroke-width="2" marker-end="url(#arrowhead2)"/>
                     
                     <!-- 3x3 conv -->
-                    <rect x="0" y="130" width="150" height="40" fill="#1e1e2e" stroke="#f59e0b" stroke-width="2" rx="5"/>
-                    <text x="75" y="147" fill="#fcd34d" font-size="11" text-anchor="middle">Conv 3×3, 64</text>
-                    <text x="75" y="162" fill="#8888aa" font-size="9" text-anchor="middle">保持 64-d</text>
+                    <rect x="0" y="125" width="150" height="45" fill="#1e1e2e" stroke="#f59e0b" stroke-width="2" rx="5"/>
+                    <text x="75" y="143" fill="#fcd34d" font-size="11" text-anchor="middle">Conv 3×3, 64</text>
+                    <text x="75" y="160" fill="#8888aa" font-size="9" text-anchor="middle">保持 64-d</text>
                     
                     <!-- Arrow -->
-                    <line x1="75" y1="170" x2="75" y2="190" stroke="#6366f1" stroke-width="2"/>
+                    <line x1="75" y1="170" x2="75" y2="185" stroke="#6366f1" stroke-width="2" marker-end="url(#arrowhead2)"/>
                     
                     <!-- 1x1 conv -->
-                    <rect x="0" y="195" width="150" height="40" fill="#1e1e2e" stroke="#f59e0b" stroke-width="2" rx="5"/>
-                    <text x="75" y="212" fill="#fcd34d" font-size="11" text-anchor="middle">Conv 1×1, 256</text>
-                    <text x="75" y="227" fill="#8888aa" font-size="9" text-anchor="middle">升维回 256-d</text>
+                    <rect x="0" y="190" width="150" height="45" fill="#1e1e2e" stroke="#f59e0b" stroke-width="2" rx="5"/>
+                    <text x="75" y="208" fill="#fcd34d" font-size="11" text-anchor="middle">Conv 1×1, 256</text>
+                    <text x="75" y="225" fill="#8888aa" font-size="9" text-anchor="middle">升维回 256-d</text>
+                    
+                    <!-- Main path arrow -->
+                    <line x1="75" y1="235" x2="75" y2="265" stroke="#6366f1" stroke-width="2" marker-end="url(#arrowhead2)"/>
                     
                     <!-- Plus -->
-                    <line x1="75" y1="235" x2="75" y2="260" stroke="#6366f1" stroke-width="2"/>
-                    <circle cx="75" cy="270" r="18" fill="#10b981"/>
-                    <text x="75" y="276" fill="#fff" font-size="16" font-weight="bold" text-anchor="middle">+</text>
+                    <circle cx="75" cy="275" r="18" fill="#10b981"/>
+                    <text x="75" y="281" fill="#fff" font-size="16" font-weight="bold" text-anchor="middle">+</text>
                     
-                    <!-- Skip -->
-                    <path d="M-20 17 L-35 17 L-35 270 L60 270" stroke="#10b981" stroke-width="2" fill="none"/>
+                    <!-- Skip connection with 1x1 -->
+                    <path d="M-25 17 L-45 17 L-45 275 L57 275" stroke="#ec4899" stroke-width="2" fill="none"/>
+                    <text x="-80" y="145" fill="#ec4899" font-size="10" font-weight="bold">Skip</text>
+                    <text x="-80" y="160" fill="#ec4899" font-size="10">(1×1 conv</text>
+                    <text x="-80" y="175" fill="#ec4899" font-size="10">if dims differ)</text>
+                    
+                    <!-- Output arrow -->
+                    <line x1="75" y1="293" x2="75" y2="310" stroke="#6366f1" stroke-width="2" marker-end="url(#arrowhead2)"/>
                     
                     <!-- Output -->
-                    <line x1="75" y1="288" x2="75" y2="305" stroke="#6366f1" stroke-width="2"/>
-                    
-                    <rect x="25" y="310" width="100" height="35" fill="#2d2d44" stroke="#6366f1" stroke-width="2" rx="5"/>
-                    <text x="75" y="332" fill="#fff" font-size="12" text-anchor="middle">256-d</text>
+                    <rect x="25" y="315" width="100" height="35" fill="#2d2d44" stroke="#6366f1" stroke-width="2" rx="5"/>
+                    <text x="75" y="337" fill="#fff" font-size="12" text-anchor="middle">256-d</text>
                 </g>
+                
+                <defs>
+                    <marker id="arrowhead2" markerWidth="10" markerHeight="10" refX="9" refY="3" orient="auto">
+                        <polygon points="0 0, 10 3, 0 6" fill="#6366f1"/>
+                    </marker>
+                </defs>
             </svg>
             <p style="color: #8888aa; font-size: 0.9rem; margin-top: 15px;">通过1×1卷积先降维再升维，将3×3卷积的计算量减少约50%</p>
         </div>
 
-        <h2>📊 实验结果</h2>
+        <h2>📊 实验结果与性能</h2>
 
         <div class="stats-grid">
             <div class="stat-card">
@@ -460,37 +645,177 @@
             </div>
         </div>
 
-        <h3>ImageNet 分类结果</h3>
+        <h3>ImageNet 分类结果对比</h3>
 
-        <div class="highlight-box"
-            <strong>ResNet-50:</strong> Top-1 Error 24.01%, Top-5 Error 7.02%<br>
-            <strong>ResNet-101:</strong> Top-1 Error 22.44%, Top-5 Error 6.21%<br>
-            <strong>ResNet-152:</strong> Top-1 Error 21.51%, Top-5 Error 5.93%<br>
-            <br>
-            更深的网络持续带来更好的性能，没有退化现象！
+        <table class="comparison-table">
+            <thead>
+                <tr>
+                    <th>网络架构</th>
+                    <th>层数</th>
+                    <th>Top-1 Error</th>
+                    <th>Top-5 Error</th>
+                    <th>参数量</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>VGG-16</td>
+                    <td>16</td>
+                    <td>28.07%</td>
+                    <td>9.33%</td>
+                    <td>138M</td>
+                </tr>
+                <tr>
+                    <td>ResNet-34</td>
+                    <td>34</td>
+                    <td>26.73%</td>
+                    <td>8.57%</td>
+                    <td>36M</td>
+                </tr>
+                <tr>
+                    <td>ResNet-50</td>
+                    <td>50</td>
+                    <td>24.01%</td>
+                    <td>7.02%</td>
+                    <td>26M</td>
+                </tr>
+                <tr>
+                    <td>ResNet-101</td>
+                    <td>101</td>
+                    <td>22.44%</td>
+                    <td>6.21%</td>
+                    <td>45M</td>
+                </tr>
+                <tr>
+                    <td><strong>ResNet-152</strong></td>
+                    <td>152</td>
+                    <td><strong>21.51%</strong></td>
+                    <td><strong>5.93%</strong></td>
+                    <td>60M</td>
+                </tr>
+            </tbody>
+        </table>
+
+        <div class="highlight-box">
+            <strong>关键发现：</strong><br><br>
+            • 更深的网络持续带来更好的性能，没有退化现象<br>
+            • ResNet-152 比 VGG-16 错误率低 6.5%，但参数量更少<br>
+            • 152层网络成功训练，证明了残差学习的有效性
         </div>
 
-        <h2>💻 PyTorch 实现</h2>
+        <h2>🔄 梯度流可视化</h2>
 
-        <div class="code-block"
+        <div class="viz-container">
+            <h4>为什么跳跃连接有效？梯度高速公路</h4>
+            <svg width="700" height="350" viewBox="0 0 700 350">
+                <!-- Title -->
+                <text x="350" y="25" fill="#fff" font-size="14" text-anchor="middle" font-weight="bold">反向传播时的梯度流动</text>
+                
+                <!-- Plain Network - Gradient Vanishing -->
+                <g transform="translate(50, 50)">
+                    <text x="150" y="0" fill="#ef4444" font-size="14" text-anchor="middle" font-weight="bold">普通网络：梯度消失</text>
+                    
+                    <!-- Layers -->
+                    <g transform="translate(0, 30)">
+                        <rect x="50" y="0" width="60" height="200" fill="#1e1e2e" stroke="#6366f1" stroke-width="1" rx="3"/>
+                        <text x="80" y="105" fill="#8888aa" font-size="10" text-anchor="middle">Layer</text>
+                        <text x="80" y="120" fill="#8888aa" font-size="10" text-anchor="middle">Stack</text>
+                    </g>
+                    
+                    <!-- Gradient arrows - fading -->
+                    <g>
+                        <!-- Strong gradient at bottom -->
+                        <line x1="140" y1="220" x2="200" y2="220" stroke="#ef4444" stroke-width="6" marker-end="url(#arrowRed2)"/>
+                        <text x="210" y="225" fill="#ef4444" font-size="11">∂L/∂x</text>
+                        
+                        <!-- Medium gradient -->
+                        <line x1="140" y1="150" x2="190" y2="150" stroke="#ef4444" stroke-width="4" opacity="0.6" marker-end="url(#arrowRed2)"/>
+                        
+                        <!-- Weak gradient at top -->
+                        <line x1="140" y1="80" x2="180" y2="80" stroke="#ef4444" stroke-width="2" opacity="0.3" marker-end="url(#arrowRed2)"/>
+                        
+                        <!-- Very weak at input -->
+                        <line x1="140" y1="40" x2="170" y2="40" stroke="#ef4444" stroke-width="1" opacity="0.15" marker-end="url(#arrowRed2)"/>
+                    </g>
+                    
+                    <text x="150" y="270" fill="#ef4444" font-size="12" text-anchor="middle">❌ 深层梯度几乎为0</text>
+                </g>
+                
+                <!-- ResNet - Gradient Highway -->
+                <g transform="translate(400, 50)">
+                    <text x="150" y="0" fill="#10b981" font-size="14" text-anchor="middle" font-weight="bold">ResNet：梯度高速公路</text>
+                    
+                    <!-- Main path -->
+                    <g transform="translate(0, 30)">
+                        <rect x="50" y="0" width="60" height="200" fill="#1e1e2e" stroke="#6366f1" stroke-width="1" rx="3"/>
+                        <text x="80" y="105" fill="#8888aa" font-size="10" text-anchor="middle">Residual</text>
+                        <text x="80" y="120" fill="#8888aa" font-size="10" text-anchor="middle">Blocks</text>
+                    </g>
+                    
+                    <!-- Skip connections (highways) -->
+                    <g>
+                        <path d="M20 230 L20 230 L20 50 L45 50" stroke="#10b981" stroke-width="4" fill="none" opacity="0.8"/>
+                        <text x="0" y="140" fill="#10b981" font-size="10">Skip</text>
+                        <text x="0" y="155" fill="#10b981" font-size="10">Path</text>
+                    </g>
+                    
+                    <!-- Strong gradients everywhere -->
+                    <g>
+                        <!-- Through main path -->
+                        <line x1="140" y1="220" x2="200" y2="220" stroke="#ef4444" stroke-width="3" opacity="0.5" marker-end="url(#arrowRed2)"/>
+                        
+                        <!-- Through skip - strong -->
+                        <line x1="140" y1="50" x2="200" y2="50" stroke="#10b981" stroke-width="5" marker-end="url(#arrowGreen)"/>
+                        <line x1="140" y1="130" x2="200" y2="130" stroke="#10b981" stroke-width="5" marker-end="url(#arrowGreen)"/>
+                        <line x1="140" y1="220" x2="200" y2="220" stroke="#10b981" stroke-width="5" marker-end="url(#arrowGreen)"/>
+                    </g>
+                    
+                    <!-- Legend -->
+                    <text x="220" y="55" fill="#10b981" font-size="11">强梯度</text>
+                    <text x="220" y="135" fill="#10b981" font-size="11">强梯度</text>
+                    <text x="220" y="225" fill="#10b981" font-size="11">强梯度</text>
+                    
+                    <text x="150" y="270" fill="#10b981" font-size="12" text-anchor="middle">✓ 每层都能获得有效梯度</text>
+                </g>
+                
+                <defs>
+                    <marker id="arrowRed2" markerWidth="8" markerHeight="8" refX="7" refY="3" orient="auto">
+                        <polygon points="0 0, 8 3, 0 6" fill="#ef4444"/>
+                    </marker>
+                    <marker id="arrowGreen" markerWidth="8" markerHeight="8" refX="7" refY="3" orient="auto">
+                        <polygon points="0 0, 8 3, 0 6" fill="#10b981"/>
+                    </marker>
+                </defs>
+            </svg>
+            <p style="color: #8888aa; font-size: 0.9rem; margin-top: 10px;">跳跃连接创建"梯度高速公路"，让深层网络也能有效训练</p>
+        </div>
+
+        <h2>💻 PyTorch 完整实现</h2>
+
+        <div class="code-block">
 <span class="keyword">import</span> torch
 <span class="keyword">import</span> torch.nn <span class="keyword">as</span> nn
 
 <span class="keyword">class</span> <span class="function">BasicBlock</span>(nn.Module):
-    <span class="comment">"""ResNet-18/34 使用的残差块"""</span>
+    <span class="comment">"""ResNet-18/34 使用的残差块 - 两个3×3卷积"""</span>
     expansion = <span class="number">1</span>
     
     <span class="keyword">def</span> <span class="function">__init__</span>(self, in_channels, out_channels, stride=<span class="number">1</span>):
         super(BasicBlock, self).__init__()
+        
+        <span class="comment"># 第一个3×3卷积，可能下采样</span>
         self.conv1 = nn.Conv2d(in_channels, out_channels, kernel_size=<span class="number">3</span>, 
                                stride=stride, padding=<span class="number">1</span>, bias=<span class="keyword">False</span>)
         self.bn1 = nn.BatchNorm2d(out_channels)
+        
+        <span class="comment"># 第二个3×3卷积</span>
         self.conv2 = nn.Conv2d(out_channels, out_channels, kernel_size=<span class="number">3</span>,
                                stride=<span class="number">1</span>, padding=<span class="number">1</span>, bias=<span class="keyword">False</span>)
         self.bn2 = nn.BatchNorm2d(out_channels)
+        
         self.relu = nn.ReLU(inplace=<span class="keyword">True</span>)
         
-        <span class="comment"># 下采样层，当维度不匹配时使用</span>
+        <span class="comment"># 下采样层：当维度不匹配时使用1×1卷积</span>
         self.shortcut = nn.Sequential()
         <span class="keyword">if</span> stride != <span class="number">1</span> <span class="keyword">or</span> in_channels != out_channels:
             self.shortcut = nn.Sequential(
@@ -509,58 +834,212 @@
         out = self.conv2(out)
         out = self.bn2(out)
         
-        <span class="comment"># 关键：跳跃连接 + 残差学习</span>
-        out += self.shortcut(identity)  <span class="comment"># F(x) + x</span>
+        <span class="comment"># 关键：跳跃连接 + 残差学习 F(x) + x</span>
+        out += self.shortcut(identity)
         out = self.relu(out)
         
         <span class="keyword">return</span> out
 
-<span class="comment"># 使用预训练模型</span>
+
+<span class="keyword">class</span> <span class="function">Bottleneck</span>(nn.Module):
+    <span class="comment">"""ResNet-50/101/152 使用的瓶颈块 - 1×1→3×3→1×1"""</span>
+    expansion = <span class="number">4</span>
+    
+    <span class="keyword">def</span> <span class="function">__init__</span>(self, in_channels, out_channels, stride=<span class="number">1</span>):
+        super(Bottleneck, self).__init__()
+        
+        <span class="comment"># 1×1 降维</span>
+        self.conv1 = nn.Conv2d(in_channels, out_channels, kernel_size=<span class="number">1</span>, bias=<span class="keyword">False</span>)
+        self.bn1 = nn.BatchNorm2d(out_channels)
+        
+        <span class="comment"># 3×3 卷积</span>
+        self.conv2 = nn.Conv2d(out_channels, out_channels, kernel_size=<span class="number">3</span>,
+                               stride=stride, padding=<span class="number">1</span>, bias=<span class="keyword">False</span>)
+        self.bn2 = nn.BatchNorm2d(out_channels)
+        
+        <span class="comment"># 1×1 升维</span>
+        self.conv3 = nn.Conv2d(out_channels, out_channels * <span class="number">4</span>, kernel_size=<span class="number">1</span>, bias=<span class="keyword">False</span>)
+        self.bn3 = nn.BatchNorm2d(out_channels * <span class="number">4</span>)
+        
+        self.relu = nn.ReLU(inplace=<span class="keyword">True</span>)
+        
+        <span class="comment"># 下采样层</span>
+        self.shortcut = nn.Sequential()
+        <span class="keyword">if</span> stride != <span class="number">1</span> <span class="keyword">or</span> in_channels != out_channels * <span class="number">4</span>:
+            self.shortcut = nn.Sequential(
+                nn.Conv2d(in_channels, out_channels * <span class="number">4</span>, kernel_size=<span class="number">1</span>,
+                         stride=stride, bias=<span class="keyword">False</span>),
+                nn.BatchNorm2d(out_channels * <span class="number">4</span>)
+            )
+    
+    <span class="keyword">def</span> <span class="function">forward</span>(self, x):
+        identity = x
+        
+        out = self.conv1(x)
+        out = self.bn1(out)
+        out = self.relu(out)
+        
+        out = self.conv2(out)
+        out = self.bn2(out)
+        out = self.relu(out)
+        
+        out = self.conv3(out)
+        out = self.bn3(out)
+        
+        out += self.shortcut(identity)
+        out = self.relu(out)
+        
+        <span class="keyword">return</span> out
+
+
+<span class="comment"># 使用预训练模型进行迁移学习</span>
 <span class="keyword">from</span> torchvision <span class="keyword">import</span> models
 
+<span class="comment"># 加载预训练ResNet-50</span>
 resnet50 = models.resnet50(pretrained=<span class="keyword">True</span>)
-resnet101 = models.resnet101(pretrained=<span class="keyword">True</span>)
+
+<span class="comment"># 冻结特征提取层</span>
+<span class="keyword">for</span> param <span class="keyword">in</span> resnet50.parameters():
+    param.requires_grad = <span class="keyword">False</span>
+
+<span class="comment"># 替换最后的全连接层进行微调</span>
+resnet50.fc = nn.Linear(resnet50.fc.in_features, num_classes)
         </div>
 
-        <h2>🌍 影响与意义</h2>
+        <h2>🌍 影响与后续发展</h2>
+
+        <div class="timeline">
+            <div class="timeline-item">
+                <div class="year">2015</div>
+                <div class="title">ResNet 发表</div>
+                <div class="desc">提出残差学习，152层网络赢得ILSVRC冠军</div>
+            </div>
+            <div class="timeline-item">
+                <div class="year">2016</div>
+                <div class="title">ResNet v2</div>
+                <div class="desc">Identity Mappings改进，将BN和ReLU前置到卷积层前</div>
+            </div>
+            <div class="timeline-item">
+                <div class="year">2016</div>
+                <div class="title">Wide ResNet</div>
+                <div class="desc">增加通道宽度而非深度，性能更优</div>
+            </div>
+            <div class="timeline-item">
+                <div class="year">2017</div>
+                <div class="title">ResNeXt</div>
+                <div class="desc">引入Cardinality维度，使用分组卷积</div>
+            </div>
+            <div class="timeline-item">
+                <div class="year">2017</div>
+                <div class="title">DenseNet</div>
+                <div class="desc">将跳跃连接发挥到极致，每层连接所有前面层</div>
+            </div>
+            <div class="timeline-item">
+                <div class="year">2019</div>
+                <div class="title">EfficientNet</div>
+                <div class="desc">复合缩放深度、宽度、分辨率</div>
+            </div>
+        </div>
 
         <p>ResNet的影响远远超出了图像分类：</p>
 
-        <div class="highlight-box"
-            <strong>检测与分割：</strong> ResNet成为Faster R-CNN、Mask R-CNN等检测框架的默认backbone<br><br>
-            <strong>语义分割：</strong> FCN、U-Net、DeepLab等使用ResNet作为编码器<br><br>
-            <strong>视觉Transformer：</u003c/strong> ViT的架构设计深受ResNet影响<br><br>
-            <strong>NLP领域：</strong> Transformer的残差连接直接继承自ResNet
-        </div>
-
-        <h3>后续发展</h3>
-
-        <ul style="color: #b0b0cc; margin-left: 20px; margin-bottom: 20px;">
-            <li><strong>ResNeXt (2017):</strong> 引入cardinality维度，使用分组卷积</li>
-            <li><strong>DenseNet (2017):</strong> 将跳跃连接发挥到极致，每层连接所有前面层</li>
-            <li><strong>Wide ResNet (2016):</strong> 增加通道宽度而非深度</li>
-            <li><strong>ResNet v2 (2016):</strong> 改进残差单元设计，将BN和ReLU前置</li>
-            <li><strong>EfficientNet (2019):</strong> 复合缩放深度、宽度、分辨率</li>
+        <ul>
+            <li><strong>目标检测：</strong> ResNet成为Faster R-CNN、Mask R-CNN等检测框架的默认backbone</li>
+            <li><strong>语义分割：</strong> FCN、U-Net、DeepLab等使用ResNet作为编码器</li>
+            <li><strong>视觉Transformer：</strong> ViT的架构设计深受ResNet影响</li>
+            <li><strong>NLP领域：</strong> Transformer的残差连接直接继承自ResNet</li>
+            <li><strong>生成模型：</strong> Stable Diffusion的U-Net使用ResNet-style blocks</li>
         </ul>
 
         <h2>📚 关键启示</h2>
 
-        <div class="solution-box"
-            <strong>ResNet给我们的三个启示：</strong><br><br>
+        <div class="solution-box">
+            <strong>ResNet给我们的四个启示：</strong><br><br>
             1. <strong>问题重构：</strong> 学习残差比学习原始映射更容易<br><br>
             2. <strong>梯度高速公路：</strong> 跳跃连接为梯度提供直接回传路径<br><br>
-            3. <strong>深度即力量：</strong> 解决了退化问题后，更深确实更好
+            3. <strong>深度即力量：</strong> 解决了退化问题后，更深确实更好<br><br>
+            4. <strong>简洁即优雅：</strong> 一个简单idea解决了困扰学界多年的问题
+        </div>
+
+        <div class="viz-container">
+            <h4>ResNet架构全家桶</h4>
+            <svg width="600" height="200" viewBox="0 0 600 200">
+                <!-- ResNet-18 -->
+                <g transform="translate(50, 40)">
+                    <rect x="0" y="0" width="80" height="120" fill="#1e1e2e" stroke="#6366f1" stroke-width="2" rx="5"/>
+                    <text x="40" y="25" fill="#fff" font-size="12" text-anchor="middle" font-weight="bold">ResNet</text>
+                    <text x="40" y="45" fill="#6366f1" font-size="16" text-anchor="middle" font-weight="bold">18</text>
+                    <text x="40" y="70" fill="#8888aa" font-size="10" text-anchor="middle">Basic</text>
+                    <text x="40" y="85" fill="#8888aa" font-size="10" text-anchor="middle">Block</text>
+                    <text x="40" y="110" fill="#10b981" font-size="11" text-anchor="middle">11M params</text>
+                </g>
+                
+                <!-- ResNet-34 -->
+                <g transform="translate(160, 30)">
+                    <rect x="0" y="0" width="80" height="140" fill="#1e1e2e" stroke="#6366f1" stroke-width="2" rx="5"/>
+                    <text x="40" y="25" fill="#fff" font-size="12" text-anchor="middle" font-weight="bold">ResNet</text>
+                    <text x="40" y="45" fill="#6366f1" font-size="16" text-anchor="middle" font-weight="bold">34</text>
+                    <text x="40" y="75" fill="#8888aa" font-size="10" text-anchor="middle">Basic</text>
+                    <text x="40" y="90" fill="#8888aa" font-size="10" text-anchor="middle">Block</text>
+                    <text x="40" y="125" fill="#10b981" font-size="11" text-anchor="middle">22M params</text>
+                </g>
+                
+                <!-- ResNet-50 -->
+                <g transform="translate(270, 20)">
+                    <rect x="0" y="0" width="80" height="160" fill="#1e1e2e" stroke="#a855f7" stroke-width="2" rx="5"/>
+                    <text x="40" y="25" fill="#fff" font-size="12" text-anchor="middle" font-weight="bold">ResNet</text>
+                    <text x="40" y="45" fill="#a855f7" font-size="16" text-anchor="middle" font-weight="bold">50</text>
+                    <text x="40" y="80" fill="#fcd34d" font-size="10" text-anchor="middle">Bottle</text>
+                    <text x="40" y="95" fill="#fcd34d" font-size="10" text-anchor="middle">neck</text>
+                    <text x="40" y="140" fill="#10b981" font-size="11" text-anchor="middle">26M params</text>
+                </g>
+                
+                <!-- ResNet-101 -->
+                <g transform="translate(380, 10)">
+                    <rect x="0" y="0" width="80" height="180" fill="#1e1e2e" stroke="#a855f7" stroke-width="2" rx="5"/>
+                    <text x="40" y="25" fill="#fff" font-size="12" text-anchor="middle" font-weight="bold">ResNet</text>
+                    <text x="40" y="45" fill="#a855f7" font-size="16" text-anchor="middle" font-weight="bold">101</text>
+                    <text x="40" y="90" fill="#fcd34d" font-size="10" text-anchor="middle">Bottle</text>
+                    <text x="40" y="105" fill="#fcd34d" font-size="10" text-anchor="middle">neck</text>
+                    <text x="40" y="160" fill="#10b981" font-size="11" text-anchor="middle">45M params</text>
+                </g>
+                
+                <!-- ResNet-152 -->
+                <g transform="translate(490, 0)">
+                    <rect x="0" y="0" width="80" height="200" fill="#1e1e2e" stroke="#ec4899" stroke-width="2" rx="5"/>
+                    <text x="40" y="25" fill="#fff" font-size="12" text-anchor="middle" font-weight="bold">ResNet</text>
+                    <text x="40" y="45" fill="#ec4899" font-size="16" text-anchor="middle" font-weight="bold">152</text>
+                    <text x="40" y="100" fill="#fcd34d" font-size="10" text-anchor="middle">Bottle</text>
+                    <text x="40" y="115" fill="#fcd34d" font-size="10" text-anchor="middle">neck</text>
+                    <text x="40" y="180" fill="#10b981" font-size="11" text-anchor="middle">60M params</text>
+                </g>
+                
+                <!-- Arrows showing progression -->
+                <g>
+                    <path d="M130 100 L160 100" stroke="#6366f1" stroke-width="2" marker-end="url(#arrowhead3)"/>
+                    <path d="M240 100 L270 100" stroke="#6366f1" stroke-width="2" marker-end="url(#arrowhead3)"/>
+                    <path d="M350 100 L380 100" stroke="#6366f1" stroke-width="2" marker-end="url(#arrowhead3)"/>
+                    <path d="M460 100 L490 100" stroke="#6366f1" stroke-width="2" marker-end="url(#arrowhead3)"/>
+                </g>
+                
+                <text x="300" y="195" fill="#8888aa" font-size="12" text-anchor="middle">← 越深性能越好 →</text>
+                
+                <defs>
+                    <marker id="arrowhead3" markerWidth="10" markerHeight="10" refX="9" refY="3" orient="auto">
+                        <polygon points="0 0, 10 3, 0 6" fill="#6366f1"/>
+                    </marker>
+                </defs>
+            </svg>
         </div>
 
         <div style="text-align: center; margin: 50px 0;">
-            <a href="index.html" style="display: inline-block; background: linear-gradient(135deg, #6366f1 0%, #a855f7 100%); color: white; padding: 15px 40px; border-radius: 30px; text-decoration: none; font-size: 1.1rem;">
-                ← 返回首页
-            </a>
+            <a href="../index.html" class="back-link">← 返回首页</a>
         </div>
     </div>
 
     <footer>
         <p>Paper explanation by Kimi Claw | <a href="https://github.com/Patbby/ai-neural-networks" style="color:#6366f1">GitHub</a></p>
+        <p style="font-size: 0.85rem; margin-top: 10px;">Last updated: April 12, 2026</p>
     </footer>
 </body>
 </html>
