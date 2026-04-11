@@ -1,0 +1,727 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CLIP: Learning Transferable Visual Models From Natural Language Supervision | AI Neural Networks</title>
+    <style>
+        :root {
+            --bg-dark: #0a0a0f;
+            --bg-card: #12121a;
+            --bg-elevated: #1a1a25;
+            --primary: #6366f1;
+            --primary-light: #818cf8;
+            --secondary: #a855f7;
+            --accent: #10b981;
+            --text-primary: #f8fafc;
+            --text-secondary: #94a3b8;
+            --text-muted: #64748b;
+            --border: #2d2d3a;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, sans-serif;
+            background: var(--bg-dark);
+            color: var(--text-primary);
+            line-height: 1.7;
+        }
+        
+        /* Navigation */
+        nav {
+            background: rgba(10, 10, 15, 0.8);
+            backdrop-filter: blur(20px);
+            border-bottom: 1px solid var(--border);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+        
+        .nav-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 1rem 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .logo {
+            font-size: 1.25rem;
+            font-weight: 700;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        
+        .nav-links {
+            display: flex;
+            gap: 2rem;
+            list-style: none;
+        }
+        
+        .nav-links a {
+            color: var(--text-secondary);
+            text-decoration: none;
+            transition: color 0.2s;
+        }
+        
+        .nav-links a:hover {
+            color: var(--text-primary);
+        }
+        
+        /* Hero Section */
+        .hero {
+            background: linear-gradient(180deg, rgba(99, 102, 241, 0.1) 0%, transparent 100%);
+            padding: 4rem 2rem;
+            text-align: center;
+        }
+        
+        .hero-content {
+            max-width: 900px;
+            margin: 0 auto;
+        }
+        
+        .paper-badge {
+            display: inline-block;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            color: white;
+            padding: 0.5rem 1.5rem;
+            border-radius: 50px;
+            font-size: 0.875rem;
+            font-weight: 600;
+            margin-bottom: 1.5rem;
+        }
+        
+        h1 {
+            font-size: 2.75rem;
+            font-weight: 800;
+            line-height: 1.2;
+            margin-bottom: 1.5rem;
+            background: linear-gradient(135deg, var(--text-primary) 0%, var(--primary-light) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        
+        .authors {
+            color: var(--text-secondary);
+            font-size: 1.125rem;
+            margin-bottom: 0.75rem;
+        }
+        
+        .affiliation {
+            color: var(--text-muted);
+            font-size: 1rem;
+            margin-bottom: 1.5rem;
+        }
+        
+        .paper-meta {
+            display: flex;
+            justify-content: center;
+            gap: 2rem;
+            flex-wrap: wrap;
+            margin-bottom: 2rem;
+        }
+        
+        .meta-item {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            color: var(--text-secondary);
+        }
+        
+        .meta-item svg {
+            width: 18px;
+            height: 18px;
+            color: var(--primary);
+        }
+        
+        .paper-links {
+            display: flex;
+            justify-content: center;
+            gap: 1rem;
+            flex-wrap: wrap;
+        }
+        
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.75rem 1.5rem;
+            border-radius: 10px;
+            text-decoration: none;
+            font-weight: 600;
+            transition: all 0.2s;
+        }
+        
+        .btn-primary {
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            color: white;
+        }
+        
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 30px rgba(99, 102, 241, 0.3);
+        }
+        
+        .btn-secondary {
+            background: var(--bg-elevated);
+            color: var(--text-primary);
+            border: 1px solid var(--border);
+        }
+        
+        .btn-secondary:hover {
+            background: var(--border);
+        }
+        
+        /* Main Content */
+        main {
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 3rem 2rem;
+        }
+        
+        section {
+            margin-bottom: 4rem;
+        }
+        
+        h2 {
+            font-size: 1.75rem;
+            font-weight: 700;
+            margin-bottom: 1.5rem;
+            color: var(--text-primary);
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+        
+        h2::before {
+            content: '';
+            width: 4px;
+            height: 1.5rem;
+            background: linear-gradient(180deg, var(--primary), var(--secondary));
+            border-radius: 2px;
+        }
+        
+        p {
+            color: var(--text-secondary);
+            margin-bottom: 1rem;
+            font-size: 1.0625rem;
+        }
+        
+        /* Problem Statement */
+        .problem-box {
+            background: linear-gradient(135deg, rgba(239, 68, 68, 0.1), rgba(239, 68, 68, 0.05));
+            border: 1px solid rgba(239, 68, 68, 0.2);
+            border-radius: 16px;
+            padding: 2rem;
+            margin-bottom: 1.5rem;
+        }
+        
+        .problem-box h3 {
+            color: #ef4444;
+            font-size: 1.125rem;
+            margin-bottom: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        
+        /* Innovation Box */
+        .innovation-box {
+            background: linear-gradient(135deg, rgba(16, 185, 129, 0.1), rgba(16, 185, 129, 0.05));
+            border: 1px solid rgba(16, 185, 129, 0.2);
+            border-radius: 16px;
+            padding: 2rem;
+            margin-bottom: 1.5rem;
+        }
+        
+        .innovation-box h3 {
+            color: var(--accent);
+            font-size: 1.125rem;
+            margin-bottom: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        
+        /* Architecture Diagram */
+        .architecture-container {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 20px;
+            padding: 3rem;
+            margin: 2rem 0;
+            text-align: center;
+        }
+        
+        .arch-title {
+            font-size: 1.25rem;
+            font-weight: 600;
+            margin-bottom: 2rem;
+            color: var(--text-primary);
+        }
+        
+        .clip-arch {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 2rem;
+        }
+        
+        .encoders-row {
+            display: flex;
+            justify-content: center;
+            gap: 4rem;
+            flex-wrap: wrap;
+        }
+        
+        .encoder-block {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 1rem;
+        }
+        
+        .encoder-box {
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            padding: 1.5rem 2.5rem;
+            border-radius: 16px;
+            color: white;
+            font-weight: 600;
+            min-width: 140px;
+        }
+        
+        .encoder-label {
+            color: var(--text-secondary);
+            font-size: 0.875rem;
+        }
+        
+        .contrastive-layer {
+            background: var(--bg-elevated);
+            border: 2px solid var(--accent);
+            padding: 1.5rem 3rem;
+            border-radius: 16px;
+            color: var(--accent);
+            font-weight: 700;
+            font-size: 1.125rem;
+        }
+        
+        .dataset-badge {
+            background: linear-gradient(135deg, rgba(236, 72, 153, 0.2), rgba(236, 72, 153, 0.1));
+            border: 1px solid rgba(236, 72, 153, 0.3);
+            color: #ec4899;
+            padding: 1rem 2rem;
+            border-radius: 12px;
+            font-weight: 600;
+        }
+        
+        /* Results Table */
+        .results-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 1.5rem 0;
+            background: var(--bg-card);
+            border-radius: 12px;
+            overflow: hidden;
+        }
+        
+        .results-table th,
+        .results-table td {
+            padding: 1rem 1.5rem;
+            text-align: left;
+            border-bottom: 1px solid var(--border);
+        }
+        
+        .results-table th {
+            background: var(--bg-elevated);
+            color: var(--text-primary);
+            font-weight: 600;
+        }
+        
+        .results-table td {
+            color: var(--text-secondary);
+        }
+        
+        .results-table tr:last-child td {
+            border-bottom: none;
+        }
+        
+        /* Code Block */
+        .code-block {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            overflow: hidden;
+            margin: 1.5rem 0;
+        }
+        
+        .code-header {
+            background: var(--bg-elevated);
+            padding: 0.75rem 1.25rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            color: var(--text-secondary);
+            font-size: 0.875rem;
+        }
+        
+        .code-header::before {
+            content: '🐍';
+        }
+        
+        pre {
+            padding: 1.5rem;
+            overflow-x: auto;
+            font-size: 0.9375rem;
+            line-height: 1.6;
+        }
+        
+        code {
+            font-family: 'JetBrains Mono', 'Fira Code', monospace;
+            color: var(--text-primary);
+        }
+        
+        .keyword { color: #c792ea; }
+        .function { color: #82aaff; }
+        .string { color: #c3e88d; }
+        .comment { color: #676e95; }
+        .number { color: #f78c6c; }
+        
+        /* Impact Stats */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1.5rem;
+            margin: 2rem 0;
+        }
+        
+        .stat-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            padding: 1.5rem;
+            text-align: center;
+        }
+        
+        .stat-value {
+            font-size: 2.5rem;
+            font-weight: 800;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 0.5rem;
+        }
+        
+        .stat-label {
+            color: var(--text-secondary);
+            font-size: 0.9375rem;
+        }
+        
+        /* Related Papers */
+        .related-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 1.5rem;
+            margin-top: 1.5rem;
+        }
+        
+        .related-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 1.5rem;
+            transition: all 0.2s;
+        }
+        
+        .related-card:hover {
+            border-color: var(--primary);
+            transform: translateY(-2px);
+        }
+        
+        .related-card h4 {
+            color: var(--text-primary);
+            margin-bottom: 0.5rem;
+        }
+        
+        .related-card p {
+            font-size: 0.9375rem;
+            margin-bottom: 0;
+        }
+        
+        /* Footer */
+        footer {
+            text-align: center;
+            padding: 3rem 2rem;
+            border-top: 1px solid var(--border);
+            color: var(--text-muted);
+        }
+        
+        /* Responsive */
+        @media (max-width: 768px) {
+            h1 {
+                font-size: 2rem;
+            }
+            
+            .encoders-row {
+                gap: 2rem;
+            }
+            
+            .architecture-container {
+                padding: 1.5rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <nav>
+        <div class="nav-container">
+            <a href="../index.html" class="logo">AI Neural Networks</a>
+            <ul class="nav-links">
+                <li><a href="../index.html">Home</a></li>
+                <li><a href="../cnn.html">CNN</a></li>
+                <li><a href="../gnn.html">GNN</a></li>
+                <li><a href="../gat.html">GAT</a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <header class="hero">
+        <div class="hero-content">
+            <span class="paper-badge">ICML 2021</span>
+            <h1>CLIP: Learning Transferable Visual Models From Natural Language Supervision</h1>
+            <p class="authors">Alec Radford, Jong Wook Kim, Chris Hallacy, Aditya Ramesh, Gabriel Goh, Sandhini Agarwal, Girish Sastry, Amanda Askell, Pamela Mishkin, Jack Clark, Gretchen Krueger, Ilya Sutskever</p>
+            <p class="affiliation">OpenAI</p>
+            
+            <div class="paper-meta">
+                <div class="meta-item">
+                    <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg>
+                    <span>2021</span>
+                </div>
+                <div class="meta-item">
+                    <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
+                    <span>ICML</span>
+                </div>
+                <div class="meta-item">
+                    <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1"></path></svg>
+                    <span>10,000+ Citations</span>
+                </div>
+            </div>
+            
+            <div class="paper-links">
+                <a href="https://arxiv.org/abs/2103.00020" class="btn btn-primary" target="_blank">
+                    <svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
+                    Paper (PDF)
+                </a>
+                <a href="https://github.com/openai/CLIP" class="btn btn-secondary" target="_blank">
+                    <svg width="20" height="20" fill="currentColor" viewBox="0 0 24 24"><path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"></path></svg>
+                    Code
+                </a>
+                <a href="https://openai.com/research/clip" class="btn btn-secondary" target="_blank">
+                    <svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 12a9 9 0 01-9 9m9-9a9 9 0 00-9-9m9 9H3m9 9a9 9 0 01-9-9m9 9c1.657 0 3-4.03 3-9s-1.343-9-3-9m0 18c-1.657 0-3-4.03-3-9s1.343-9 3-9m-9 9a9 9 0 019-9"></path></svg>
+                    Project Page
+                </a>
+            </div>
+        </div>
+    </header>
+
+    <main>
+        <!-- Problem Statement -->
+        <section>
+            <h2>Problem Statement</h2>
+            <div class="problem-box">
+                <h3>⚠️ The Limitation</h3>
+                <p>State-of-the-art computer vision systems are trained to predict a fixed set of predetermined object categories. This restricted form of supervision limits their generality and usability since additional labeled data is needed to specify any other visual concept. Every new task requires collecting and annotating a new dataset.</p>
+            </div>
+            <p>Traditional vision models like ResNet trained on ImageNet can only recognize the 1,000 categories in the training set. To recognize new concepts, you need to collect images, annotate them, and retrain the model—an expensive and time-consuming process.</p>
+        </section>
+
+        <!-- Key Innovation -->
+        <section>
+            <h2>Key Innovation</h2>
+            <div class="innovation-box">
+                <h3>💡 The Breakthrough</h3>
+                <p><strong>Learning directly from raw text about images leverages a much broader source of supervision.</strong> CLIP demonstrates that predicting which caption goes with which image is an efficient and scalable way to learn state-of-the-art image representations from 400 million (image, text) pairs collected from the internet.</p>
+            </div>
+            <p>After pre-training, natural language is used to reference learned visual concepts (or describe new ones), enabling <strong>zero-shot transfer</strong> to downstream tasks. You can classify images using natural language descriptions without any task-specific training data.</p>
+        </section>
+
+        <!-- Architecture -->
+        <section>
+            <h2>Architecture & Method</h2>
+            <div class="architecture-container">
+                <div class="arch-title">CLIP Dual-Encoder Architecture</div>
+                <div class="clip-arch">
+                    <div class="dataset-badge">400M (Image, Text) Pairs</div>
+                    
+                    <div class="encoders-row">
+                        <div class="encoder-block">
+                            <div class="encoder-box">Image Encoder</div>
+                            <div class="encoder-label">ResNet or Vision Transformer</div>
+                        </div>
+                        <div class="encoder-block">
+                            <div class="encoder-box">Text Encoder</div>
+                            <div class="encoder-label">Transformer</div>
+                        </div>
+                    </div>
+                    
+                    <div style="font-size: 2rem; color: var(--text-muted);">↓</div>
+                    
+                    <div class="contrastive-layer">Contrastive Learning</div>
+                    
+                    <div style="font-size: 2rem; color: var(--text-muted);">↓</div>
+                    
+                    <div class="encoder-box" style="background: linear-gradient(135deg, var(--accent), #059669);">Joint Embedding Space</div>
+                </div>
+            </div>
+            
+            <h3 style="margin-top: 2rem; margin-bottom: 1rem; color: var(--text-primary);">Training Objective</h3>
+            <p>CLIP uses a contrastive learning objective across a batch of N (image, text) pairs:</p>
+            <ul style="color: var(--text-secondary); margin-left: 2rem; margin-bottom: 1rem;">
+                <li>Train the model to maximize the cosine similarity of N real pairs</li>
+                <li>Minimize the cosine similarity of N² - N incorrect pairings</li>
+                <li>Symmetric cross-entropy loss over similarity scores</li>
+            </ul>
+            
+            <h3 style="margin-top: 2rem; margin-bottom: 1rem; color: var(--text-primary);">Model Variants</h3>
+            <table class="results-table">
+                <thead>
+                    <tr>
+                        <th>Architecture</th>
+                        <th>Variants</th>
+                        <th>Training</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>ResNet-based</td>
+                        <td>RN50, RN101, RN50x4, RN50x16, RN50x64</td>
+                        <td>592 V100 GPUs, 18 days (largest)</td>
+                    </tr>
+                    <tr>
+                        <td>Vision Transformer</td>
+                        <td>ViT-B/32, ViT-B/16, ViT-L/14, ViT-L/14@336px</td>
+                        <td>256 V100 GPUs, 12 days (largest)</td>
+                    </tr>
+                </tbody>
+            </table>
+        </section>
+
+        <!-- Results & Impact -->
+        <section>
+            <h2>Results & Impact</h2>
+            
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-value">400M</div>
+                    <div class="stat-label">Training Pairs</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value">30+</div>
+                    <div class="stat-label">Datasets Tested</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value">76.2%</div>
+                    <div class="stat-label">ImageNet Zero-Shot</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value">ResNet-50</div>
+                    <div class="stat-label">Matching Accuracy</div>
+                </div>
+            </div>
+            
+            <p>CLIP achieved remarkable results without any ImageNet training data:</p>
+            <ul style="color: var(--text-secondary); margin-left: 2rem; margin-bottom: 1rem;">
+                <li><strong>ImageNet:</strong> 76.2% top-1 accuracy zero-shot (matching ResNet-50 trained on 1.28M images)</li>
+                <li><strong>Robustness:</strong> Better out-of-distribution performance than supervised models</li>
+                <li><strong>Versatility:</strong> Works across OCR, action recognition, geo-localization, fine-grained classification</li>
+                <li><strong>Efficiency:</strong> Same pre-trained model works for all downstream tasks</li>
+            </ul>
+        </section>
+
+        <!-- Code Implementation -->
+        <section>
+            <h2>Code Implementation</h2>
+            
+            <div class="code-block">
+                <div class="code-header">Zero-Shot Image Classification with CLIP</div>
+                <pre><code><span class="keyword">import</span> torch
+<span class="keyword">import</span> clip
+<span class="keyword">from</span> PIL <span class="keyword">import</span> Image
+
+<span class="comment"># Load the model</span>
+device = <span class="string">"cuda"</span> <span class="keyword">if</span> torch.cuda.is_available() <span class="keyword">else</span> <span class="string">"cpu"</span>
+model, preprocess = clip.load(<span class="string">"ViT-B/32"</span>, device=device)
+
+<span class="comment"># Prepare image</span>
+image = preprocess(Image.open(<span class="string">"image.jpg"</span>)).unsqueeze(<span class="number">0</span>).to(device)
+
+<span class="comment"># Prepare text descriptions</span>
+text_descriptions = [<span class="string">"a photo of a cat"</span>, <span class="string">"a photo of a dog"</span>, <span class="string">"a photo of a bird"</span>]
+text_tokens = clip.tokenize(text_descriptions).to(device)
+
+<span class="comment"># Compute features</span>
+<span class="keyword">with</span> torch.no_grad():
+    image_features = model.encode_image(image)
+    text_features = model.encode_text(text_tokens)
+    
+    <span class="comment"># Normalize features</span>
+    image_features /= image_features.norm(dim=-<span class="number">1</span>, keepdim=<span class="keyword">True</span>)
+    text_features /= text_features.norm(dim=-<span class="number">1</span>, keepdim=<span class="keyword">True</span>)
+    
+    <span class="comment"># Compute similarity</span>
+    similarity = (<span class="number">100.0</span> * image_features @ text_features.T).softmax(dim=-<span class="number">1</span>)
+    
+    <span class="comment"># Get predictions</span>
+    probs = similarity[<span class="number">0</span>].cpu().numpy()
+    
+<span class="comment"># Print results</span>
+<span class="keyword">for</span> label, prob <span class="keyword">in</span> zip(text_descriptions, probs):
+    print(<span class="string">f"{label}: {prob:.2%}"</span>)</code></pre>
+            </div>
+        </section>
+
+        <!-- Related Work -->
+        <section>
+            <h2>Related Work</h2>
+            
+            <div class="related-grid">
+                <div class="related-card">
+                    <h4>VirTex (2020)</h4>
+                    <p>Learning Visual Representations from Textual Annotations - precursor to CLIP using smaller datasets.</p>
+                </div>
+                <div class="related-card">
+                    <h4>ALIGN (2021)</h4>
+                    <p>Scaling Up Visual and Vision-Language Representation Learning with Noisy Text Supervision from Google.</p>
+                </div>
+                <div class="related-card">
+                    <h4>DALL-E (2021)</h4>
+                    <p>OpenAI's text-to-image model that uses CLIP for ranking generated images.</p>
+                </div>
+                <div class="related-card">
+                    <h4>Stable Diffusion (2022)</h4>
+                    <p>Uses CLIP text encoder for conditioning text-to-image generation models.</p>
+                </div>
+                <div class="related-card">
+                    <h4>BLIP (2022)</h4>
+                    <p>Bootstrapping Language-Image Pre-training with unified vision-language understanding.</p>
+                </div>
+                <div class="related-card">
+                    <h4>LLaVA (2023)</h4>
+                    <p>Large Language and Vision Assistant combining CLIP vision encoder with LLMs.</p>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer>
+        <p>Part of the AI Neural Networks Visualized collection</p>
+        <p style="margin-top: 0.5rem; font-size: 0.875rem;">Paper summaries for educational purposes</p>
+    </footer>
+</body>
+</html>
