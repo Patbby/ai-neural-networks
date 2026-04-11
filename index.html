@@ -200,10 +200,42 @@
                 </svg>
             </div>
 
+            <!-- DiT Paper Card -->
+            <div class="network-card" onclick="location.href='papers/dit.html'">
+                <span class="tag">ICCV 2023</span>
+                <h3>DiT · Diffusion Transformers</h3>
+                <p>Scalable Diffusion Models with Transformers - Replacing U-Nets with transformers for state-of-the-art image generation.</p>
+                <svg class="preview-svg" viewBox="0 0 300 150">
+                    <defs>
+                        <linearGradient id="dit-grad" x1="0%" y1="0%" x2="100%" y2="0%">
+                            <stop offset="0%" style="stop-color:#6366f1"/>
+                            <stop offset="100%" style="stop-color:#a855f7"/>
+                        </linearGradient>
+                    </defs>
+                    <!-- Patch grid -->
+                    <rect x="30" y="40" width="25" height="25" fill="none" stroke="#6366f1" stroke-width="2" rx="2"/>
+                    <rect x="60" y="40" width="25" height="25" fill="none" stroke="#6366f1" stroke-width="2" rx="2"/>
+                    <rect x="30" y="70" width="25" height="25" fill="none" stroke="#6366f1" stroke-width="2" rx="2"/>
+                    <rect x="60" y="70" width="25" height="25" fill="none" stroke="#6366f1" stroke-width="2" rx="2"/>
+                    <!-- Arrow -->
+                    <path d="M100 75 L130 75" stroke="#6366f1" stroke-width="2"/>
+                    <polygon points="130,75 125,70 125,80" fill="#6366f1"/>
+                    <!-- Transformer blocks -->
+                    <rect x="140" y="55" width="50" height="40" fill="rgba(168,85,247,0.3)" stroke="#a855f7" stroke-width="2" rx="3"/>
+                    <text x="165" y="80" fill="#fff" font-size="10" text-anchor="middle">DiT</text>
+                    <!-- Arrow -->
+                    <path d="M200 75 L230 75" stroke="#6366f1" stroke-width="2"/>
+                    <polygon points="230,75 225,70 225,80" fill="#6366f1"/>
+                    <!-- Output -->
+                    <rect x="240" y="50" width="35" height="50" fill="none" stroke="#10b981" stroke-width="2" rx="3"/>
+                    <text x="257" y="80" fill="#10b981" font-size="10" text-anchor="middle">IMG</text>
+                </svg>
+            </div>
+            
             <!-- More Papers Coming -->
             <div class="network-card" style="opacity: 0.7;">
                 <span class="tag">Coming Soon</span>
-                <h3>DiT · Transformer · BERT</h3>
+                <h3>Transformer · BERT · GAN</h3>
                 <p>More classic papers will be added hourly by automated updates. Stay tuned for detailed explanations with visualizations.</p>
                 <svg class="preview-svg" viewBox="0 0 300 150">
                     <text x="150" y="75" fill="#8888aa" font-size="14" text-anchor="middle" dominant-baseline="middle">
