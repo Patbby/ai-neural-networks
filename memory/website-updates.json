@@ -1,15 +1,10 @@
 {
-  "lastUpdate": "2026-04-12T05:30:00+08:00",
+  "lastUpdate": "2026-04-12T06:29:00+08:00",
   "papersAdded": 1,
-  "totalPapers": 8,
+  "totalPapers": 4,
   "nextPaper": "DiT",
   "updateCount": 1,
-  "recentUpdates": [
-    {
-      "date": "2026-04-12",
-      "paper": "ResNet",
-      "action": "enhanced",
-      "details": "Added comprehensive SVG visualizations including degradation problem, residual blocks, bottleneck structure, gradient flow, and ResNet family overview"
-    }
+  "recentCommits": [
+    "Add ResNet paper page: Deep Residual Learning for Image Recognition with SVG visualizations"
   ]
 }
