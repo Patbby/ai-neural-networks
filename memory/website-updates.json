@@ -1,0 +1,15 @@
+{
+  "lastUpdate": "2026-04-12T05:30:00+08:00",
+  "papersAdded": 1,
+  "totalPapers": 8,
+  "nextPaper": "DiT",
+  "updateCount": 1,
+  "recentUpdates": [
+    {
+      "date": "2026-04-12",
+      "paper": "ResNet",
+      "action": "enhanced",
+      "details": "Added comprehensive SVG visualizations including degradation problem, residual blocks, bottleneck structure, gradient flow, and ResNet family overview"
+    }
+  ]
+}
