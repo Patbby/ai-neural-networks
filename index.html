@@ -167,6 +167,56 @@
     </header>
 
     <div class="container">
+        <h2 style="text-align: center; margin: 60px 0 30px; color: #fff; font-size: 2rem;">
+            📚 Classic Papers
+        </h2>
+
+        <div class="network-grid">
+            <!-- ResNet Paper Card -->
+            <div class="network-card" onclick="location.href='papers/resnet.html'">
+                <span class="tag">CVPR 2016 Best Paper</span>
+                <h3>ResNet</h3>
+                <p>Deep Residual Learning for Image Recognition - The breakthrough that made 100+ layer networks trainable using skip connections.</p>
+                <svg class="preview-svg" viewBox="0 0 300 150">
+                    <defs>
+                        <linearGradient id="resnet-grad" x1="0%" y1="0%" x2="100%" y2="0%">
+                            <stop offset="0%" style="stop-color:#6366f1"/>
+                            <stop offset="100%" style="stop-color:#10b981"/>
+                        </linearGradient>
+                    </defs>
+                    <!-- Skip connection -->
+                    <path d="M40 75 L40 40 L100 40 L100 75" stroke="#10b981" stroke-width="3" fill="none" opacity="0.8">
+                        <animate attributeName="stroke-opacity" values="0.6;1;0.6" dur="2s" repeatCount="indefinite"/>
+                    </path>
+                    <!-- Blocks -->
+                    <rect x="60" y="60" width="40" height="30" fill="none" stroke="#6366f1" stroke-width="2" rx="3"/>
+                    <rect x="110" y="60" width="40" height="30" fill="none" stroke="#6366f1" stroke-width="2" rx="3"/>
+                    <rect x="160" y="60" width="40" height="30" fill="none" stroke="#6366f1" stroke-width="2" rx="3"/>
+                    <!-- Plus -->
+                    <circle cx="220" cy="75" r="15" fill="#10b981"/>
+                    <text x="220" y="80" fill="#fff" font-size="16" font-weight="bold" text-anchor="middle">+</text>
+                    <!-- Arrow -->
+                    <path d="M240 75 L280 75" stroke="#6366f1" stroke-width="2" marker-end="url(#arrowhead)"/>
+                </svg>
+            </div>
+
+            <!-- More Papers Coming -->
+            <div class="network-card" style="opacity: 0.7;">
+                <span class="tag">Coming Soon</span>
+                <h3>DiT · Transformer · BERT</h3>
+                <p>More classic papers will be added hourly by automated updates. Stay tuned for detailed explanations with visualizations.</p>
+                <svg class="preview-svg" viewBox="0 0 300 150">
+                    <text x="150" y="75" fill="#8888aa" font-size="14" text-anchor="middle" dominant-baseline="middle">
+                        🕐 Auto-updating...
+                    </text>
+                </svg>
+            </div>
+        </div>
+
+        <h2 style="text-align: center; margin: 80px 0 30px; color: #fff; font-size: 2rem;">
+            🧠 Network Architectures
+        </h2>
+
         <div class="network-grid">
             <!-- CNN Card -->
             <div class="network-card" onclick="location.href='cnn.html'">
