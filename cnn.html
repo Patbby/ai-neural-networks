@@ -1,0 +1,515 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CNN - Convolutional Neural Network | 卷积神经网络</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: #0a0a0f;
+            color: #e0e0ff;
+            line-height: 1.7;
+        }
+        
+        nav {
+            background: rgba(20, 20, 35, 0.95);
+            padding: 15px 30px;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            backdrop-filter: blur(10px);
+            border-bottom: 1px solid rgba(99, 102, 241, 0.2);
+        }
+        
+        nav a {
+            color: #8888aa;
+            text-decoration: none;
+            margin-right: 25px;
+            transition: color 0.3s;
+        }
+        
+        nav a:hover {
+            color: #6366f1;
+        }
+        
+        header {
+            text-align: center;
+            padding: 60px 20px 40px;
+            background: linear-gradient(180deg, rgba(99,102,241,0.15) 0%, transparent 100%);
+        }
+        
+        h1 {
+            font-size: 2.8rem;
+            background: linear-gradient(135deg, #6366f1 0%, #a855f7 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 15px;
+        }
+        
+        .subtitle {
+            color: #8888aa;
+            font-size: 1.1rem;
+        }
+        
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: 40px 20px;
+        }
+        
+        h2 {
+            color: #fff;
+            margin: 50px 0 25px;
+            font-size: 1.8rem;
+            border-left: 4px solid #6366f1;
+            padding-left: 20px;
+        }
+        
+        h3 {
+            color: #a5b4fc;
+            margin: 30px 0 15px;
+            font-size: 1.3rem;
+        }
+        
+        p {
+            margin-bottom: 20px;
+            color: #b0b0cc;
+        }
+        
+        .viz-container {
+            background: rgba(20, 20, 35, 0.6);
+            border: 1px solid rgba(99, 102, 241, 0.3);
+            border-radius: 15px;
+            padding: 30px;
+            margin: 30px 0;
+            text-align: center;
+        }
+        
+        .viz-container h4 {
+            color: #fff;
+            margin-bottom: 20px;
+            font-size: 1.1rem;
+        }
+        
+        .controls {
+            margin: 20px 0;
+        }
+        
+        button {
+            background: linear-gradient(135deg, #6366f1 0%, #a855f7 100%);
+            color: white;
+            border: none;
+            padding: 12px 25px;
+            border-radius: 25px;
+            cursor: pointer;
+            font-size: 1rem;
+            margin: 5px;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+        
+        button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 20px rgba(99, 102, 241, 0.4);
+        }
+        
+        .code-block {
+            background: #111118;
+            border-radius: 10px;
+            padding: 20px;
+            margin: 20px 0;
+            font-family: 'Fira Code', monospace;
+            font-size: 0.9rem;
+            overflow-x: auto;
+            border-left: 3px solid #6366f1;
+        }
+        
+        .code-block .comment {
+            color: #6b7280;
+        }
+        
+        .code-block .keyword {
+            color: #c084fc;
+        }
+        
+        .code-block .function {
+            color: #60a5fa;
+        }
+        
+        .highlight-box {
+            background: rgba(99, 102, 241, 0.1);
+            border: 1px solid rgba(99, 102, 241, 0.3);
+            border-radius: 10px;
+            padding: 20px;
+            margin: 25px 0;
+        }
+        
+        .highlight-box strong {
+            color: #a5b4fc;
+        }
+        
+        .formula {
+            background: rgba(168, 85, 247, 0.1);
+            border-radius: 8px;
+            padding: 15px 25px;
+            margin: 20px 0;
+            text-align: center;
+            font-family: 'Times New Roman', serif;
+            font-size: 1.2rem;
+            color: #e0e0ff;
+        }
+        
+        footer {
+            text-align: center;
+            padding: 40px;
+            color: #555577;
+            border-top: 1px solid rgba(99, 102, 241, 0.1);
+            margin-top: 60px;
+        }
+    </style>
+</head>
+<body>
+    <nav>
+        <a href="index.html">← Back to Home</a>
+        <a href="cnn.html">CNN</a>
+        <a href="gnn.html">GNN</a>
+        <a href="gat.html">GAT</a>
+    </nav>
+
+    <header>
+        <h1>🖼️ CNN 卷积神经网络</h1>
+        <p class="subtitle">Convolutional Neural Networks - How machines learn to "see"</p>
+    </header>
+
+    <div class="container">
+        <h2>什么是卷积？</h2>
+        
+        <p>卷积神经网络（CNN）是计算机视觉领域的基石。与传统的全连接神经网络不同，CNN利用<strong>局部感受野</strong>和<strong>权值共享</strong>来高效处理图像数据。</p>
+        
+        <div class="highlight-box">
+            <strong>核心思想：</strong> 图像中的局部特征（如边缘、纹理）在图像的任何位置都使用相同的检测器（卷积核）。这种"平移不变性"让CNN能高效学习视觉模式。
+        </div>
+
+        <div class="viz-container">
+            <h4>🔍 卷积操作演示 - 点击开始动画</h4>
+            <svg id="conv-viz" width="700" height="400" viewBox="0 0 700 400">
+                <defs>
+                    <linearGradient id="input-grad" x1="0%" y1="0%" x2="100%" y2="100%">
+                        <stop offset="0%" style="stop-color:#1e1e2e"/>
+                        <stop offset="100%" style="stop-color:#2d2d44"/>
+                    </linearGradient>
+                    <linearGradient id="kernel-grad" x1="0%" y1="0%" x2="100%" y2="100%">
+                        <stop offset="0%" style="stop-color:#6366f1"/>
+                        <stop offset="100%" style="stop-color:#a855f7"/>
+                    </linearGradient>
+                    <linearGradient id="output-grad" x1="0%" y1="0%" x2="100%" y2="100%">
+                        <stop offset="0%" style="stop-color:#10b981"/>
+                        <stop offset="100%" style="stop-color:#059669"/>
+                    </linearGradient>
+                </defs>
+
+                <!-- Input feature map -->
+                <g transform="translate(30, 50)">
+                    <text x="75" y="-20" fill="#8888aa" font-size="14" text-anchor="middle">输入特征图 (5×5)</text>
+                    <g id="input-grid">
+                        <!-- 5x5 grid -->
+                        <rect x="0" y="0" width="30" height="30" fill="url(#input-grad)" stroke="#444" stroke-width="1"/>
+                        <rect x="30" y="0" width="30" height="30" fill="url(#input-grad)" stroke="#444" stroke-width="1"/>
+                        <rect x="60" y="0" width="30" height="30" fill="url(#input-grad)" stroke="#444" stroke-width="1"/>
+                        <rect x="90" y="0" width="30" height="30" fill="url(#input-grad)" stroke="#444" stroke-width="1"/>
+                        <rect x="120" y="0" width="30" height="30" fill="url(#input-grad)" stroke="#444" stroke-width="1"/>
+                        
+                        <rect x="0" y="30" width="30" height="30" fill="url(#input-grad)" stroke="#444" stroke-width="1"/>
+                        <rect x="30" y="30" width="30" height="30" fill="url(#input-grad)" stroke="#444" stroke-width="1"/>
+                        <rect x="60" y="30" width="30" height="30" fill="url(#input-grad)" stroke="#444" stroke-width="1"/>
+                        <rect x="90" y="30" width="30" height="30" fill="url(#input-grad)" stroke="#444" stroke-width="1"/>
+                        <rect x="120" y="30" width="30" height="30" fill="url(#input-grad)" stroke="#444" stroke-width="1"/>
+                        
+                        <rect x="0" y="60" width="30" height="30" fill="url(#input-grad)" stroke="#444" stroke-width="1"/>
+                        <rect x="30" y="60" width="30" height="30" fill="url(#input-grad)" stroke="#444" stroke-width="1"/>
+                        <rect x="60" y="60" width="30" height="30" fill="url(#input-grad)" stroke="#444" stroke-width="1"/>
+                        <rect x="90" y="60" width="30" height="30" fill="url(#input-grad)" stroke="#444" stroke-width="1"/>
+                        <rect x="120" y="60" width="30" height="30" fill="url(#input-grad)" stroke="#444" stroke-width="1"/>
+                        
+                        <rect x="0" y="90" width="30" height="30" fill="url(#input-grad)" stroke="#444" stroke-width="1"/>
+                        <rect x="30" y="90" width="30" height="30" fill="url(#input-grad)" stroke="#444" stroke-width="1"/>
+                        <rect x="60" y="90" width="30" height="30" fill="url(#input-grad)" stroke="#444" stroke-width="1"/>
+                        <rect x="90" y="90" width="30" height="30" fill="url(#input-grad)" stroke="#444" stroke-width="1"/>
+                        <rect x="120" y="90" width="30" height="30" fill="url(#input-grad)" stroke="#444" stroke-width="1"/>
+                        
+                        <rect x="0" y="120" width="30" height="30" fill="url(#input-grad)" stroke="#444" stroke-width="1"/>
+                        <rect x="30" y="120" width="30" height="30" fill="url(#input-grad)" stroke="#444" stroke-width="1"/>
+                        <rect x="60" y="120" width="30" height="30" fill="url(#input-grad)" stroke="#444" stroke-width="1"/>
+                        <rect x="90" y="120" width="30" height="30" fill="url(#input-grad)" stroke="#444" stroke-width="1"/>
+                        <rect x="120" y="120" width="30" height="30" fill="url(#input-grad)" stroke="#444" stroke-width="1"/>
+                    </g>
+                    
+                    <!-- Sliding kernel highlight -->
+                    <rect id="kernel-highlight" x="0" y="0" width="90" height="90" fill="none" stroke="#6366f1" stroke-width="3" opacity="0">
+                        <animate id="anim1" attributeName="opacity" values="0;1;1;0" dur="2s" begin="indefinite"/>
+                        <animate attributeName="x" values="0;30;60;0;30;60;0;30;60" dur="4.5s" begin="anim1.begin"/>
+                        <animate attributeName="y" values="0;0;0;30;30;30;60;60;60" dur="4.5s" begin="anim1.begin"/>
+                    </rect>
+                </g>
+
+                <!-- Arrow -->
+                <g transform="translate(200, 130)">
+                    <path d="M0 20 L60 20" stroke="#6366f1" stroke-width="3" marker-end="url(#arrowhead)" opacity="0.6">
+                        <animate id="arrow-anim" attributeName="stroke-dasharray" values="0,60;60,0" dur="1s" begin="anim1.begin"/>
+                    </path>
+                    <text x="30" y="10" fill="#6366f1" font-size="12" text-anchor="middle">卷积</text>
+                </g>
+
+                <defs>
+                    <marker id="arrowhead" markerWidth="10" markerHeight="10" refX="9" refY="3" orient="auto">
+                        <polygon points="0 0, 10 3, 0 6" fill="#6366f1"/>
+                    </marker>
+                </defs>
+
+                <!-- Kernel visualization -->
+                <g transform="translate(280, 70)">
+                    <text x="45" y="-20" fill="#8888aa" font-size="14" text-anchor="middle">卷积核 (3×3)</text>
+                    <g id="kernel-weights">
+                        <rect x="0" y="0" width="30" height="30" fill="url(#kernel-grad)" stroke="#fff" stroke-width="1"/>
+                        <text x="15" y="20" fill="white" font-size="12" text-anchor="middle">1</text>
+                        
+                        <rect x="30" y="0" width="30" height="30" fill="url(#kernel-grad)" stroke="#fff" stroke-width="1"/>
+                        <text x="45" y="20" fill="white" font-size="12" text-anchor="middle">0</text>
+                        
+                        <rect x="60" y="0" width="30" height="30" fill="url(#kernel-grad)" stroke="#fff" stroke-width="1"/>
+                        <text x="75" y="20" fill="white" font-size="12" text-anchor="middle">-1</text>
+                        
+                        <rect x="0" y="30" width="30" height="30" fill="url(#kernel-grad)" stroke="#fff" stroke-width="1"/>
+                        <text x="15" y="50" fill="white" font-size="12" text-anchor="middle">1</text>
+                        
+                        <rect x="30" y="30" width="30" height="30" fill="url(#kernel-grad)" stroke="#fff" stroke-width="1"/>
+                        <text x="45" y="50" fill="white" font-size="12" text-anchor="middle">0</text>
+                        
+                        <rect x="60" y="30" width="30" height="30" fill="url(#kernel-grad)" stroke="#fff" stroke-width="1"/>
+                        <text x="75" y="50" fill="white" font-size="12" text-anchor="middle">-1</text>
+                        
+                        <rect x="0" y="60" width="30" height="30" fill="url(#kernel-grad)" stroke="#fff" stroke-width="1"/>
+                        <text x="15" y="80" fill="white" font-size="12" text-anchor="middle">1</text>
+                        
+                        <rect x="30" y="60" width="30" height="30" fill="url(#kernel-grad)" stroke="#fff" stroke-width="1"/>
+                        <text x="45" y="80" fill="white" font-size="12" text-anchor="middle">0</text>
+                        
+                        <rect x="60" y="60" width="30" height="30" fill="url(#kernel-grad)" stroke="#fff" stroke-width="1"/>
+                        <text x="75" y="80" fill="white" font-size="12" text-anchor="middle">-1</text>
+                    </g>
+                </g>
+
+                <!-- Output feature map -->
+                <g transform="translate(400, 80)">
+                    <text x="45" y="-15" fill="#8888aa" font-size="14" text-anchor="middle">输出特征图 (3×3)</text>
+                    
+                    <g id="output-grid">
+                        <rect x="0" y="0" width="30" height="30" fill="url(#output-grad)" stroke="#10b981" stroke-width="1" opacity="0">
+                            <animate id="out1" attributeName="opacity" values="0;1" dur="0.3s" begin="anim1.begin+0.5s" fill="freeze"/>
+                        </rect>
+                        
+                        <rect x="30" y="0" width="30" height="30" fill="url(#output-grad)" stroke="#10b981" stroke-width="1" opacity="0">
+                            <animate attributeName="opacity" values="0;1" dur="0.3s" begin="anim1.begin+1s" fill="freeze"/>
+                        </rect>
+                        
+                        <rect x="60" y="0" width="30" height="30" fill="url(#output-grad)" stroke="#10b981" stroke-width="1" opacity="0">
+                            <animate attributeName="opacity" values="0;1" dur="0.3s" begin="anim1.begin+1.5s" fill="freeze"/>
+                        </rect>
+                        
+                        <rect x="0" y="30" width="30" height="30" fill="url(#output-grad)" stroke="#10b981" stroke-width="1" opacity="0">
+                            <animate attributeName="opacity" values="0;1" dur="0.3s" begin="anim1.begin+2s" fill="freeze"/>
+                        </rect>
+                        
+                        <rect x="30" y="30" width="30" height="30" fill="url(#output-grad)" stroke="#10b981" stroke-width="1" opacity="0">
+                            <animate attributeName="opacity" values="0;1" dur="0.3s" begin="anim1.begin+2.5s" fill="freeze"/>
+                        </rect>
+                        
+                        <rect x="60" y="30" width="30" height="30" fill="url(#output-grad)" stroke="#10b981" stroke-width="1" opacity="0">
+                            <animate attributeName="opacity" values="0;1" dur="0.3s" begin="anim1.begin+3s" fill="freeze"/>
+                        </rect>
+                        
+                        <rect x="0" y="60" width="30" height="30" fill="url(#output-grad)" stroke="#10b981" stroke-width="1" opacity="0">
+                            <animate attributeName="opacity" values="0;1" dur="0.3s" begin="anim1.begin+3.5s" fill="freeze"/>
+                        </rect>
+                        
+                        <rect x="30" y="60" width="30" height="30" fill="url(#output-grad)" stroke="#10b981" stroke-width="1" opacity="0">
+                            <animate attributeName="opacity" values="0;1" dur="0.3s" begin="anim1.begin+4s" fill="freeze"/>
+                        </rect>
+                        
+                        <rect x="60" y="60" width="30" height="30" fill="url(#output-grad)" stroke="#10b981" stroke-width="1" opacity="0">
+                            <animate attributeName="opacity" values="0;1" dur="0.3s" begin="anim1.begin+4.5s" fill="freeze"/>
+                        </rect>
+                    </g>
+                </g>
+
+                <!-- Formula -->
+                <text x="350" y="250" fill="#a5b4fc" font-size="14" text-anchor="middle">输出[i,j] = Σ_m Σ_n 输入[i+m, j+n] × 核[m,n]</text>
+                
+            </svg>
+            
+            <div class="controls">
+                <button onclick="document.getElementById('anim1').beginElement()">▶ 开始卷积动画</button>
+                <button onclick="location.reload()">🔄 重置</button>
+            </div>
+        </div>
+
+        <h2>核心组件</h2>
+
+        <h3>1. 卷积层 (Convolutional Layer)</h3>
+        
+        <p>卷积层是CNN的核心。它使用一组可学习的滤波器（卷积核）扫描输入数据，提取局部特征。</p>
+
+        <div class="formula">
+            (I * K)(i, j) = Σ_m Σ_n I(i+m, j+n) · K(m, n)
+        </div>
+
+        <div class="code-block">
+            <span class="keyword">import</span> torch.nn as nn
+
+            <span class="comment"># 定义卷积层：输入通道=3，输出通道=64，卷积核=3×3</span>
+            conv = nn.Conv2d(in_channels=<span class="number">3</span>, out_channels=<span class="number">64</span>, kernel_size=<span class="number">3</span>, padding=<span class="number">1</span>)
+
+            <span class="comment"># 前向传播</span>
+            output = conv(input)  <span class="comment"># 输入: (B, 3, H, W) → 输出: (B, 64, H, W)</span>
+        </div>
+
+        <h3>2. 池化层 (Pooling Layer)</h3>
+        
+        <p>池化层降低特征图的空间维度，减少计算量并提供平移不变性。最常用的<strong>最大池化(Max Pooling)</strong>保留每个区域的最强激活值。</p>
+
+        <div class="viz-container">
+            <h4>🎯 最大池化演示 (2×2 池化核，步长2)</h4>
+            <svg width="600" height="200" viewBox="0 0 600 200">
+                <!-- Input -->
+                <g transform="translate(30, 30)">
+                    <text x="75" y="-10" fill="#8888aa" font-size="12" text-anchor="middle">输入 (4×4)</text>
+                    
+                    <rect x="0" y="0" width="37" height="37" fill="#2d2d44" stroke="#444"/>
+                    <text x="18" y="24" fill="#fff" font-size="14" text-anchor="middle">1</text>
+                    
+                    <rect x="37" y="0" width="37" height="37" fill="#2d2d44" stroke="#444"/>
+                    <text x="55" y="24" fill="#fff" font-size="14" text-anchor="middle">3</text>
+                    
+                    <rect x="74" y="0" width="37" height="37" fill="#2d2d44" stroke="#444"/>
+                    <text x="92" y="24" fill="#fff" font-size="14" text-anchor="middle">2</text>
+                    
+                    <rect x="111" y="0" width="37" height="37" fill="#2d2d44" stroke="#444"/>
+                    <text x="129" y="24" fill="#fff" font-size="14" text-anchor="middle">4</text>
+                    
+                    <rect x="0" y="37" width="37" height="37" fill="#2d2d44" stroke="#444"/>
+                    <text x="18" y="61" fill="#fff" font-size="14" text-anchor="middle">5</text>
+                    
+                    <rect x="37" y="37" width="37" height="37" fill="#6366f1" stroke="#6366f1" stroke-width="2"/>
+                    <text x="55" y="61" fill="#fff" font-size="16" font-weight="bold" text-anchor="middle">9</text>
+                    
+                    <rect x="74" y="37" width="37" height="37" fill="#2d2d44" stroke="#444"/>
+                    <text x="92" y="61" fill="#fff" font-size="14" text-anchor="middle">6</text>
+                    
+                    <rect x="111" y="37" width="37" height="37" fill="#2d2d44" stroke="#444"/>
+                    <text x="129" y="61" fill="#fff" font-size="14" text-anchor="middle">7</text>
+                    
+                    <rect x="0" y="74" width="37" height="37" fill="#2d2d44" stroke="#444"/>
+                    <text x="18" y="98" fill="#fff" font-size="14" text-anchor="middle">8</text>
+                    
+                    <rect x="37" y="74" width="37" height="37" fill="#2d2d44" stroke="#444"/>
+                    <text x="55" y="98" fill="#fff" font-size="14" text-anchor="middle">2</text>
+                    
+                    <rect x="74" y="74" width="37" height="37" fill="#2d2d44" stroke="#444"/>
+                    <text x="92" y="98" fill="#fff" font-size="14" text-anchor="middle">1</text>
+                    
+                    <rect x="111" y="74" width="37" height="37" fill="#6366f1" stroke="#6366f1" stroke-width="2"/>
+                    <text x="129" y="98" fill="#fff" font-size="16" font-weight="bold" text-anchor="middle">8</text>
+                    
+                    <rect x="0" y="111" width="37" height="37" fill="#2d2d44" stroke="#444"/>
+                    <text x="18" y="135" fill="#fff" font-size="14" text-anchor="middle">3</text>
+                    
+                    <rect x="37" y="111" width="37" height="37" fill="#2d2d44" stroke="#444"/>
+                    <text x="55" y="135" fill="#fff" font-size="14" text-anchor="middle">4</text>
+                    
+                    <rect x="74" y="111" width="37" height="37" fill="#6366f1" stroke="#6366f1" stroke-width="2"/>
+                    <text x="92" y="135" fill="#fff" font-size="16" font-weight="bold" text-anchor="middle">6</text>
+                    
+                    <rect x="111" y="111" width="37" height="37" fill="#2d2d44" stroke="#444"/>
+                    <text x="129" y="135" fill="#fff" font-size="14" text-anchor="middle">5</text>
+                </g>
+
+                <!-- Arrow -->
+                <g transform="translate(170, 95)">
+                    <text x="40" y="-15" fill="#6366f1" font-size="12" text-anchor="middle">MaxPool</text>
+                    <path d="M0 20 L80 20" stroke="#6366f1" stroke-width="3" marker-end="url(#arrow2)"/>
+                </g>
+
+                <defs>
+                    <marker id="arrow2" markerWidth="10" markerHeight="10" refX="9" refY="3" orient="auto">
+                        <polygon points="0 0, 10 3, 0 6" fill="#6366f1"/>
+                    </marker>
+                </defs>
+
+                <!-- Output -->
+                <g transform="translate(280, 48)">
+                    <text x="37" y="-10" fill="#8888aa" font-size="12" text-anchor="middle">输出 (2×2)</text>
+                    
+                    <rect x="0" y="0" width="74" height="74" fill="none" stroke="#10b981" stroke-width="2" stroke-dasharray="5,5"/>
+                    
+                    <rect x="0" y="0" width="37" height="37" fill="#10b981"/>
+                    <text x="18" y="24" fill="#fff" font-size="16" font-weight="bold" text-anchor="middle">9</text>
+                    
+                    <rect x="37" y="0" width="37" height="37" fill="#10b981"/>
+                    <text x="55" y="24" fill="#fff" font-size="16" font-weight="bold" text-anchor="middle">7</text>
+                    
+                    <rect x="0" y="37" width="37" height="37" fill="#10b981"/>
+                    <text x="18" y="61" fill="#fff" font-size="16" font-weight="bold" text-anchor="middle">8</text>
+                    
+                    <rect x="37" y="37" width="37" height="37" fill="#10b981"/>
+                    <text x="55" y="61" fill="#fff" font-size="16" font-weight="bold" text-anchor="middle">6</text>
+                </g>
+
+                <!-- Explanation -->
+                <text x="400" y="60" fill="#8888aa" font-size="11">每个 2×2 区域取最大值：</text>
+                <text x="400" y="80" fill="#a5b4fc" font-size="11">max(1,3,5,9) = 9</text>
+                <text x="400" y="100" fill="#a5b4fc" font-size="11">max(2,4,6,7) = 7</text>
+                <text x="400" y="120" fill="#a5b4fc" font-size="11">max(8,2,3,4) = 8</text>
+                <text x="400" y="140" fill="#a5b4fc" font-size="11">max(1,8,6,5) = 8 → 修正: 6</text>
+            </svg>
+        </div>
+
+        <h3>3. 激活函数 (Activation Function)</h3>
+        
+        <p>引入非线性，让网络能学习复杂模式。ReLU（Rectified Linear Unit）是最常用的激活函数：</p>
+
+        <div class="formula">
+            ReLU(x) = max(0, x)
+        </div>
+
+        <h2>经典架构演进</h2>
+
+        <div class="highlight-box">
+            <strong>LeNet (1998)</strong> → 现代CNN的奠基者，手写数字识别<br>
+            <strong>AlexNet (2012)</strong> → ReLU+Dropout，引爆深度学习革命<br>
+            <strong>VGG (2014)</strong> → 3×3小卷积核堆叠，证明深度的重要性<br>
+            <strong>ResNet (2015)</strong> → 残差连接，可训练152+层网络<br>
+            <strong>EfficientNet (2019)</strong> → 复合缩放，效率与精度平衡
+        </div>
+
+        <h2>总结</h2>
+        
+        <p>CNN通过<strong>局部连接</strong>、<strong>权值共享</strong>和<strong>空间下采样</strong>三大特性，高效处理网格状数据（图像）。理解卷积的本质——<em>局部特征的滑动检测</em>——是掌握计算机视觉的关键。</p>
+
+        <div style="text-align: center; margin: 50px 0;">
+            <a href="gnn.html" style="display: inline-block; background: linear-gradient(135deg, #6366f1 0%, #a855f7 100%); color: white; padding: 15px 40px; border-radius: 30px; text-decoration: none; font-size: 1.1rem;">
+                继续探索：GNN 图神经网络 →
+            </a>
+        </div>
+    </div>
+
+    <footer>
+        <p>Made with ❤️ by Kimi Claw | <a href="https://github.com/Patbby/ai-neural-networks" style="color:#6366f1">GitHub</a></p>
+    </footer>
+</body>
+</html>

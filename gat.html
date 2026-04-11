@@ -1,0 +1,529 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GAT - Graph Attention Network | 图注意力网络</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: #0a0a0f;
+            color: #e0e0ff;
+            line-height: 1.7;
+        }
+        
+        nav {
+            background: rgba(20, 20, 35, 0.95);
+            padding: 15px 30px;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            backdrop-filter: blur(10px);
+            border-bottom: 1px solid rgba(245, 158, 11, 0.2);
+        }
+        
+        nav a {
+            color: #8888aa;
+            text-decoration: none;
+            margin-right: 25px;
+            transition: color 0.3s;
+        }
+        
+        nav a:hover {
+            color: #f59e0b;
+        }
+        
+        header {
+            text-align: center;
+            padding: 60px 20px 40px;
+            background: linear-gradient(180deg, rgba(245,158,11,0.15) 0%, transparent 100%);
+        }
+        
+        h1 {
+            font-size: 2.8rem;
+            background: linear-gradient(135deg, #f59e0b 0%, #ef4444 50%, #ec4899 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 15px;
+        }
+        
+        .subtitle {
+            color: #8888aa;
+            font-size: 1.1rem;
+        }
+        
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: 40px 20px;
+        }
+        
+        h2 {
+            color: #fff;
+            margin: 50px 0 25px;
+            font-size: 1.8rem;
+            border-left: 4px solid #f59e0b;
+            padding-left: 20px;
+        }
+        
+        h3 {
+            color: #fcd34d;
+            margin: 30px 0 15px;
+            font-size: 1.3rem;
+        }
+        
+        p {
+            margin-bottom: 20px;
+            color: #b0b0cc;
+        }
+        
+        .viz-container {
+            background: rgba(20, 20, 35, 0.6);
+            border: 1px solid rgba(245, 158, 11, 0.3);
+            border-radius: 15px;
+            padding: 30px;
+            margin: 30px 0;
+            text-align: center;
+        }
+        
+        .viz-container h4 {
+            color: #fff;
+            margin-bottom: 20px;
+            font-size: 1.1rem;
+        }
+        
+        .controls {
+            margin: 20px 0;
+        }
+        
+        button {
+            background: linear-gradient(135deg, #f59e0b 0%, #ef4444 100%);
+            color: white;
+            border: none;
+            padding: 12px 25px;
+            border-radius: 25px;
+            cursor: pointer;
+            font-size: 1rem;
+            margin: 5px;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+        
+        button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 20px rgba(245, 158, 11, 0.4);
+        }
+        
+        .code-block {
+            background: #111118;
+            border-radius: 10px;
+            padding: 20px;
+            margin: 20px 0;
+            font-family: 'Fira Code', monospace;
+            font-size: 0.9rem;
+            overflow-x: auto;
+            border-left: 3px solid #f59e0b;
+        }
+        
+        .code-block .comment { color: #6b7280; }
+        .code-block .keyword { color: #fbbf24; }
+        .code-block .function { color: #60a5fa; }
+        
+        .highlight-box {
+            background: rgba(245, 158, 11, 0.1);
+            border: 1px solid rgba(245, 158, 11, 0.3);
+            border-radius: 10px;
+            padding: 20px;
+            margin: 25px 0;
+        }
+        
+        .highlight-box strong {
+            color: #fcd34d;
+        }
+        
+        .formula {
+            background: rgba(239, 68, 68, 0.1);
+            border-radius: 8px;
+            padding: 15px 25px;
+            margin: 20px 0;
+            text-align: center;
+            font-family: 'Times New Roman', serif;
+            font-size: 1.2rem;
+            color: #e0e0ff;
+        }
+
+        .attention-weight {
+            display: inline-block;
+            padding: 2px 8px;
+            border-radius: 4px;
+            font-weight: bold;
+        }
+
+        .weight-high { background: rgba(239, 68, 68, 0.5); color: #fff; }
+        .weight-med { background: rgba(245, 158, 11, 0.5); color: #fff; }
+        .weight-low { background: rgba(107, 114, 128, 0.5); color: #fff; }
+        
+        footer {
+            text-align: center;
+            padding: 40px;
+            color: #555577;
+            border-top: 1px solid rgba(245, 158, 11, 0.1);
+            margin-top: 60px;
+        }
+    </style>
+</head>
+<body>
+    <nav>
+        <a href="index.html">← Back to Home</a>
+        <a href="cnn.html">CNN</a>
+        <a href="gnn.html">GNN</a>
+        <a href="gat.html">GAT</a>
+    </nav>
+
+    <header>
+        <h1>🎯 GAT 图注意力网络</h1>
+        <p class="subtitle">Graph Attention Networks - Where attention meets graphs</p>
+    </header>
+
+    <div class="container">
+        <h2>注意力机制遇上图</h2>
+        
+        <p>GAT（Graph Attention Network）是GNN的重要突破。与GCN对所有邻居一视同仁不同，GAT引入<strong>自注意力机制</strong>，让模型自动学习"哪些邻居更重要"。</p>
+
+        <div class="highlight-box">
+            <strong>核心洞察：</strong> 在图中，并非所有连接都同等重要。GAT通过可学习的注意力权重，让网络自适应地关注最相关的邻居节点。这就像你在社交网络上更关注某些好友的动态。
+        </div>
+
+        <h2>注意力机制可视化</h2>
+
+        <div class="viz-container">
+            <h4>🎪 注意力权重演示 - 观察不同连接的重要性</h4>
+            <svg width="800" height="500" viewBox="0 0 800 500">
+                <defs>
+                    <radialGradient id="center-grad" cx="50%" cy="50%" r="50%">
+                        <stop offset="0%" style="stop-color:#ef4444"/>
+                        <stop offset="100%" style="stop-color:#dc2626"/>
+                    </radialGradient>
+                    
+                    <radialGradient id="neighbor-grad" cx="50%" cy="50%" r="50%">
+                        <stop offset="0%" style="stop-color:#f59e0b"/>
+                        <stop offset="100%" style="stop-color:#d97706"/>
+                    </radialGradient>
+                    
+                    <linearGradient id="high-attn" x1="0%" y1="0%" x2="100%" y2="0%">
+                        <stop offset="0%" style="stop-color:#ef4444;stop-opacity:1"/>
+                        <stop offset="100%" style="stop-color:#dc2626;stop-opacity:0.8"/>
+                    </linearGradient>
+                    
+                    <linearGradient id="med-attn" x1="0%" y1="0%" x2="100%" y2="0%">
+                        <stop offset="0%" style="stop-color:#f59e0b;stop-opacity:0.8"/>
+                        <stop offset="100%" style="stop-color:#d97706;stop-opacity:0.6"/>
+                    </linearGradient>
+                    
+                    <linearGradient id="low-attn" x1="0%" y1="0%" x2="100%" y2="0%">
+                        <stop offset="0%" style="stop-color:#6b7280;stop-opacity:0.4"/>
+                        <stop offset="100%" style="stop-color:#4b5563;stop-opacity:0.3"/>
+                    </linearGradient>
+                </defs>
+
+                <!-- Title -->
+                <text x="400" y="30" fill="#fff" font-size="16" text-anchor="middle" font-weight="bold">Self-Attention in Graphs: Different weights for different neighbors</text>
+
+                <!-- Center node (Target) -->
+                <circle cx="400" cy="250" r="40" fill="url(#center-grad)" stroke="#fff" stroke-width="3">
+                    <animate attributeName="r" values="40;43;40" dur="2s" repeatCount="indefinite"/>
+                </circle>
+                <text x="400" y="260" fill="#fff" font-size="20" font-weight="bold" text-anchor="middle">i</text>
+                <text x="400" y="310" fill="#fcd34d" font-size="12" text-anchor="middle">目标节点</text>
+
+                <!-- Neighbor nodes and attention connections -->
+                
+                <!-- Node j1 - HIGH attention -->
+                <line x1="340" y1="210" x2="220" y2="120" stroke="url(#high-attn)" stroke-width="8" opacity="0.9">
+                    <animate attributeName="stroke-width" values="8;10;8" dur="1.5s" repeatCount="indefinite"/>
+                </line>
+                <circle cx="200" cy="100" r="30" fill="url(#neighbor-grad)" stroke="#ef4444" stroke-width="3"/>
+                <text x="200" y="108" fill="#fff" font-size="16" font-weight="bold" text-anchor="middle">j₁</text>
+                <text x="200" y="70" fill="#ef4444" font-size="14" font-weight="bold" text-anchor="middle">αᵢⱼ = 0.45</text>
+                <text x="200" y="150" fill="#8888aa" font-size="11" text-anchor="middle">重要邻居</text>
+
+                <!-- Node j2 - MEDIUM attention -->
+                <line x1="430" y1="220" x2="550" y2="130" stroke="url(#med-attn)" stroke-width="4" opacity="0.7"/>
+                <circle cx="570" cy="110" r="30" fill="url(#neighbor-grad)" stroke="#f59e0b" stroke-width="2"/>
+                <text x="570" y="118" fill="#fff" font-size="16" font-weight="bold" text-anchor="middle">j₂</text>
+                <text x="570" y="80" fill="#f59e0b" font-size="14" text-anchor="middle">αᵢⱼ = 0.25</text>
+                <text x="570" y="160" fill="#8888aa" font-size="11" text-anchor="middle">一般相关</text>
+
+                <!-- Node j3 - LOW attention -->
+                <line x1="360" y1="290" x2="280" y2="400" stroke="url(#low-attn)" stroke-width="2" opacity="0.5"/>
+                <circle cx="260" cy="420" r="30" fill="url(#neighbor-grad)" stroke="#6b7280" stroke-width="1.5"/>
+                <text x="260" y="428" fill="#fff" font-size="16" font-weight="bold" text-anchor="middle">j₃</text>
+                <text x="260" y="470" fill="#6b7280" font-size="14" text-anchor="middle">αᵢⱼ = 0.15</text>
+                <text x="260" y="395" fill="#8888aa" font-size="11" text-anchor="middle">弱相关</text>
+
+                <!-- Node j4 - LOW attention -->
+                <line x1="440" y1="280" x2="520" y2="390" stroke="url(#low-attn)" stroke-width="2" opacity="0.5"/>
+                <circle cx="540" cy="410" r="30" fill="url(#neighbor-grad)" stroke="#6b7280" stroke-width="1.5"/>
+                <text x="540" y="418" fill="#fff" font-size="16" font-weight="bold" text-anchor="middle">j₄</text>
+                <text x="540" y="460" fill="#6b7280" font-size="14" text-anchor="middle">αᵢⱼ = 0.10</text>
+                <text x="540" y="385" fill="#8888aa" font-size="11" text-anchor="middle">弱相关</text>
+
+                <!-- Node j5 - MEDIUM-HIGH attention (top) -->
+                <line x1="400" y1="210" x2="400" y2="80" stroke="url(#med-attn)" stroke-width="5" opacity="0.8">
+                    <animate attributeName="stroke-width" values="5;6;5" dur="1.5s" begin="0.3s" repeatCount="indefinite"/>
+                </line>
+                <circle cx="400" cy="60" r="30" fill="url(#neighbor-grad)" stroke="#f59e0b" stroke-width="2.5"/>
+                <text x="400" y="68" fill="#fff" font-size="16" font-weight="bold" text-anchor="middle">j₅</text>
+                <text x="400" y="35" fill="#f59e0b" font-size="14" font-weight="bold" text-anchor="middle">αᵢⱼ = 0.30</text>
+
+                <!-- Legend -->
+                <g transform="translate(50, 420)">
+                    <rect x="0" y="0" width="20" height="6" fill="#ef4444" rx="3"/>
+                    <text x="30" y="10" fill="#8888aa" font-size="11">高注意力 (High)</text>
+                    
+                    <rect x="130" y="0" width="20" height="4" fill="#f59e0b" rx="2"/>
+                    <text x="160" y="10" fill="#8888aa" font-size="11">中注意力 (Medium)</text>
+                    
+                    <rect x="280" y="0" width="20" height="2" fill="#6b7280" rx="1"/>
+                    <text x="310" y="10" fill="#8888aa" font-size="11">低注意力 (Low)</text>
+                </g>
+
+                <!-- Formula at bottom -->
+                <text x="400" y="490" fill="#fcd34d" font-size="13" text-anchor="middle">
+                    h'_i = σ(Σⱼ αᵢⱼ · W · hⱼ)    where    αᵢⱼ = softmaxⱼ(eᵢⱼ) = exp(eᵢⱼ) / Σₖ exp(eᵢₖ)
+                </text>
+            </svg>
+        </div>
+
+        <h2>GAT的核心公式</h2>
+
+        <h3>1. 注意力系数计算</h3>
+        
+        <p>首先，计算节点i和j之间的注意力系数（未归一化）：</p>
+
+        <div class="formula">
+            eᵢⱼ = LeakyReLU(aᵀ · [Whᵢ ‖ Whⱼ])
+        </div>
+
+        <p>其中：</p>
+        <ul style="color: #b0b0cc; margin-left: 20px; margin-bottom: 20px;">
+            <li><strong>W</strong>: 可学习的权重矩阵（线性变换）</li>
+            <li><strong>a</strong>: 注意力向量（可学习）</li>
+            <li><strong>‖</strong>: 向量拼接操作</li>
+            <li><strong>LeakyReLU</strong>: 非线性激活（负斜率0.2）</li>
+        </ul>
+
+        <h3>2. Softmax归一化</h3>
+        
+        <div class="formula">
+            αᵢⱼ = softmaxⱼ(eᵢⱼ) = exp(eᵢⱼ) / Σ_{k∈N(i)} exp(eᵢₖ)
+        </div>
+
+        <h3>3. 特征聚合</h3>
+        
+        <div class="formula">
+            h'ᵢ = σ(Σ_{j∈N(i)} αᵢⱼ · W · hⱼ)
+        </div>
+
+        <h2>多头注意力 (Multi-head Attention)</h2>
+
+        <p>GAT使用多头注意力机制增强表达能力——就像Transformer一样，多个注意力头从不同的"视角"观察邻居：</p>
+
+        <div class="viz-container">
+            <h4>🎭 多头注意力示意 - 3个注意力头并行工作</h4>
+            <svg width="700" height="300" viewBox="0 0 700 300">
+                <!-- Input nodes -->
+                <g transform="translate(50, 50)">
+                    <text x="0" y="-20" fill="#8888aa" font-size="12">输入特征</text>
+                    
+                    <rect x="0" y="0" width="60" height="150" fill="#1e1e2e" stroke="#6366f1" stroke-width="2" rx="5"/>
+                    <text x="30" y="80" fill="#6366f1" font-size="14" text-anchor="middle">hᵢ</text>
+                </g>
+
+                <!-- Attention heads -->
+                <g transform="translate(150, 30)">
+                    <!-- Head 1 -->
+                    <rect x="0" y="0" width="120" height="70" fill="rgba(239,68,68,0.2)" stroke="#ef4444" stroke-width="2" rx="10"/>
+                    <text x="60" y="25" fill="#ef4444" font-size="12" text-anchor="middle" font-weight="bold">Head 1</text>
+                    <text x="60" y="45" fill="#fca5a5" font-size="10" text-anchor="middle">关注结构特征</text>
+                    
+                    <path d="M-40 75 L0 35" stroke="#ef4444" stroke-width="2" stroke-dasharray="3,3"/>
+                </g>
+
+                <g transform="translate(150, 115)">
+                    <!-- Head 2 -->
+                    <rect x="0" y="0" width="120" height="70" fill="rgba(245,158,11,0.2)" stroke="#f59e0b" stroke-width="2" rx="10"/>
+                    <text x="60" y="25" fill="#f59e0b" font-size="12" text-anchor="middle" font-weight="bold">Head 2</text>
+                    <text x="60" y="45" fill="#fcd34d" font-size="10" text-anchor="middle">关注语义特征</text>
+                    
+                    <path d="M-40 75 L0 35" stroke="#f59e0b" stroke-width="2" stroke-dasharray="3,3"/>
+                </g>
+
+                <g transform="translate(150, 200)">
+                    <!-- Head 3 -->
+                    <rect x="0" y="0" width="120" height="70" fill="rgba(99,102,241,0.2)" stroke="#6366f1" stroke-width="2" rx="10"/>
+                    <text x="60" y="25" fill="#6366f1" font-size="12" text-anchor="middle" font-weight="bold">Head 3</text>
+                    <text x="60" y="45" fill="#a5b4fc" font-size="10" text-anchor="middle">关注关系特征</text>
+                    
+                    <path d="M-40 0 L0 35" stroke="#6366f1" stroke-width="2" stroke-dasharray="3,3"/>
+                </g>
+
+                <!-- Concatenation -->
+                <g transform="translate(320, 125)">
+                    <circle cx="30" cy="25" r="25" fill="#2d2d44" stroke="#10b981" stroke-width="2"/>
+                    <text x="30" y="30" fill="#10b981" font-size="11" text-anchor="middle">拼接</text>
+                    
+                    <path d="M-50 -60 L0 5" stroke="#fff" stroke-width="1.5" opacity="0.5" marker-end="url(#arr)"/>
+                    <path d="M-50 0 L0 20" stroke="#fff" stroke-width="1.5" opacity="0.5" marker-end="url(#arr)"/>
+                    <path d="M-50 70 L0 40" stroke="#fff" stroke-width="1.5" opacity="0.5" marker-end="url(#arr)"/>
+                </g>
+
+                <defs>
+                    <marker id="arr" markerWidth="8" markerHeight="8" refX="7" refY="3" orient="auto">
+                        <polygon points="0 0, 8 3, 0 6" fill="#fff" opacity="0.5"/>
+                    </marker>
+                </defs>
+
+                <!-- Output -->
+                <g transform="translate(450, 50)">
+                    <text x="30" y="-20" fill="#8888aa" font-size="12">输出特征</text>
+                    
+                    <rect x="0" y="0" width="80" height="150" fill="#10b981" stroke="#059669" stroke-width="2" rx="5" opacity="0.3"/>
+                    <rect x="5" y="5" width="70" height="140" fill="none" stroke="#10b981" stroke-width="1" stroke-dasharray="3,3" rx="3"/>
+                    
+                    <text x="40" y="80" fill="#10b981" font-size="14" text-anchor="middle">h'ᵢ</text>
+                </g>
+
+                <path d="M380 150 L450 125" stroke="#10b981" stroke-width="2" marker-end="url(#arr2)"/>
+
+                <defs>
+                    <marker id="arr2" markerWidth="8" markerHeight="8" refX="7" refY="3" orient="auto">
+                        <polygon points="0 0, 8 3, 0 6" fill="#10b981"/>
+                    </marker>
+                </defs>
+
+                <!-- Formula -->
+                <text x="580" y="100" fill="#fcd34d" font-size="11">Multi-head:</text>
+                <text x="580" y="120" fill="#b0b0cc" font-size="10">h' = ‖ₖ₌₁ᴷ σ(Σ αᵢⱼᵏ Wᵏ hⱼ)</text>
+            </svg>
+        </div>
+
+        <h2>代码实现</h2>
+
+        <div class="code-block"
+<span class="keyword">import</span> torch
+<span class="keyword">import</span> torch.nn as nn
+<span class="keyword">import</span> torch.nn.functional as F
+
+<span class="keyword">class</span> <span class="function">GATLayer</span>(nn.Module):
+    <span class="keyword">def</span> <span class="function">__init__</span>(self, in_features, out_features, dropout, alpha, concat=True):
+        super(GATLayer, self).__init__()
+        self.dropout = dropout
+        self.in_features = in_features
+        self.out_features = out_features
+        self.alpha = alpha
+        self.concat = concat
+        
+        <span class="comment"># 可学习参数</span>
+        self.W = nn.Parameter(torch.zeros(size=(in_features, out_features)))
+        self.a = nn.Parameter(torch.zeros(size=(2*out_features, 1)))
+        nn.init.xavier_uniform_(self.W.data, gain=1.414)
+        nn.init.xavier_uniform_(self.a.data, gain=1.414)
+        
+        self.leakyrelu = nn.LeakyReLU(self.alpha)
+    
+    <span class="keyword">def</span> <span class="function">forward</span>(self, h, adj):
+        <span class="comment"># 线性变换: h shape: (N, in_features) -> (N, out_features)</span>
+        Wh = torch.mm(h, self.W)  <span class="comment"># h.shape: (N, out_features)</span>
+        
+        <span class="comment"># 计算注意力系数 e_ij</span>
+        e = self._prepare_attentional_mechanism_input(Wh)
+        
+        <span class="comment"># 掩码: 只保留邻接矩阵中有连接的节点对</span>
+        zero_vec = -9e15*torch.ones_like(e)
+        attention = torch.where(adj > 0, e, zero_vec)
+        attention = F.softmax(attention, dim=1)
+        attention = F.dropout(attention, self.dropout, training=self.training)
+        
+        <span class="comment"># 聚合邻居特征</span>
+        h_prime = torch.matmul(attention, Wh)
+        
+        <span class="keyword">if</span> self.concat:
+            <span class="keyword">return</span> F.elu(h_prime)
+        <span class="keyword">else</span>:
+            <span class="keyword">return</span> h_prime
+        
+    <span class="keyword">def</span> <span class="function">_prepare_attentional_mechanism_input</span>(self, Wh):
+        <span class="comment"># Wh.shape: (N, out_feature)</span>
+        <span class="comment"># self.a.shape: (2*out_feature, 1)</span>
+        <span class="comment"># Wh1\Wh2.shape: (N, 1)</span>
+        <span class="comment"># e.shape: (N, N)</span>
+        Wh1 = torch.matmul(Wh, self.a[:self.out_features, :])
+        Wh2 = torch.matmul(Wh, self.a[self.out_features:, :])
+        <span class="comment"># broadcast add</span>
+        e = Wh1 + Wh2.T
+        <span class="keyword">return</span> self.leakyrelu(e)
+        
+<span class="comment"># PyG简化版本</span>
+<span class="keyword">from</span> torch_geometric.nn <span class="keyword">import</span> GATConv
+
+conv = GATConv(in_channels=16, out_channels=8, heads=8, dropout=0.6)
+out = conv(x, edge_index)  <span class="comment"># x: 节点特征, edge_index: 边索引</span>
+        </div>
+
+        <h2>GAT vs GCN</h2>
+
+        <table style="width:100%; border-collapse: collapse; margin: 25px 0; color: #b0b0cc;">
+            <tr style="background: rgba(245,158,11,0.1)">
+                <th style="padding: 12px; text-align: left; color: #fcd34d;">特性</th>
+                <th style="padding: 12px; text-align: left; color: #fcd34d;">GCN</th>
+                <th style="padding: 12px; text-align: left; color: #fcd34d;">GAT</th>
+            </tr>
+            <tr>
+                <td style="padding: 12px; border-bottom: 1px solid rgba(245,158,11,0.2)">邻居权重</td>
+                <td style="padding: 12px; border-bottom: 1px solid rgba(245,158,11,0.2)">固定（度归一化）</td>
+                <td style="padding: 12px; border-bottom: 1px solid rgba(245,158,11,0.2)">可学习（注意力）</td>
+            </tr>
+            <tr>
+                <td style="padding: 12px; border-bottom: 1px solid rgba(245,158,11,0.2)">计算复杂度</td>
+                <td style="padding: 12px; border-bottom: 1px solid rgba(245,158,11,0.2)">O(|E|)</td>
+                <td style="padding: 12px; border-bottom: 1px solid rgba(245,158,11,0.2)">O(|V|²) 可优化</td>
+            </tr>
+            <tr>
+                <td style="padding: 12px; border-bottom: 1px solid rgba(245,158,11,0.2)">归纳能力</td>
+                <td style="padding: 12px; border-bottom: 1px solid rgba(245,158,11,0.2)">直推式 (Transductive)</td>
+                <td style="padding: 12px; border-bottom: 1px solid rgba(245,158,11,0.2)">归纳式 (Inductive) ✅</td>
+            </tr>
+            <tr>
+                <td style="padding: 12px; border-bottom: 1px solid rgba(245,158,11,0.2)">并行度</td>
+                <td style="padding: 12px; border-bottom: 1px solid rgba(245,158,11,0.2)">高</td>
+                <td style="padding: 12px; border-bottom: 1px solid rgba(245,158,11,0.2)">高（多头独立）</td>
+            </tr>
+        </table>
+
+        <h2>应用场景</h2>
+
+        <div class="highlight-box"
+            <strong>🛒 推荐系统：</strong> 区分用户-物品交互中的重要连接<br><br>
+            <strong>🧬 蛋白质交互：</strong> 识别关键的生物分子关系<br><br>
+            <strong>🚗 交通预测：</strong> 关注对当前路段影响最大的相邻路段<br><br>
+            <strong>📚 知识图谱：</strong> 推理时聚焦最相关的实体关系
+        </div>
+
+        <div style="text-align: center; margin: 50px 0;">
+            <a href="index.html" style="display: inline-block; background: linear-gradient(135deg, #6366f1 0%, #a855f7 100%); color: white; padding: 15px 40px; border-radius: 30px; text-decoration: none; font-size: 1.1rem;">
+                ← 返回首页探索更多
+            </a>
+        </div>
+    </div>
+
+    <footer>
+        <p>Made with ❤️ by Kimi Claw | <a href="https://github.com/Patbby/ai-neural-networks" style="color:#f59e0b">GitHub</a></p>
+    </footer>
+</body>
+</html>

@@ -1,0 +1,338 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Neural Networks Visualized | 神经网络可视化</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            background: #0a0a0f;
+            color: #e0e0ff;
+            line-height: 1.6;
+            overflow-x: hidden;
+        }
+        
+        /* Animated background */
+        .bg-animation {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+            opacity: 0.3;
+        }
+        
+        header {
+            text-align: center;
+            padding: 80px 20px 40px;
+            background: linear-gradient(180deg, rgba(99,102,241,0.1) 0%, transparent 100%);
+        }
+        
+        h1 {
+            font-size: 3.5rem;
+            background: linear-gradient(135deg, #6366f1 0%, #a855f7 50%, #ec4899 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 20px;
+            font-weight: 800;
+        }
+        
+        .subtitle {
+            font-size: 1.3rem;
+            color: #8888aa;
+            max-width: 600px;
+            margin: 0 auto;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 40px 20px;
+        }
+        
+        .network-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 30px;
+            margin-top: 60px;
+        }
+        
+        .network-card {
+            background: rgba(20, 20, 35, 0.8);
+            border: 1px solid rgba(99, 102, 241, 0.3);
+            border-radius: 20px;
+            padding: 30px;
+            transition: all 0.3s ease;
+            cursor: pointer;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .network-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 3px;
+            background: linear-gradient(90deg, #6366f1, #a855f7, #ec4899);
+            transform: scaleX(0);
+            transition: transform 0.3s ease;
+        }
+        
+        .network-card:hover {
+            transform: translateY(-5px);
+            border-color: rgba(99, 102, 241, 0.6);
+            box-shadow: 0 20px 40px rgba(99, 102, 241, 0.2);
+        }
+        
+        .network-card:hover::before {
+            transform: scaleX(1);
+        }
+        
+        .network-card h3 {
+            font-size: 1.8rem;
+            color: #fff;
+            margin-bottom: 10px;
+        }
+        
+        .network-card .tag {
+            display: inline-block;
+            background: rgba(99, 102, 241, 0.2);
+            color: #a5b4fc;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            margin-bottom: 15px;
+        }
+        
+        .network-card p {
+            color: #8888aa;
+            margin-bottom: 20px;
+        }
+        
+        .preview-svg {
+            width: 100%;
+            height: 150px;
+            margin-top: 15px;
+        }
+        
+        footer {
+            text-align: center;
+            padding: 60px 20px;
+            color: #555577;
+            border-top: 1px solid rgba(99, 102, 241, 0.1);
+            margin-top: 80px;
+        }
+        
+        footer a {
+            color: #6366f1;
+            text-decoration: none;
+        }
+        
+        @media (max-width: 768px) {
+            h1 {
+                font-size: 2rem;
+            }
+            .network-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Animated neural network background -->
+    <svg class="bg-animation" viewBox="0 0 1920 1080" preserveAspectRatio="xMidYMid slice">
+        <defs>
+            <linearGradient id="grad1" x1="0%" y1="0%" x2="100%" y2="100%">
+                <stop offset="0%" style="stop-color:#6366f1;stop-opacity:0.3" />
+                <stop offset="100%" style="stop-color:#a855f7;stop-opacity:0.1" />
+            </linearGradient>
+        </defs>
+        <g id="bg-nodes"></g>
+    </svg>
+
+    <header>
+        <h1>🧠 Neural Networks</h1>
+        <p class="subtitle">Interactive visualizations of AI architectures.<br>See how machines learn, one layer at a time.</p>
+    </header>
+
+    <div class="container">
+        <div class="network-grid">
+            <!-- CNN Card -->
+            <div class="network-card" onclick="location.href='cnn.html'">
+                <span class="tag">Computer Vision</span>
+                <h3>CNN 卷积神经网络</h3>
+                <p>How computers "see" images. Learn about convolution kernels, feature maps, pooling, and how hierarchical patterns emerge.</p>
+                <svg class="preview-svg" viewBox="0 0 300 150">
+                    <!-- Animated CNN preview -->
+                    <defs>
+                        <linearGradient id="cnn-grad" x1="0%" y1="0%" x2="100%" y2="0%">
+                            <stop offset="0%" style="stop-color:#6366f1"/>
+                            <stop offset="100%" style="stop-color:#a855f7"/>
+                        </linearGradient>
+                    </defs>
+                    <!-- Input layer -->
+                    <rect x="20" y="40" width="40" height="70" fill="none" stroke="#6366f1" stroke-width="2" opacity="0.8">
+                        <animate attributeName="stroke-opacity" values="0.8;1;0.8" dur="2s" repeatCount="indefinite"/>
+                    </rect>
+                    <!-- Conv layer -->
+                    <rect x="90" y="50" width="35" height="50" fill="none" stroke="#8b5cf6" stroke-width="2" opacity="0.8">
+                        <animate attributeName="stroke-opacity" values="0.6;1;0.6" dur="2s" begin="0.3s" repeatCount="indefinite"/>
+                    </rect>
+                    <!-- Another conv -->
+                    <rect x="150" y="55" width="30" height="40" fill="none" stroke="#a855f7" stroke-width="2" opacity="0.8">
+                        <animate attributeName="stroke-opacity" values="0.6;1;0.6" dur="2s" begin="0.6s" repeatCount="indefinite"/>
+                    </rect>
+                    <!-- Output -->
+                    <circle cx="230" cy="75" r="15" fill="url(#cnn-grad)" opacity="0.9">
+                        <animate attributeName="r" values="15;18;15" dur="1.5s" repeatCount="indefinite"/>
+                    </circle>
+                    <!-- Connections -->
+                    <path d="M60 75 L90 75" stroke="#6366f1" stroke-width="1.5" opacity="0.5">
+                        <animate attributeName="stroke-dasharray" values="0,100;100,0" dur="1.5s" repeatCount="indefinite"/>
+                    </path>
+                    <path d="M125 75 L150 75" stroke="#8b5cf6" stroke-width="1.5" opacity="0.5"/>
+                    <path d="M180 75 L215 75" stroke="#a855f7" stroke-width="1.5" opacity="0.5"/>
+                </svg>
+            </div>
+
+            <!-- GNN Card -->
+            <div class="network-card" onclick="location.href='gnn.html'">
+                <span class="tag">Graph Learning</span>
+                <h3>GNN 图神经网络</h3>
+                <p>Learning from connected data. Discover message passing, neighborhood aggregation, and how graphs become embeddings.</p>
+                <svg class="preview-svg" viewBox="0 0 300 150">
+                    <!-- Animated GNN preview - nodes and edges -->
+                    <defs>
+                        <radialGradient id="node-grad">
+                            <stop offset="0%" style="stop-color:#ec4899"/>
+                            <stop offset="100%" style="stop-color:#a855f7"/>
+                        </radialGradient>
+                    </defs>
+                    <!-- Edges -->
+                    <g opacity="0.4">
+                        <line x1="80" y1="50" x2="150" y2="40" stroke="#ec4899" stroke-width="1.5">
+                            <animate attributeName="stroke-opacity" values="0.3;0.8;0.3" dur="2s" repeatCount="indefinite"/>
+                        </line>
+                        <line x1="80" y1="50" x2="130" y2="100" stroke="#ec4899" stroke-width="1.5"/>
+                        <line x1="150" y1="40" x2="220" y2="60" stroke="#ec4899" stroke-width="1.5">
+                            <animate attributeName="stroke-opacity" values="0.3;0.8;0.3" dur="2s" begin="0.5s" repeatCount="indefinite"/>
+                        </line>
+                        <line x1="130" y1="100" x2="220" y2="60" stroke="#ec4899" stroke-width="1.5"/>
+                        <line x1="150" y1="40" x2="130" y2="100" stroke="#ec4899" stroke-width="1.5"/>
+                    </g>
+                    <!-- Nodes -->
+                    <circle cx="80" cy="50" r="12" fill="url(#node-grad)">
+                        <animate attributeName="r" values="12;14;12" dur="1.5s" repeatCount="indefinite"/>
+                    </circle>
+                    <circle cx="150" cy="40" r="12" fill="url(#node-grad)">
+                        <animate attributeName="r" values="12;14;12" dur="1.5s" begin="0.3s" repeatCount="indefinite"/>
+                    </circle>
+                    <circle cx="130" cy="100" r="12" fill="url(#node-grad)">
+                        <animate attributeName="r" values="12;14;12" dur="1.5s" begin="0.6s" repeatCount="indefinite"/>
+                    </circle>
+                    <circle cx="220" cy="60" r="12" fill="url(#node-grad)">
+                        <animate attributeName="r" values="12;14;12" dur="1.5s" begin="0.9s" repeatCount="indefinite"/>
+                    </circle>
+                </svg>
+            </div>
+
+            <!-- GAT Card -->
+            <div class="network-card" onclick="location.href='gat.html'">
+                <span class="tag">Attention Mechanism</span>
+                <h3>GAT 图注意力网络</h3>
+                <p>Where attention meets graphs. Learn how GAT assigns different importance to neighbors, creating adaptive message passing.</p>
+                <svg class="preview-svg" viewBox="0 0 300 150">
+                    <!-- Animated GAT preview - attention weights -->
+                    <defs>
+                        <linearGradient id="attention-grad" x1="0%" y1="0%" x2="100%" y2="0%">
+                            <stop offset="0%" style="stop-color:#f59e0b"/>
+                            <stop offset="50%" style="stop-color:#ef4444"/>
+                            <stop offset="100%" style="stop-color:#ec4899"/>
+                        </linearGradient>
+                    </defs>
+                    <!-- Center node -->
+                    <circle cx="150" cy="75" r="20" fill="#ef4444" opacity="0.9"/>
+                    <!-- Neighbor nodes -->
+                    <circle cx="80" cy="40" r="10" fill="#f59e0b"/>
+                    <circle cx="220" cy="40" r="10" fill="#f59e0b"/>
+                    <circle cx="60" cy="110" r="10" fill="#f59e0b"/>
+                    <circle cx="240" cy="110" r="10" fill="#f59e0b"/>
+                    <circle cx="150" cy="20" r="10" fill="#f59e0b"/>
+                    <!-- Attention connections with varying weights -->
+                    <line x1="95" y1="48" x2="132" y2="62" stroke="url(#attention-grad)" stroke-width="4" opacity="0.8">
+                        <animate attributeName="stroke-width" values="4;6;4" dur="1.5s" repeatCount="indefinite"/>
+                    </line>
+                    <line x1="205" y1="48" x2="168" y2="62" stroke="#f59e0b" stroke-width="2" opacity="0.5"/>
+                    <line x1="72" y1="102" x2="135" y2="88" stroke="url(#attention-grad)" stroke-width="3" opacity="0.7">
+                        <animate attributeName="stroke-width" values="3;5;3" dur="1.5s" begin="0.3s" repeatCount="indefinite"/>
+                    </line>
+                    <line x1="228" y1="102" x2="165" y2="88" stroke="#f59e0b" stroke-width="2" opacity="0.4"/>
+                    <line x1="150" y1="35" x2="150" y2="58" stroke="#f59e0b" stroke-width="2" opacity="0.6"/>
+                </svg>
+            </div>
+        </div>
+    </div>
+
+    <footer>
+        <p>Built with ❤️ by <a href="https://github.com/Patbby">Patbby</a> (Kimi Claw)</p>
+        <p>Open source on <a href="https://github.com/Patbby/ai-neural-networks">GitHub</a></p>
+    </footer>
+
+    <script>
+        // Animated background nodes
+        const bgSvg = document.getElementById('bg-nodes');
+        const nodeCount = 30;
+        const nodes = [];
+        
+        // Create nodes
+        for (let i = 0; i < nodeCount; i++) {
+            const circle = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
+            const x = Math.random() * 1920;
+            const y = Math.random() * 1080;
+            const r = Math.random() * 3 + 1;
+            
+            circle.setAttribute('cx', x);
+            circle.setAttribute('cy', y);
+            circle.setAttribute('r', r);
+            circle.setAttribute('fill', '#6366f1');
+            circle.setAttribute('opacity', Math.random() * 0.5 + 0.2);
+            
+            bgSvg.appendChild(circle);
+            nodes.push({
+                element: circle,
+                x: x,
+                y: y,
+                vx: (Math.random() - 0.5) * 0.5,
+                vy: (Math.random() - 0.5) * 0.5
+            });
+        }
+        
+        // Animate nodes
+        function animateNodes() {
+            nodes.forEach(node => {
+                node.x += node.vx;
+                node.y += node.vy;
+                
+                if (node.x < 0 || node.x > 1920) node.vx *= -1;
+                if (node.y < 0 || node.y > 1080) node.vy *= -1;
+                
+                node.element.setAttribute('cx', node.x);
+                node.element.setAttribute('cy', node.y);
+            });
+            requestAnimationFrame(animateNodes);
+        }
+        animateNodes();
+    </script>
+</body>
+</html>

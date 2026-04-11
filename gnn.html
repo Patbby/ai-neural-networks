@@ -1,0 +1,452 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GNN - Graph Neural Network | 图神经网络</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: #0a0a0f;
+            color: #e0e0ff;
+            line-height: 1.7;
+        }
+        
+        nav {
+            background: rgba(20, 20, 35, 0.95);
+            padding: 15px 30px;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            backdrop-filter: blur(10px);
+            border-bottom: 1px solid rgba(236, 72, 153, 0.2);
+        }
+        
+        nav a {
+            color: #8888aa;
+            text-decoration: none;
+            margin-right: 25px;
+            transition: color 0.3s;
+        }
+        
+        nav a:hover {
+            color: #ec4899;
+        }
+        
+        header {
+            text-align: center;
+            padding: 60px 20px 40px;
+            background: linear-gradient(180deg, rgba(236,72,153,0.15) 0%, transparent 100%);
+        }
+        
+        h1 {
+            font-size: 2.8rem;
+            background: linear-gradient(135deg, #ec4899 0%, #a855f7 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 15px;
+        }
+        
+        .subtitle {
+            color: #8888aa;
+            font-size: 1.1rem;
+        }
+        
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: 40px 20px;
+        }
+        
+        h2 {
+            color: #fff;
+            margin: 50px 0 25px;
+            font-size: 1.8rem;
+            border-left: 4px solid #ec4899;
+            padding-left: 20px;
+        }
+        
+        h3 {
+            color: #f9a8d4;
+            margin: 30px 0 15px;
+            font-size: 1.3rem;
+        }
+        
+        p {
+            margin-bottom: 20px;
+            color: #b0b0cc;
+        }
+        
+        .viz-container {
+            background: rgba(20, 20, 35, 0.6);
+            border: 1px solid rgba(236, 72, 153, 0.3);
+            border-radius: 15px;
+            padding: 30px;
+            margin: 30px 0;
+            text-align: center;
+        }
+        
+        .viz-container h4 {
+            color: #fff;
+            margin-bottom: 20px;
+            font-size: 1.1rem;
+        }
+        
+        .controls {
+            margin: 20px 0;
+        }
+        
+        button {
+            background: linear-gradient(135deg, #ec4899 0%, #a855f7 100%);
+            color: white;
+            border: none;
+            padding: 12px 25px;
+            border-radius: 25px;
+            cursor: pointer;
+            font-size: 1rem;
+            margin: 5px;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+        
+        button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 20px rgba(236, 72, 153, 0.4);
+        }
+        
+        .code-block {
+            background: #111118;
+            border-radius: 10px;
+            padding: 20px;
+            margin: 20px 0;
+            font-family: 'Fira Code', monospace;
+            font-size: 0.9rem;
+            overflow-x: auto;
+            border-left: 3px solid #ec4899;
+        }
+        
+        .code-block .comment { color: #6b7280; }
+        .code-block .keyword { color: #f472b6; }
+        .code-block .function { color: #60a5fa; }
+        
+        .highlight-box {
+            background: rgba(236, 72, 153, 0.1);
+            border: 1px solid rgba(236, 72, 153, 0.3);
+            border-radius: 10px;
+            padding: 20px;
+            margin: 25px 0;
+        }
+        
+        .highlight-box strong {
+            color: #f9a8d4;
+        }
+        
+        .formula {
+            background: rgba(168, 85, 247, 0.1);
+            border-radius: 8px;
+            padding: 15px 25px;
+            margin: 20px 0;
+            text-align: center;
+            font-family: 'Times New Roman', serif;
+            font-size: 1.2rem;
+            color: #e0e0ff;
+        }
+
+        .comparison-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 25px 0;
+        }
+        
+        .comparison-table th {
+            background: rgba(236, 72, 153, 0.2);
+            padding: 12px;
+            text-align: left;
+            color: #f9a8d4;
+        }
+        
+        .comparison-table td {
+            padding: 12px;
+            border-bottom: 1px solid rgba(236, 72, 153, 0.1);
+            color: #b0b0cc;
+        }
+        
+        footer {
+            text-align: center;
+            padding: 40px;
+            color: #555577;
+            border-top: 1px solid rgba(236, 72, 153, 0.1);
+            margin-top: 60px;
+        }
+    </style>
+</head>
+<body>
+    <nav>
+        <a href="index.html">← Back to Home</a>
+        <a href="cnn.html">CNN</a>
+        <a href="gnn.html">GNN</a>
+        <a href="gat.html">GAT</a>
+    </nav>
+
+    <header>
+        <h1>🕸️ GNN 图神经网络</h1>
+        <p class="subtitle">Graph Neural Networks - Learning from connections and relationships</p>
+    </header>
+
+    <div class="container">
+        <h2>为什么需要GNN？</h2>
+        
+        <p>传统神经网络（如CNN、RNN）处理的是<strong>规则结构数据</strong>：图像（网格）、文本（序列）。但现实世界充满了<strong>不规则的图结构</strong>：社交网络、分子结构、知识图谱、推荐系统...</p>
+
+        <div class="highlight-box">
+            <strong>GNN的核心思想：</strong> 通过<strong>消息传递(Message Passing)</strong>机制，让每个节点聚合邻居信息，逐步更新自身表示。经过多层传播，每个节点都能获得图中更远距离的结构信息。
+        </div>
+
+        <table class="comparison-table">
+            <tr>
+                <th>数据类型</th>
+                <th>传统方法</th>
+                <th>GNN优势</th>
+            </tr>
+            <tr>
+                <td>社交网络</td>
+                <td>手工特征工程</td>
+                <td>自动学习节点角色和社群结构</td>
+            </tr>
+            <tr>
+                <td>分子图</td>
+                <td>固定指纹</td>
+                <td>端到端学习化学性质</td>
+            </tr>
+            <tr>
+                <td>知识图谱</td>
+                <td>规则推理</td>
+                <td>推理+表示学习结合</td>
+            </tr>
+        </table>
+
+        <h2>消息传递机制</h2>
+
+        <div class="viz-container">
+            <h4>📨 消息传递演示 - 观察节点如何聚合邻居信息</h4>
+            <svg id="gnn-viz" width="750" height="450" viewBox="0 0 750 450">
+                <defs>
+                    <radialGradient id="node-grad-1" cx="50%" cy="50%" r="50%">
+                        <stop offset="0%" style="stop-color:#ec4899"/>
+                        <stop offset="100%" style="stop-color:#a855f7"/>
+                    </radialGradient>
+                    
+                    <radialGradient id="node-grad-2" cx="50%" cy="50%" r="50%">
+                        <stop offset="0%" style="stop-color:#6366f1"/>
+                        <stop offset="100%" style="stop-color:#8b5cf6"/>
+                    </radialGradient>
+                    
+                    <linearGradient id="msg-grad" x1="0%" y1="0%" x2="100%" y2="0%">
+                        <stop offset="0%" style="stop-color:#fbbf24;stop-opacity:0.8"/>
+                        <stop offset="100%" style="stop-color:#f59e0b;stop-opacity:0.8"/>
+                    </linearGradient>
+                </defs>
+
+                <!-- Title -->
+                <text x="375" y="30" fill="#fff" font-size="16" text-anchor="middle" font-weight="bold">Message Passing: Layer k → Layer k+1</text>
+
+                <!-- Layer k (left side) -->
+                <text x="150" y="70" fill="#8888aa" font-size="14" text-anchor="middle">第 k 层</text>
+                
+                <g id="layer-k">
+                    <!-- Central node A -->
+                    <circle cx="150" cy="200" r="30" fill="url(#node-grad-1)" stroke="#fff" stroke-width="2"/>
+                    <text x="150" y="208" fill="#fff" font-size="16" font-weight="bold" text-anchor="middle">A</text>
+                    
+                    <!-- Neighbors B, C, D, E -->
+                    <circle cx="80" cy="120" r="22" fill="url(#node-grad-2)" stroke="#fff" stroke-width="1.5" opacity="0.8">
+                        <title>Node B</title>
+                    </circle>
+                    <text x="80" y="127" fill="#fff" font-size="12" text-anchor="middle">B</text>
+                    
+                    <circle cx="220" cy="120" r="22" fill="url(#node-grad-2)" stroke="#fff" stroke-width="1.5" opacity="0.8"/>
+                    <text x="220" y="127" fill="#fff" font-size="12" text-anchor="middle">C</text>
+                    
+                    <circle cx="80" cy="280" r="22" fill="url(#node-grad-2)" stroke="#fff" stroke-width="1.5" opacity="0.8"/>
+                    <text x="80" y="287" fill="#fff" font-size="12" text-anchor="middle">D</text>
+                    
+                    <circle cx="220" cy="280" r="22" fill="url(#node-grad-2)" stroke="#fff" stroke-width="1.5" opacity="0.8"/>
+                    <text x="220" y="287" fill="#fff" font-size="12" text-anchor="middle">E</text>
+
+                    <!-- Edges in layer k -->
+                    <line x1="105" y1="175" x2="95" y2="140" stroke="#ec4899" stroke-width="2" opacity="0.6"/>
+                    <line x1="195" y1="175" x2="205" y2="140" stroke="#ec4899" stroke-width="2" opacity="0.6"/>
+                    <line x1="105" y1="225" x2="95" y2="260" stroke="#ec4899" stroke-width="2" opacity="0.6"/>
+                    <line x1="195" y1="225" x2="205" y2="260" stroke="#ec4899" stroke-width="2" opacity="0.6"/>
+                </g>
+
+                <!-- Arrow indicating time step -->
+                <g transform="translate(300, 200)">
+                    <text x="75" y="-20" fill="#fbbf24" font-size="12" text-anchor="middle">Aggregate</text>
+                    <path d="M0 0 L120 0" stroke="#fbbf24" stroke-width="3" marker-end="url(#arrow-msg)"/>
+                    
+                    <!-- Animated message particles -->
+                    <circle r="5" fill="#fbbf24">
+                        <animateMotion path="M0 0 L120 0" dur="1.5s" repeatCount="indefinite"/>
+                    </circle>
+                    
+                    <circle r="5" fill="#fbbf24">
+                        <animateMotion path="M0 0 L120 0" dur="1.5s" begin="0.3s" repeatCount="indefinite"/>
+                    </circle>
+                    
+                    <circle r="5" fill="#fbbf24">
+                        <animateMotion path="M0 0 L120 0" dur="1.5s" begin="0.6s" repeatCount="indefinite"/>
+                    </circle>
+                    
+                    <circle r="5" fill="#fbbf24">
+                        <animateMotion path="M0 0 L120 0" dur="1.5s" begin="0.9s" repeatCount="indefinite"/>
+                    </circle>
+                </g>
+
+                <defs>
+                    <marker id="arrow-msg" markerWidth="10" markerHeight="10" refX="9" refY="3" orient="auto">
+                        <polygon points="0 0, 10 3, 0 6" fill="#fbbf24"/>
+                    </marker>
+                </defs>
+
+                <!-- Layer k+1 (right side) -->
+                <text x="550" y="70" fill="#8888aa" font-size="14" text-anchor="middle">第 k+1 层</text>
+                
+                <g id="layer-k1">
+                    <!-- Updated central node A -->
+                    <circle cx="550" cy="200" r="35" fill="url(#node-grad-1)" stroke="#10b981" stroke-width="3" opacity="0">
+                        <animate id="anim-node" attributeName="opacity" values="0;1" dur="0.5s" begin="indefinite" fill="freeze"/>
+                        <animate attributeName="r" values="30;35" dur="0.5s" begin="anim-node.begin" fill="freeze"/>
+                    </circle>
+                    
+                    <text x="550" y="208" fill="#fff" font-size="16" font-weight="bold" text-anchor="middle" opacity="0">
+                        A'
+                        <animate attributeName="opacity" values="0;1" dur="0.3s" begin="anim-node.begin+0.2s" fill="freeze"/>
+                    </text>
+
+                    <!-- Formula annotation -->
+                    <text x="550" y="280" fill="#10b981" font-size="12" text-anchor="middle" opacity="0">
+                        h_A' = σ(W · AGG({h_B, h_C, h_D, h_E}))
+                        <animate attributeName="opacity" values="0;1" dur="0.5s" begin="anim-node.begin+0.5s" fill="freeze"/>
+                    </text>
+
+                    <!-- Neighbor nodes (faded) -->
+                    <circle cx="480" cy="120" r="22" fill="url(#node-grad-2)" stroke="#fff" stroke-width="1.5" opacity="0.3"/>
+                    <circle cx="620" cy="120" r="22" fill="url(#node-grad-2)" stroke="#fff" stroke-width="1.5" opacity="0.3"/>
+                    <circle cx="480" cy="280" r="22" fill="url(#node-grad-2)" stroke="#fff" stroke-width="1.5" opacity="0.3"/>
+                    <circle cx="620" cy="280" r="22" fill="url(#node-grad-2)" stroke="#fff" stroke-width="1.5" opacity="0.3"/>
+                </g>
+
+                <!-- Legend -->
+                <g transform="translate(30, 380)">
+                    <circle cx="10" cy="10" r="10" fill="url(#node-grad-1)"/>
+                    <text x="30" y="15" fill="#8888aa" font-size="12">目标节点 (Target)</text>
+                    
+                    <circle cx="150" cy="10" r="8" fill="url(#node-grad-2)" opacity="0.8"/>
+                    <text x="170" y="15" fill="#8888aa" font-size="12">邻居节点 (Neighbors)</text>
+                    
+                    <circle cx="320" cy="10" r="5" fill="#fbbf24"/>
+                    <text x="340" y="15" fill="#8888aa" font-size="12">消息 (Messages)</text>
+                </g>
+
+                <!-- Explanation text -->
+                <text x="375" y="430" fill="#a5b4fc" font-size="13" text-anchor="middle">
+                    每个节点收集邻居的特征 → 聚合函数(AGG)合并信息 → 更新自身表示
+                </text>
+            </svg>
+            
+            <div class="controls">
+                <button onclick="document.getElementById('anim-node').beginElement()">▶ 开始消息传递</button>
+                <button onclick="location.reload()">🔄 重置</button>
+            </div>
+        </div>
+
+        <h2>GNN的通用框架</h2>
+
+        <p>几乎所有GNN变体都遵循以下两步迭代：</p>
+
+        <h3>1. 消息生成 (Message)</h3>
+        
+        <div class="formula">
+            m_{u→v}^{(l)} = MSG^{(l)}(h_u^{(l-1)}, h_v^{(l-1)}, e_{uv})
+        </div>
+
+        <p>邻居节点u向目标节点v发送消息，可基于双方特征和边属性。</p>
+
+        <h3>2. 聚合与更新 (Aggregate & Update)</h3>
+        
+        <div class="formula">
+            h_v^{(l)} = UPDATE^{(l)}(h_v^{(l-1)}, AGG_{u∈N(v)}({m_{u→v}^{(l)}}))
+        </div>
+
+        <p>聚合邻居消息，结合自身旧状态，生成新表示。</p>
+
+        <h2>主要GNN变体</h2>
+
+        <h3>GCN (Graph Convolutional Network)</h3>
+        
+        <p>最经典的GNN，使用对称归一化的邻接矩阵进行特征传播：</p>
+
+        <div class="formula">
+            H^{(l+1)} = σ(D̃^{-1/2} Ã D̃^{-1/2} H^{(l)} W^{(l)})
+        </div>
+
+        <div class="code-block"
+            <span class="keyword">import</span> torch.nn.functional as F
+            <span class="keyword">from</span> torch_geometric.nn <span class="keyword">import</span> GCNConv
+
+            <span class="keyword">class</span> <span class="function">GCN</span>(torch.nn.Module):
+                <span class="keyword">def</span> <span class="function">__init__</span>(self, in_channels, hidden_channels, out_channels):
+                    super().__init__()
+                    self.conv1 = GCNConv(in_channels, hidden_channels)
+                    self.conv2 = GCNConv(hidden_channels, out_channels)
+                
+                <span class="keyword">def</span> <span class="function">forward</span>(self, x, edge_index):
+                    x = self.conv1(x, edge_index)  <span class="comment"># 第1层图卷积</span>
+                    x = F.relu(x)
+                    x = F.dropout(x, training=self.training)
+                    x = self.conv2(x, edge_index)  <span class="comment"># 第2层图卷积</span>
+                    <span class="keyword">return</span> F.log_softmax(x, dim=1)
+        </div>
+
+        <h3>GraphSAGE</h3>
+        
+        <p>采样聚合(SAmple and agGreGatE)，可扩展到大规模图：</p>
+
+        <div class="formula">
+            h_v^{(l)} = σ(W · CONCAT(h_v^{(l-1)}, AGG({h_u^{(l-1)}, ∀u∈N(v)})))
+        </div>
+
+        <h3>GIN (Graph Isomorphism Network)</h3>
+        
+        <p>理论上最强大的GNN，能区分更多图结构：</p>
+
+        <div class="formula">
+            h_v^{(l)} = MLP^{(l)}((1 + ε^{(l)}) · h_v^{(l-1)} + Σ_{u∈N(v)} h_u^{(l-1)})
+        </div>
+
+        <h2>应用场景</h2>
+
+        <div class="highlight-box"
+            <strong>节点级别：</strong> 社交网络用户分类、论文引用网络主题预测<br><br>
+            <strong>边级别：</strong> 推荐系统链接预测、知识图谱关系推理<br><br>
+            <strong>图级别：</strong> 分子性质预测、程序代码漏洞检测、3D点云分类
+        </div>
+
+        <div style="text-align: center; margin: 50px 0;">
+            <a href="gat.html" style="display: inline-block; background: linear-gradient(135deg, #ec4899 0%, #f59e0b 100%); color: white; padding: 15px 40px; border-radius: 30px; text-decoration: none; font-size: 1.1rem;">
+                进阶探索：GAT 图注意力网络 →
+            </a>
+        </div>
+    </div>
+
+    <footer>
+        <p>Made with ❤️ by Kimi Claw | <a href="https://github.com/Patbby/ai-neural-networks" style="color:#ec4899">GitHub</a></p>
+    </footer>
+</body>
+</html>
