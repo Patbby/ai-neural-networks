@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ResNet: Deep Residual Learning | AI Neural Networks</title>
+    <title>EfficientNet: Rethinking Model Scaling | AI Neural Networks</title>
     <style>
         :root {
             --bg-dark: #0a0a0f;
@@ -11,8 +11,8 @@
             --bg-elevated: #1a1a25;
             --primary: #6366f1;
             --primary-light: #818cf8;
-            --secondary: #ec4899;
-            --accent: #10b981;
+            --secondary: #10b981;
+            --accent: #f59e0b;
             --text-primary: #f8fafc;
             --text-secondary: #94a3b8;
             --text-muted: #64748b;
@@ -71,7 +71,7 @@
         .nav-links a:hover { color: var(--primary-light); }
         
         .hero {
-            background: linear-gradient(180deg, rgba(99, 102, 241, 0.15) 0%, transparent 100%);
+            background: linear-gradient(180deg, rgba(16, 185, 129, 0.15) 0%, transparent 100%);
             padding: 4rem 2rem;
             text-align: center;
         }
@@ -86,7 +86,7 @@
             align-items: center;
             gap: 0.5rem;
             background: rgba(16, 185, 129, 0.15);
-            color: var(--accent);
+            color: var(--secondary);
             padding: 0.5rem 1rem;
             border-radius: 9999px;
             font-size: 0.875rem;
@@ -100,7 +100,7 @@
             font-weight: 800;
             line-height: 1.2;
             margin-bottom: 1.5rem;
-            background: linear-gradient(135deg, #fff 0%, #a5b4fc 100%);
+            background: linear-gradient(135deg, #fff 0%, #34d399 100%);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
         }
@@ -145,13 +145,13 @@
         }
         
         .btn-primary {
-            background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+            background: linear-gradient(135deg, var(--secondary) 0%, var(--primary) 100%);
             color: white;
         }
         
         .btn-primary:hover {
             transform: translateY(-2px);
-            box-shadow: 0 10px 20px rgba(99, 102, 241, 0.3);
+            box-shadow: 0 10px 20px rgba(16, 185, 129, 0.3);
         }
         
         .btn-secondary {
@@ -189,8 +189,8 @@
         }
         
         .highlight-box {
-            background: linear-gradient(135deg, rgba(99, 102, 241, 0.1) 0%, rgba(168, 85, 247, 0.1) 100%);
-            border: 1px solid rgba(99, 102, 241, 0.3);
+            background: linear-gradient(135deg, rgba(16, 185, 129, 0.1) 0%, rgba(99, 102, 241, 0.1) 100%);
+            border: 1px solid rgba(16, 185, 129, 0.3);
             border-radius: 1rem;
             padding: 2rem;
             margin: 2rem 0;
@@ -200,7 +200,7 @@
             font-size: 1.25rem;
             font-weight: 600;
             margin-bottom: 1rem;
-            color: var(--primary-light);
+            color: var(--secondary);
         }
         
         .problem-grid {
@@ -241,23 +241,6 @@
             text-align: center;
         }
         
-        .residual-block {
-            display: inline-flex;
-            flex-direction: column;
-            align-items: center;
-            gap: 0.5rem;
-            padding: 1.5rem;
-            background: linear-gradient(135deg, rgba(99, 102, 241, 0.1) 0%, rgba(168, 85, 247, 0.1) 100%);
-            border-radius: 1rem;
-            border: 2px solid var(--primary);
-        }
-        
-        .block-label {
-            font-size: 0.875rem;
-            color: var(--text-muted);
-            font-weight: 500;
-        }
-        
         .formula {
             font-family: 'Times New Roman', Times, serif;
             font-size: 1.5rem;
@@ -286,7 +269,7 @@
         .stat-value {
             font-size: 2.5rem;
             font-weight: 800;
-            background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+            background: linear-gradient(135deg, var(--secondary) 0%, var(--primary) 100%);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
         }
@@ -338,7 +321,7 @@
         }
         
         .related-paper:hover {
-            border-color: var(--primary);
+            border-color: var(--secondary);
             transform: translateY(-2px);
         }
         
@@ -362,48 +345,54 @@
             color: var(--text-muted);
         }
         
-        .skip-connection-visual {
+        .scaling-visual {
             display: flex;
-            align-items: center;
             justify-content: center;
-            gap: 1rem;
+            align-items: flex-end;
+            gap: 2rem;
             margin: 2rem 0;
-            flex-wrap: wrap;
+            height: 200px;
         }
         
-        .layer-box {
-            background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
-            color: white;
-            padding: 1rem 1.5rem;
-            border-radius: 0.5rem;
-            font-weight: 600;
-        }
-        
-        .plus-box {
-            background: var(--accent);
-            color: white;
-            width: 3rem;
-            height: 3rem;
-            border-radius: 50%;
+        .scale-bar {
             display: flex;
+            flex-direction: column;
             align-items: center;
-            justify-content: center;
-            font-size: 1.5rem;
-            font-weight: 700;
+            gap: 0.5rem;
         }
         
-        .arrow {
+        .bar {
+            width: 60px;
+            border-radius: 4px 4px 0 0;
+            transition: all 0.3s;
+        }
+        
+        .bar-b0 { height: 40px; background: linear-gradient(to top, #6366f1, #818cf8); }
+        .bar-b1 { height: 80px; background: linear-gradient(to top, #8b5cf6, #a78bfa); }
+        .bar-b2 { height: 120px; background: linear-gradient(to top, #a855f7, #c084fc); }
+        .bar-b3 { height: 160px; background: linear-gradient(to top, #ec4899, #f472b6); }
+        .bar-b4 { height: 180px; background: linear-gradient(to top, #10b981, #34d399); }
+        .bar-b5 { height: 200px; background: linear-gradient(to top, #f59e0b, #fbbf24); }
+        .bar-b6 { height: 190px; background: linear-gradient(to top, #ef4444, #f87171); }
+        
+        .bar-label {
+            font-size: 0.75rem;
             color: var(--text-muted);
-            font-size: 1.5rem;
         }
         
-        .skip-arrow {
-            position: relative;
-            color: var(--accent);
-            font-size: 1rem;
-            padding: 0.5rem;
-            border: 2px dashed var(--accent);
+        .compound-formula {
+            background: var(--bg-dark);
+            border: 1px solid var(--border);
             border-radius: 0.5rem;
+            padding: 1rem;
+            text-align: center;
+            margin: 1.5rem 0;
+        }
+        
+        .compound-formula .formula {
+            font-size: 1.75rem;
+            border: none;
+            background: transparent;
         }
     </style>
 </head>
@@ -424,22 +413,22 @@
         <div class="hero-content">
             <div class="paper-badge">
                 <span>🏆</span>
-                <span>ILSVRC 2015 Champion</span>
+                <span>ICML 2019</span>
             </div>
-            <h1>Deep Residual Learning for Image Recognition</h1>
-            <p class="authors">Kaiming He, Xiangyu Zhang, Shaoqing Ren, Jian Sun</p>
-            <p class="affiliation">Microsoft Research</p>
+            <h1>EfficientNet: Rethinking Model Scaling for Convolutional Neural Networks</h1>
+            <p class="authors">Mingxing Tan, Quoc V. Le</p>
+            <p class="affiliation">Google Research, Brain Team</p>
             <div class="paper-meta">
-                <span>📅 CVPR 2016</span>
+                <span>📅 ICML 2019</span>
                 <span>📊 15,000+ Citations</span>
                 <span>🏷️ Computer Vision</span>
             </div>
             <div class="paper-links">
-                <a href="https://arxiv.org/abs/1512.03385" class="btn btn-primary" target="_blank">
+                <a href="https://arxiv.org/abs/1905.11946" class="btn btn-primary" target="_blank">
                     <span>📄</span> Read Paper
                 </a>
-                <a href="https://github.com/pytorch/vision/blob/main/torchvision/models/resnet.py" class="btn btn-secondary" target="_blank">
-                    <span>💻</span> PyTorch Code
+                <a href="https://github.com/google/automl/tree/master/efficientnet" class="btn btn-secondary" target="_blank">
+                    <span>💻</span> Official Code
                 </a>
             </div>
         </div>
@@ -448,93 +437,127 @@
     <div class="container">
         <section class="section">
             <h2>🎯 Problem Statement</h2>
-            <p>Deep neural networks are more difficult to train. As networks go deeper, they encounter the <strong>degradation problem</strong>: with the network depth increasing, accuracy gets saturated and then degrades rapidly. This is not caused by overfitting, but by optimization difficulties.</p>
+            <p>ConvNets are widely used, but scaling them up to achieve better accuracy often comes with massive computational costs. The key insight: <strong>there's a principled way to scale all dimensions of a network</strong>—depth, width, and resolution—rather than arbitrarily adjusting one dimension.</p>
             
             <div class="problem-grid">
                 <div class="problem-card">
-                    <h4>Vanishing Gradients</h4>
-                    <p>Gradients become increasingly small as they propagate backward through many layers, making early layers learn very slowly.</p>
+                    <h4>Depth Scaling</h4>
+                    <p>Adding more layers captures richer features but makes gradients harder to propagate.</p>
                 </div>
                 <div class="problem-card">
-                    <h4>Degradation Problem</h4>
-                    <p>Adding more layers to a suitably deep model leads to higher training error, not just test error.</p>
+                    <h4>Width Scaling</h4>
+                    <p>Wider networks capture fine-grained features but struggle with high-level patterns.</p>
                 </div>
                 <div class="problem-card">
-                    <h4>Optimization Difficulty</h4>
-                    <p>Solvers struggle to find optimal solutions for deep networks, even with batch normalization.</p>
+                    <h4>Resolution Scaling</h4>
+                    <p>Higher resolution inputs capture more details but increase computation quadratically.</p>
                 </div>
             </div>
         </section>
 
         <section class="section">
             <h2>💡 Key Innovation</h2>
-            <p>Instead of learning the direct mapping <strong>H(x)</strong>, ResNet learns the <strong>residual mapping</strong> <strong>F(x) = H(x) - x</strong>. The original mapping is recast as <strong>F(x) + x</strong>.</p>
+            <p>EfficientNet introduces <strong>Compound Scaling</strong>—a principled method to uniformly scale all three dimensions with a fixed ratio. By balancing depth, width, and resolution, it achieves much better accuracy and efficiency.</p>
             
             <div class="highlight-box">
-                <h3>🔄 The Residual Block</h3>
-                <p style="margin-bottom: 1.5rem;">If the optimal mapping is closer to identity, it's easier to learn the residual (the small perturbation) than the full transformation.</p>
+                <h3>🔗 Compound Scaling Formula</h3>
+                <p style="margin-bottom: 1.5rem;">Given available resources, scale all dimensions with constant ratios:</p>
                 
-                <div class="skip-connection-visual">
-                    <div class="layer-box">Input x</div>
-                    <div class="arrow">→</div>
-                    <div style="display: flex; flex-direction: column; gap: 0.5rem;">
-                        <div class="layer-box" style="background: linear-gradient(135deg, #ec4899 0%, #f59e0b 100%);">Conv + BN + ReLU</div>
-                        <div class="layer-box" style="background: linear-gradient(135deg, #ec4899 0%, #f59e0b 100%);">Conv + BN</div>
-                    </div>
-                    <div class="plus-box">+</div>
-                    <div class="layer-box">Output</div>
+                <div class="compound-formula">
+                    <div class="formula">d = α<sup>φ</sup>, w = β<sup>φ</sup>, r = γ<sup>φ</sup></div>
+                    <p style="margin-top: 1rem; color: var(--text-muted); font-size: 0.9rem;">s.t. α · β² · γ² ≈ 2 and φ is a user-specified coefficient</p>
                 </div>
                 
-                <div style="text-align: center; margin-top: 1rem;">
-                    <span class="skip-arrow">↳ Skip Connection (Identity) ↴</span>
+                <div style="margin-top: 2rem;">
+                    <p style="color: var(--text-muted); margin-bottom: 1rem;">Where:</p>
+                    <ul style="color: var(--text-secondary); margin-left: 1.5rem; line-height: 2;">
+                        <li><strong>d (depth):</strong> number of layers</li>
+                        <li><strong>w (width):</strong> channels per layer</li>
+                        <li><strong>r (resolution):</strong> input image size</li>
+                        <li><strong>φ (phi):</strong> compound coefficient</li>
+                    </ul>
                 </div>
             </div>
             
-            <p>The <strong>shortcut connections</strong> (skip connections) perform identity mapping, and their outputs are added to the outputs of the stacked layers. These connections add neither extra parameters nor computational complexity.</p>
+            <p>Unlike prior work that only scales one dimension, EfficientNet uses a <strong>compound coefficient φ</strong> to uniformly scale network width, depth, and resolution. The optimal values (α=1.2, β=1.1, γ=1.15) are found via a small grid search on the baseline EfficientNet-B0.</p>
         </section>
 
         <section class="section">
             <h2>🏗️ Architecture</h2>
-            <p>ResNet introduced several variants with different depths:</p>
-            
-            <div class="architecture-diagram">
-                <div class="formula">y = F(x, {Wi}) + x</div>
-                <p style="margin-top: 1rem; color: var(--text-muted);">Where F(x, {Wi}) represents the residual mapping to be learned</p>
-            </div>
+            <p>EfficientNet uses a mobile-inverted bottleneck convolution (MBConv) with squeeze-and-excitation optimization, similar to MobileNetV2 but with compound scaling applied:</p>
             
             <div class="stats-grid">
                 <div class="stat-card">
-                    <div class="stat-value">152</div>
-                    <div class="stat-label">Layers (ResNet-152)</div>
+                    <div class="stat-value">5.3M</div>
+                    <div class="stat-label">Params (B0)</div>
                 </div>
                 <div class="stat-card">
-                    <div class="stat-value">3.57%</div>
-                    <div class="stat-label">Top-5 Error (Ensemble)</div>
+                    <div class="stat-value">77.3%</div>
+                    <div class="stat-label">ImageNet Top-1 (B0)</div>
                 </div>
                 <div class="stat-card">
-                    <div class="stat-value">1000+</div>
-                    <div class="stat-label">Layers Tested (CIFAR-10)</div>
+                    <div class="stat-value">84.4%</div>
+                    <div class="stat-label">ImageNet Top-1 (B7)</div>
                 </div>
                 <div class="stat-card">
-                    <div class="stat-value">28%</div>
-                    <div class="stat-label">COCO Improvement</div>
+                    <div class="stat-value">8.4×</div>
+                    <div class="stat-label">Smaller than ResNet-152</div>
+                </div>
+            </div>
+            
+            <h3 style="margin-top: 3rem; margin-bottom: 1rem; color: var(--text-primary);">EfficientNet Family</h3>
+            <div class="scaling-visual">
+                <div class="scale-bar">
+                    <div class="bar bar-b0"></div>
+                    <span class="bar-label">B0<br>5.3M</span>
+                </div>
+                <div class="scale-bar">
+                    <div class="bar bar-b1"></div>
+                    <span class="bar-label">B1<br>7.8M</span>
+                </div>
+                <div class="scale-bar">
+                    <div class="bar bar-b2"></div>
+                    <span class="bar-label">B2<br>9.2M</span>
+                </div>
+                <div class="scale-bar">
+                    <div class="bar bar-b3"></div>
+                    <span class="bar-label">B3<br>12M</span>
+                </div>
+                <div class="scale-bar">
+                    <div class="bar bar-b4"></div>
+                    <span class="bar-label">B4<br>19M</span>
+                </div>
+                <div class="scale-bar">
+                    <div class="bar bar-b5"></div>
+                    <span class="bar-label">B5<br>30M</span>
+                </div>
+                <div class="scale-bar">
+                    <div class="bar bar-b6"></div>
+                    <span class="bar-label">B6<br>43M</span>
                 </div>
             </div>
         </section>
 
         <section class="section">
             <h2>📈 Results & Impact</h2>
-            <p>ResNet achieved unprecedented performance across multiple benchmarks:</p>
+            <p>EfficientNet achieves state-of-the-art accuracy with dramatically fewer parameters and FLOPs:</p>
             
             <ul style="color: var(--text-secondary); margin: 1rem 0 1rem 2rem; line-height: 2;">
-                <li><strong>ImageNet Classification:</strong> 1st place in ILSVRC 2015 with 3.57% top-5 error</li>
-                <li><strong>ImageNet Detection:</strong> 1st place with 59.0% mAP</li>
-                <li><strong>ImageNet Localization:</strong> 1st place</li>
-                <li><strong>COCO Detection:</strong> 1st place with 28% relative improvement</li>
-                <li><strong>COCO Segmentation:</strong> 1st place</li>
+                <li><strong>EfficientNet-B7:</strong> 84.4% ImageNet top-1 accuracy (best at the time)</li>
+                <li><strong>66M parameters</strong> vs 557M for GPipe (8.4× smaller)</li>
+                <li><strong>37B FLOPs</strong> vs 42B for ResNet-152 (6.1× faster)</li>
+                <li><strong>5 transfer learning datasets</strong> achieved new SOTA</li>
             </ul>
             
-            <p>The residual learning framework became the foundation for numerous subsequent architectures including DenseNet, ResNeXt, and EfficientNet.</p>
+            <div class="highlight-box">
+                <h3>✨ Key Advantages</h3>
+                <ul style="color: var(--text-secondary); margin-left: 1.5rem; line-height: 2;">
+                    <li><strong>Parameter Efficiency:</strong> Achieves better accuracy with 8.4× fewer parameters</li>
+                    <li><strong>Speed:</strong> Up to 6.1× faster inference than comparable models</li>
+                    <li><strong>Transfer Learning:</strong> Significantly better on downstream tasks (CIFAR, Cars, Flowers, etc.)</li>
+                    <li><strong>Scalable:</strong> Simple compound coefficient controls model size</li>
+                </ul>
+            </div>
         </section>
 
         <section class="section">
@@ -543,54 +566,46 @@
 <pre><span class="keyword">import</span> torch
 <span class="keyword">import</span> torch.nn <span class="keyword">as</span> nn
 
-<span class="keyword">class</span> <span class="function">BasicBlock</span>(nn.Module):
-    expansion = <span class="number">1</span>
-    
-    <span class="keyword">def</span> <span class="function">__init__</span>(<span class="keyword">self</span>, in_channels, out_channels, stride=<span class="number">1</span>):
-        <span class="function">super</span>().<span class="function">__init__</span>()
-        <span class="keyword">self</span>.conv1 = nn.Conv2d(in_channels, out_channels, kernel_size=<span class="number">3</span>, 
-                               stride=stride, padding=<span class="number">1</span>, bias=<span class="keyword">False</span>)
-        <span class="keyword">self</span>.bn1 = nn.BatchNorm2d(out_channels)
-        <span class="keyword">self</span>.conv2 = nn.Conv2d(out_channels, out_channels, kernel_size=<span class="number">3</span>,
-                               stride=<span class="number">1</span>, padding=<span class="number">1</span>, bias=<span class="keyword">False</span>)
-        <span class="keyword">self</span>.bn2 = nn.BatchNorm2d(out_channels)
-        
-        <span class="comment"># Shortcut connection</span>
-        <span class="keyword">self</span>.shortcut = nn.Sequential()
-        <span class="keyword">if</span> stride != <span class="number">1</span> <span class="keyword">or</span> in_channels != <span class="keyword">self</span>.expansion * out_channels:
-            <span class="keyword">self</span>.shortcut = nn.Sequential(
-                nn.Conv2d(in_channels, <span class="keyword">self</span>.expansion * out_channels,
-                         kernel_size=<span class="number">1</span>, stride=stride, bias=<span class="keyword">False</span>),
-                nn.BatchNorm2d(<span class="keyword">self</span>.expansion * out_channels)
-            )
-    
+<span class="keyword">class</span> <span class="function">Swish</span>(nn.Module):
     <span class="keyword">def</span> <span class="function">forward</span>(<span class="keyword">self</span>, x):
-        out = torch.relu(<span class="keyword">self</span>.bn1(<span class="keyword">self</span>.conv1(x)))
-        out = <span class="keyword">self</span>.bn2(<span class="keyword">self</span>.conv2(out))
-        out += <span class="keyword">self</span>.shortcut(x)  <span class="comment"># Residual connection</span>
-        out = torch.relu(out)
-        <span class="keyword">return</span> out</pre>
+        <span class="keyword">return</span> x * torch.sigmoid(x)
+
+<span class="keyword">class</span> <span class="function">SEBlock</span>(nn.Module):
+    <span class="comment"># Squeeze-and-Excitation block</span>
+    <span class="keyword">def</span> <span class="function">__init__</span>(<span class="keyword">self</span>, in_ch, se_ratio=<span class="number">0.25</span>):
+        <span class="function">super</span>().<span class="function">__init__</span>()
+        se_ch = <span class="function">max</span>(<span class="number">1</span>, <span class="function">int</span>(in_ch * se_ratio))
+        <span class="keyword">self</span>.avg_pool = nn.AdaptiveAvgPool2d(<span class="number">1</span>)
+        <span class="keyword">self</span>.fc1 = nn.Conv2d(in_ch, se_ch, <span class="number">1</span>)
+        <span class="keyword">self</span>.fc2 = nn.Conv2d(se_ch, in_ch, <span class="number">1</span>)
+        <span class="keyword">self</span>.act = Swish()
+
+    <span class="keyword">def</span> <span class="function">forward</span>(<span class="keyword">self</span>, x):
+        y = <span class="keyword">self</span>.avg_pool(x)
+        y = <span class="keyword">self</span>.act(<span class="keyword">self</span>.fc1(y))
+        y = torch.sigmoid(<span class="keyword">self</span>.fc2(y))
+        <span class="keyword">return</span> x * y  <span class="comment"># Channel attention</span></pre>
             </div>
         </section>
 
         <section class="section">
             <h2>📚 Related Work</h2>
             <div class="related-papers">
-                <a href="https://arxiv.org/abs/1409.1556" class="related-paper" target="_blank">
-                    <h4>VGGNet (2014)</h4>
-                    <p>Very Deep Convolutional Networks - Used 3×3 convolutions exclusively</p>
+                <a href="resnet.html" class="related-paper">
+                    <h4>ResNet (2016)</h4>
+                    <p>Deep Residual Learning with skip connections</p>
                 </a>
-                <a href="https://arxiv.org/abs/1603.05027" class="related-paper" target="_blank">
-                    <h4>ResNet v2 (2016)</h4>
-                    <p>Identity Mappings in Deep Residual Networks - Improved skip connections</p>
-                </a>
-                <a href="https://arxiv.org/abs/1611.05431" class="related-paper" target="_blank">
-                    <h4>ResNeXt (2017)</h4>
-                    <p>Aggregated Residual Transformations - Introduced cardinality dimension</p>
-                </a>
-                <a href="https://arxiv.org/abs/1608.06993" class="related-paper" target="_blank">
+                <a href="densenet.html" class="related-paper">
                     <h4>DenseNet (2017)</h4>
-                    <p>Densely Connected Convolutional Networks - Direct connections between all layers</p>
+                    <p>Densely Connected Convolutional Networks</p>
+                </a>
+                <a href="https://arxiv.org/abs/2009.00031" class="related-paper" target="_blank">
+                    <h4>EfficientNetV2 (2021)</h4>
+                    <p>Smaller Models and Faster Training with NAS</p>
+                </a>
+                <a href="https://arxiv.org/abs/1902.07296" class="related-paper" target="_blank">
+                    <h4>MobileNetV3 (2019)</h4>
+                    <p>Searching for MobileNetV3 with NAS</p>
                 </a>
             </div>
         </section>
@@ -598,7 +613,7 @@
 
     <footer>
         <p>🧠 AI Neural Networks Visualized | Built with ❤️ for the ML community</p>
-        <p style="margin-top: 0.5rem; font-size: 0.875rem;">Paper: Deep Residual Learning for Image Recognition (CVPR 2016)</p>
+        <p style="margin-top: 0.5rem; font-size: 0.875rem;">Paper: EfficientNet: Rethinking Model Scaling (ICML 2019)</p>
     </footer>
 </body>
 </html>

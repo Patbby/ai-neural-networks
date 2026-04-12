@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ResNet: Deep Residual Learning | AI Neural Networks</title>
+    <title>DenseNet: Densely Connected Convolutional Networks | AI Neural Networks</title>
     <style>
         :root {
             --bg-dark: #0a0a0f;
@@ -71,7 +71,7 @@
         .nav-links a:hover { color: var(--primary-light); }
         
         .hero {
-            background: linear-gradient(180deg, rgba(99, 102, 241, 0.15) 0%, transparent 100%);
+            background: linear-gradient(180deg, rgba(236, 72, 153, 0.15) 0%, transparent 100%);
             padding: 4rem 2rem;
             text-align: center;
         }
@@ -85,14 +85,14 @@
             display: inline-flex;
             align-items: center;
             gap: 0.5rem;
-            background: rgba(16, 185, 129, 0.15);
-            color: var(--accent);
+            background: rgba(236, 72, 153, 0.15);
+            color: var(--secondary);
             padding: 0.5rem 1rem;
             border-radius: 9999px;
             font-size: 0.875rem;
             font-weight: 600;
             margin-bottom: 1.5rem;
-            border: 1px solid rgba(16, 185, 129, 0.3);
+            border: 1px solid rgba(236, 72, 153, 0.3);
         }
         
         .hero h1 {
@@ -100,7 +100,7 @@
             font-weight: 800;
             line-height: 1.2;
             margin-bottom: 1.5rem;
-            background: linear-gradient(135deg, #fff 0%, #a5b4fc 100%);
+            background: linear-gradient(135deg, #fff 0%, #f472b6 100%);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
         }
@@ -145,13 +145,13 @@
         }
         
         .btn-primary {
-            background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+            background: linear-gradient(135deg, var(--secondary) 0%, var(--primary) 100%);
             color: white;
         }
         
         .btn-primary:hover {
             transform: translateY(-2px);
-            box-shadow: 0 10px 20px rgba(99, 102, 241, 0.3);
+            box-shadow: 0 10px 20px rgba(236, 72, 153, 0.3);
         }
         
         .btn-secondary {
@@ -189,8 +189,8 @@
         }
         
         .highlight-box {
-            background: linear-gradient(135deg, rgba(99, 102, 241, 0.1) 0%, rgba(168, 85, 247, 0.1) 100%);
-            border: 1px solid rgba(99, 102, 241, 0.3);
+            background: linear-gradient(135deg, rgba(236, 72, 153, 0.1) 0%, rgba(99, 102, 241, 0.1) 100%);
+            border: 1px solid rgba(236, 72, 153, 0.3);
             border-radius: 1rem;
             padding: 2rem;
             margin: 2rem 0;
@@ -200,7 +200,7 @@
             font-size: 1.25rem;
             font-weight: 600;
             margin-bottom: 1rem;
-            color: var(--primary-light);
+            color: var(--secondary);
         }
         
         .problem-grid {
@@ -241,21 +241,37 @@
             text-align: center;
         }
         
-        .residual-block {
+        .dense-layer {
             display: inline-flex;
             flex-direction: column;
             align-items: center;
             gap: 0.5rem;
-            padding: 1.5rem;
-            background: linear-gradient(135deg, rgba(99, 102, 241, 0.1) 0%, rgba(168, 85, 247, 0.1) 100%);
-            border-radius: 1rem;
-            border: 2px solid var(--primary);
+            padding: 1rem;
         }
         
-        .block-label {
+        .layer-stack {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+            align-items: center;
+        }
+        
+        .layer-box {
+            background: linear-gradient(135deg, var(--secondary) 0%, var(--primary) 100%);
+            color: white;
+            padding: 0.75rem 1.5rem;
+            border-radius: 0.5rem;
+            font-weight: 600;
+            font-size: 0.9rem;
+        }
+        
+        .dense-connection {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            color: var(--accent);
             font-size: 0.875rem;
-            color: var(--text-muted);
-            font-weight: 500;
+            margin-top: 0.5rem;
         }
         
         .formula {
@@ -286,7 +302,7 @@
         .stat-value {
             font-size: 2.5rem;
             font-weight: 800;
-            background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+            background: linear-gradient(135deg, var(--secondary) 0%, var(--primary) 100%);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
         }
@@ -338,7 +354,7 @@
         }
         
         .related-paper:hover {
-            border-color: var(--primary);
+            border-color: var(--secondary);
             transform: translateY(-2px);
         }
         
@@ -362,48 +378,31 @@
             color: var(--text-muted);
         }
         
-        .skip-connection-visual {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 1rem;
+        .comparison-table {
+            width: 100%;
+            border-collapse: collapse;
             margin: 2rem 0;
-            flex-wrap: wrap;
         }
         
-        .layer-box {
-            background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
-            color: white;
-            padding: 1rem 1.5rem;
-            border-radius: 0.5rem;
+        .comparison-table th,
+        .comparison-table td {
+            padding: 1rem;
+            text-align: left;
+            border-bottom: 1px solid var(--border);
+        }
+        
+        .comparison-table th {
+            color: var(--text-primary);
             font-weight: 600;
+            background: var(--bg-card);
         }
         
-        .plus-box {
-            background: var(--accent);
-            color: white;
-            width: 3rem;
-            height: 3rem;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 1.5rem;
-            font-weight: 700;
+        .comparison-table td {
+            color: var(--text-secondary);
         }
         
-        .arrow {
-            color: var(--text-muted);
-            font-size: 1.5rem;
-        }
-        
-        .skip-arrow {
-            position: relative;
-            color: var(--accent);
-            font-size: 1rem;
-            padding: 0.5rem;
-            border: 2px dashed var(--accent);
-            border-radius: 0.5rem;
+        .comparison-table tr:hover td {
+            background: var(--bg-elevated);
         }
     </style>
 </head>
@@ -424,22 +423,22 @@
         <div class="hero-content">
             <div class="paper-badge">
                 <span>🏆</span>
-                <span>ILSVRC 2015 Champion</span>
+                <span>CVPR 2017 Best Paper</span>
             </div>
-            <h1>Deep Residual Learning for Image Recognition</h1>
-            <p class="authors">Kaiming He, Xiangyu Zhang, Shaoqing Ren, Jian Sun</p>
-            <p class="affiliation">Microsoft Research</p>
+            <h1>Densely Connected Convolutional Networks</h1>
+            <p class="authors">Gao Huang, Zhuang Liu, Laurens van der Maaten, Kilian Q. Weinberger</p>
+            <p class="affiliation">Cornell University, Tsinghua University, Facebook AI Research</p>
             <div class="paper-meta">
-                <span>📅 CVPR 2016</span>
-                <span>📊 15,000+ Citations</span>
+                <span>📅 CVPR 2017</span>
+                <span>📊 20,000+ Citations</span>
                 <span>🏷️ Computer Vision</span>
             </div>
             <div class="paper-links">
-                <a href="https://arxiv.org/abs/1512.03385" class="btn btn-primary" target="_blank">
+                <a href="https://arxiv.org/abs/1608.06993" class="btn btn-primary" target="_blank">
                     <span>📄</span> Read Paper
                 </a>
-                <a href="https://github.com/pytorch/vision/blob/main/torchvision/models/resnet.py" class="btn btn-secondary" target="_blank">
-                    <span>💻</span> PyTorch Code
+                <a href="https://github.com/liuzhuang13/DenseNet" class="btn btn-secondary" target="_blank">
+                    <span>💻</span> Official Code
                 </a>
             </div>
         </div>
@@ -448,93 +447,146 @@
     <div class="container">
         <section class="section">
             <h2>🎯 Problem Statement</h2>
-            <p>Deep neural networks are more difficult to train. As networks go deeper, they encounter the <strong>degradation problem</strong>: with the network depth increasing, accuracy gets saturated and then degrades rapidly. This is not caused by overfitting, but by optimization difficulties.</p>
+            <p>CNNs have become increasingly deep, but traditional feed-forward architectures face challenges with feature reuse and gradient flow. The key insight: <strong>short connections</strong> between layers enable better feature propagation and encourage feature reuse.</p>
             
             <div class="problem-grid">
                 <div class="problem-card">
-                    <h4>Vanishing Gradients</h4>
-                    <p>Gradients become increasingly small as they propagate backward through many layers, making early layers learn very slowly.</p>
+                    <h4>Feature Reuse</h4>
+                    <p>Traditional networks discard features after processing, missing opportunities to reuse them in deeper layers.</p>
                 </div>
                 <div class="problem-card">
-                    <h4>Degradation Problem</h4>
-                    <p>Adding more layers to a suitably deep model leads to higher training error, not just test error.</p>
+                    <h4>Gradient Flow</h4>
+                    <p>Long paths from loss to early layers make gradients vanish, slowing down learning.</p>
                 </div>
                 <div class="problem-card">
-                    <h4>Optimization Difficulty</h4>
-                    <p>Solvers struggle to find optimal solutions for deep networks, even with batch normalization.</p>
+                    <h4>Parameter Efficiency</h4>
+                    <p>Deep networks have many redundant parameters. Can we achieve similar performance with fewer parameters?</p>
                 </div>
             </div>
         </section>
 
         <section class="section">
             <h2>💡 Key Innovation</h2>
-            <p>Instead of learning the direct mapping <strong>H(x)</strong>, ResNet learns the <strong>residual mapping</strong> <strong>F(x) = H(x) - x</strong>. The original mapping is recast as <strong>F(x) + x</strong>.</p>
+            <p>DenseNet connects each layer to every other layer in a feed-forward fashion. In a DenseNet with L layers, there are L(L+1)/2 direct connections—each layer receives feature-maps from all preceding layers and passes its own feature-maps to all subsequent layers.</p>
             
             <div class="highlight-box">
-                <h3>🔄 The Residual Block</h3>
-                <p style="margin-bottom: 1.5rem;">If the optimal mapping is closer to identity, it's easier to learn the residual (the small perturbation) than the full transformation.</p>
+                <h3>🔗 Dense Connectivity</h3>
+                <p style="margin-bottom: 1.5rem;">The ℓ-th layer receives all preceding feature-maps as input:</p>
                 
-                <div class="skip-connection-visual">
-                    <div class="layer-box">Input x</div>
-                    <div class="arrow">→</div>
-                    <div style="display: flex; flex-direction: column; gap: 0.5rem;">
-                        <div class="layer-box" style="background: linear-gradient(135deg, #ec4899 0%, #f59e0b 100%);">Conv + BN + ReLU</div>
-                        <div class="layer-box" style="background: linear-gradient(135deg, #ec4899 0%, #f59e0b 100%);">Conv + BN</div>
-                    </div>
-                    <div class="plus-box">+</div>
-                    <div class="layer-box">Output</div>
+                <div class="architecture-diagram">
+                    <div class="formula">x_ℓ = H_ℓ([x₀, x₁, ..., x_{ℓ-1}])</div>
+                    <p style="margin-top: 1rem; color: var(--text-muted);">Where [x₀, x₁, ..., x_{ℓ-1}] denotes concatenation of feature maps</p>
                 </div>
                 
-                <div style="text-align: center; margin-top: 1rem;">
-                    <span class="skip-arrow">↳ Skip Connection (Identity) ↴</span>
+                <div style="margin-top: 2rem; text-align: center;">
+                    <div style="display: flex; justify-content: center; gap: 1rem; flex-wrap: wrap;">
+                        <div class="dense-layer">
+                            <div class="layer-box">x₀</div>
+                        </div>
+                        <div class="dense-layer">
+                            <div class="layer-stack">
+                                <div class="dense-connection">↗ receives x₀</div>
+                                <div class="layer-box">x₁</div>
+                            </div>
+                        </div>
+                        <div class="dense-layer">
+                            <div class="layer-stack">
+                                <div class="dense-connection">↗ receives x₀, x₁</div>
+                                <div class="layer-box">x₂</div>
+                            </div>
+                        </div>
+                        <div class="dense-layer">
+                            <div class="layer-stack">
+                                <div class="dense-connection">↗ receives x₀-x₂</div>
+                                <div class="layer-box">x₃</div>
+                            </div>
+                        </div>
+                    </div>
+                    <p style="margin-top: 1.5rem; color: var(--accent); font-weight: 600;">Each layer connected to ALL previous layers</p>
                 </div>
             </div>
             
-            <p>The <strong>shortcut connections</strong> (skip connections) perform identity mapping, and their outputs are added to the outputs of the stacked layers. These connections add neither extra parameters nor computational complexity.</p>
+            <p>Unlike ResNet which uses <strong>summation</strong>, DenseNet uses <strong>concatenation</strong>—preserving all information from previous layers while maintaining a compact feature representation through 1×1 convolutions.</p>
         </section>
 
         <section class="section">
             <h2>🏗️ Architecture</h2>
-            <p>ResNet introduced several variants with different depths:</p>
-            
-            <div class="architecture-diagram">
-                <div class="formula">y = F(x, {Wi}) + x</div>
-                <p style="margin-top: 1rem; color: var(--text-muted);">Where F(x, {Wi}) represents the residual mapping to be learned</p>
-            </div>
+            <p>DenseNets are built from <strong>Dense Blocks</strong> with transition layers between them:</p>
             
             <div class="stats-grid">
                 <div class="stat-card">
-                    <div class="stat-value">152</div>
-                    <div class="stat-label">Layers (ResNet-152)</div>
+                    <div class="stat-value">121</div>
+                    <div class="stat-label">Layers (DenseNet-121)</div>
                 </div>
                 <div class="stat-card">
-                    <div class="stat-value">3.57%</div>
-                    <div class="stat-label">Top-5 Error (Ensemble)</div>
+                    <div class="stat-value">32</div>
+                    <div class="stat-label">Growth Rate (k)</div>
                 </div>
                 <div class="stat-card">
-                    <div class="stat-value">1000+</div>
-                    <div class="stat-label">Layers Tested (CIFAR-10)</div>
+                    <div class="stat-value">7.98M</div>
+                    <div class="stat-label">Parameters (vs 25.6M ResNet)</div>
                 </div>
                 <div class="stat-card">
-                    <div class="stat-value">28%</div>
-                    <div class="stat-label">COCO Improvement</div>
+                    <div class="stat-value">3.46%</div>
+                    <div class="stat-label">Top-5 Error (ImageNet)</div>
                 </div>
             </div>
+            
+            <h3 style="margin-top: 3rem; margin-bottom: 1rem; color: var(--text-primary);">DenseNet Variants</h3>
+            <table class="comparison-table">
+                <tr>
+                    <th>Model</th>
+                    <th>Depth</th>
+                    <th>Growth Rate</th>
+                    <th>Parameters</th>
+                </tr>
+                <tr>
+                    <td>DenseNet-121</td>
+                    <td>121</td>
+                    <td>32</td>
+                    <td>7.98M</td>
+                </tr>
+                <tr>
+                    <td>DenseNet-169</td>
+                    <td>169</td>
+                    <td>32</td>
+                    <td>14.15M</td>
+                </tr>
+                <tr>
+                    <td>DenseNet-201</td>
+                    <td>201</td>
+                    <td>32</td>
+                    <td>20.01M</td>
+                </tr>
+                <tr>
+                    <td>DenseNet-161</td>
+                    <td>161</td>
+                    <td>48</td>
+                    <td>28.68M</td>
+                </tr>
+            </table>
         </section>
 
         <section class="section">
             <h2>📈 Results & Impact</h2>
-            <p>ResNet achieved unprecedented performance across multiple benchmarks:</p>
+            <p>DenseNet achieved state-of-the-art results while using significantly fewer parameters:</p>
             
             <ul style="color: var(--text-secondary); margin: 1rem 0 1rem 2rem; line-height: 2;">
-                <li><strong>ImageNet Classification:</strong> 1st place in ILSVRC 2015 with 3.57% top-5 error</li>
-                <li><strong>ImageNet Detection:</strong> 1st place with 59.0% mAP</li>
-                <li><strong>ImageNet Localization:</strong> 1st place</li>
-                <li><strong>COCO Detection:</strong> 1st place with 28% relative improvement</li>
-                <li><strong>COCO Segmentation:</strong> 1st place</li>
+                <li><strong>CIFAR-10:</strong> 3.46% error rate (best among methods without data augmentation)</li>
+                <li><strong>CIFAR-100:</strong> 17.18% error rate</li>
+                <li><strong>SVHN:</strong> 1.59% error rate</li>
+                <li><strong>ImageNet:</strong> 3.46% top-5 error with 7.98M parameters</li>
             </ul>
             
-            <p>The residual learning framework became the foundation for numerous subsequent architectures including DenseNet, ResNeXt, and EfficientNet.</p>
+            <div class="highlight-box">
+                <h3>✨ Key Advantages</h3>
+                <ul style="color: var(--text-secondary); margin-left: 1.5rem; line-height: 2;">
+                    <li><strong>Parameter Efficiency:</strong> DenseNet-BC has 0.8M parameters vs 10.2M for ResNet-110 on CIFAR</li>
+                    <li><strong>Improved Gradient Flow:</strong> Direct access to gradients from loss function</li>
+                    <li><strong>Feature Reuse:</strong> Lower layers' features used by all subsequent layers</li>
+                    <li><strong>Regularization Effect:</strong> Reduces overfitting on smaller datasets</li>
+                </ul>
+            </div>
         </section>
 
         <section class="section">
@@ -543,54 +595,49 @@
 <pre><span class="keyword">import</span> torch
 <span class="keyword">import</span> torch.nn <span class="keyword">as</span> nn
 
-<span class="keyword">class</span> <span class="function">BasicBlock</span>(nn.Module):
-    expansion = <span class="number">1</span>
-    
-    <span class="keyword">def</span> <span class="function">__init__</span>(<span class="keyword">self</span>, in_channels, out_channels, stride=<span class="number">1</span>):
+<span class="keyword">class</span> <span class="function">DenseLayer</span>(nn.Module):
+    <span class="keyword">def</span> <span class="function">__init__</span>(<span class="keyword">self</span>, in_channels, growth_rate, bn_size, drop_rate):
         <span class="function">super</span>().<span class="function">__init__</span>()
-        <span class="keyword">self</span>.conv1 = nn.Conv2d(in_channels, out_channels, kernel_size=<span class="number">3</span>, 
-                               stride=stride, padding=<span class="number">1</span>, bias=<span class="keyword">False</span>)
-        <span class="keyword">self</span>.bn1 = nn.BatchNorm2d(out_channels)
-        <span class="keyword">self</span>.conv2 = nn.Conv2d(out_channels, out_channels, kernel_size=<span class="number">3</span>,
-                               stride=<span class="number">1</span>, padding=<span class="number">1</span>, bias=<span class="keyword">False</span>)
-        <span class="keyword">self</span>.bn2 = nn.BatchNorm2d(out_channels)
+        <span class="comment"># Bottleneck layer (1x1 conv)</span>
+        <span class="keyword">self</span>.add_module(<span class="string">'norm1'</span>, nn.BatchNorm2d(in_channels))
+        <span class="keyword">self</span>.add_module(<span class="string">'relu1'</span>, nn.ReLU(inplace=<span class="keyword">True</span>))
+        <span class="keyword">self</span>.add_module(<span class="string">'conv1'</span>, nn.Conv2d(in_channels, bn_size * growth_rate,
+                                              kernel_size=<span class="number">1</span>, stride=<span class="number">1</span>, bias=<span class="keyword">False</span>))
         
-        <span class="comment"># Shortcut connection</span>
-        <span class="keyword">self</span>.shortcut = nn.Sequential()
-        <span class="keyword">if</span> stride != <span class="number">1</span> <span class="keyword">or</span> in_channels != <span class="keyword">self</span>.expansion * out_channels:
-            <span class="keyword">self</span>.shortcut = nn.Sequential(
-                nn.Conv2d(in_channels, <span class="keyword">self</span>.expansion * out_channels,
-                         kernel_size=<span class="number">1</span>, stride=stride, bias=<span class="keyword">False</span>),
-                nn.BatchNorm2d(<span class="keyword">self</span>.expansion * out_channels)
-            )
-    
+        <span class="comment"># 3x3 conv layer</span>
+        <span class="keyword">self</span>.add_module(<span class="string">'norm2'</span>, nn.BatchNorm2d(bn_size * growth_rate))
+        <span class="keyword">self</span>.add_module(<span class="string">'relu2'</span>, nn.ReLU(inplace=<span class="keyword">True</span>))
+        <span class="keyword">self</span>.add_module(<span class="string">'conv2'</span>, nn.Conv2d(bn_size * growth_rate, growth_rate,
+                                              kernel_size=<span class="number">3</span>, stride=<span class="number">1</span>, padding=<span class="number">1</span>, bias=<span class="keyword">False</span>))
+        <span class="keyword">self</span>.drop_rate = drop_rate
+
     <span class="keyword">def</span> <span class="function">forward</span>(<span class="keyword">self</span>, x):
-        out = torch.relu(<span class="keyword">self</span>.bn1(<span class="keyword">self</span>.conv1(x)))
-        out = <span class="keyword">self</span>.bn2(<span class="keyword">self</span>.conv2(out))
-        out += <span class="keyword">self</span>.shortcut(x)  <span class="comment"># Residual connection</span>
-        out = torch.relu(out)
-        <span class="keyword">return</span> out</pre>
+        new_features = <span class="keyword">self</span>.conv2(<span class="keyword">self</span>.relu2(<span class="keyword">self</span>.norm2(
+                       <span class="keyword">self</span>.conv1(<span class="keyword">self</span>.relu1(<span class="keyword">self</span>.norm1(x))))))
+        <span class="keyword">if</span> <span class="keyword">self</span>.drop_rate > <span class="number">0</span>:
+            new_features = nn.functional.dropout(new_features, p=<span class="keyword">self</span>.drop_rate)
+        <span class="keyword">return</span> torch.cat([x, new_features], <span class="number">1</span>)  <span class="comment"># Dense connectivity</span></pre>
             </div>
         </section>
 
         <section class="section">
             <h2>📚 Related Work</h2>
             <div class="related-papers">
-                <a href="https://arxiv.org/abs/1409.1556" class="related-paper" target="_blank">
-                    <h4>VGGNet (2014)</h4>
-                    <p>Very Deep Convolutional Networks - Used 3×3 convolutions exclusively</p>
+                <a href="resnet.html" class="related-paper">
+                    <h4>ResNet (2016)</h4>
+                    <p>Deep Residual Learning - Skip connections via addition</p>
                 </a>
-                <a href="https://arxiv.org/abs/1603.05027" class="related-paper" target="_blank">
-                    <h4>ResNet v2 (2016)</h4>
-                    <p>Identity Mappings in Deep Residual Networks - Improved skip connections</p>
+                <a href="https://arxiv.org/abs/1707.06990" class="related-paper" target="_blank">
+                    <h4>CondenseNet (2018)</h4>
+                    <p>Learned group convolutions for efficient DenseNets</p>
                 </a>
-                <a href="https://arxiv.org/abs/1611.05431" class="related-paper" target="_blank">
-                    <h4>ResNeXt (2017)</h4>
-                    <p>Aggregated Residual Transformations - Introduced cardinality dimension</p>
+                <a href="https://arxiv.org/abs/1801.05895" class="related-paper" target="_blank">
+                    <h4>DenseNAS (2019)</h4>
+                    <p>Neural Architecture Search with dense connections</p>
                 </a>
-                <a href="https://arxiv.org/abs/1608.06993" class="related-paper" target="_blank">
-                    <h4>DenseNet (2017)</h4>
-                    <p>Densely Connected Convolutional Networks - Direct connections between all layers</p>
+                <a href="https://arxiv.org/abs/1906.06965" class="related-paper" target="_blank">
+                    <h4>CSPNet (2020)</h4>
+                    <p>Cross Stage Partial Networks - Reducing computation</p>
                 </a>
             </div>
         </section>
@@ -598,7 +645,7 @@
 
     <footer>
         <p>🧠 AI Neural Networks Visualized | Built with ❤️ for the ML community</p>
-        <p style="margin-top: 0.5rem; font-size: 0.875rem;">Paper: Deep Residual Learning for Image Recognition (CVPR 2016)</p>
+        <p style="margin-top: 0.5rem; font-size: 0.875rem;">Paper: Densely Connected Convolutional Networks (CVPR 2017)</p>
     </footer>
 </body>
 </html>
