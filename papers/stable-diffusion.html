@@ -1,0 +1,987 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Stable Diffusion: Latent Diffusion Models | AI Neural Networks</title>
+    <style>
+        :root {
+            --bg-dark: #0a0a0f;
+            --bg-card: #12121a;
+            --bg-elevated: #1a1a25;
+            --primary: #6366f1;
+            --primary-light: #818cf8;
+            --secondary: #ec4899;
+            --accent: #10b981;
+            --text-primary: #f8fafc;
+            --text-secondary: #94a3b8;
+            --text-muted: #64748b;
+            --border: #2d2d3a;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, sans-serif;
+            background: var(--bg-dark);
+            color: var(--text-primary);
+            line-height: 1.7;
+        }
+        
+        /* Navigation */
+        nav {
+            background: rgba(10, 10, 15, 0.8);
+            backdrop-filter: blur(20px);
+            border-bottom: 1px solid var(--border);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+        
+        .nav-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 1rem 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .logo {
+            font-size: 1.25rem;
+            font-weight: 700;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        
+        .nav-links {
+            display: flex;
+            gap: 2rem;
+            list-style: none;
+        }
+        
+        .nav-links a {
+            color: var(--text-secondary);
+            text-decoration: none;
+            transition: color 0.2s;
+        }
+        
+        .nav-links a:hover {
+            color: var(--text-primary);
+        }
+        
+        /* Hero Section */
+        .hero {
+            background: linear-gradient(180deg, rgba(236, 72, 153, 0.1) 0%, transparent 100%);
+            padding: 4rem 2rem;
+            text-align: center;
+        }
+        
+        .hero-content {
+            max-width: 900px;
+            margin: 0 auto;
+        }
+        
+        .paper-badge {
+            display: inline-block;
+            padding: 0.5rem 1rem;
+            background: linear-gradient(135deg, rgba(236, 72, 153, 0.2), rgba(168, 85, 247, 0.2));
+            border: 1px solid var(--secondary);
+            border-radius: 2rem;
+            font-size: 0.875rem;
+            color: #f472b6;
+            margin-bottom: 1.5rem;
+        }
+        
+        .hero h1 {
+            font-size: 2.5rem;
+            margin-bottom: 1rem;
+            background: linear-gradient(135deg, var(--text-primary), #f472b6);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        
+        .authors {
+            color: var(--text-secondary);
+            font-size: 1.125rem;
+            margin-bottom: 0.5rem;
+        }
+        
+        .affiliation {
+            color: var(--text-muted);
+            font-size: 0.875rem;
+            margin-bottom: 1.5rem;
+        }
+        
+        .paper-meta {
+            display: flex;
+            justify-content: center;
+            gap: 2rem;
+            flex-wrap: wrap;
+            margin-bottom: 2rem;
+        }
+        
+        .meta-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        
+        .meta-value {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: #f472b6;
+        }
+        
+        .meta-label {
+            font-size: 0.75rem;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+        
+        .paper-links {
+            display: flex;
+            justify-content: center;
+            gap: 1rem;
+            flex-wrap: wrap;
+        }
+        
+        .paper-link {
+            padding: 0.75rem 1.5rem;
+            border-radius: 0.5rem;
+            text-decoration: none;
+            font-weight: 500;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+        
+        .paper-link:hover {
+            transform: translateY(-2px);
+        }
+        
+        .link-primary {
+            background: linear-gradient(135deg, var(--secondary), var(--primary));
+            color: white;
+        }
+        
+        .link-secondary {
+            background: var(--bg-elevated);
+            color: var(--text-primary);
+            border: 1px solid var(--border);
+        }
+        
+        /* Main Content */
+        main {
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+        
+        .section {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 1rem;
+            padding: 2rem;
+            margin-bottom: 2rem;
+        }
+        
+        .section h2 {
+            font-size: 1.5rem;
+            margin-bottom: 1rem;
+            color: var(--text-primary);
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+        
+        .section h3 {
+            font-size: 1.125rem;
+            margin: 1.5rem 0 0.75rem;
+            color: #f472b6;
+        }
+        
+        .section p {
+            color: var(--text-secondary);
+            margin-bottom: 1rem;
+        }
+        
+        /* Formula Box */
+        .formula-box {
+            background: var(--bg-elevated);
+            border-left: 3px solid var(--secondary);
+            padding: 1.5rem;
+            margin: 1.5rem 0;
+            border-radius: 0 0.5rem 0.5rem 0;
+        }
+        
+        .formula {
+            font-family: 'Georgia', serif;
+            font-size: 1.25rem;
+            color: var(--text-primary);
+            text-align: center;
+            margin-bottom: 0.5rem;
+        }
+        
+        .formula-desc {
+            font-size: 0.875rem;
+            color: var(--text-muted);
+            text-align: center;
+        }
+        
+        /* Architecture Diagram */
+        .diagram-container {
+            background: var(--bg-elevated);
+            border-radius: 1rem;
+            padding: 2rem;
+            margin: 2rem 0;
+            text-align: center;
+        }
+        
+        .diagram-title {
+            font-size: 1rem;
+            color: var(--text-secondary);
+            margin-bottom: 1rem;
+        }
+        
+        /* SVG Styles */
+        svg {
+            max-width: 100%;
+            height: auto;
+        }
+        
+        /* Code Block */
+        .code-block {
+            background: #0d0d12;
+            border: 1px solid var(--border);
+            border-radius: 0.75rem;
+            overflow: hidden;
+            margin: 1.5rem 0;
+        }
+        
+        .code-header {
+            background: var(--bg-elevated);
+            padding: 0.75rem 1rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid var(--border);
+        }
+        
+        .code-lang {
+            font-size: 0.75rem;
+            color: var(--accent);
+            text-transform: uppercase;
+            font-weight: 600;
+        }
+        
+        .code-block pre {
+            padding: 1.5rem;
+            overflow-x: auto;
+            font-family: 'Fira Code', 'Monaco', 'Consolas', monospace;
+            font-size: 0.875rem;
+            line-height: 1.6;
+        }
+        
+        .code-block code {
+            color: #e2e8f0;
+        }
+        
+        .keyword { color: #c678dd; }
+        .function { color: #61afef; }
+        .string { color: #98c379; }
+        .comment { color: #5c6370; font-style: italic; }
+        .number { color: #d19a66; }
+        
+        /* Impact Cards */
+        .impact-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+            margin-top: 1.5rem;
+        }
+        
+        .impact-card {
+            background: var(--bg-elevated);
+            border: 1px solid var(--border);
+            border-radius: 0.75rem;
+            padding: 1.5rem;
+            text-align: center;
+        }
+        
+        .impact-number {
+            font-size: 2rem;
+            font-weight: 700;
+            background: linear-gradient(135deg, var(--secondary), var(--primary));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        
+        .impact-label {
+            font-size: 0.875rem;
+            color: var(--text-muted);
+            margin-top: 0.25rem;
+        }
+        
+        /* Related Papers */
+        .related-list {
+            list-style: none;
+        }
+        
+        .related-list li {
+            padding: 0.75rem 0;
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+        
+        .related-list li:last-child {
+            border-bottom: none;
+        }
+        
+        .related-year {
+            font-size: 0.75rem;
+            padding: 0.25rem 0.5rem;
+            background: var(--bg-elevated);
+            border-radius: 0.25rem;
+            color: var(--text-muted);
+            min-width: 3rem;
+            text-align: center;
+        }
+        
+        .related-title {
+            color: var(--text-primary);
+        }
+        
+        /* Two Column Layout */
+        .two-column {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+        }
+        
+        /* Footer */
+        footer {
+            text-align: center;
+            padding: 3rem 2rem;
+            color: var(--text-muted);
+            border-top: 1px solid var(--border);
+            margin-top: 2rem;
+        }
+        
+        /* Animation */
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .section {
+            animation: fadeIn 0.6s ease-out;
+        }
+        
+        /* Comparison Table */
+        .comparison-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 1.5rem 0;
+        }
+        
+        .comparison-table th,
+        .comparison-table td {
+            padding: 1rem;
+            text-align: left;
+            border-bottom: 1px solid var(--border);
+        }
+        
+        .comparison-table th {
+            color: #f472b6;
+            font-weight: 600;
+        }
+        
+        .comparison-table td {
+            color: var(--text-secondary);
+        }
+        
+        /* Responsive */
+        @media (max-width: 768px) {
+            .hero h1 {
+                font-size: 1.75rem;
+            }
+            
+            .nav-links {
+                display: none;
+            }
+            
+            .paper-meta {
+                gap: 1rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <nav>
+        <div class="nav-container">
+            <div class="logo">🧠 AI Neural Networks</div>
+            <ul class="nav-links">
+                <li><a href="/">Home</a></li>
+                <li><a href="/papers">Papers</a></li>
+                <li><a href="/cnn.html">CNN</a></li>
+                <li><a href="/gnn.html">GNN</a></li>
+                <li><a href="/gat.html">GAT</a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <header class="hero">
+        <div class="hero-content">
+            <span class="paper-badge">CVPR 2022 Oral</span>
+            <h1>High-Resolution Image Synthesis with Latent Diffusion Models</h1>
+            <p class="authors">Robin Rombach*, Andreas Blattmann*, Dominik Lorenz, Patrick Esser, Björn Ommer</p>
+            <p class="affiliation">Ludwig Maximilian University of Munich & IWR, Heidelberg University, Germany | Runway ML</p>
+            
+            <div class="paper-meta">
+                <div class="meta-item">
+                    <span class="meta-value">2022</span>
+                    <span class="meta-label">Published</span>
+                </div>
+                <div class="meta-item">
+                    <span class="meta-value">LDM</span>
+                    <span class="meta-label">Architecture</span>
+                </div>
+                <div class="meta-item">
+                    <span class="meta-value">8GB</span>
+                    <span class="meta-label">Min GPU RAM</span>
+                </div>
+                <div class="meta-item">
+                    <span class="meta-value">×30</span>
+                    <span class="meta-label">Speed vs DM</span>
+                </div>
+            </div>
+            
+            <div class="paper-links">
+                <a href="https://arxiv.org/abs/2112.10752" class="paper-link link-primary" target="_blank">📄 arXiv</a>
+                <a href="https://arxiv.org/pdf/2112.10752.pdf" class="paper-link link-secondary" target="_blank">📥 PDF</a>
+                <a href="https://github.com/CompVis/latent-diffusion" class="paper-link link-secondary" target="_blank">💻 Code</a>
+            </div>
+        </div>
+    </header>
+
+    <main>
+        <!-- Problem Statement -->
+        <section class="section">
+            <h2>🎯 Problem Statement</h2>
+            <p>Diffusion Models (DMs) achieved state-of-the-art synthesis results on image generation, but they came with a critical limitation: <strong>they operated directly in pixel space</strong>. This made them extremely resource-intensive:</p>
+            
+            <div class="formula-box">
+                <div class="formula">Training: Hundreds of GPU days | Inference: Sequential & Expensive</div>
+                <div class="formula-desc">Pixel-space DMs require evaluating gradients and neural networks on every single pixel</div>
+            </div>
+            
+            <h3>The Computational Bottleneck</h3>
+            <p>Most bits in a digital image correspond to <strong>imperceptible high-frequency details</strong> — information that is semantically meaningless but computationally expensive to process. Pixel-space diffusion models must evaluate on all pixels, leading to:</p>
+            
+            <div class="two-column">
+                <div>
+                    <p>❌ <strong>Superfluous Computation</strong><br>Processing imperceptible noise</p>
+                    <p>❌ <strong>Expensive Training</strong><br>Hundreds of GPU days required</p>
+                </div>
+                <div>
+                    <p>❌ <strong>Slow Inference</strong><br>Sequential denoising steps</p>
+                    <p>❌ <strong>Limited Accessibility</strong><br>Only viable for large organizations</p>
+                </div>
+            </div>
+            
+            <h3>Key Questions</h3>
+            <p>❓ Can we separate perceptual compression from semantic generation?<br>
+            ❓ Is there a perceptually equivalent but computationally more suitable space?<br>
+            ❓ How can we enable high-resolution synthesis on consumer hardware?</p>
+        </section>
+
+        <!-- Key Innovation -->
+        <section class="section">
+            <h2>💡 Key Innovation: Latent Diffusion</h2>
+            <p>Latent Diffusion Models (LDMs) decompose image synthesis into two distinct stages:</p>
+            
+            <div class="diagram-container">
+                <div class="diagram-title">Two-Stage Learning Process</div>
+                <svg viewBox="0 0 700 320" xmlns="http://www.w3.org/2000/svg">
+                    <!-- Stage 1: Perceptual Compression -->
+                    <rect x="20" y="20" width="280" height="180" rx="10" fill="#1e293b" stroke="#6366f1" stroke-width="2"/>
+                    <text x="160" y="45" text-anchor="middle" fill="#818cf8" font-size="14" font-weight="600">Stage 1: Perceptual Compression</text>
+                    
+                    <!-- Autoencoder -->
+                    <rect x="40" y="60" width="80" height="40" rx="5" fill="#6366f1" opacity="0.9"/>
+                    <text x="80" y="85" text-anchor="middle" fill="white" font-size="11">Encoder</text>
+                    
+                    <rect x="120" y="95" width="80" height="25" rx="5" fill="#ec4899" opacity="0.8"/>
+                    <text x="160" y="112" text-anchor="middle" fill="white" font-size="10">Latent Space z</text>
+                    
+                    <rect x="200" y="130" width="80" height="40" rx="5" fill="#6366f1" opacity="0.9"/>
+                    <text x="240" y="155" text-anchor="middle" fill="white" font-size="11">Decoder</text>
+                    
+                    <!-- Arrows for Stage 1 -->
+                    <line x1="40" y1="80" x2="20" y2="80" stroke="#94a3b8" stroke-width="2" marker-end="url(#arrowhead)"/>
+                    <text x="30" y="70" fill="#64748b" font-size="9">x</text>
+                    
+                    <line x1="120" y1="80" x2="120" y2="95" stroke="#94a3b8" stroke-width="2" marker-end="url(#arrowhead)"/>
+                    <line x1="200" y1="108" x2="200" y2="130" stroke="#94a3b8" stroke-width="2" marker-end="url(#arrowhead)"/>
+                    <line x1="280" y1="150" x2="300" y2="150" stroke="#94a3b8" stroke-width="2" marker-end="url(#arrowhead)"/>
+                    <text x="295" y="140" fill="#64748b" font-size="9">x̂</text>
+                    
+                    <!-- Stage 2: Semantic Generation -->
+                    <rect x="380" y="20" width="300" height="180" rx="10" fill="#1e293b" stroke="#ec4899" stroke-width="2"/>
+                    <text x="530" y="45" text-anchor="middle" fill="#f472b6" font-size="14" font-weight="600">Stage 2: Semantic Generation</text>
+                    
+                    <!-- U-Net Denoising -->
+                    <rect x="400" y="70" width="100" height="50" rx="5" fill="#10b981" opacity="0.9"/>
+                    <text x="450" y="95" text-anchor="middle" fill="white" font-size="11">UNet Denoiser</text>
+                    <text x="450" y="110" text-anchor="middle" fill="white" font-size="9">ϵθ(zt, t)</text>
+                    
+                    <!-- Cross Attention -->
+                    <rect x="520" y="60" width="70" height="30" rx="3" fill="#f59e0b" opacity="0.8"/>
+                    <text x="555" y="80" text-anchor="middle" fill="white" font-size="9">Cross-Attention</text>
+                    
+                    <!-- Text Conditioning -->
+                    <rect x="600" y="100" width="60" height="30" rx="3" fill="#8b5cf6" opacity="0.8"/>
+                    <text x="630" y="120" text-anchor="middle" fill="white" font-size="9">Text τθ(y)</text>
+                    
+                    <!-- Arrows for Stage 2 -->
+                    <line x1="400" y1="95" x2="380" y2="95" stroke="#94a3b8" stroke-width="2" marker-end="url(#arrowhead)"/>
+                    <text x="390" y="85" fill="#64748b" font-size="9">zt</text>
+                    
+                    <line x1="500" y1="85" x2="520" y2="75" stroke="#94a3b8" stroke-width="1.5"/>
+                    <line x1="590" y1="115" x2="600" y2="115" stroke="#94a3b8" stroke-width="1.5" marker-end="url(#arrowhead)"/>
+                    
+                    <line x1="500" y1="105" x2="520" y2="105" stroke="#94a3b8" stroke-width="1.5"/>
+                    
+                    <!-- Output -->
+                    <line x1="500" y1="95" x2="680" y2="95" stroke="#94a3b8" stroke-width="2" marker-end="url(#arrowhead)"/>
+                    <text x="665" y="85" fill="#64748b" font-size="9">z₀</text>
+                    
+                    <!-- Arrow marker -->
+                    <defs>
+                        <marker id="arrowhead" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto">
+                            <polygon points="0 0, 10 3.5, 0 7" fill="#94a3b8"/>
+                        </marker>
+                    </defs>
+                    
+                    <!-- Stage descriptions -->
+                    <text x="160" y="225" text-anchor="middle" fill="#94a3b8" font-size="10">Train once, reuse for any task</text>
+                    <text x="530" y="225" text-anchor="middle" fill="#94a3b8" font-size="10">Train LDMs in latent space</text>
+                    
+                    <!-- Key benefits -->
+                    <rect x="20" y="250" width="660" height="55" rx="5" fill="#12121a" stroke="#2d2d3a"/>
+                    <text x="350" y="270" text-anchor="middle" fill="#f472b6" font-size="11" font-weight="600">Key Benefits</text>
+                    <text x="350" y="290" text-anchor="middle" fill="#94a3b8" font-size="10">✓ Lower dimensionality  ✓ Faster training  ✓ Efficient inference  ✓ Consumer GPU friendly</text>
+                </svg>
+            </div>
+            
+            <h3>Why This Works</h3>
+            <p><strong>1. Perceptual Compression:</strong> A pretrained autoencoder compresses images into a lower-dimensional latent space, removing imperceptible details while preserving semantic content.</p>
+            
+            <p><strong>2. Semantic Compression:</strong> The diffusion model operates in this efficient latent space, learning the semantic and conceptual composition of data.</p>
+            
+            <p><strong>3. Cross-Attention Conditioning:</strong> General-purpose conditioning mechanism enables text-to-image, class-conditional, and layout-to-image synthesis through cross-attention layers.</p>
+            
+            <div class="formula-box">
+                <div class="formula">L<sub>LDM</sub> = E<sub>z,ε~N(0,1),t</sub>[||ε - ε<sub>θ</sub>(z<sub>t</sub>, t, τ<sub>θ</sub>(y))||²₂]</div>
+                <div class="formula-desc">Latent diffusion loss: predict noise ε given noisy latent z<sub>t</sub>, timestep t, and conditioning y</div>
+            </div>
+        </section>
+
+        <!-- Architecture -->
+        <section class="section">
+            <h2>🏗️ Architecture</h2>
+            
+            <h3>Autoencoder Design</h3>
+            <div class="diagram-container">
+                <div class="diagram-title">VQGAN / KL-Autoencoder Architecture</div>
+                <svg viewBox="0 0 600 250" xmlns="http://www.w3.org/2000/svg">
+                    <!-- Input -->
+                    <rect x="20" y="90" width="60" height="60" rx="5" fill="#1e293b" stroke="#64748b"/>
+                    <text x="50" y="125" text-anchor="middle" fill="#94a3b8" font-size="11">Image</text>
+                    <text x="50" y="140" text-anchor="middle" fill="#64748b" font-size="9">H×W×3</text>
+                    
+                    <!-- Encoder -->
+                    <rect x="100" y="50" width="80" height="140" rx="5" fill="#6366f1" opacity="0.9"/>
+                    <text x="140" y="95" text-anchor="middle" fill="white" font-size="11">Encoder</text>
+                    <text x="140" y="115" text-anchor="middle" fill="white" font-size="10">Conv +</text>
+                    <text x="140" y="130" text-anchor="middle" fill="white" font-size="10">ResBlocks</text>
+                    <text x="140" y="150" text-anchor="middle" fill="#c7d2fe" font-size="9">↓4× or ↓8×</text>
+                    
+                    <!-- Latent Space -->
+                    <rect x="200" y="80" width="80" height="80" rx="5" fill="#ec4899" opacity="0.8"/>
+                    <text x="240" y="110" text-anchor="middle" fill="white" font-size="11">Latent z</text>
+                    <text x="240" y="130" text-anchor="middle" fill="white" font-size="10">h×w×c</text>
+                    <text x="240" y="150" text-anchor="middle" fill="#fbcfe8" font-size="9">f=H/h</text>
+                    
+                    <!-- Decoder -->
+                    <rect x="300" y="50" width="80" height="140" rx="5" fill="#6366f1" opacity="0.9"/>
+                    <text x="340" y="95" text-anchor="middle" fill="white" font-size="11">Decoder</text>
+                    <text x="340" y="115" text-anchor="middle" fill="white" font-size="10">ResBlocks +</text>
+                    <text x="340" y="130" text-anchor="middle" fill="white" font-size="10">Upsample</text>
+                    <text x="340" y="150" text-anchor="middle" fill="#c7d2fe" font-size="9">↑4× or ↑8×</text>
+                    
+                    <!-- Output -->
+                    <rect x="400" y="90" width="60" height="60" rx="5" fill="#1e293b" stroke="#64748b"/>
+                    <text x="430" y="125" text-anchor="middle" fill="#94a3b8" font-size="11">Recon</text>
+                    <text x="430" y="140" text-anchor="middle" fill="#64748b" font-size="9">H×W×3</text>
+                    
+                    <!-- Regularization options -->
+                    <rect x="200" y="20" width="180" height="40" rx="5" fill="#1e293b" stroke="#2d2d3a"/>
+                    <text x="290" y="35" text-anchor="middle" fill="#f472b6" font-size="10" font-weight="600">Regularization Options</text>
+                    <text x="230" y="50" text-anchor="middle" fill="#94a3b8" font-size="9">KL-reg (VAE)</text>
+                    <text x="350" y="50" text-anchor="middle" fill="#94a3b8" font-size="9">VQ-reg (VQGAN)</text>
+                    
+                    <!-- Arrows -->
+                    <line x1="80" y1="120" x2="100" y2="120" stroke="#94a3b8" stroke-width="2" marker-end="url(#arrowhead2)"/>
+                    <line x1="180" y1="120" x2="200" y2="120" stroke="#94a3b8" stroke-width="2" marker-end="url(#arrowhead2)"/>
+                    <line x1="280" y1="120" x2="300" y2="120" stroke="#94a3b8" stroke-width="2" marker-end="url(#arrowhead2)"/>
+                    <line x1="380" y1="120" x2="400" y2="120" stroke="#94a3b8" stroke-width="2" marker-end="url(#arrowhead2)"/>
+                    
+                    <!-- Compression ratio -->
+                    <rect x="480" y="50" width="100" height="140" rx="5" fill="#12121a" stroke="#2d2d3a"/>
+                    <text x="530" y="75" text-anchor="middle" fill="#f472b6" font-size="10" font-weight="600">Compression</text>
+                    <text x="530" y="100" text-anchor="middle" fill="#94a3b8" font-size="10">f=4: 512×512→64×64</text>
+                    <text x="530" y="120" text-anchor="middle" fill="#94a3b8" font-size="10">f=8: 512×512→64×64×4</text>
+                    <text x="530" y="150" text-anchor="middle" fill="#10b981" font-size="10">48× faster!</text>
+                    
+                    <!-- Arrow marker -->
+                    <defs>
+                        <marker id="arrowhead2" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto">
+                            <polygon points="0 0, 10 3.5, 0 7" fill="#94a3b8"/>
+                        </marker>
+                    </defs>
+                </svg>
+            </div>
+            
+            <h3>UNet Denoiser with Cross-Attention</h3>
+            <div class="diagram-container">
+                <div class="diagram-title">Conditional UNet Architecture</div>
+                <svg viewBox="0 0 650 350" xmlns="http://www.w3.org/2000/svg">
+                    <!-- UNet Backbone -->
+                    <rect x="50" y="50" width="120" height="250" rx="5" fill="#10b981" opacity="0.3"/>
+                    <text x="110" y="40" text-anchor="middle" fill="#34d399" font-size="12" font-weight="600">UNet Backbone</text>
+                    
+                    <!-- Encoder path -->
+                    <rect x="60" y="60" width="100" height="40" rx="5" fill="#10b981" opacity="0.9"/>
+                    <text x="110" y="85" text-anchor="middle" fill="white" font-size="10">Conv In</text>
+                    
+                    <rect x="60" y="110" width="100" height="40" rx="5" fill="#10b981" opacity="0.9"/>
+                    <text x="110" y="135" text-anchor="middle" fill="white" font-size="10">Down Block 1</text>
+                    
+                    <rect x="60" y="160" width="100" height="40" rx="5" fill="#10b981" opacity="0.9"/>
+                    <text x="110" y="185" text-anchor="middle" fill="white" font-size="10">Down Block 2</text>
+                    
+                    <rect x="60" y="210" width="100" height="40" rx="5" fill="#10b981" opacity="0.9"/>
+                    <text x="110" y="235" text-anchor="middle" fill="white" font-size="10">Mid Block</text>
+                    
+                    <!-- Cross Attention Modules -->
+                    <rect x="180" y="80" width="100" height="35" rx="5" fill="#f59e0b" opacity="0.9"/>
+                    <text x="230" y="102" text-anchor="middle" fill="white" font-size="10">Self-Attention</text>
+                    
+                    <rect x="180" y="130" width="100" height="35" rx="5" fill="#f59e0b" opacity="0.9"/>
+                    <text x="230" y="152" text-anchor="middle" fill="white" font-size="10">Cross-Attention</text>
+                    
+                    <rect x="180" y="180" width="100" height="35" rx="5" fill="#f59e0b" opacity="0.9"/>
+                    <text x="230" y="202" text-anchor="middle" fill="white" font-size="10">Cross-Attention</text>
+                    
+                    <rect x="180" y="230" width="100" height="35" rx="5" fill="#f59e0b" opacity="0.9"/>
+                    <text x="230" y="252" text-anchor="middle" fill="white" font-size="10">Cross-Attention</text>
+                    
+                    <!-- Conditioning -->
+                    <rect x="320" y="140" width="100" height="60" rx="5" fill="#8b5cf6" opacity="0.9"/>
+                    <text x="370" y="165" text-anchor="middle" fill="white" font-size="11">Text Encoder</text>
+                    <text x="370" y="185" text-anchor="middle" fill="white" font-size="10">τθ(y)</text>
+                    
+                    <!-- CLIP/BERT -->
+                    <rect x="440" y="150" width="80" height="40" rx="5" fill="#6366f1" opacity="0.8"/>
+                    <text x="480" y="175" text-anchor="middle" fill="white" font-size="10">CLIP/BERT</text>
+                    
+                    <!-- Time Embedding -->
+                    <rect x="320" y="60" width="100" height="40" rx="5" fill="#ec4899" opacity="0.8"/>
+                    <text x="370" y="85" text-anchor="middle" fill="white" font-size="10">Time Embed t</text>
+                    
+                    <!-- Arrows from conditioning -->
+                    <line x1="320" y1="160" x2="280" y2="147" stroke="#94a3b8" stroke-width="1.5" marker-end="url(#arrowhead3)"/>
+                    <line x1="320" y1="170" x2="280" y2="197" stroke="#94a3b8" stroke-width="1.5" marker-end="url(#arrowhead3)"/>
+                    <line x1="320" y1="180" x2="280" y2="247" stroke="#94a3b8" stroke-width="1.5" marker-end="url(#arrowhead3)"/>
+                    
+                    <!-- Arrow from text encoder to CLIP -->
+                    <line x1="420" y1="170" x2="440" y2="170" stroke="#94a3b8" stroke-width="1.5" marker-end="url(#arrowhead3)"/>
+                    
+                    <!-- Decoder path -->
+                    <rect x="60" y="270" width="100" height="20" rx="3" fill="#10b981" opacity="0.7"/>
+                    <text x="110" y="283" text-anchor="middle" fill="white" font-size="9">Up Blocks → Out</text>
+                    
+                    <!-- Skip connections -->
+                    <path d="M 160 80 L 240 80 L 240 80" stroke="#6366f1" stroke-width="1.5" stroke-dasharray="4,2" fill="none"/>
+                    <path d="M 160 130 L 240 130" stroke="#6366f1" stroke-width="1.5" stroke-dasharray="4,2" fill="none"/>
+                    <path d="M 160 180 L 240 180" stroke="#6366f1" stroke-width="1.5" stroke-dasharray="4,2" fill="none"/>
+                    
+                    <!-- Input/Output -->
+                    <rect x="20" y="135" width="30" height="30" rx="3" fill="#1e293b" stroke="#64748b"/>
+                    <text x="35" y="155" text-anchor="middle" fill="#94a3b8" font-size="9">zt</text>
+                    
+                    <rect x="540" y="140" width="80" height="60" rx="5" fill="#1e293b" stroke="#10b981" stroke-width="2"/>
+                    <text x="580" y="165" text-anchor="middle" fill="#34d399" font-size="11">Predicted</text>
+                    <text x="580" y="185" text-anchor="middle" fill="#34d399" font-size="11">Noise ε</text>
+                    
+                    <!-- Arrow to output -->
+                    <line x1="280" y1="170" x2="540" y2="170" stroke="#94a3b8" stroke-width="2" marker-end="url(#arrowhead3)"/>
+                    
+                    <!-- Arrow marker -->
+                    <defs>
+                        <marker id="arrowhead3" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto">
+                            <polygon points="0 0, 10 3.5, 0 7" fill="#94a3b8"/>
+                        </marker>
+                    </defs>
+                    
+                    <!-- Legend -->
+                    <rect x="20" y="310" width="610" height="30" rx="5" fill="#12121a" stroke="#2d2d3a"/>
+                    <text x="325" y="330" text-anchor="middle" fill="#94a3b8" font-size="10">Cross-attention layers enable conditioning on text, class labels, or semantic maps</text>
+                </svg>
+            </div>
+            
+            <h3>Comparison: Pixel DM vs Latent DM</h3>
+            <table class="comparison-table">
+                <thead>
+                    <tr>
+                        <th>Aspect</th>
+                        <th>Pixel-Space DM</th>
+                        <th>Latent DM (LDM)</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Dimensionality</td>
+                        <td>H × W × 3 (e.g., 512×512×3)</td>
+                        <td>h × w × c (e.g., 64×64×4)</td>
+                    </tr>
+                    <tr>
+                        <td>Training Time</td>
+                        <td>Hundreds of GPU days</td>
+                        <td>Days to weeks</td>
+                    </tr>
+                    <tr>
+                        <td>Inference Speed</td>
+                        <td>Slow (sequential pixel eval)</td>
+                        <td>~30× faster</td>
+                    </tr>
+                    <tr>
+                        <td>Min GPU Memory</td>
+                        <td>~32GB+</td>
+                        <td>~8GB</td>
+                    </tr>
+                    <tr>
+                        <td>Detail Preservation</td>
+                        <td>Excellent</td>
+                        <td>Near-optimal</td>
+                    </tr>
+                </tbody>
+            </table>
+        </section>
+
+        <!-- Results & Impact -->
+        <section class="section">
+            <h2>📊 Results & Impact</h2>
+            
+            <div class="impact-grid">
+                <div class="impact-card">
+                    <div class="impact-number">SOTA</div>
+                    <div class="impact-label">Image Inpainting</div>
+                </div>
+                <div class="impact-card">
+                    <div class="impact-number">SOTA</div>
+                    <div class="impact-label">Class-Conditional</div>
+                </div>
+                <div class="impact-card">
+                    <div class="impact-number">8GB</div>
+                    <div class="impact-label">Consumer GPU</div>
+                </div>
+                <div class="impact-card">
+                    <div class="impact-number">1024²</div>
+                    <div class="impact-label">Resolution</div>
+                </div>
+            </div>
+            
+            <h3>Key Achievements</h3>
+            <p>🏆 <strong>New State-of-the-Art:</strong> Achieved SOTA on image inpainting and class-conditional image synthesis</p>
+            <p>🏆 <strong>Competitive Text-to-Image:</strong> Highly competitive performance on text-to-image generation</p>
+            <p>🏆 <strong>Efficient Super-Resolution:</strong> State-of-the-art stochastic super-resolution results</p>
+            <p>🏆 <strong>Unconditional Generation:</strong> Strong results on unconditional image synthesis across multiple datasets</p>
+            
+            <h3>Democratization of AI Art</h3>
+            <p>Stable Diffusion (based on LDM) became the <strong>first open-source text-to-image model</strong> capable of running on consumer hardware:</p>
+            <p>• Released by Stability AI in August 2022</p>
+            <p>• Runs on GPUs with just 8GB RAM</p>
+            <p>• Open weights enabled community fine-tuning (LoRA, DreamBooth)</p>
+            <p>• Inspired ControlNet, img2img, inpainting pipelines</p>
+            
+            <h3>Legacy</h3>
+            <p>LDM architecture became the foundation for:</p>
+            <p>• <strong>Stable Diffusion v1.x, v2.x, XL</strong> — most widely used open-source image generation</p>
+            <p>• <strong>Stable Video Diffusion</strong> — video generation from images</p>
+            <p>• <strong>ControlNet</strong> — precise control over generation with additional conditions</p>
+            <p>• <strong>Text-to-3D</strong> — DreamFusion, Magic3D applications</p>
+        </section>
+
+        <!-- Code Implementation -->
+        <section class="section">
+            <h2>💻 PyTorch Implementation</h2>
+            
+            <div class="code-block">
+                <div class="code-header">
+                    <span class="code-lang">Python</span>
+                    <span style="color: var(--text-muted); font-size: 0.75rem;">ldm_forward.py</span>
+                </div>
+                <pre><code><span class="keyword">import</span> torch
+<span class="keyword">import</span> torch.nn <span class="keyword">as</span> nn
+
+<span class="keyword">class</span> <span class="function">LatentDiffusion</span>(nn.Module):
+    <span class="comment">"""Latent Diffusion Model with Cross-Attention Conditioning"""</span>
+    
+    <span class="keyword">def</span> <span class="function">__init__</span>(self, unet, autoencoder, text_encoder):
+        super().__init__()
+        self.unet = unet              <span class="comment"># Denoising UNet</span>
+        self.vae = autoencoder        <span class="comment"># AutoencoderKL or VQGAN</span>
+        self.text_enc = text_encoder  <span class="comment"># CLIP/BERT text encoder</span>
+        
+    <span class="keyword">def</span> <span class="function">encode</span>(self, x):
+        <span class="comment">"""Encode image to latent space"""</span>
+        <span class="keyword">return</span> self.vae.encode(x).sample()
+    
+    <span class="keyword">def</span> <span class="function">decode</span>(self, z):
+        <span class="comment">"""Decode latent to image"""</span>
+        <span class="keyword">return</span> self.vae.decode(z)
+    
+    <span class="keyword">def</span> <span class="function">forward</span>(self, x, text, t):
+        <span class="comment"># Encode image to latent</span>
+        z = self.encode(x)
+        
+        <span class="comment"># Add noise (forward diffusion)</span>
+        noise = torch.randn_like(z)
+        z_t = self.q_sample(z, t, noise)
+        
+        <span class="comment"># Encode text conditioning</span>
+        c = self.text_enc(text)
+        
+        <span class="comment"># Predict noise with cross-attention</span>
+        noise_pred = self.unet(z_t, t, context=c)
+        
+        <span class="comment"># MSE loss between predicted and actual noise</span>
+        loss = F.mse_loss(noise_pred, noise)
+        <span class="keyword">return</span> loss
+    
+    <span class="keyword">def</span> <span class="function">q_sample</span>(self, z, t, noise):
+        <span class="comment">"""Forward diffusion: z_t = √(ᾱ_t) z₀ + √(1-ᾱ_t) ε"""</span>
+        sqrt_alpha_t = self.sqrt_alphas_cumprod[t]
+        sqrt_one_minus_alpha_t = self.sqrt_one_minus_alphas_cumprod[t]
+        <span class="keyword">return</span> sqrt_alpha_t * z + sqrt_one_minus_alpha_t * noise
+
+
+<span class="keyword">class</span> <span class="function">CrossAttention</span>(nn.Module):
+    <span class="comment">"""Cross-attention for conditioning on text/image features"""</span>
+    
+    <span class="keyword">def</span> <span class="function">__init__</span>(self, query_dim, context_dim, heads=<span class="number">8</span>):
+        super().__init__()
+        self.heads = heads
+        self.scale = (query_dim // heads) ** -<span class="number">0.5</span>
+        
+        self.to_q = nn.Linear(query_dim, query_dim)
+        self.to_k = nn.Linear(context_dim, query_dim)
+        self.to_v = nn.Linear(context_dim, query_dim)
+        self.to_out = nn.Linear(query_dim, query_dim)
+    
+    <span class="keyword">def</span> <span class="function">forward</span>(self, x, context):
+        <span class="comment"># x: [batch, seq_len, dim], context: [batch, ctx_len, ctx_dim]</span>
+        q = self.to_q(x)
+        k = self.to_k(context)
+        v = self.to_v(context)
+        
+        <span class="comment"># Multi-head attention</span>
+        q, k, v = [self.reshape_heads(t) <span class="keyword">for</span> t <span class="keyword">in</span> (q, k, v)]
+        
+        attn = torch.softmax(q @ k.transpose(-2, -1) * self.scale, dim=-<span class="number">1</span>)
+        out = attn @ v
+        
+        <span class="keyword">return</span> self.to_out(self.reshape_batch(out))</code></pre>
+            </div>
+            
+            <h3>Key Training Details</h3>
+            <p>• <strong>Autoencoder:</strong> KL-regularized VAE with f=4 or f=8 downsampling factor</p>
+            <p>• <strong>UNet:</strong> ResNet backbone with self-attention at 16×16 resolution</p>
+            <p>• <strong>Timesteps:</strong> T=1000 for training, DDIM sampler for efficient inference</p>
+            <p>• <strong>Conditioning:</strong> Cross-attention layers at multiple resolutions</p>
+            <p>• <strong>Optimizer:</strong> AdamW, learning rate 1e-4</p>
+        </section>
+
+        <!-- Related Work -->
+        <section class="section">
+            <h2>🔗 Related Work</h2>
+            
+            <h3>Papers That Inspired LDM</h3>
+            <ul class="related-list">
+                <li>
+                    <span class="related-year">2015</span>
+                    <span class="related-title">Diffusion Models - Deep Unsupervised Learning using Nonequilibrium Thermodynamics (Sohl-Dickstein et al.)</span>
+                </li>
+                <li>
+                    <span class="related-year">2020</span>
+                    <span class="related-title">DDPM - Denoising Diffusion Probabilistic Models (Ho et al.)</span>
+                </li>
+                <li>
+                    <span class="related-year">2021</span>
+                    <span class="related-title">VQGAN - Taming Transformers for High-Resolution Image Synthesis (Esser et al.)</span>
+                </li>
+                <li>
+                    <span class="related-year">2021</span>
+                    <span class="related-title">ADM - Diffusion Models Beat GANs on Image Synthesis (Dhariwal & Nichol)</span>
+                </li>
+                <li>
+                    <span class="related-year">2021</span>
+                    <span class="related-title">CLIP - Learning Transferable Visual Models (Radford et al.)</span>
+                </li>
+            </ul>
+            
+            <h3>Follow-up Papers</h3>
+            <ul class="related-list">
+                <li>
+                    <span class="related-year">2022</span>
+                    <span class="related-title">Stable Diffusion - High-Resolution Image Synthesis with Latent Diffusion (Rombach et al.)</span>
+                </li>
+                <li>
+                    <span class="related-year">2023</span>
+                    <span class="related-title">ControlNet - Adding Conditional Control to Diffusion Models (Zhang et al.)</span>
+                </li>
+                <li>
+                    <span class="related-year">2023</span>
+                    <span class="related-title">LoRA - Low-Rank Adaptation of Large Language Models (Hu et al.)</span>
+                </li>
+                <li>
+                    <span class="related-year">2023</span>
+                    <span class="related-title">SDXL - Improving Latent Diffusion Models for High-Resolution Image Synthesis</span>
+                </li>
+                <li>
+                    <span class="related-year">2024</span>
+                    <span class="related-title">Stable Video Diffusion - Scaling Latent Video Diffusion Models</span>
+                </li>
+                <li>
+                    <span class="related-year">2024</span>
+                    <span class="related-title">SD3 - Scaling Rectified Flow Transformers for High-Resolution Image Synthesis</span>
+                </li>
+            </ul>
+        </section>
+    </main>
+
+    <footer>
+        <p>🤖 Generated by AI Neural Networks | Stable Diffusion / LDM Paper Analysis</p>
+        <p style="margin-top: 0.5rem; font-size: 0.875rem;">Part of the classic ML papers collection</p>
+    </footer>
+</body>
+</html>
