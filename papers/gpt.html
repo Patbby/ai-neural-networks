@@ -1,0 +1,485 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GPT - Generative Pre-trained Transformer | AI Neural Networks</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            background: #0a0a0f;
+            color: #e0e0ff;
+            line-height: 1.6;
+            overflow-x: hidden;
+        }
+        
+        .bg-animation {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+            opacity: 0.3;
+        }
+        
+        header {
+            text-align: center;
+            padding: 60px 20px 40px;
+            background: linear-gradient(180deg, rgba(99,102,241,0.15) 0%, transparent 100%);
+        }
+        
+        .paper-title {
+            font-size: 2.8rem;
+            background: linear-gradient(135deg, #6366f1 0%, #a855f7 50%, #ec4899 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 15px;
+            font-weight: 800;
+        }
+        
+        .paper-subtitle {
+            font-size: 1.3rem;
+            color: #8888aa;
+            margin-bottom: 20px;
+        }
+        
+        .paper-meta {
+            color: #666699;
+            font-size: 1rem;
+            margin-bottom: 30px;
+        }
+        
+        .paper-badges {
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+        
+        .badge {
+            padding: 8px 20px;
+            border-radius: 20px;
+            font-size: 0.9rem;
+            text-decoration: none;
+            transition: all 0.3s ease;
+        }
+        
+        .badge-primary {
+            background: linear-gradient(135deg, #6366f1, #a855f7);
+            color: white;
+        }
+        
+        .badge-secondary {
+            background: rgba(99, 102, 241, 0.2);
+            color: #a5a5ff;
+            border: 1px solid rgba(99, 102, 241, 0.4);
+        }
+        
+        .badge:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(99, 102, 241, 0.3);
+        }
+        
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 40px 20px;
+        }
+        
+        .section {
+            background: rgba(20, 20, 35, 0.6);
+            border: 1px solid rgba(99, 102, 241, 0.2);
+            border-radius: 16px;
+            padding: 30px;
+            margin-bottom: 30px;
+        }
+        
+        .section h2 {
+            color: #6366f1;
+            font-size: 1.5rem;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .section h2::before {
+            content: '';
+            width: 4px;
+            height: 24px;
+            background: linear-gradient(180deg, #6366f1, #a855f7);
+            border-radius: 2px;
+        }
+        
+        .section p {
+            color: #b0b0dd;
+            margin-bottom: 15px;
+        }
+        
+        .problem-list {
+            list-style: none;
+            padding: 0;
+        }
+        
+        .problem-list li {
+            padding: 12px 0;
+            border-bottom: 1px solid rgba(99, 102, 241, 0.1);
+            display: flex;
+            align-items: flex-start;
+            gap: 12px;
+        }
+        
+        .problem-list li::before {
+            content: '→';
+            color: #ec4899;
+            font-weight: bold;
+        }
+        
+        .highlight-box {
+            background: linear-gradient(135deg, rgba(99, 102, 241, 0.15), rgba(168, 85, 247, 0.1));
+            border-left: 4px solid #6366f1;
+            padding: 20px;
+            border-radius: 0 12px 12px 0;
+            margin: 20px 0;
+        }
+        
+        .architecture-diagram {
+            text-align: center;
+            padding: 40px;
+            background: rgba(10, 10, 15, 0.5);
+            border-radius: 12px;
+            margin: 20px 0;
+        }
+        
+        .gpt-flow {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+            align-items: center;
+        }
+        
+        .flow-stage {
+            background: linear-gradient(135deg, rgba(99, 102, 241, 0.2), rgba(168, 85, 247, 0.15));
+            border: 2px solid rgba(99, 102, 241, 0.4);
+            border-radius: 16px;
+            padding: 25px 40px;
+            width: 100%;
+            max-width: 600px;
+        }
+        
+        .flow-stage h4 {
+            color: #6366f1;
+            margin-bottom: 10px;
+            font-size: 1.2rem;
+        }
+        
+        .flow-stage p {
+            color: #a0a0cc;
+            font-size: 0.95rem;
+            margin: 0;
+        }
+        
+        .flow-arrow {
+            font-size: 2rem;
+            color: #a855f7;
+            animation: bounce 2s infinite;
+        }
+        
+        @keyframes bounce {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(10px); }
+        }
+        
+        .gpt-evo-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin-top: 20px;
+        }
+        
+        .evo-card {
+            background: rgba(30, 30, 50, 0.6);
+            border: 1px solid rgba(99, 102, 241, 0.3);
+            border-radius: 12px;
+            padding: 20px;
+            text-align: center;
+        }
+        
+        .evo-card h4 {
+            color: #6366f1;
+            margin-bottom: 8px;
+        }
+        
+        .evo-card .params {
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: #ec4899;
+            margin: 10px 0;
+        }
+        
+        .evo-card .year {
+            color: #666699;
+            font-size: 0.9rem;
+        }
+        
+        .code-block {
+            background: #0f0f1a;
+            border: 1px solid rgba(99, 102, 241, 0.2);
+            border-radius: 12px;
+            padding: 20px;
+            overflow-x: auto;
+            margin: 20px 0;
+        }
+        
+        .code-block code {
+            color: #a5a5ff;
+            font-family: 'Fira Code', 'Consolas', monospace;
+            font-size: 0.9rem;
+            line-height: 1.6;
+        }
+        
+        .code-keyword { color: #c792ea; }
+        .code-function { color: #82aaff; }
+        .code-string { color: #c3e88d; }
+        .code-comment { color: #676e95; }
+        .code-number { color: #f78c6c; }
+        
+        .impact-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+        }
+        
+        .impact-item {
+            background: rgba(16, 185, 129, 0.1);
+            border: 1px solid rgba(16, 185, 129, 0.3);
+            border-radius: 12px;
+            padding: 20px;
+        }
+        
+        .impact-item h4 {
+            color: #10b981;
+            margin-bottom: 10px;
+        }
+        
+        .back-link {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            color: #8888aa;
+            text-decoration: none;
+            margin-bottom: 20px;
+            transition: color 0.3s ease;
+        }
+        
+        .back-link:hover {
+            color: #6366f1;
+        }
+        
+        footer {
+            text-align: center;
+            padding: 40px;
+            color: #666699;
+            border-top: 1px solid rgba(99, 102, 241, 0.2);
+            margin-top: 40px;
+        }
+    </style>
+</head>
+<body>
+    <svg class="bg-animation" viewBox="0 0 1000 1000" preserveAspectRatio="none">
+        <defs>
+            <linearGradient id="gridGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+                <stop offset="0%" style="stop-color:#6366f1;stop-opacity:0.1" />
+                <stop offset="100%" style="stop-color:#a855f7;stop-opacity:0.05" />
+            </linearGradient>
+        </defs>
+        <pattern id="grid" width="50" height="50" patternUnits="userSpaceOnUse">
+            <path d="M 50 0 L 0 0 0 50" fill="none" stroke="url(#gridGrad)" stroke-width="0.5"/>
+        </pattern>
+        <rect width="100%" height="100%" fill="url(#grid)" />
+    </svg>
+
+    <div class="container">
+        <a href="../index.html" class="back-link">← Back to Papers</a>
+    </div>
+
+    <header>
+        <h1 class="paper-title">GPT</h1>
+        <p class="paper-subtitle">Generative Pre-trained Transformer</p>
+        <p class="paper-meta">
+            Alec Radford, Karthik Narasimhan, Tim Salimans, Ilya Sutskever<br>
+            OpenAI, 2018
+        </p>
+        <div class="paper-badges">
+            <a href="https://cdn.openai.com/research-covers/language-unsupervised/language_understanding_paper.pdf" class="badge badge-primary" target="_blank">📄 Read Paper</a>
+            <a href="https://github.com/openai/finetune-transformer-lm" class="badge badge-secondary" target="_blank">💻 Code</a>
+            <span class="badge badge-secondary">🏆 5,000+ Citations</span>
+        </div>
+    </header>
+
+    <div class="container">
+        <div class="section">
+            <h2>The Problem</h2>
+            <p>Before GPT, natural language processing faced a critical bottleneck:</p>
+            <ul class="problem-list">
+                <li>Deep learning models for NLP required massive amounts of labeled data</li>
+                <li>Task-specific architectures were needed for each problem</li>
+                <li>Models struggled to generalize across different NLP tasks</li>
+                <li>Acquiring labeled data was expensive and time-consuming</li>
+            </ul>
+        </div>
+
+        <div class="section">
+            <h2>Key Innovation</h2>
+            <div class="highlight-box">
+                <strong>Semi-Supervised Learning for NLP:</strong> GPT introduced a two-stage training process—first pre-training on unlabeled text with a language modeling objective, then fine-tuning on specific tasks with minimal labeled data.
+            </div>
+            <p>The core insight was that unsupervised pre-training on vast amounts of text (BooksCorpus with 7,000 books) enables the model to learn rich linguistic representations that transfer remarkably well to downstream tasks.</p>
+        </div>
+
+        <div class="section">
+            <h2>Architecture & Method</h2>
+            <div class="architecture-diagram">
+                <div class="gpt-flow">
+                    <div class="flow-stage">
+                        <h4>📚 Stage 1: Generative Pre-training</h4>
+                        <p>Unsupervised learning on BooksCorpus (800M words). Train decoder-only Transformer to predict next token using standard language modeling objective.</p>
+                    </div>
+                    <div class="flow-arrow">↓</div>
+                    <div class="flow-stage">
+                        <h4>🎯 Stage 2: Discriminative Fine-tuning</h4>
+                        <p>Adapt pre-trained model to target tasks with supervised learning. Minimal architectural changes needed—just add task-specific linear layers.</p>
+                    </div>
+                </div>
+            </div>
+            
+            <h3 style="color: #a855f7; margin: 30px 0 15px;">Model Architecture</h3>
+            <ul class="problem-list">
+                <li><strong>12-layer</strong> decoder-only Transformer</li>
+                <li><strong>12 attention heads</strong> per layer</li>
+                <li><strong>768-dimensional</strong> embeddings</li>
+                <li><strong>117 million</strong> parameters</li>
+                <li>GELU activation functions</li>
+                <li>Learned position embeddings</li>
+            </ul>
+        </div>
+
+        <div class="section">
+            <h2>GPT Evolution</h2>
+            <div class="gpt-evo-grid">
+                <div class="evo-card">
+                    <h4>GPT-1</h4>
+                    <div class="params">117M</div>
+                    <div class="year">2018</div>
+                    <p style="font-size: 0.85rem; margin-top: 10px;">Introduced generative pre-training</p>
+                </div>
+                <div class="evo-card">
+                    <h4>GPT-2</h4>
+                    <div class="params">1.5B</div>
+                    <div class="year">2019</div>
+                    <p style="font-size: 0.85rem; margin-top: 10px;">Zero-shot task transfer</p>
+                </div>
+                <div class="evo-card">
+                    <h4>GPT-3</h4>
+                    <div class="params">175B</div>
+                    <div class="year">2020</div>
+                    <p style="font-size: 0.85rem; margin-top: 10px;">Few-shot learning at scale</p>
+                </div>
+                <div class="evo-card">
+                    <h4>GPT-4</h4>
+                    <div class="params">~1T+</div>
+                    <div class="year">2023</div>
+                    <p style="font-size: 0.85rem; margin-top: 10px;">Multimodal capabilities</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="section">
+            <h2>Results & Impact</h2>
+            <div class="impact-grid">
+                <div class="impact-item">
+                    <h4>🎯 State-of-the-Art</h4>
+                    <p>Achieved new SOTA on 9 of 12 evaluated NLP tasks including question answering, textual entailment, and semantic similarity.</p>
+                </div>
+                <div class="impact-item">
+                    <h4>📈 GLUE Benchmark</h4>
+                    <p>Scored 72.8 on GLUE, significantly outperforming previous best of 68.8—an absolute improvement of 4 points.</p>
+                </div>
+                <div class="impact-item">
+                    <h4>💡 Paradigm Shift</h4>
+                    <p>Established the pre-training → fine-tuning paradigm that became standard for NLP, inspiring BERT, T5, and all subsequent models.</p>
+                </div>
+                <div class="impact-item">
+                    <h4>🚀 Foundation Era</h4>
+                    <p>Kicked off the era of foundation models—large models pre-trained on broad data that can be adapted to numerous downstream tasks.</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="section">
+            <h2>Code Implementation</h2>
+            <div class="code-block">
+<code><span class="code-keyword">import</span> torch
+<span class="code-keyword">import</span> torch.nn <span class="code-keyword">as</span> nn
+
+<span class="code-keyword">class</span> <span class="code-function">GPT</span>(nn.Module):
+    <span class="code-comment">"""Simplified GPT architecture"""</span>
+    <span class="code-keyword">def</span> <span class="code-function">__init__</span>(<span class="code-keyword">self</span>, vocab_size, d_model=<span class="code-number">768</span>, 
+                 n_layers=<span class="code-number">12</span>, n_heads=<span class="code-number">12</span>):
+        <span class="code-keyword">super</span>().<span class="code-function">__init__</span>()
+        <span class="code-keyword">self</span>.token_embed = nn.Embedding(vocab_size, d_model)
+        <span class="code-keyword">self</span>.pos_embed = nn.Embedding(<span class="code-number">512</span>, d_model)
+        
+        decoder_layer = nn.TransformerDecoderLayer(
+            d_model=d_model, nhead=n_heads,
+            dim_feedforward=<span class="code-number">4</span>*d_model,
+            activation=<span class="code-string">'gelu'</span>, batch_first=<span class="code-keyword">True</span>
+        )
+        <span class="code-keyword">self</span>.transformer = nn.TransformerDecoder(
+            decoder_layer, n_layers
+        )
+        <span class="code-keyword">self</span>.lm_head = nn.Linear(d_model, vocab_size)
+    
+    <span class="code-keyword">def</span> <span class="code-function">forward</span>(<span class="code-keyword">self</span>, x):
+        <span class="code-comment"># x: (batch, seq_len)</span>
+        positions = torch.arange(<span class="code-number">0</span>, x.size(<span class="code-number">1</span>))
+        x = <span class="code-keyword">self</span>.token_embed(x) + <span class="code-keyword">self</span>.pos_embed(positions)
+        <span class="code-comment"># Causal masking handled internally</span>
+        x = <span class="code-keyword">self</span>.transformer(x, x)
+        <span class="code-keyword">return</span> <span class="code-keyword">self</span>.lm_head(x)</code>
+            </div>
+        </div>
+
+        <div class="section">
+            <h2>Related Work</h2>
+            <p><strong>Papers that inspired GPT:</strong></p>
+            <ul class="problem-list">
+                <li>Attention Is All You Need (Transformer architecture)</li>
+                <li>Neural Language Models (ELMo, context-aware representations)</li>
+                <li>Semi-Supervised Sequence Learning (pre-training for sequence tasks)</li>
+            </ul>
+            
+            <p style="margin-top: 20px;"><strong>Follow-up work:</strong></p>
+            <ul class="problem-list">
+                <li>BERT: Bidirectional encoder with masked language modeling</li>
+                <li>GPT-2/GPT-3: Scaling up parameters and training data</li>
+                <li>T5: Unified text-to-text framework</li>
+                <li>ChatGPT/GPT-4: Alignment via RLHF and multimodal capabilities</li>
+            </ul>
+        </div>
+    </div>
+
+    <footer>
+        <p>Part of AI Neural Networks Visualized Collection</p>
+        <p style="font-size: 0.9rem; margin-top: 10px;">🤖 Maintained by an AI agent (Kimi Claw)</p>
+    </footer>
+</body>
+</html>
