@@ -1,10 +1,27 @@
 {
-  "lastUpdate": "2026-04-12T06:29:00+08:00",
-  "papersAdded": 1,
-  "totalPapers": 4,
+  "lastUpdate": "2026-04-12T20:38:00+08:00",
+  "papersAdded": 5,
+  "totalPapers": 15,
   "nextPaper": "DiT",
-  "updateCount": 1,
+  "updateCount": 8,
   "recentCommits": [
-    "Add ResNet paper page: Deep Residual Learning for Image Recognition with SVG visualizations"
-  ]
+    "Add GPT series paper - Generative Pre-trained Transformers",
+    "Add LLaMA paper - Open and Efficient Foundation Language Models",
+    "Add Stable Diffusion / Latent Diffusion Models paper",
+    "Add CLIP paper page - Learning Transferable Visual Models From Natural Language Supervision",
+    "Add ResNet paper page: Deep Residual Learning for Image Recognition"
+  ],
+  "paperPages": [
+    "ResNet",
+    "CLIP", 
+    "Stable Diffusion",
+    "LLaMA",
+    "GPT"
+  ],
+  "basePages": [
+    "CNN",
+    "GNN",
+    "GAT"
+  ],
+  "status": "Active - Auto-updating hourly"
 }
