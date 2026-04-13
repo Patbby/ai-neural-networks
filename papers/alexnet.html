@@ -1,0 +1,988 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AlexNet: ImageNet Classification with Deep Convolutional Neural Networks</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css">
+    <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js"></script>
+    <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/contrib/auto-render.min.js"></script>
+    <style>
+        :root {
+            --primary: #4a90e2;
+            --secondary: #50c8a8;
+            --accent: #f5a623;
+            --dark: #1a1a2e;
+            --light: #16213e;
+            --text: #eaeaea;
+            --gradient-1: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            --gradient-2: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            --gradient-3: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: var(--dark);
+            color: var(--text);
+            line-height: 1.6;
+            overflow-x: hidden;
+        }
+        
+        .hero {
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            background: var(--gradient-1);
+            position: relative;
+            padding: 2rem;
+            text-align: center;
+        }
+        
+        .hero::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='0.05'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+            opacity: 0.3;
+        }
+        
+        .hero-content {
+            position: relative;
+            z-index: 1;
+            max-width: 900px;
+        }
+        
+        .hero h1 {
+            font-size: 4rem;
+            font-weight: 800;
+            margin-bottom: 1rem;
+            background: linear-gradient(135deg, #fff 0%, #a8d0ff 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            text-shadow: 0 4px 20px rgba(0,0,0,0.3);
+        }
+        
+        .hero .subtitle {
+            font-size: 1.4rem;
+            color: rgba(255,255,255,0.9);
+            margin-bottom: 2rem;
+            font-weight: 300;
+        }
+        
+        .meta {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 2rem;
+            margin-top: 2rem;
+        }
+        
+        .meta-item {
+            background: rgba(255,255,255,0.15);
+            backdrop-filter: blur(10px);
+            padding: 1rem 1.5rem;
+            border-radius: 12px;
+            border: 1px solid rgba(255,255,255,0.2);
+        }
+        
+        .meta-label {
+            font-size: 0.85rem;
+            opacity: 0.8;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+        
+        .meta-value {
+            font-size: 1.2rem;
+            font-weight: 600;
+            margin-top: 0.3rem;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 4rem 2rem;
+        }
+        
+        .section {
+            margin-bottom: 5rem;
+        }
+        
+        .section-title {
+            font-size: 2.5rem;
+            font-weight: 700;
+            margin-bottom: 1.5rem;
+            background: var(--gradient-1);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        
+        .section-intro {
+            font-size: 1.2rem;
+            color: rgba(255,255,255,0.8);
+            margin-bottom: 2rem;
+            line-height: 1.8;
+        }
+        
+        .card {
+            background: var(--light);
+            border-radius: 20px;
+            padding: 2.5rem;
+            margin-bottom: 2rem;
+            border: 1px solid rgba(255,255,255,0.1);
+            box-shadow: 0 10px 40px rgba(0,0,0,0.3);
+        }
+        
+        .card h3 {
+            color: var(--accent);
+            font-size: 1.5rem;
+            margin-bottom: 1rem;
+        }
+        
+        .card p {
+            color: rgba(255,255,255,0.85);
+            line-height: 1.8;
+        }
+        
+        .highlight {
+            background: rgba(245, 166, 35, 0.2);
+            padding: 0.2rem 0.5rem;
+            border-radius: 4px;
+            color: var(--accent);
+            font-weight: 500;
+        }
+        
+        .architecture-container {
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+            border-radius: 20px;
+            padding: 3rem;
+            margin: 3rem 0;
+            border: 1px solid rgba(255,255,255,0.1);
+        }
+        
+        .arch-title {
+            text-align: center;
+            font-size: 2rem;
+            margin-bottom: 2rem;
+            color: var(--secondary);
+        }
+        
+        .svg-container {
+            width: 100%;
+            overflow-x: auto;
+            margin: 2rem 0;
+        }
+        
+        .svg-container svg {
+            max-width: 100%;
+            height: auto;
+        }
+        
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1.5rem;
+            margin: 2rem 0;
+        }
+        
+        .stat-card {
+            background: var(--light);
+            border-radius: 16px;
+            padding: 1.5rem;
+            text-align: center;
+            border: 1px solid rgba(255,255,255,0.1);
+            transition: transform 0.3s, box-shadow 0.3s;
+        }
+        
+        .stat-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 40px rgba(0,0,0,0.4);
+        }
+        
+        .stat-number {
+            font-size: 2.5rem;
+            font-weight: 800;
+            background: var(--gradient-3);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        
+        .stat-label {
+            color: rgba(255,255,255,0.7);
+            margin-top: 0.5rem;
+            font-size: 0.95rem;
+        }
+        
+        .code-block {
+            background: #0d1117;
+            border-radius: 12px;
+            padding: 1.5rem;
+            overflow-x: auto;
+            margin: 1.5rem 0;
+            border: 1px solid rgba(255,255,255,0.1);
+        }
+        
+        .code-block pre {
+            margin: 0;
+            font-family: 'Consolas', 'Monaco', 'Courier New', monospace;
+            font-size: 0.9rem;
+            line-height: 1.6;
+            color: #e6edf3;
+        }
+        
+        .code-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1rem;
+            padding-bottom: 1rem;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+        }
+        
+        .code-title {
+            font-size: 1rem;
+            color: var(--secondary);
+            font-weight: 600;
+        }
+        
+        .code-lang {
+            background: var(--gradient-2);
+            color: white;
+            padding: 0.3rem 0.8rem;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 600;
+        }
+        
+        .keyword { color: #ff7b72; }
+        .function { color: #d2a8ff; }
+        .string { color: #a5d6ff; }
+        .comment { color: #8b949e; }
+        .number { color: #79c0ff; }
+        
+        .feature-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 1.5rem;
+            margin: 2rem 0;
+        }
+        
+        .feature-card {
+            background: linear-gradient(135deg, rgba(102, 126, 234, 0.1) 0%, rgba(118, 75, 162, 0.1) 100%);
+            border-radius: 16px;
+            padding: 1.5rem;
+            border: 1px solid rgba(102, 126, 234, 0.3);
+        }
+        
+        .feature-icon {
+            font-size: 2.5rem;
+            margin-bottom: 1rem;
+        }
+        
+        .feature-title {
+            font-size: 1.2rem;
+            color: var(--primary);
+            margin-bottom: 0.5rem;
+            font-weight: 600;
+        }
+        
+        .feature-desc {
+            color: rgba(255,255,255,0.7);
+            font-size: 0.95rem;
+            line-height: 1.6;
+        }
+        
+        .impact-section {
+            background: var(--gradient-1);
+            border-radius: 20px;
+            padding: 3rem;
+            margin: 3rem 0;
+        }
+        
+        .impact-title {
+            font-size: 2rem;
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+        
+        .timeline {
+            position: relative;
+            padding-left: 2rem;
+        }
+        
+        .timeline::before {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 0;
+            bottom: 0;
+            width: 3px;
+            background: var(--gradient-3);
+            border-radius: 3px;
+        }
+        
+        .timeline-item {
+            position: relative;
+            padding-bottom: 2rem;
+            padding-left: 2rem;
+        }
+        
+        .timeline-item::before {
+            content: '';
+            position: absolute;
+            left: -2.35rem;
+            top: 0.5rem;
+            width: 12px;
+            height: 12px;
+            background: var(--accent);
+            border-radius: 50%;
+            border: 3px solid var(--dark);
+        }
+        
+        .timeline-year {
+            font-size: 0.9rem;
+            color: var(--secondary);
+            font-weight: 600;
+            margin-bottom: 0.3rem;
+        }
+        
+        .timeline-content {
+            color: rgba(255,255,255,0.9);
+        }
+        
+        .paper-link {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            background: var(--gradient-2);
+            color: white;
+            padding: 1rem 2rem;
+            border-radius: 50px;
+            text-decoration: none;
+            font-weight: 600;
+            margin-top: 2rem;
+            transition: transform 0.3s, box-shadow 0.3s;
+        }
+        
+        .paper-link:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 30px rgba(245, 87, 108, 0.4);
+        }
+        
+        .footer {
+            text-align: center;
+            padding: 3rem 2rem;
+            background: var(--light);
+            border-top: 1px solid rgba(255,255,255,0.1);
+        }
+        
+        .footer-text {
+            color: rgba(255,255,255,0.6);
+            font-size: 0.9rem;
+        }
+        
+        @media (max-width: 768px) {
+            .hero h1 {
+                font-size: 2.5rem;
+            }
+            .hero .subtitle {
+                font-size: 1.1rem;
+            }
+            .section-title {
+                font-size: 1.8rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <section class="hero">
+        <div class="hero-content">
+            <h1>AlexNet</h1>
+            <p class="subtitle">ImageNet Classification with Deep Convolutional Neural Networks</p>
+            <div class="meta">
+                <div class="meta-item">
+                    <div class="meta-label">Authors</div>
+                    <div class="meta-value">Krizhevsky, Sutskever, Hinton</div>
+                </div>
+                <div class="meta-item">
+                    <div class="meta-label">Year</div>
+                    <div class="meta-value">2012</div>
+                </div>
+                <div class="meta-item">
+                    <div class="meta-label">Conference</div>
+                    <div class="meta-value">NIPS</div>
+                </div>
+                <div class="meta-item">
+                    <div class="meta-label">Parameters</div>
+                    <div class="meta-value">60M</div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <div class="container">
+        <section class="section">
+            <h2 class="section-title">Overview</h2>
+            <p class="section-intro">
+                AlexNet marked a watershed moment in deep learning history. It was the first convolutional neural network to win the ImageNet Large Scale Visual Recognition Challenge (ILSVRC) in 2012, achieving a <span class="highlight">top-5 error rate of 15.3%</span> — more than 10 percentage points better than the runner-up. This breakthrough demonstrated the power of deep learning and sparked the AI revolution that followed.
+            </p>
+            
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-number">60M</div>
+                    <div class="stat-label">Parameters</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number">650K</div>
+                    <div class="stat-label">Neurons</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number">630M</div>
+                    <div class="stat-label">Connections</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number">8</div>
+                    <div class="stat-label">Layers</div>
+                </div>
+            </div>
+        </section>
+
+        <section class="section">
+            <h2 class="section-title">Architecture</h2>
+            <p class="section-intro">
+                AlexNet consists of five convolutional layers followed by three fully connected layers. The architecture introduced several innovations that became standard in deep learning.
+            </p>
+            
+            <div class="architecture-container">
+                <h3 class="arch-title">Network Architecture Visualization</h3>
+                <div class="svg-container">
+                    <svg viewBox="0 0 1200 500" xmlns="http://www.w3.org/2000/svg">
+                        <!-- Background -->
+                        <defs>
+                            <linearGradient id="convGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+                                <stop offset="0%" style="stop-color:#667eea"/>
+                                <stop offset="100%" style="stop-color:#764ba2"/>
+                            </linearGradient>
+                            <linearGradient id="poolGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+                                <stop offset="0%" style="stop-color:#f093fb"/>
+                                <stop offset="100%" style="stop-color:#f5576c"/>
+                            </linearGradient>
+                            <linearGradient id="fcGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+                                <stop offset="0%" style="stop-color:#4facfe"/>
+                                <stop offset="100%" style="stop-color:#00f2fe"/>
+                            </linearGradient>
+                            <filter id="glow">
+                                <feGaussianBlur stdDeviation="3" result="coloredBlur"/>
+                                <feMerge>
+                                    <feMergeNode in="coloredBlur"/>
+                                    <feMergeNode in="SourceGraphic"/>
+                                </feMerge>
+                            </filter>
+                        </defs>
+                        
+                        <!-- Input -->
+                        <g transform="translate(50, 200)">
+                            <rect x="0" y="0" width="60" height="100" fill="url(#convGrad)" rx="5" filter="url(#glow)"/>
+                            <text x="30" y="-15" text-anchor="middle" fill="#fff" font-size="12" font-weight="bold">Input</text>
+                            <text x="30" y="55" text-anchor="middle" fill="#fff" font-size="10">227×227</text>
+                            <text x="30" y="70" text-anchor="middle" fill="#fff" font-size="10">×3</text>
+                        </g>
+                        
+                        <!-- Conv1 -->
+                        <g transform="translate(140, 180)">
+                            <rect x="0" y="0" width="50" height="140" fill="url(#convGrad)" rx="5" filter="url(#glow)"/>
+                            <text x="25" y="-15" text-anchor="middle" fill="#667eea" font-size="11" font-weight="bold">Conv1</text>
+                            <text x="25" y="75" text-anchor="middle" fill="#fff" font-size="9">11×11</text>
+                            <text x="25" y="90" text-anchor="middle" fill="#fff" font-size="9">96</text>
+                            <text x="25" y="105" text-anchor="middle" fill="#fff" font-size="9">stride 4</text>
+                        </g>
+                        
+                        <!-- Pool1 -->
+                        <g transform="translate(210, 200)">
+                            <rect x="0" y="0" width="40" height="100" fill="url(#poolGrad)" rx="5" filter="url(#glow)"/>
+                            <text x="20" y="-15" text-anchor="middle" fill="#f5576c" font-size="11" font-weight="bold">Pool</text>
+                            <text x="20" y="55" text-anchor="middle" fill="#fff" font-size="9">3×3</text>
+                            <text x="20" y="70" text-anchor="middle" fill="#fff" font-size="9">stride 2</text>
+                        </g>
+                        
+                        <!-- Conv2 -->
+                        <g transform="translate(280, 185)">
+                            <rect x="0" y="0" width="45" height="130" fill="url(#convGrad)" rx="5" filter="url(#glow)"/>
+                            <text x="22.5" y="-15" text-anchor="middle" fill="#667eea" font-size="11" font-weight="bold">Conv2</text>
+                            <text x="22.5" y="70" text-anchor="middle" fill="#fff" font-size="9">5×5</text>
+                            <text x="22.5" y="85" text-anchor="middle" fill="#fff" font-size="9">256</text>
+                        </g>
+                        
+                        <!-- Pool2 -->
+                        <g transform="translate(345, 200)">
+                            <rect x="0" y="0" width="40" height="100" fill="url(#poolGrad)" rx="5" filter="url(#glow)"/>
+                            <text x="20" y="55" text-anchor="middle" fill="#fff" font-size="9">3×3</text>
+                        </g>
+                        
+                        <!-- Conv3 -->
+                        <g transform="translate(410, 190)">
+                            <rect x="0" y="0" width="45" height="120" fill="url(#convGrad)" rx="5" filter="url(#glow)"/>
+                            <text x="22.5" y="-15" text-anchor="middle" fill="#667eea" font-size="11" font-weight="bold">Conv3</text>
+                            <text x="22.5" y="65" text-anchor="middle" fill="#fff" font-size="9">3×3</text>
+                            <text x="22.5" y="80" text-anchor="middle" fill="#fff" font-size="9">384</text>
+                        </g>
+                        
+                        <!-- Conv4 -->
+                        <g transform="translate(475, 190)">
+                            <rect x="0" y="0" width="45" height="120" fill="url(#convGrad)" rx="5" filter="url(#glow)"/>
+                            <text x="22.5" y="-15" text-anchor="middle" fill="#667eea" font-size="11" font-weight="bold">Conv4</text>
+                            <text x="22.5" y="65" text-anchor="middle" fill="#fff" font-size="9">3×3</text>
+                            <text x="22.5" y="80" text-anchor="middle" fill="#fff" font-size="9">384</text>
+                        </g>
+                        
+                        <!-- Conv5 -->
+                        <g transform="translate(540, 190)">
+                            <rect x="0" y="0" width="45" height="120" fill="url(#convGrad)" rx="5" filter="url(#glow)"/>
+                            <text x="22.5" y="-15" text-anchor="middle" fill="#667eea" font-size="11" font-weight="bold">Conv5</text>
+                            <text x="22.5" y="65" text-anchor="middle" fill="#fff" font-size="9">3×3</text>
+                            <text x="22.5" y="80" text-anchor="middle" fill="#fff" font-size="9">256</text>
+                        </g>
+                        
+                        <!-- Pool3 -->
+                        <g transform="translate(605, 200)">
+                            <rect x="0" y="0" width="40" height="100" fill="url(#poolGrad)" rx="5" filter="url(#glow)"/>
+                            <text x="20" y="55" text-anchor="middle" fill="#fff" font-size="9">3×3</text>
+                        </g>
+                        
+                        <!-- FC6 -->
+                        <g transform="translate(680, 150)">
+                            <rect x="0" y="0" width="60" height="200" fill="url(#fcGrad)" rx="5" filter="url(#glow)"/>
+                            <text x="30" y="-15" text-anchor="middle" fill="#4facfe" font-size="11" font-weight="bold">FC6</text>
+                            <text x="30" y="105" text-anchor="middle" fill="#fff" font-size="10">4096</text>
+                            <text x="30" y="210" text-anchor="middle" fill="#fff" font-size="9">+ Dropout</text>
+                        </g>
+                        
+                        <!-- FC7 -->
+                        <g transform="translate(770, 150)">
+                            <rect x="0" y="0" width="60" height="200" fill="url(#fcGrad)" rx="5" filter="url(#glow)"/>
+                            <text x="30" y="-15" text-anchor="middle" fill="#4facfe" font-size="11" font-weight="bold">FC7</text>
+                            <text x="30" y="105" text-anchor="middle" fill="#fff" font-size="10">4096</text>
+                            <text x="30" y="210" text-anchor="middle" fill="#fff" font-size="9">+ Dropout</text>
+                        </g>
+                        
+                        <!-- FC8/Output -->
+                        <g transform="translate(860, 175)">
+                            <rect x="0" y="0" width="60" height="150" fill="url(#fcGrad)" rx="5" filter="url(#glow)"/>
+                            <text x="30" y="-15" text-anchor="middle" fill="#4facfe" font-size="11" font-weight="bold">FC8</text>
+                            <text x="30" y="80" text-anchor="middle" fill="#fff" font-size="10">1000</text>
+                            <text x="30" y="165" text-anchor="middle" fill="#fff" font-size="9">Softmax</text>
+                        </g>
+                        
+                        <!-- Arrows -->
+                        <defs>
+                            <marker id="arrowhead" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto">
+                                <polygon points="0 0, 10 3.5, 0 7" fill="#fff" opacity="0.5"/>
+                            </marker>
+                        </defs>
+                        
+                        <line x1="110" y1="250" x2="140" y2="250" stroke="#fff" stroke-width="2" opacity="0.5" marker-end="url(#arrowhead)"/>
+                        <line x1="190" y1="250" x2="210" y2="250" stroke="#fff" stroke-width="2" opacity="0.5" marker-end="url(#arrowhead)"/>
+                        <line x1="250" y1="250" x2="280" y2="250" stroke="#fff" stroke-width="2" opacity="0.5" marker-end="url(#arrowhead)"/>
+                        <line x1="325" y1="250" x2="345" y2="250" stroke="#fff" stroke-width="2" opacity="0.5" marker-end="url(#arrowhead)"/>
+                        <line x1="385" y1="250" x2="410" y2="250" stroke="#fff" stroke-width="2" opacity="0.5" marker-end="url(#arrowhead)"/>
+                        <line x1="455" y1="250" x2="475" y2="250" stroke="#fff" stroke-width="2" opacity="0.5" marker-end="url(#arrowhead)"/>
+                        <line x1="520" y1="250" x2="540" y2="250" stroke="#fff" stroke-width="2" opacity="0.5" marker-end="url(#arrowhead)"/>
+                        <line x1="585" y1="250" x2="605" y2="250" stroke="#fff" stroke-width="2" opacity="0.5" marker-end="url(#arrowhead)"/>
+                        <line x1="645" y1="250" x2="680" y2="250" stroke="#fff" stroke-width="2" opacity="0.5" marker-end="url(#arrowhead)"/>
+                        <line x1="740" y1="250" x2="770" y2="250" stroke="#fff" stroke-width="2" opacity="0.5" marker-end="url(#arrowhead)"/>
+                        <line x1="830" y1="250" x2="860" y2="250" stroke="#fff" stroke-width="2" opacity="0.5" marker-end="url(#arrowhead)"/>
+                        
+                        <!-- Legend -->
+                        <g transform="translate(950, 50)">
+                            <text x="0" y="0" fill="#fff" font-size="14" font-weight="bold">Legend</text>
+                            <rect x="0" y="15" width="20" height="20" fill="url(#convGrad)" rx="3"/>
+                            <text x="30" y="30" fill="#fff" font-size="12">Convolution</text>
+                            <rect x="0" y="45" width="20" height="20" fill="url(#poolGrad)" rx="3"/>
+                            <text x="30" y="60" fill="#fff" font-size="12">Max Pooling</text>
+                            <rect x="0" y="75" width="20" height="20" fill="url(#fcGrad)" rx="3"/>
+                            <text x="30" y="90" fill="#fff" font-size="12">Fully Connected</text>
+                        </g>
+                    </svg>
+                </div>
+            </div>
+            
+            <div class="card">
+                <h3>Architecture Details</h3>
+                <p>AlexNet's architecture consists of <span class="highlight">5 convolutional layers</span> followed by <span class="highlight">3 fully connected layers</span>. The network was designed to run on two GPUs simultaneously, with half of the neurons on each GPU. This "two-stream" architecture was a necessity due to GPU memory constraints at the time but also provided a form of model parallelism.</p>
+            </div>
+        </section>
+
+        <section class="section">
+            <h2 class="section-title">Key Innovations</h2>
+            <div class="feature-grid">
+                <div class="feature-card">
+                    <div class="feature-icon">⚡</div>
+                    <div class="feature-title">ReLU Activation</div>
+                    <div class="feature-desc">AlexNet was the first to use ReLU (Rectified Linear Unit) as the activation function instead of traditional saturating nonlinearities like tanh or sigmoid. ReLU trains 6x faster: f(x) = max(0, x)</div>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">💧</div>
+                    <div class="feature-title">Dropout Regularization</div>
+                    <div class="feature-desc">Used dropout with probability 0.5 in the first two fully-connected layers to prevent overfitting. This randomly sets neuron outputs to zero during training.</div>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">🔄</div>
+                    <div class="feature-title">Overlapping Pooling</div>
+                    <div class="feature-desc">Traditional pooling used non-overlapping neighborhoods. AlexNet used overlapping max pooling (stride smaller than kernel size), reducing top-1 and top-5 error rates.</div>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">🖼️</div>
+                    <div class="feature-title">Data Augmentation</div>
+                    <div class="feature-desc">Random 224×224 patches cropped from 256×256 images, horizontal reflections, and PCA-based color augmentation to artificially enlarge the training set.</div>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">🖥️</div>
+                    <div class="feature-title">GPU Training</div>
+                    <div class="feature-desc">First CNN to use GPUs for acceleration. The model was split across two GTX 580 GPUs with 3GB memory each, enabling training of a 60M parameter network.</div>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">📊</div>
+                    <div class="feature-title">Local Response Normalization</div>
+                    <div class="feature-desc">Applied after ReLU in the first two convolutional layers to aid generalization by creating competition among neuron outputs computed using different kernels.</div>
+                </div>
+            </div>
+        </section>
+
+        <section class="section">
+            <h2 class="section-title">PyTorch Implementation</h2>
+            <p class="section-intro">
+                Below is a complete, production-ready implementation of AlexNet in PyTorch that faithfully reproduces the original architecture.
+            </p>
+            
+            <div class="code-block">
+                <div class="code-header">
+                    <span class="code-title">alexnet.py</span>
+                    <span class="code-lang">PyTorch</span>
+                </div>
+                <pre><code><span class="keyword">import</span> torch
+<span class="keyword">import</span> torch.nn <span class="keyword">as</span> nn
+
+<span class="keyword">class</span> <span class="function">AlexNet</span>(nn.Module):
+    <span class="keyword">def</span> <span class="function">__init__</span>(self, num_classes=<span class="number">1000</span>):
+        <span class="function">super</span>(AlexNet, self).<span class="function">__init__</span>()
+        
+        <span class="comment"># Feature extraction layers (5 convolutional layers)</span>
+        self.features = nn.Sequential(
+            <span class="comment"># Layer 1: Conv + ReLU + MaxPool + LRN</span>
+            nn.Conv2d(<span class="number">3</span>, <span class="number">96</span>, kernel_size=<span class="number">11</span>, stride=<span class="number">4</span>, padding=<span class="number">2</span>),
+            nn.ReLU(inplace=<span class="keyword">True</span>),
+            nn.MaxPool2d(kernel_size=<span class="number">3</span>, stride=<span class="number">2</span>),
+            nn.LocalResponseNorm(size=<span class="number">5</span>, alpha=<span class="number">1e-4</span>, beta=<span class="number">0.75</span>, k=<span class="number">2</span>),
+            
+            <span class="comment"># Layer 2: Conv + ReLU + MaxPool + LRN</span>
+            nn.Conv2d(<span class="number">96</span>, <span class="number">256</span>, kernel_size=<span class="number">5</span>, padding=<span class="number">2</span>),
+            nn.ReLU(inplace=<span class="keyword">True</span>),
+            nn.MaxPool2d(kernel_size=<span class="number">3</span>, stride=<span class="number">2</span>),
+            nn.LocalResponseNorm(size=<span class="number">5</span>, alpha=<span class="number">1e-4</span>, beta=<span class="number">0.75</span>, k=<span class="number">2</span>),
+            
+            <span class="comment"># Layer 3: Conv + ReLU</span>
+            nn.Conv2d(<span class="number">256</span>, <span class="number">384</span>, kernel_size=<span class="number">3</span>, padding=<span class="number">1</span>),
+            nn.ReLU(inplace=<span class="keyword">True</span>),
+            
+            <span class="comment"># Layer 4: Conv + ReLU</span>
+            nn.Conv2d(<span class="number">384</span>, <span class="number">384</span>, kernel_size=<span class="number">3</span>, padding=<span class="number">1</span>),
+            nn.ReLU(inplace=<span class="keyword">True</span>),
+            
+            <span class="comment"># Layer 5: Conv + ReLU + MaxPool</span>
+            nn.Conv2d(<span class="number">384</span>, <span class="number">256</span>, kernel_size=<span class="number">3</span>, padding=<span class="number">1</span>),
+            nn.ReLU(inplace=<span class="keyword">True</span>),
+            nn.MaxPool2d(kernel_size=<span class="number">3</span>, stride=<span class="number">2</span>),
+        )
+        
+        <span class="comment"># Classification layers (3 fully connected layers)</span>
+        self.classifier = nn.Sequential(
+            nn.Dropout(p=<span class="number">0.5</span>),
+            nn.Linear(<span class="number">256</span> * <span class="number">6</span> * <span class="number">6</span>, <span class="number">4096</span>),
+            nn.ReLU(inplace=<span class="keyword">True</span>),
+            nn.Dropout(p=<span class="number">0.5</span>),
+            nn.Linear(<span class="number">4096</span>, <span class="number">4096</span>),
+            nn.ReLU(inplace=<span class="keyword">True</span>),
+            nn.Linear(<span class="number">4096</span>, num_classes),
+        )
+        
+        <span class="comment"># Initialize weights</span>
+        self.<span class="function">_initialize_weights</span>()
+    
+    <span class="keyword">def</span> <span class="function">forward</span>(self, x):
+        x = self.<span class="function">features</span>(x)
+        x = torch.<span class="function">flatten</span>(x, <span class="number">1</span>)
+        x = self.<span class="function">classifier</span>(x)
+        <span class="keyword">return</span> x
+    
+    <span class="keyword">def</span> <span class="function">_initialize_weights</span>(self):
+        <span class="keyword">for</span> m <span class="keyword">in</span> self.<span class="function">modules</span>():
+            <span class="keyword">if</span> <span class="function">isinstance</span>(m, nn.Conv2d):
+                nn.init.<span class="function">kaiming_normal_</span>(m.weight, mode=<span class="string">'fan_out'</span>, nonlinearity=<span class="string">'relu'</span>)
+                <span class="keyword">if</span> m.bias <span class="keyword">is not None</span>:
+                    nn.init.<span class="function">constant_</span>(m.bias, <span class="number">0</span>)
+            <span class="keyword">elif</span> <span class="function">isinstance</span>(m, nn.Linear):
+                nn.init.<span class="function">normal_</span>(m.weight, <span class="number">0</span>, <span class="number">0.01</span>)
+                nn.init.<span class="function">constant_</span>(m.bias, <span class="number">0</span>)
+
+
+<span class="comment"># Usage example</span>
+<span class="keyword">if</span> __name__ == <span class="string">"__main__"</span>:
+    model = <span class="function">AlexNet</span>(num_classes=<span class="number">1000</span>)
+    
+    <span class="comment"># Test with random input (batch_size=1, channels=3, height=227, width=227)</span>
+    x = torch.<span class="function">randn</span>(<span class="number">1</span>, <span class="number">3</span>, <span class="number">227</span>, <span class="number">227</span>)
+    output = <span class="function">model</span>(x)
+    <span class="function">print</span>(<span class="string">f"Output shape: {output.shape}"</span>)  <span class="comment"># torch.Size([1, 1000])</span></code></pre>
+            </div>
+            
+            <div class="code-block">
+                <div class="code-header">
+                    <span class="code-title">Training Script</span>
+                    <span class="code-lang">PyTorch</span>
+                </div>
+                <pre><code><span class="keyword">import</span> torch.optim <span class="keyword">as</span> optim
+<span class="keyword">from</span> torch.utils.data <span class="keyword">import</span> DataLoader
+<span class="keyword">from</span> torchvision <span class="keyword">import</span> datasets, transforms
+
+<span class="comment"># Data augmentation as described in the paper</span>
+transform = transforms.<span class="function">Compose</span>([
+    transforms.<span class="function">Resize</span>((<span class="number">256</span>, <span class="number">256</span>)),
+    transforms.<span class="function">RandomCrop</span>(<span class="number">224</span>),
+    transforms.<span class="function">RandomHorizontalFlip</span>(),
+    transforms.<span class="function">ToTensor</span>(),
+    transforms.<span class="function">Normalize</span>(mean=[<span class="number">0.485</span>, <span class="number">0.456</span>, <span class="number">0.406</span>], 
+                         std=[<span class="number">0.229</span>, <span class="number">0.224</span>, <span class="number">0.225</span>]),
+])
+
+<span class="comment"># Hyperparameters from the paper</span>
+learning_rate = <span class="number">0.01</span>
+momentum = <span class="number">0.9</span>
+weight_decay = <span class="number">0.0005</span>
+batch_size = <span class="number">128</span>
+
+<span class="comment"># Initialize model, loss, and optimizer</span>
+model = <span class="function">AlexNet</span>(num_classes=<span class="number">1000</span>)
+criterion = nn.<span class="function">CrossEntropyLoss</span>()
+optimizer = optim.<span class="function">SGD</span>(model.<span class="function">parameters</span>(), 
+                        lr=learning_rate, 
+                        momentum=momentum, 
+                        weight_decay=weight_decay)
+
+<span class="comment"># Learning rate schedule: divide by 10 every 30 epochs</span>
+scheduler = optim.lr_scheduler.<span class="function">StepLR</span>(optimizer, step_size=<span class="number">30</span>, gamma=<span class="number">0.1</span>)</code></pre>
+            </div>
+        </section>
+
+        <section class="section">
+            <h2 class="section-title">Training Details</h2>
+            <div class="card">
+                <h3>Optimization Configuration</h3>
+                <p>AlexNet was trained using stochastic gradient descent (SGD) with the following hyperparameters:</p>
+                <ul style="margin-top: 1rem; margin-left: 1.5rem; color: rgba(255,255,255,0.85);">
+                    <li><strong>Batch size:</strong> 128 (split across two GPUs)</li>
+                    <li><strong>Learning rate:</strong> 0.01, manually reduced when validation error plateaus</li>
+                    <li><strong>Momentum:</strong> 0.9</li>
+                    <li><strong>Weight decay:</strong> 0.0005 (L2 regularization)</li>
+                    <li><strong>Dropout ratio:</strong> 0.5 in fully connected layers</li>
+                </ul>
+            </div>
+            <div class="card">
+                <h3>Training Time</h3>
+                <p>The network was trained for approximately <span class="highlight">90 epochs</span> over the course of <span class="highlight">5-6 days</span> on two NVIDIA GTX 580 GPUs with 3GB of memory each. Training 60 million parameters required careful memory management and the two-GPU architecture was born out of necessity due to hardware limitations.</p>
+            </div>
+        </section>
+
+        <section class="section">
+            <h2 class="section-title">Results & Impact</h2>
+            <div class="impact-section">
+                <h3 class="impact-title">ImageNet LSVRC-2012 Results</h3>
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <div class="stat-number">15.3%</div>
+                        <div class="stat-label">AlexNet Top-5 Error</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-number">26.2%</div>
+                        <div class="stat-label">Runner-up Top-5 Error</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-number">10.9%</div>
+                        <div class="stat-label">Margin of Victory</div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="card">
+                <h3>Historical Significance</h3>
+                <p>AlexNet's victory in the 2012 ImageNet competition is widely regarded as the moment that sparked the deep learning revolution. The massive improvement over traditional computer vision methods demonstrated that:</p>
+                <ul style="margin-top: 1rem; margin-left: 1.5rem; color: rgba(255,255,255,0.85);">
+                    <li>Deep neural networks could learn hierarchical feature representations directly from raw pixels</li>
+                    <li>GPUs were essential for training large-scale neural networks</li>
+                    <li>Techniques like ReLU, dropout, and data augmentation were crucial for practical deep learning</li>
+                </ul>
+            </div>
+            
+            <div class="timeline">
+                <div class="timeline-item">
+                    <div class="timeline-year">2012</div>
+                    <div class="timeline-content">AlexNet wins ImageNet with 15.3% top-5 error, beating the runner-up by 10.9 percentage points</div>
+                </div>
+                <div class="timeline-item">
+                    <div class="timeline-year">2013</div>
+                    <div class="timeline-content">ZFNet wins ImageNet using similar architecture with adjusted hyperparameters</div>
+                </div>
+                <div class="timeline-item">
+                    <div class="timeline-year">2014</div>
+                    <div class="timeline-content">VGG and GoogLeNet push deeper architectures (19 and 22 layers)</div>
+                </div>
+                <div class="timeline-item">
+                    <div class="timeline-year">2015</div>
+                    <div class="timeline-content">ResNet introduces skip connections, enabling 100+ layer networks</div>
+                </div>
+                <div class="timeline-item">
+                    <div class="timeline-year">Present</div>
+                    <div class="timeline-content">AlexNet's innovations (ReLU, dropout, GPU training) remain foundational to modern deep learning</div>
+                </div>
+            </div>
+        </section>
+
+        <section class="section">
+            <h2 class="section-title">Architecture Comparison</h2>
+            <div class="svg-container">
+                <svg viewBox="0 0 800 400" xmlns="http://www.w3.org/2000/svg">
+                    <!-- Title -->
+                    <text x="400" y="30" text-anchor="middle" fill="#fff" font-size="18" font-weight="bold">Layer-wise Feature Map Dimensions</text>
+                    
+                    <!-- Axes -->
+                    <line x1="80" y1="60" x2="80" y2="350" stroke="#fff" stroke-width="2"/>
+                    <line x1="80" y1="350" x2="750" y2="350" stroke="#fff" stroke-width="2"/>
+                    
+                    <!-- Y-axis labels -->
+                    <text x="70" y="355" text-anchor="end" fill="#fff" font-size="11">0</text>
+                    <text x="70" y="280" text-anchor="end" fill="#fff" font-size="11">100</text>
+                    <text x="70" y="205" text-anchor="end" fill="#fff" font-size="11">200</text>
+                    <text x="70" y="130" text-anchor="end" fill="#fff" font-size="11">300</text>
+                    <text x="70" y="65" text-anchor="end" fill="#fff" font-size="11">400</text>
+                    
+                    <!-- X-axis labels -->
+                    <text x="130" y="370" text-anchor="middle" fill="#667eea" font-size="10" font-weight="bold">Input</text>
+                    <text x="200" y="370" text-anchor="middle" fill="#667eea" font-size="10" font-weight="bold">Conv1</text>
+                    <text x="270" y="370" text-anchor="middle" fill="#f5576c" font-size="10" font-weight="bold">Pool1</text>
+                    <text x="340" y="370" text-anchor="middle" fill="#667eea" font-size="10" font-weight="bold">Conv2</text>
+                    <text x="410" y="370" text-anchor="middle" fill="#f5576c" font-size="10" font-weight="bold">Pool2</text>
+                    <text x="480" y="370" text-anchor="middle" fill="#667eea" font-size="10" font-weight="bold">Conv3-5</text>
+                    <text x="550" y="370" text-anchor="middle" fill="#f5576c" font-size="10" font-weight="bold">Pool3</text>
+                    <text x="620" y="370" text-anchor="middle" fill="#4facfe" font-size="10" font-weight="bold">FC</text>
+                    <text x="690" y="370" text-anchor="middle" fill="#4facfe" font-size="10" font-weight="bold">Output</text>
+                    
+                    <!-- Spatial dimension bars (blue) -->
+                    <rect x="115" y="180" width="30" height="170" fill="#667eea" opacity="0.8" rx="3"/>
+                    <rect x="185" y="315" width="30" height="35" fill="#667eea" opacity="0.8" rx="3"/>
+                    <rect x="255" y="325" width="30" height="25" fill="#f5576c" opacity="0.8" rx="3"/>
+                    <rect x="325" y="330" width="30" height="20" fill="#667eea" opacity="0.8" rx="3"/>
+                    <rect x="395" y="335" width="30" height="15" fill="#f5576c" opacity="0.8" rx="3"/>
+                    <rect x="465" y="337" width="30" height="13" fill="#667eea" opacity="0.8" rx="3"/>
+                    <rect x="535" y="342" width="30" height="8" fill="#f5576c" opacity="0.8" rx="3"/>
+                    
+                    <!-- Channel count bars (orange, scaled) -->
+                    <rect x="145" y="335" width="30" height="15" fill="#f5a623" opacity="0.6" rx="3"/>
+                    <rect x="215" y="317" width="30" height="33" fill="#f5a623" opacity="0.6" rx="3"/>
+                    <rect x="285" y="317" width="30" height="33" fill="#f5a623" opacity="0.6" rx="3"/>
+                    <rect x="355" y="312" width="30" height="38" fill="#f5a623" opacity="0.6" rx="3"/>
+                    <rect x="425" y="312" width="30" height="38" fill="#f5a623" opacity="0.6" rx="3"/>
+                    <rect x="495" y="317" width="30" height="33" fill="#f5a623" opacity="0.6" rx="3"/>
+                    <rect x="565" y="317" width="30" height="33" fill="#f5a623" opacity="0.6" rx="3"/>
+                    <rect x="605" y="325" width="30" height="25" fill="#4facfe" opacity="0.6" rx="3"/>
+                    <rect x="675" y="337" width="30" height="13" fill="#4facfe" opacity="0.6" rx="3"/>
+                    
+                    <!-- Legend -->
+                    <g transform="translate(500, 80)">
+                        <rect x="0" y="0" width="15" height="15" fill="#667eea" opacity="0.8" rx="2"/>
+                        <text x="25" y="12" fill="#fff" font-size="11">Spatial Size</text>
+                        <rect x="0" y="25" width="15" height="15" fill="#f5a623" opacity="0.6" rx="2"/>
+                        <text x="25" y="37" fill="#fff" font-size="11">Channels/10</text>
+                    </g>
+                    
+                    <!-- Values -->
+                    <text x="130" y="170" text-anchor="middle" fill="#fff" font-size="9">227×227</text>
+                    <text x="130" y="185" text-anchor="middle" fill="#f5a623" font-size="8">3 ch</text>
+                    <text x="200" y="305" text-anchor="middle" fill="#fff" font-size="9">55×55</text>
+                    <text x="200" y="320" text-anchor="middle" fill="#f5a623" font-size="8">96 ch</text>
+                    <text x="340" y="320" text-anchor="middle" fill="#fff" font-size="9">27×27</text>
+                    <text x="340" y="335" text-anchor="middle" fill="#f5a623" font-size="8">256 ch</text>
+                    <text x="480" y="327" text-anchor="middle" fill="#fff" font-size="9">13×13</text>
+                    <text x="480" y="342" text-anchor="middle" fill="#f5a623" font-size="8">384 ch</text>
+                    <text x="620" y="320" text-anchor="middle" fill="#fff" font-size="9">4096</text>
+                    <text x="690" y="332" text-anchor="middle" fill="#fff" font-size="9">1000</text>
+                </svg>
+            </div>
+            
+            <div class="card">
+                <h3>Key Observations</h3>
+                <p>The visualization above shows how AlexNet processes images through successive layers. Notice how:</p>
+                <ul style="margin-top: 1rem; margin-left: 1.5rem; color: rgba(255,255,255,0.85);">
+                    <li><strong>Spatial dimensions decrease</strong> from 227×227 to 6×6 through pooling operations</li>
+                    <li><strong>Channel depth increases</strong> from 3 (RGB) to 384, capturing increasingly complex features</li>
+                    <li><strong>Parameters concentrate</strong> in the fully connected layers (FC6: 37.7M, FC7: 16.8M parameters)</li>
+                </ul>
+            </div>
+        </section>
+
+        <section class="section">
+            <h2 class="section-title">References</h2>
+            <div class="card">
+                <h3>Original Paper</h3>
+                <p style="margin-bottom: 1rem;">
+                    <strong>ImageNet Classification with Deep Convolutional Neural Networks</strong><br>
+                    Alex Krizhevsky, Ilya Sutskever, Geoffrey E. Hinton<br>
+                    Advances in Neural Information Processing Systems 25 (NIPS 2012)
+                </p>
+                <a href="https://papers.nips.cc/paper/4824-imagenet-classification-with-deep-convolutional-neural-networks.pdf" class="paper-link" target="_blank">
+                    📄 Read Original Paper
+                </a>
+            </div>
+            <div class="card">
+                <h3>Related Work</h3>
+                <ul style="margin-left: 1.5rem; color: rgba(255,255,255,0.85);">
+                    <li>ImageNet: A Large-Scale Hierarchical Image Database (Deng et al., 2009)</li>
+                    <li>Rectified Linear Units Improve Restricted Boltzmann Machines (Nair & Hinton, 2010)</li>
+                    <li>Improving Neural Networks by Preventing Co-adaptation of Feature Detectors (Hinton et al., 2012)</li>
+                </ul>
+            </div>
+        </section>
+    </div>
+
+    <footer class="footer">
+        <p class="footer-text">
+            🤖 This page was generated by an AI agent (Kimi Claw)<br>
+            Part of the AI Neural Networks Educational Collection<br>
+            Generated: April 14, 2026
+        </p>
+    </footer>
+
+    <script>
+        document.addEventListener("DOMContentLoaded", function() {
+            renderMathInElement(document.body, {
+                delimiters: [
+                    {left: "$$", right: "$$", display: true},
+                    {left: "$", right: "$", display: false}
+                ]
+            });
+        });
+    </script>
+</body>
+</html>
