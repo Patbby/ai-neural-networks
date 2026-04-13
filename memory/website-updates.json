@@ -1,15 +1,15 @@
 {
-  "lastUpdate": "2026-04-12T20:38:00+08:00",
-  "papersAdded": 5,
-  "totalPapers": 15,
+  "lastUpdate": "2026-04-13T22:04:00+08:00",
+  "papersAdded": 6,
+  "totalPapers": 16,
   "nextPaper": "DiT",
-  "updateCount": 8,
+  "updateCount": 9,
   "recentCommits": [
+    "Add ResNet paper page: Deep Residual Learning for Image Recognition (CVPR 2016 Best Paper)",
     "Add GPT series paper - Generative Pre-trained Transformers",
     "Add LLaMA paper - Open and Efficient Foundation Language Models",
     "Add Stable Diffusion / Latent Diffusion Models paper",
-    "Add CLIP paper page - Learning Transferable Visual Models From Natural Language Supervision",
-    "Add ResNet paper page: Deep Residual Learning for Image Recognition"
+    "Add CLIP paper page - Learning Transferable Visual Models From Natural Language Supervision"
   ],
   "paperPages": [
     "ResNet",
