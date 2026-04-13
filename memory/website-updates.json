@@ -1,27 +1,33 @@
 {
-  "lastUpdate": "2026-04-13T22:04:00+08:00",
-  "papersAdded": 6,
-  "totalPapers": 16,
-  "nextPaper": "DiT",
-  "updateCount": 9,
-  "recentCommits": [
-    "Add ResNet paper page: Deep Residual Learning for Image Recognition (CVPR 2016 Best Paper)",
-    "Add GPT series paper - Generative Pre-trained Transformers",
-    "Add LLaMA paper - Open and Efficient Foundation Language Models",
-    "Add Stable Diffusion / Latent Diffusion Models paper",
-    "Add CLIP paper page - Learning Transferable Visual Models From Natural Language Supervision"
-  ],
+  "lastUpdate": "2026-04-14T05:15:00+08:00",
+  "papersAdded": 15,
+  "totalPapers": 18,
+  "nextPaper": null,
+  "updateCount": 15,
+  "addedPapers": ["ResNet", "DiT", "Transformer", "BERT", "GAN", "VAE", "Vision Transformer", "CLIP", "Stable Diffusion", "Llama", "GPT", "DenseNet", "EfficientNet", "AlexNet", "VGG"],
+  "pendingPapers": [],
+  "completedPapers": ["ResNet", "DiT", "Transformer", "BERT", "GAN", "VAE", "Vision Transformer", "CLIP", "Stable Diffusion", "Llama", "GPT", "DenseNet", "EfficientNet", "AlexNet", "VGG"],
   "paperPages": [
     "ResNet",
-    "CLIP", 
+    "DiT",
+    "Transformer",
+    "BERT",
+    "GAN",
+    "VAE",
+    "Vision Transformer",
+    "CLIP",
     "Stable Diffusion",
-    "LLaMA",
-    "GPT"
+    "Llama",
+    "GPT",
+    "DenseNet",
+    "EfficientNet",
+    "AlexNet",
+    "VGG"
   ],
   "basePages": [
     "CNN",
     "GNN",
     "GAT"
   ],
-  "status": "Active - Auto-updating hourly"
+  "status": "Active - All priority papers completed!"
 }
