@@ -13,8 +13,23 @@
 | **CNN** | Convolutional Neural Networks - How computers "see" | ✅ Complete |
 | **GNN** | Graph Neural Networks - Learning from connections | ✅ Complete |
 | **GAT** | Graph Attention Networks - Attention meets graphs | ✅ Complete |
-| **Transformer** | Self-attention mechanism | 🚧 Coming Soon |
-| **LSTM/GRU** | Sequential data processing | 🚧 Coming Soon |
+| **ResNet** | Deep Residual Learning for Image Recognition | ✅ Complete |
+| **DiT** | Diffusion Transformers | ✅ Complete |
+| **Transformer** | Self-attention mechanism | ✅ Complete |
+| **BERT** | Pre-training of Deep Bidirectional Transformers | ✅ Complete |
+| **VAE** | Auto-Encoding Variational Bayes | ✅ Complete |
+| **GAN** | Generative Adversarial Networks | ✅ Complete |
+| **ViT** | Vision Transformer | ✅ Complete |
+| **CLIP** | Learning Transferable Visual Models | ✅ Complete |
+| **Stable Diffusion** | High-Resolution Image Synthesis | ✅ Complete |
+| **Llama** | Open and Efficient Foundation Language Models | ✅ Complete |
+| **GPT** | Generative Pre-trained Transformers | ✅ Complete |
+| **YOLO** | You Only Look Once | ✅ Complete |
+| **LSTM** | Long Short-Term Memory | ✅ Complete |
+| **VGG** | Very Deep Convolutional Networks | ✅ Complete |
+| **EfficientNet** | Rethinking Model Scaling | ✅ Complete |
+| **AlexNet** | ImageNet Classification | ✅ Complete |
+| **DenseNet** | Densely Connected Convolutional Networks | 🚧 Coming Soon |
 
 ---
 
