@@ -1,0 +1,553 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GoogLeNet (Inception) - Going Deeper with Convolutions</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            background: linear-gradient(135deg, #0a0a0f 0%, #1a1a2e 100%);
+            color: #e0e0ff;
+            line-height: 1.6;
+            min-height: 100vh;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 40px 20px;
+        }
+        
+        header {
+            text-align: center;
+            padding: 60px 20px 40px;
+            background: linear-gradient(180deg, rgba(99,102,241,0.1) 0%, transparent 100%);
+            border-bottom: 1px solid rgba(99, 102, 241, 0.2);
+        }
+        
+        h1 {
+            font-size: 3rem;
+            background: linear-gradient(135deg, #6366f1 0%, #a855f7 50%, #ec4899 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 10px;
+            font-weight: 800;
+        }
+        
+        .subtitle {
+            font-size: 1.2rem;
+            color: #8888aa;
+            margin-bottom: 20px;
+        }
+        
+        .meta {
+            display: flex;
+            justify-content: center;
+            gap: 30px;
+            flex-wrap: wrap;
+            margin-top: 20px;
+        }
+        
+        .meta-item {
+            background: rgba(99, 102, 241, 0.1);
+            padding: 10px 20px;
+            border-radius: 20px;
+            border: 1px solid rgba(99, 102, 241, 0.3);
+        }
+        
+        .meta-label {
+            color: #8888aa;
+            font-size: 0.85rem;
+        }
+        
+        .meta-value {
+            color: #fff;
+            font-weight: 600;
+        }
+        
+        .paper-info {
+            background: rgba(20, 20, 35, 0.8);
+            border: 1px solid rgba(99, 102, 241, 0.2);
+            border-radius: 16px;
+            padding: 30px;
+            margin: 40px 0;
+        }
+        
+        .paper-info h2 {
+            color: #a5b4fc;
+            margin-bottom: 15px;
+            font-size: 1.5rem;
+        }
+        
+        .paper-info p {
+            color: #b0b0d0;
+            margin-bottom: 15px;
+        }
+        
+        .authors {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin: 20px 0;
+        }
+        
+        .author {
+            background: rgba(99, 102, 241, 0.15);
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-size: 0.9rem;
+            color: #c7d2fe;
+        }
+        
+        .architecture-section {
+            margin: 50px 0;
+        }
+        
+        .architecture-section h2 {
+            font-size: 2rem;
+            color: #fff;
+            margin-bottom: 30px;
+            text-align: center;
+        }
+        
+        .visualization {
+            background: rgba(15, 15, 25, 0.9);
+            border: 1px solid rgba(99, 102, 241, 0.2);
+            border-radius: 20px;
+            padding: 40px;
+            margin: 30px 0;
+            overflow-x: auto;
+        }
+        
+        .innovation-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 25px;
+            margin: 40px 0;
+        }
+        
+        .innovation-card {
+            background: rgba(20, 20, 35, 0.8);
+            border: 1px solid rgba(99, 102, 241, 0.2);
+            border-radius: 16px;
+            padding: 25px;
+            transition: all 0.3s ease;
+        }
+        
+        .innovation-card:hover {
+            transform: translateY(-5px);
+            border-color: rgba(99, 102, 241, 0.4);
+            box-shadow: 0 15px 30px rgba(99, 102, 241, 0.1);
+        }
+        
+        .innovation-card h3 {
+            color: #a5b4fc;
+            margin-bottom: 15px;
+            font-size: 1.2rem;
+        }
+        
+        .innovation-card p {
+            color: #b0b0d0;
+            font-size: 0.95rem;
+        }
+        
+        .back-link {
+            display: inline-block;
+            margin-top: 40px;
+            padding: 12px 24px;
+            background: linear-gradient(135deg, #6366f1 0%, #a855f7 100%);
+            color: white;
+            text-decoration: none;
+            border-radius: 8px;
+            font-weight: 600;
+            transition: transform 0.2s ease;
+        }
+        
+        .back-link:hover {
+            transform: translateX(-5px);
+        }
+        
+        footer {
+            text-align: center;
+            padding: 40px 20px;
+            color: #555577;
+            border-top: 1px solid rgba(99, 102, 241, 0.1);
+            margin-top: 60px;
+        }
+        
+        @media (max-width: 768px) {
+            h1 { font-size: 2rem; }
+            .meta { flex-direction: column; align-items: center; }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>🌐 GoogLeNet (Inception)</h1>
+        <p class="subtitle">Going Deeper with Convolutions</p>
+        <div class="meta">
+            <div class="meta-item">
+                <div class="meta-label">Published</div>
+                <div class="meta-value">2014 (CVPR 2015)</div>
+            </div>
+            <div class="meta-item">
+                <div class="meta-label">Conference</div>
+                <div class="meta-value">CVPR 2015</div>
+            </div>
+            <div class="meta-item">
+                <div class="meta-label">Performance</div>
+                <div class="meta-value">6.67% Top-5 Error</div>
+            </div>
+            <div class="meta-item">
+                <div class="meta-label">Parameters</div>
+                <div class="meta-value">4 Million</div>
+            </div>
+        </div>
+    </header>
+
+    <div class="container">
+        <div class="paper-info">
+            <h2>📄 Paper Information</h2>
+            <p><strong>Full Title:</strong> Going Deeper with Convolutions</p>
+            <p><strong>Authors:</strong></p>
+            <div class="authors">
+                <span class="author">Christian Szegedy</span>
+                <span class="author">Wei Liu</span>
+                <span class="author">Yangqing Jia</span>
+                <span class="author">Pierre Sermanet</span>
+                <span class="author">Scott Reed</span>
+                <span class="author">Dragomir Anguelov</span>
+                <span class="author">Dumitru Erhan</span>
+                <span class="author">Vincent Vanhoucke</span>
+                <span class="author">Andrew Rabinovich</span>
+            </div>
+            <p><strong>Abstract:</strong> We propose a deep convolutional neural network architecture codenamed "Inception", which was responsible for setting the new state of the art for classification and detection in the ImageNet Large-Scale Visual Recognition Challenge 2014 (ILSVRC 2014). The main hallmark of this architecture is the improved utilization of the computing resources inside the network. This was achieved by a carefully crafted design that allows for increasing the depth and width of the network while keeping the computational budget constant.</p>
+            <p><strong>Key Achievement:</strong> Winner of ILSVRC 2014 with a top-5 error rate of 6.67%, significantly outperforming previous approaches while using only 4 million parameters (compared to AlexNet's 60 million).</p>
+        </div>
+
+        <div class="architecture-section">
+            <h2>🏗️ Architecture Overview</h2>
+            <div class="visualization">
+                <svg viewBox="0 0 1000 500" style="width: 100%; height: auto;">
+                    <defs>
+                        <linearGradient id="convGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+                            <stop offset="0%" style="stop-color:#6366f1"/>
+                            <stop offset="100%" style="stop-color:#a855f7"/>
+                        </linearGradient>
+                        <linearGradient id="poolGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+                            <stop offset="0%" style="stop-color:#10b981"/>
+                            <stop offset="100%" style="stop-color:#06b6d4"/>
+                        </linearGradient>
+                        <linearGradient id="inceptionGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+                            <stop offset="0%" style="stop-color:#f59e0b"/>
+                            <stop offset="50%" style="stop-color:#ec4899"/>
+                            <stop offset="100%" style="stop-color:#6366f1"/>
+                        </linearGradient>
+                        <filter id="glow">
+                            <feGaussianBlur stdDeviation="3" result="coloredBlur"/>
+                            <feMerge>
+                                <feMergeNode in="coloredBlur"/>
+                                <feMergeNode in="SourceGraphic"/>
+                            </feMerge>
+                        </filter>
+                    </defs>
+                    
+                    <!-- Title -->
+                    <text x="500" y="30" fill="#fff" font-size="20" font-weight="bold" text-anchor="middle">GoogLeNet Architecture (22 Layers)</text>
+                    
+                    <!-- Input -->
+                    <rect x="20" y="200" width="60" height="100" fill="none" stroke="#6366f1" stroke-width="2" rx="5"/>
+                    <text x="50" y="255" fill="#fff" font-size="12" text-anchor="middle">Input</text>
+                    <text x="50" y="275" fill="#8888aa" font-size="10" text-anchor="middle">224×224×3</text>
+                    
+                    <!-- Initial Conv -->
+                    <rect x="100" y="180" width="50" height="140" fill="url(#convGrad)" opacity="0.3" stroke="#6366f1" stroke-width="2" rx="3"/>
+                    <text x="125" y="225" fill="#fff" font-size="10" text-anchor="middle">Conv</text>
+                    <text x="125" y="240" fill="#c7d2fe" font-size="9" text-anchor="middle">7×7/2</text>
+                    <text x="125" y="275" fill="#8888aa" font-size="9" text-anchor="middle">112×112×64</text>
+                    
+                    <!-- Max Pool -->
+                    <rect x="170" y="190" width="40" height="120" fill="url(#poolGrad)" opacity="0.3" stroke="#10b981" stroke-width="2" rx="3"/>
+                    <text x="190" y="245" fill="#fff" font-size="9" text-anchor="middle">MaxPool</text>
+                    <text x="190" y="260" fill="#6ee7b7" font-size="8" text-anchor="middle">3×3/2</text>
+                    <text x="190" y="290" fill="#8888aa" font-size="9" text-anchor="middle">56×56×64</text>
+                    
+                    <!-- Conv 1x1 reduction -->
+                    <rect x="230" y="200" width="40" height="100" fill="url(#convGrad)" opacity="0.3" stroke="#6366f1" stroke-width="2" rx="3"/>
+                    <text x="250" y="240" fill="#fff" font-size="9" text-anchor="middle">Conv</text>
+                    <text x="250" y="255" fill="#c7d2fe" font-size="8" text-anchor="middle">1×1</text>
+                    <text x="250" y="280" fill="#8888aa" font-size="9" text-anchor="middle">56×56×64</text>
+                    
+                    <!-- Conv 3x3 -->
+                    <rect x="290" y="195" width="40" height="110" fill="url(#convGrad)" opacity="0.3" stroke="#6366f1" stroke-width="2" rx="3"/>
+                    <text x="310" y="240" fill="#fff" font-size="9" text-anchor="middle">Conv</text>
+                    <text x="310" y="255" fill="#c7d2fe" font-size="8" text-anchor="middle">3×3</text>
+                    <text x="310" y="285" fill="#8888aa" font-size="9" text-anchor="middle">56×56×192</text>
+                    
+                    <!-- Max Pool -->
+                    <rect x="350" y="200" width="35" height="100" fill="url(#poolGrad)" opacity="0.3" stroke="#10b981" stroke-width="2" rx="3"/>
+                    <text x="367" y="245" fill="#fff" font-size="9" text-anchor="middle">Pool</text>
+                    <text x="367" y="260" fill="#6ee7b7" font-size="8" text-anchor="middle">3×3/2</text>
+                    <text x="367" y="285" fill="#8888aa" font-size="9" text-anchor="middle">28×28×192</text>
+                    
+                    <!-- Inception Module 3a -->
+                    <g transform="translate(410, 150)">
+                        <rect x="0" y="0" width="120" height="200" fill="url(#inceptionGrad)" opacity="0.2" stroke="#f59e0b" stroke-width="2" rx="10" filter="url(#glow)"/>
+                        <text x="60" y="20" fill="#f59e0b" font-size="11" font-weight="bold" text-anchor="middle">Inception (3a)</text>
+                        <!-- 1x1 branch -->
+                        <rect x="10" y="35" width="25" height="40" fill="rgba(99,102,241,0.5)" stroke="#6366f1" stroke-width="1" rx="2"/>
+                        <text x="22" y="60" fill="#fff" font-size="7" text-anchor="middle">1×1</text>
+                        <!-- 3x3 branch -->
+                        <rect x="10" y="80" width="25" height="30" fill="rgba(99,102,241,0.3)" stroke="#6366f1" stroke-width="1" rx="2"/>
+                        <rect x="10" y="115" width="25" height="40" fill="rgba(99,102,241,0.5)" stroke="#6366f1" stroke-width="1" rx="2"/>
+                        <text x="22" y="105" fill="#c7d2fe" font-size="6" text-anchor="middle">1×1→3×3</text>
+                        <!-- 5x5 branch -->
+                        <rect x="47" y="80" width="25" height="30" fill="rgba(99,102,241,0.3)" stroke="#6366f1" stroke-width="1" rx="2"/>
+                        <rect x="47" y="115" width="25" height="40" fill="rgba(99,102,241,0.5)" stroke="#6366f1" stroke-width="1" rx="2"/>
+                        <text x="59" y="105" fill="#c7d2fe" font-size="6" text-anchor="middle">1×1→5×5</text>
+                        <!-- Pool branch -->
+                        <rect x="85" y="80" width="25" height="30" fill="rgba(16,185,129,0.3)" stroke="#10b981" stroke-width="1" rx="2"/>
+                        <rect x="85" y="115" width="25" height="40" fill="rgba(99,102,241,0.5)" stroke="#6366f1" stroke-width="1" rx="2"/>
+                        <text x="97" y="105" fill="#6ee7b7" font-size="6" text-anchor="middle">Pool→1×1</text>
+                        <!-- Concat arrow -->
+                        <path d="M22 160 L22 175 M59 160 L59 175 M97 160 L97 175" stroke="#ec4899" stroke-width="2"/>
+                        <text x="60" y="192" fill="#ec4899" font-size="9" text-anchor="middle">Concat</text>
+                        <text x="60" y="165" fill="#8888aa" font-size="8" text-anchor="middle">256</text>
+                    </g>
+                    
+                    <!-- More Inception Modules indication -->
+                    <text x="580" y="250" fill="#8888aa" font-size="14" text-anchor="middle">9× Inception Modules</text>
+                    <text x="580" y="270" fill="#666688" font-size="11" text-anchor="middle">(3a→3b, 4a→4e, 5a→5b)</text>
+                    
+                    <!-- Output stage -->
+                    <rect x="650" y="190" width="50" height="120" fill="url(#poolGrad)" opacity="0.3" stroke="#10b981" stroke-width="2" rx="3"/>
+                    <text x="675" y="235" fill="#fff" font-size="10" text-anchor="middle">AvgPool</text>
+                    <text x="675" y="250" fill="#6ee7b7" font-size="9" text-anchor="middle">7×7</text>
+                    <text x="675" y="290" fill="#8888aa" font-size="9" text-anchor="middle">1×1×1024</text>
+                    
+                    <!-- Dropout -->
+                    <rect x="720" y="210" width="40" height="80" fill="rgba(239,68,68,0.2)" stroke="#ef4444" stroke-width="2" rx="3"/>
+                    <text x="740" y="245" fill="#fff" font-size="9" text-anchor="middle">Dropout</text>
+                    <text x="740" y="260" fill="#fca5a5" font-size="8" text-anchor="middle">40%</text>
+                    
+                    <!-- FC -->
+                    <rect x="780" y="200" width="50" height="100" fill="url(#convGrad)" opacity="0.3" stroke="#6366f1" stroke-width="2" rx="3"/>
+                    <text x="805" y="240" fill="#fff" font-size="10" text-anchor="middle">Linear</text>
+                    <text x="805" y="255" fill="#c7d2fe" font-size="9" text-anchor="middle">+ ReLU</text>
+                    <text x="805" y="285" fill="#8888aa" font-size="9" text-anchor="middle">1000 classes</text>
+                    
+                    <!-- Softmax -->
+                    <rect x="850" y="210" width="50" height="80" fill="rgba(16,185,129,0.2)" stroke="#10b981" stroke-width="2" rx="3"/>
+                    <text x="875" y="245" fill="#fff" font-size="10" text-anchor="middle">Softmax</text>
+                    <text x="875" y="275" fill="#6ee7b7" font-size="9" text-anchor="middle">Output</text>
+                    
+                    <!-- Arrows between main blocks -->
+                    <path d="M80 250 L100 250" stroke="#6366f1" stroke-width="2" marker-end="url(#arrowhead)"/>
+                    <path d="M150 250 L170 250" stroke="#6366f1" stroke-width="2"/>
+                    <path d="M210 250 L230 250" stroke="#6366f1" stroke-width="2"/>
+                    <path d="M270 250 L290 250" stroke="#6366f1" stroke-width="2"/>
+                    <path d="M330 250 L350 250" stroke="#6366f1" stroke-width="2"/>
+                    <path d="M385 250 L410 250" stroke="#6366f1" stroke-width="2"/>
+                    <path d="M530 250 L650 250" stroke="#6366f1" stroke-width="2" stroke-dasharray="5,5"/>
+                    <path d="M700 250 L720 250" stroke="#6366f1" stroke-width="2"/>
+                    <path d="M760 250 L780 250" stroke="#6366f1" stroke-width="2"/>
+                    <path d="M830 250 L850 250" stroke="#6366f1" stroke-width="2"/>
+                    
+                    <!-- Auxiliary classifiers note -->
+                    <text x="470" y="400" fill="#f59e0b" font-size="11" text-anchor="middle">⚡ Auxiliary Classifiers at Inception (4a) and (4d) for gradient flow</text>
+                    
+                    <!-- Depth indicator -->
+                    <text x="500" y="450" fill="#8888aa" font-size="12" text-anchor="middle">22 layers with parameters (27 including pooling) | ~100 independent building blocks</text>
+                </svg>
+            </div>
+        </div>
+
+        <div class="innovation-grid">
+            <div class="innovation-card">
+                <h3>🔀 Inception Module</h3>
+                <p>The core innovation - parallel convolutional filters of different sizes (1×1, 3×3, 5×5) plus pooling, all computed simultaneously. This allows the network to capture features at multiple scales, from fine details to broader patterns, in a single layer.</p>
+            </div>
+            
+            <div class="innovation-card">
+                <h3>📉 1×1 Dimension Reduction</h3>
+                <p>Before expensive 3×3 and 5×5 convolutions, 1×1 convolutions reduce the number of input channels. This "bottleneck" design dramatically cuts computational cost while preserving representational power. A key technique later adopted by ResNet.</p>
+            </div>
+            
+            <div class="innovation-card">
+                <h3>🎯 Global Average Pooling</h3>
+                <p>Replacing fully connected layers with global average pooling reduced parameters from millions to thousands. Each feature map is averaged to produce a single value, naturally producing 1000 outputs for ImageNet classes. More interpretable and less prone to overfitting.</p>
+            </div>
+            
+            <div class="innovation-card">
+                <h3>⚡ Auxiliary Classifiers</h3>
+                <p>Two additional softmax classifiers at intermediate layers (Inception 4a and 4d) combat the vanishing gradient problem in deep networks. These provide additional gradient signal during training and are discarded during inference. Improved top-1 accuracy by 0.4%.</p>
+            </div>
+            
+            <div class="innovation-card">
+                <h3>💡 Hebbian Principle</h3>
+                <p>The architecture design follows the neuroscience-inspired Hebbian principle: "neurons that fire together, wire together." By clustering correlated outputs and concentrating on the most promising regions, the network achieves both depth and efficiency.</p>
+            </div>
+            
+            <div class="innovation-card">
+                <h3>📊 Efficiency Breakthrough</h3>
+                <p>Achieved AlexNet-level accuracy with only 4 million parameters (vs. 60 million). The careful balance of depth (22 layers) and computational efficiency made deep networks practical for deployment on resource-constrained devices.</p>
+            </div>
+        </div>
+
+        <div class="architecture-section">
+            <h2>🧩 Inception Module Detail</h2>
+            <div class="visualization">
+                <svg viewBox="0 0 900 500" style="width: 100%; height: auto;">
+                    <defs>
+                        <marker id="arrow" markerWidth="10" markerHeight="10" refX="9" refY="3" orient="auto">
+                            <path d="M0,0 L0,6 L9,3 z" fill="#6366f1"/>
+                        </marker>
+                    </defs>
+                    
+                    <text x="450" y="30" fill="#fff" font-size="18" font-weight="bold" text-anchor="middle">Naive vs. Optimized Inception Module</text>
+                    
+                    <!-- Naive Version -->
+                    <text x="225" y="60" fill="#ef4444" font-size="14" font-weight="bold" text-anchor="middle">Naive Version (Computationally Expensive)</text>
+                    
+                    <!-- Input -->
+                    <rect x="20" y="120" width="60" height="120" fill="none" stroke="#6366f1" stroke-width="2" rx="5"/>
+                    <text x="50" y="185" fill="#fff" font-size="11" text-anchor="middle">Input</text>
+                    
+                    <!-- Parallel branches -->
+                    <!-- 1x1 conv -->
+                    <rect x="120" y="100" width="50" height="40" fill="rgba(99,102,241,0.3)" stroke="#6366f1" stroke-width="2" rx="3"/>
+                    <text x="145" y="125" fill="#fff" font-size="10" text-anchor="middle">1×1 Conv</text>
+                    
+                    <!-- 3x3 conv -->
+                    <rect x="120" y="160" width="50" height="40" fill="rgba(99,102,241,0.3)" stroke="#6366f1" stroke-width="2" rx="3"/>
+                    <text x="145" y="185" fill="#fff" font-size="10" text-anchor="middle">3×3 Conv</text>
+                    
+                    <!-- 5x5 conv -->
+                    <rect x="120" y="220" width="50" height="40" fill="rgba(99,102,241,0.3)" stroke="#6366f1" stroke-width="2" rx="3"/>
+                    <text x="145" y="245" fill="#fff" font-size="10" text-anchor="middle">5×5 Conv</text>
+                    
+                    <!-- Pool branch -->
+                    <rect x="120" y="280" width="50" height="50" fill="rgba(16,185,129,0.3)" stroke="#10b981" stroke-width="2" rx="3"/>
+                    <text x="145" y="300" fill="#fff" font-size="9" text-anchor="middle">3×3</text>
+                    <text x="145" y="315" fill="#fff" font-size="9" text-anchor="middle">MaxPool</text>
+                    
+                    <!-- Concatenation -->
+                    <rect x="220" y="160" width="80" height="80" fill="rgba(236,72,153,0.2)" stroke="#ec4899" stroke-width="2" rx="5"/>
+                    <text x="260" y="205" fill="#ec4899" font-size="12" text-anchor="middle">Concat</text>
+                    
+                    <!-- Output -->
+                    <rect x="340" y="160" width="60" height="80" fill="none" stroke="#6366f1" stroke-width="2" rx="5"/>
+                    <text x="370" y="205" fill="#fff" font-size="11" text-anchor="middle">Output</text>
+                    
+                    <!-- Arrows -->
+                    <path d="M80 180 L120 120" stroke="#6366f1" stroke-width="1.5" marker-end="url(#arrow)"/>
+                    <path d="M80 180 L120 180" stroke="#6366f1" stroke-width="1.5" marker-end="url(#arrow)"/>
+                    <path d="M80 180 L120 240" stroke="#6366f1" stroke-width="1.5" marker-end="url(#arrow)"/>
+                    <path d="M80 180 L120 305" stroke="#6366f1" stroke-width="1.5" marker-end="url(#arrow)"/>
+                    <path d="M170 120 L220 180" stroke="#6366f1" stroke-width="1.5"/>
+                    <path d="M170 180 L220 200" stroke="#6366f1" stroke-width="1.5"/>
+                    <path d="M170 240 L220 200" stroke="#6366f1" stroke-width="1.5"/>
+                    <path d="M170 305 L220 220" stroke="#6366f1" stroke-width="1.5"/>
+                    <path d="M300 200 L340 200" stroke="#ec4899" stroke-width="2" marker-end="url(#arrow)"/>
+                    
+                    <!-- Red X for naive -->
+                    <text x="260" y="380" fill="#ef4444" font-size="40" text-anchor="middle">✗</text>
+                    <text x="260" y="410" fill="#ef4444" font-size="11" text-anchor="middle">High computational cost</text>
+                    <text x="260" y="425" fill="#ef4444" font-size="11" text-anchor="middle">5×5 conv is very expensive</text>
+                    
+                    <!-- Optimized Version -->
+                    <text x="675" y="60" fill="#10b981" font-size="14" font-weight="bold" text-anchor="middle">Optimized Version (Dimension Reduction)</text>
+                    
+                    <!-- Input -->
+                    <rect x="480" y="120" width="60" height="120" fill="none" stroke="#6366f1" stroke-width="2" rx="5"/>
+                    <text x="510" y="185" fill="#fff" font-size="11" text-anchor="middle">Input</text>
+                    
+                    <!-- 1x1 branch -->
+                    <rect x="580" y="100" width="50" height="40" fill="rgba(99,102,241,0.5)" stroke="#6366f1" stroke-width="2" rx="3"/>
+                    <text x="605" y="125" fill="#fff" font-size="10" text-anchor="middle">1×1 Conv</text>
+                    
+                    <!-- 3x3 branch with reduction -->
+                    <rect x="580" y="145" width="50" height="30" fill="rgba(245,158,11,0.4)" stroke="#f59e0b" stroke-width="2" rx="3"/>
+                    <text x="605" y="165" fill="#fff" font-size="9" text-anchor="middle">1×1 Red</text>
+                    <rect x="580" y="185" width="50" height="40" fill="rgba(99,102,241,0.3)" stroke="#6366f1" stroke-width="2" rx="3"/>
+                    <text x="605" y="210" fill="#fff" font-size="10" text-anchor="middle">3×3 Conv</text>
+                    
+                    <!-- 5x5 branch with reduction -->
+                    <rect x="580" y="240" width="50" height="30" fill="rgba(245,158,11,0.4)" stroke="#f59e0b" stroke-width="2" rx="3"/>
+                    <text x="605" y="260" fill="#fff" font-size="9" text-anchor="middle">1×1 Red</text>
+                    <rect x="580" y="280" width="50" height="40" fill="rgba(99,102,241,0.3)" stroke="#6366f1" stroke-width="2" rx="3"/>
+                    <text x="605" y="305" fill="#fff" font-size="10" text-anchor="middle">5×5 Conv</text>
+                    
+                    <!-- Pool branch with projection -->
+                    <rect x="580" y="340" width="50" height="40" fill="rgba(16,185,129,0.3)" stroke="#10b981" stroke-width="2" rx="3"/>
+                    <text x="605" y="355" fill="#fff" font-size="9" text-anchor="middle">3×3</text>
+                    <text x="605" y="370" fill="#fff" font-size="9" text-anchor="middle">MaxPool</text>
+                    <rect x="650" y="345" width="40" height="30" fill="rgba(245,158,11,0.4)" stroke="#f59e0b" stroke-width="2" rx="3"/>
+                    <text x="670" y="365" fill="#fff" font-size="9" text-anchor="middle">1×1 Prj</text>
+                    
+                    <!-- Concatenation -->
+                    <rect x="720" y="200" width="80" height="80" fill="rgba(16,185,129,0.2)" stroke="#10b981" stroke-width="2" rx="5"/>
+                    <text x="760" y="245" fill="#10b981" font-size="12" text-anchor="middle">Concat</text>
+                    
+                    <!-- Output -->
+                    <rect x="830" y="200" width="60" height="80" fill="none" stroke="#6366f1" stroke-width="2" rx="5"/>
+                    <text x="860" y="245" fill="#fff" font-size="11" text-anchor="middle">Output</text>
+                    
+                    <!-- Arrows for optimized -->
+                    <path d="M540 180 L580 120" stroke="#6366f1" stroke-width="1.5" marker-end="url(#arrow)"/>
+                    <path d="M540 180 L580 160" stroke="#6366f1" stroke-width="1.5" marker-end="url(#arrow)"/>
+                    <path d="M540 180 L580 255" stroke="#6366f1" stroke-width="1.5" marker-end="url(#arrow)"/>
+                    <path d="M540 180 L580 360" stroke="#6366f1" stroke-width="1.5" marker-end="url(#arrow)"/>
+                    <path d="M630 160 L720 220" stroke="#6366f1" stroke-width="1.5"/>
+                    <path d="M630 205 L720 230" stroke="#6366f1" stroke-width="1.5"/>
+                    <path d="M630 300 L720 260" stroke="#6366f1" stroke-width="1.5"/>
+                    <path d="M690 360 L720 250" stroke="#6366f1" stroke-width="1.5"/>
+                    <path d="M800 240 L830 240" stroke="#10b981" stroke-width="2" marker-end="url(#arrow)"/>
+                    
+                    <!-- Green check for optimized -->
+                    <text x="760" y="380" fill="#10b981" font-size="40" text-anchor="middle">✓</text>
+                    <text x="760" y="410" fill="#10b981" font-size="11" text-anchor="middle">1×1 convs reduce dimensions</text>
+                    <text x="760" y="425" fill="#10b981" font-size="11" text-anchor="middle">Dramatically fewer operations</text>
+                    <text x="760" y="440" fill="#10b981" font-size="11" text-anchor="middle">Same representational power</text>
+                </svg>
+            </div>
+        </div>
+
+        <div class="architecture-section">
+            <h2>📊 Impact & Legacy</h2>
+            <div class="paper-info">
+                <p><strong>Immediate Impact:</strong> GoogLeNet won ILSVRC 2014, establishing a new paradigm for efficient deep learning. The 6.67% top-5 error rate was a significant improvement over the previous state-of-the-art.</p>
+                
+                <p><strong>Key Contributions to the Field:</strong></p>
+                <ul style="color: #b0b0d0; margin-left: 20px; margin-top: 10px;">
+                    <li style="margin-bottom: 10px;"><strong>Multi-scale Processing:</strong> The Inception module's parallel filter approach became a template for future architectures</li>
+                    <li style="margin-bottom: 10px;"><strong>1×1 Convolutions:</strong> Popularized the use of 1×1 convolutions for dimension reduction, later essential in ResNet and MobileNet</li>
+                    <li style="margin-bottom: 10px;"><strong>Global Average Pooling:</strong> Demonstrated that FC layers could be eliminated, reducing overfitting and parameters</li>
+                    <li style="margin-bottom: 10px;"><strong>Efficiency Focus:</strong> Proved that careful architectural design beats simply adding more parameters</li>
+                </ul>
+                
+                <p style="margin-top: 20px;"><strong>Successors:</strong> The Inception family evolved through v2 (with batch normalization), v3 (factorized convolutions), v4 (combined with ResNet ideas), and Xception (depthwise separable convolutions).</p>
+                
+                <p><strong>Modern Relevance:</strong> Concepts from GoogLeNet remain fundamental: 1×1 bottlenecks appear in ResNet, EfficientNet, and Vision Transformers. The multi-scale philosophy influences modern architectures like HRNet.</p>
+            </div>
+        </div>
+
+        <div style="text-align: center;">
+            <a href="../index.html" class="back-link">← Back to Neural Networks</a>
+        </div>
+    </div>
+
+    <footer>
+        <p>Based on: Szegedy et al. "Going Deeper with Convolutions" (CVPR 2015)</p>
+        <p>Built with ❤️ by <a href="https://github.com/Patbby" style="color: #6366f1;">Patbby</a> (Kimi Claw)</p>
+    </footer>
+</body>
+</html>
