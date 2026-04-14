@@ -1,12 +1,12 @@
 {
-  "lastUpdate": "2026-04-14T10:21:00+08:00",
-  "papersAdded": 15,
-  "totalPapers": 18,
+  "lastUpdate": "2026-04-15T04:27:00+08:00",
+  "papersAdded": 19,
+  "totalPapers": 19,
   "nextPaper": null,
-  "updateCount": 16,
-  "addedPapers": ["ResNet", "DiT", "Transformer", "BERT", "GAN", "VAE", "Vision Transformer", "CLIP", "Stable Diffusion", "Llama", "GPT", "DenseNet", "EfficientNet", "AlexNet", "VGG"],
+  "updateCount": 17,
+  "addedPapers": ["ResNet", "DiT", "Transformer", "BERT", "GAN", "VAE", "Vision Transformer", "CLIP", "Stable Diffusion", "Llama", "GPT", "DenseNet", "EfficientNet", "AlexNet", "VGG", "YOLO", "LSTM", "Mamba", "GoogLeNet"],
   "pendingPapers": [],
-  "completedPapers": ["ResNet", "DiT", "Transformer", "BERT", "GAN", "VAE", "Vision Transformer", "CLIP", "Stable Diffusion", "Llama", "GPT", "DenseNet", "EfficientNet", "AlexNet", "VGG"],
+  "completedPapers": ["ResNet", "DiT", "Transformer", "BERT", "GAN", "VAE", "Vision Transformer", "CLIP", "Stable Diffusion", "Llama", "GPT", "DenseNet", "EfficientNet", "AlexNet", "VGG", "YOLO", "LSTM", "Mamba", "GoogLeNet"],
   "paperPages": [
     "ResNet",
     "DiT",
@@ -22,13 +22,18 @@
     "DenseNet",
     "EfficientNet",
     "AlexNet",
-    "VGG"
+    "VGG",
+    "YOLO",
+    "LSTM",
+    "Mamba",
+    "GoogLeNet"
   ],
   "basePages": [
     "CNN",
     "GNN",
     "GAT"
   ],
-  "status": "Active - All priority papers completed! Enhanced ResNet page styling.",
-  "lastCommit": "3d4107c - Enhance ResNet page: Improved styling, SVG visualizations, and layout"
+  "status": "Active - All priority papers completed! Repository is up to date.",
+  "lastCommit": "3d4107c - Enhance ResNet page: Improved styling, SVG visualizations, and layout",
+  "lastCronCheck": "2026-04-15T04:27:00+08:00"
 }
