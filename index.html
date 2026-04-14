@@ -610,6 +610,34 @@
                 </svg>
             </div>
 
+            <!-- MoE Paper Card -->
+            <div class="network-card" onclick="location.href='papers/moe.html'">
+                <span class="tag">NeurIPS 2017</span>
+                <h3>MoE · Mixture of Experts</h3>
+                <p>Adaptive computation with sparsely-gated expert networks. The foundation for scaling large language models efficiently.</p>
+                <svg class="preview-svg" viewBox="0 0 300 150">
+                    <defs>
+                        <linearGradient id="moe-grad" x1="0%" y1="0%" x2="100%" y2="0%">
+                            <stop offset="0%" style="stop-color:#6366f1"/>
+                            <stop offset="100%" style="stop-color:#f59e0b"/>
+                        </linearGradient>
+                    </defs>
+                    <!-- Input -->
+                    <rect x="20" y="55" width="40" height="40" fill="none" stroke="#6366f1" stroke-width="2" rx="3"/>
+                    <!-- Gating network -->
+                    <rect x="80" y="45" width="50" height="25" fill="rgba(99,102,241,0.3)" stroke="#6366f1" stroke-width="2" rx="2"/>
+                    <text x="105" y="62" fill="#fff" font-size="8" text-anchor="middle">Gate</text>
+                    <!-- Expert 1 -->
+                    <rect x="150" y="30" width="40" height="35" fill="rgba(245,158,11,0.3)" stroke="#f59e0b" stroke-width="2" rx="2"/>
+                    <text x="170" y="52" fill="#fff" font-size="7" text-anchor="middle">Expert1</text>
+                    <!-- Expert 2 -->
+                    <rect x="150" y="75" width="40" height="35" fill="rgba(16,185,129,0.3)" stroke="#10b981" stroke-width="2" rx="2"/>
+                    <text x="170" y="97" fill="#fff" font-size="7" text-anchor="middle">Expert2</text>
+                    <!-- Output -->
+                    <rect x="220" y="55" width="50" height="40" fill="rgba(99,102,241,0.2)" stroke="#6366f1" stroke-width="2" rx="3"/>
+                    <text x="245" y="80" fill="#c7d2fe" font-size="9" text-anchor="middle">Output</text>
+                </svg>
+            </div>
             <!-- More Papers Coming -->
             <div class="network-card" style="opacity: 0.7;">
                 <span class="tag">Coming Soon</span>

@@ -1,0 +1,747 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MoE: Mixture of Experts | AI Neural Networks</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            background: #0a0a0f;
+            color: #e0e0ff;
+            line-height: 1.7;
+            overflow-x: hidden;
+        }
+        
+        /* Animated background */
+        .bg-animation {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+            opacity: 0.2;
+        }
+        
+        /* Navigation */
+        nav {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            background: rgba(10, 10, 15, 0.95);
+            backdrop-filter: blur(20px);
+            z-index: 1000;
+            border-bottom: 1px solid rgba(99, 102, 241, 0.2);
+        }
+        
+        .nav-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 15px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .nav-logo {
+            font-size: 1.3rem;
+            font-weight: 700;
+            background: linear-gradient(135deg, #6366f1, #a855f7);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            text-decoration: none;
+        }
+        
+        .nav-links {
+            display: flex;
+            gap: 30px;
+        }
+        
+        .nav-links a {
+            color: #8888aa;
+            text-decoration: none;
+            font-size: 0.95rem;
+            transition: color 0.3s;
+        }
+        
+        .nav-links a:hover {
+            color: #e0e0ff;
+        }
+        
+        /* Hero Section */
+        .hero {
+            margin-top: 70px;
+            padding: 80px 20px 60px;
+            text-align: center;
+            background: linear-gradient(180deg, rgba(99,102,241,0.08) 0%, transparent 100%);
+        }
+        
+        .hero-badge {
+            display: inline-block;
+            padding: 6px 16px;
+            background: rgba(99, 102, 241, 0.15);
+            border: 1px solid rgba(99, 102, 241, 0.3);
+            border-radius: 20px;
+            font-size: 0.85rem;
+            color: #818cf8;
+            margin-bottom: 25px;
+        }
+        
+        .hero h1 {
+            font-size: 3.2rem;
+            background: linear-gradient(135deg, #6366f1 0%, #a855f7 50%, #ec4899 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 20px;
+            font-weight: 800;
+        }
+        
+        .hero-subtitle {
+            font-size: 1.4rem;
+            color: #8888aa;
+            max-width: 700px;
+            margin: 0 auto 30px;
+        }
+        
+        .hero-meta {
+            display: flex;
+            justify-content: center;
+            gap: 40px;
+            flex-wrap: wrap;
+            color: #666699;
+            font-size: 0.95rem;
+        }
+        
+        .hero-meta span {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .paper-badges {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            margin-top: 35px;
+            flex-wrap: wrap;
+        }
+        
+        .paper-badge {
+            padding: 10px 20px;
+            background: rgba(20, 20, 35, 0.8);
+            border: 1px solid rgba(99, 102, 241, 0.3);
+            border-radius: 8px;
+            color: #e0e0ff;
+            text-decoration: none;
+            font-size: 0.9rem;
+            transition: all 0.3s;
+        }
+        
+        .paper-badge:hover {
+            background: rgba(99, 102, 241, 0.2);
+            border-color: rgba(99, 102, 241, 0.5);
+            transform: translateY(-2px);
+        }
+        
+        /* Container */
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 60px 20px;
+        }
+        
+        /* Section Styles */
+        .section {
+            margin-bottom: 70px;
+        }
+        
+        .section h2 {
+            font-size: 2rem;
+            color: #e0e0ff;
+            margin-bottom: 25px;
+            padding-bottom: 15px;
+            border-bottom: 2px solid rgba(99, 102, 241, 0.3);
+        }
+        
+        .section p {
+            color: #a0a0cc;
+            font-size: 1.1rem;
+            margin-bottom: 20px;
+        }
+        
+        /* Problem Box */
+        .problem-box {
+            background: rgba(236, 72, 153, 0.08);
+            border: 1px solid rgba(236, 72, 153, 0.3);
+            border-radius: 16px;
+            padding: 30px;
+            margin: 30px 0;
+        }
+        
+        .problem-box h3 {
+            color: #ec4899;
+            font-size: 1.3rem;
+            margin-bottom: 15px;
+        }
+        
+        .problem-box p {
+            color: #d0d0ee;
+            margin-bottom: 0;
+        }
+        
+        /* Innovation Box */
+        .innovation-box {
+            background: rgba(16, 185, 129, 0.08);
+            border: 1px solid rgba(16, 185, 129, 0.3);
+            border-radius: 16px;
+            padding: 30px;
+            margin: 30px 0;
+        }
+        
+        .innovation-box h3 {
+            color: #10b981;
+            font-size: 1.3rem;
+            margin-bottom: 15px;
+        }
+        
+        /* Architecture Diagram Container */
+        .arch-container {
+            background: rgba(20, 20, 35, 0.8);
+            border: 1px solid rgba(99, 102, 241, 0.2);
+            border-radius: 20px;
+            padding: 40px;
+            margin: 40px 0;
+            text-align: center;
+        }
+        
+        .arch-title {
+            font-size: 1.4rem;
+            color: #e0e0ff;
+            margin-bottom: 30px;
+        }
+        
+        /* Code Block */
+        .code-block {
+            background: #0d0d14;
+            border: 1px solid rgba(99, 102, 241, 0.2);
+            border-radius: 12px;
+            padding: 25px;
+            margin: 25px 0;
+            overflow-x: auto;
+        }
+        
+        .code-block code {
+            font-family: 'SF Mono', Monaco, 'Cascadia Code', monospace;
+            font-size: 0.9rem;
+            color: #a5b4fc;
+            line-height: 1.6;
+        }
+        
+        .code-comment {
+            color: #6b7280;
+        }
+        
+        .code-keyword {
+            color: #c084fc;
+        }
+        
+        .code-string {
+            color: #86efac;
+        }
+        
+        /* Stats Grid */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin: 30px 0;
+        }
+        
+        .stat-card {
+            background: rgba(20, 20, 35, 0.8);
+            border: 1px solid rgba(99, 102, 241, 0.2);
+            border-radius: 12px;
+            padding: 25px;
+            text-align: center;
+        }
+        
+        .stat-value {
+            font-size: 2.5rem;
+            font-weight: 700;
+            background: linear-gradient(135deg, #6366f1, #a855f7);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        
+        .stat-label {
+            color: #8888aa;
+            font-size: 0.9rem;
+            margin-top: 8px;
+        }
+        
+        /* List Styles */
+        .feature-list {
+            list-style: none;
+            padding: 0;
+        }
+        
+        .feature-list li {
+            padding: 15px 0;
+            padding-left: 35px;
+            position: relative;
+            color: #a0a0cc;
+            border-bottom: 1px solid rgba(99, 102, 241, 0.1);
+        }
+        
+        .feature-list li:before {
+            content: "→";
+            position: absolute;
+            left: 0;
+            color: #6366f1;
+            font-weight: bold;
+        }
+        
+        /* Related Papers */
+        .related-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 20px;
+            margin-top: 30px;
+        }
+        
+        .related-card {
+            background: rgba(20, 20, 35, 0.8);
+            border: 1px solid rgba(99, 102, 241, 0.2);
+            border-radius: 12px;
+            padding: 25px;
+            transition: all 0.3s;
+        }
+        
+        .related-card:hover {
+            border-color: rgba(99, 102, 241, 0.5);
+            transform: translateY(-3px);
+        }
+        
+        .related-card h4 {
+            color: #e0e0ff;
+            font-size: 1.1rem;
+            margin-bottom: 10px;
+        }
+        
+        .related-card p {
+            color: #8888aa;
+            font-size: 0.95rem;
+            margin-bottom: 0;
+        }
+        
+        /* Footer */
+        footer {
+            text-align: center;
+            padding: 60px 20px;
+            border-top: 1px solid rgba(99, 102, 241, 0.2);
+            color: #666699;
+        }
+        
+        footer a {
+            color: #818cf8;
+            text-decoration: none;
+        }
+        
+        /* Formula Box */
+        .formula-box {
+            background: rgba(20, 20, 35, 0.9);
+            border: 1px solid rgba(99, 102, 241, 0.3);
+            border-radius: 12px;
+            padding: 25px;
+            margin: 25px 0;
+            text-align: center;
+            font-family: 'Times New Roman', serif;
+            font-size: 1.3rem;
+            color: #e0e0ff;
+        }
+        
+        /* Responsive */
+        @media (max-width: 768px) {
+            .hero h1 {
+                font-size: 2rem;
+            }
+            
+            .nav-links {
+                display: none;
+            }
+            
+            .hero-meta {
+                flex-direction: column;
+                gap: 10px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Background Animation -->
+    <svg class="bg-animation" viewBox="0 0 1920 1080" preserveAspectRatio="xMidYMid slice">
+        <defs>
+            <linearGradient id="bgGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+                <stop offset="0%" style="stop-color:#6366f1;stop-opacity:0.3" />
+                <stop offset="50%" style="stop-color:#a855f7;stop-opacity:0.2" />
+                <stop offset="100%" style="stop-color:#ec4899;stop-opacity:0.1" />
+            </linearGradient>
+        </defs>
+        <rect width="1920" height="1080" fill="url(#bgGrad)">
+            <animate attributeName="opacity" values="0.3;0.5;0.3" dur="10s" repeatCount="indefinite"/>
+        </rect>
+        <circle cx="200" cy="200" r="100" fill="#6366f1" opacity="0.05">
+            <animate attributeName="cy" values="200;250;200" dur="8s" repeatCount="indefinite"/>
+        </circle>
+        <circle cx="1700" cy="800" r="150" fill="#a855f7" opacity="0.05">
+            <animate attributeName="cy" values="800;750;800" dur="12s" repeatCount="indefinite"/>
+        </circle>
+    </svg>
+
+    <!-- Navigation -->
+    <nav>
+        <div class="nav-container">
+            <a href="../index.html" class="nav-logo">🧠 AI Neural Networks</a>
+            <div class="nav-links">
+                <a href="../index.html">Home</a>
+                <a href="../cnn.html">CNN</a>
+                <a href="../gnn.html">GNN</a>
+                <a href="../gat.html">GAT</a>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <section class="hero">
+        <span class="hero-badge">ICLR 2017</span>
+        <h1>Mixture of Experts</h1>
+        <p class="hero-subtitle">Outrageously Large Neural Networks: The Sparsely-Gated Mixture-of-Experts Layer</p>
+        <div class="hero-meta">
+            <span>📅 2017</span>
+            <span>✍️ Noam Shazeer, Azalia Mirhoseini, Krzysztof Maziarz, et al.</span>
+            <span>🏢 Google Brain</span>
+        </div>
+        <div class="paper-badges">
+            <a href="https://arxiv.org/abs/1701.06538" class="paper-badge" target="_blank">📄 Paper (arXiv)</a>
+            <a href="https://openreview.net/forum?id=B1ckMDqlg" class="paper-badge" target="_blank">🔗 OpenReview</a>
+            <a href="#implementation" class="paper-badge">💻 Code</a>
+        </div>
+    </section>
+
+    <div class="container">
+        <!-- Problem Statement -->
+        <section class="section">
+            <h2>🎯 Problem Statement</h2>
+            <p>
+                Neural network capacity is fundamentally limited by the number of parameters. Traditionally, increasing model 
+                capacity meant proportionally increasing computational cost—a trade-off that quickly becomes prohibitive for 
+                large-scale applications.
+            </p>
+            <div class="problem-box">
+                <h3>The Scaling Challenge</h3>
+                <p>
+                    As models grow larger to absorb more knowledge, the computational cost grows linearly. 
+                    <strong>How can we dramatically increase model capacity without a proportional increase in computation?</strong>
+                </p>
+            </div>
+            <p>
+                Conditional computation—activating only parts of the network per example—was proposed in theory as a solution, 
+                but faced significant algorithmic and performance challenges in practice, especially on modern GPU clusters.
+            </p>
+        </section>
+
+        <!-- Key Innovation -->
+        <section class="section">
+            <h2>💡 Key Innovation</h2>
+            <div class="innovation-box">
+                <h3>Sparsely-Gated Mixture-of-Experts Layer</h3>
+                <p>
+                    The MoE layer consists of up to thousands of feed-forward sub-networks (experts). A trainable 
+                    <strong>gating network</strong> determines a <strong>sparse combination</strong> of these experts to use for each input.
+                    This enables <strong>1000x improvements in model capacity</strong> with only minor computational overhead.
+                </p>
+            </div>
+            
+            <div class="formula-box">
+                y = Σ<sub>i</sub> G(x)<sub>i</sub> · E<sub>i</sub>(x)
+            </div>
+            <p style="text-align: center; color: #8888aa; font-size: 0.95rem;">
+                Where G(x) is the gating function and E<sub>i</sub> are the expert networks
+            </p>
+            
+            <ul class="feature-list">
+                <li><strong>Sparse Activation:</strong> Only a small subset of experts (typically 1-2) are activated per token</li>
+                <li><strong>Conditional Computation:</strong> Different inputs trigger different experts based on content</li>
+                <li><strong>Load Balancing:</strong> Auxiliary losses ensure experts are utilized evenly</li>
+                <li><strong>Noisy Top-K Gating:</strong> Add noise during training for better expert exploration</li>
+            </ul>
+        </section>
+
+        <!-- Architecture -->
+        <section class="section">
+            <h2>🏗️ Architecture</h2>
+            <p>
+                The MoE layer is applied convolutionally between stacked LSTM layers. Each expert is a feed-forward network, 
+                and the gating network learns to route inputs to the most appropriate experts.
+            </p>
+            
+            <div class="arch-container">
+                <div class="arch-title">MoE Layer Architecture</div>
+                <svg viewBox="0 0 800 500" width="100%" height="auto">
+                    <!-- Background -->
+                    <rect width="800" height="500" fill="none"/>
+                    
+                    <!-- Input -->
+                    <rect x="50" y="210" width="80" height="80" rx="8" fill="rgba(99,102,241,0.3)" stroke="#6366f1" stroke-width="2"/>
+                    <text x="90" y="255" text-anchor="middle" fill="#e0e0ff" font-size="14">Input</text>
+                    
+                    <!-- Arrow to Router -->
+                    <line x1="130" y1="250" x2="180" y2="250" stroke="#6366f1" stroke-width="2" marker-end="url(#arrowhead)"/>
+                    
+                    <!-- Router/Gating Network -->
+                    <rect x="180" y="170" width="100" height="160" rx="10" fill="rgba(236,72,153,0.3)" stroke="#ec4899" stroke-width="2"/>
+                    <text x="230" y="230" text-anchor="middle" fill="#e0e0ff" font-size="13">Gating</text>
+                    <text x="230" y="250" text-anchor="middle" fill="#e0e0ff" font-size="13">Network</text>
+                    <text x="230" y="280" text-anchor="middle" fill="#ec4899" font-size="11">Top-K Select</text>
+                    
+                    <!-- Routing arrows -->
+                    <defs>
+                        <marker id="arrowhead" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto">
+                            <polygon points="0 0, 10 3.5, 0 7" fill="#6366f1"/>
+                        </marker>
+                    </defs>
+                    
+                    <!-- Experts -->
+                    <rect x="350" y="50" width="100" height="70" rx="8" fill="rgba(16,185,129,0.3)" stroke="#10b981" stroke-width="2"/>
+                    <text x="400" y="85" text-anchor="middle" fill="#e0e0ff" font-size="13">Expert 1</text>
+                    <text x="400" y="105" text-anchor="middle" fill="#10b981" font-size="10">Syntax</text>
+                    
+                    <rect x="350" y="140" width="100" height="70" rx="8" fill="rgba(16,185,129,0.3)" stroke="#10b981" stroke-width="2"/>
+                    <text x="400" y="175" text-anchor="middle" fill="#e0e0ff" font-size="13">Expert 2</text>
+                    <text x="400" y="195" text-anchor="middle" fill="#10b981" font-size="10">Semantics</text>
+                    
+                    <rect x="350" y="230" width="100" height="70" rx="8" fill="rgba(16,185,129,0.3)" stroke="#10b981" stroke-width="2"/>
+                    <text x="400" y="265" text-anchor="middle" fill="#e0e0ff" font-size="13">Expert 3</text>
+                    <text x="400" y="285" text-anchor="middle" fill="#10b981" font-size="10">Facts</text>
+                    
+                    <rect x="350" y="320" width="100" height="70" rx="8" fill="rgba(16,185,129,0.3)" stroke="#10b981" stroke-width="2"/>
+                    <text x="400" y="355" text-anchor="middle" fill="#e0e0ff" font-size="13">Expert 4</text>
+                    <text x="400" y="375" text-anchor="middle" fill="#10b981" font-size="10">Reasoning</text>
+                    
+                    <text x="400" y="420" text-anchor="middle" fill="#666699" font-size="12">... up to 1000+ experts</text>
+                    
+                    <!-- Dotted lines for non-selected experts -->
+                    <line x1="280" y1="230" x2="350" y2="85" stroke="#6366f1" stroke-width="1.5" stroke-dasharray="5,5" opacity="0.5"/>
+                    <line x1="280" y1="240" x2="350" y2="175" stroke="#6366f1" stroke-width="3" opacity="0.9"/>
+                    <line x1="280" y1="250" x2="350" y2="265" stroke="#6366f1" stroke-width="3" opacity="0.9"/>
+                    <line x1="280" y1="260" x2="350" y2="355" stroke="#6366f1" stroke-width="1.5" stroke-dasharray="5,5" opacity="0.5"/>
+                    
+                    <!-- Labels for active connections -->
+                    <text x="310" y="200" fill="#6366f1" font-size="10">w₂=0.6</text>
+                    <text x="310" y="260" fill="#6366f1" font-size="10">w₃=0.4</text>
+                    
+                    <!-- Output aggregation -->
+                    <line x1="450" y1="175" x2="520" y2="250" stroke="#a855f7" stroke-width="2"/>
+                    <line x1="450" y1="265" x2="520" y2="250" stroke="#a855f7" stroke-width="2"/>
+                    
+                    <!-- Output -->
+                    <rect x="520" y="210" width="80" height="80" rx="8" fill="rgba(168,85,247,0.3)" stroke="#a855f7" stroke-width="2"/>
+                    <text x="560" y="255" text-anchor="middle" fill="#e0e0ff" font-size="14">Output</text>
+                    
+                    <!-- Key metrics -->
+                    <rect x="630" y="50" width="150" height="120" rx="8" fill="rgba(20,20,35,0.8)" stroke="rgba(99,102,241,0.3)" stroke-width="1"/>
+                    <text x="705" y="80" text-anchor="middle" fill="#e0e0ff" font-size="13" font-weight="bold">MoE Benefits</text>
+                    <text x="645" y="105" fill="#10b981" font-size="11">✓ 1000x capacity</text>
+                    <text x="645" y="125" fill="#10b981" font-size="11">✓ Sparse activation</text>
+                    <text x="645" y="145" fill="#10b981" font-size="11">✓ Sub-linear cost</text>
+                    
+                    <!-- Animation for data flow -->
+                    <circle r="5" fill="#ec4899" opacity="0.8">
+                        <animate attributeName="cx" values="130;180" dur="1s" repeatCount="indefinite"/>
+                        <animate attributeName="cy" values="250;250" dur="1s" repeatCount="indefinite"/>
+                    </circle>
+                </svg>
+            </div>
+            
+            <h3>Gating Mechanism</h3>
+            <p>
+                The gating network uses a <strong>softmax</strong> over the expert outputs, with Gaussian noise added during training 
+                to encourage exploration. Only the top-K experts (typically k=1 or 2) are selected for each input.
+            </p>
+            
+            <div class="formula-box">
+                G(x) = Softmax(TopK(Linear(x) + ε·Noise))
+            </div>
+        </section>
+
+        <!-- Results & Impact -->
+        <section class="section">
+            <h2>📊 Results & Impact</h2>
+            
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-value">137B</div>
+                    <div class="stat-label">Parameters</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value">1000x</div>
+                    <div class="stat-label">Capacity Increase</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value">&lt;2x</div>
+                    <div class="stat-label">Compute Overhead</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value">SOTA</div>
+                    <div class="stat-label">Language Modeling</div>
+                </div>
+            </div>
+            
+            <p>
+                MoE models achieved significantly better results than state-of-the-art at lower computational cost on both 
+                language modeling and machine translation benchmarks. The architecture has since been adopted in major models:
+            </p>
+            
+            <ul class="feature-list">
+                <li><strong>DeepSeek-V3/R1 (2024-2025):</strong> 671B parameters, 37B active per token</li>
+                <li><strong>Mixtral 8x7B (2023):</strong> Open-source MoE matching GPT-3.5 performance</li>
+                <li><strong>GPT-4 (2023):</strong> Widely reported to use MoE architecture</li>
+                <li><strong>Switch Transformer (2021):</strong> Google's 1.6 trillion parameter model</li>
+            </ul>
+        </section>
+
+        <!-- Code Implementation -->
+        <section class="section" id="implementation">
+            <h2>💻 PyTorch Implementation</h2>
+            
+            <div class="code-block">
+                <code>
+<span class="code-keyword">import</span> torch
+<span class="code-keyword">import</span> torch.nn <span class="code-keyword">as</span> nn
+<span class="code-keyword">import</span> torch.nn.functional <span class="code-keyword">as</span> F
+
+<span class="code-keyword">class</span> <span class="code-string">Expert</span>(nn.Module):
+    <span class="code-comment">"""Individual expert network (feed-forward)"""</span>
+    <span class="code-keyword">def</span> <span class="code-string">__init__</span>(self, input_dim, hidden_dim, output_dim):
+        super().__init__()
+        self.fc1 = nn.Linear(input_dim, hidden_dim)
+        self.fc2 = nn.Linear(hidden_dim, output_dim)
+    
+    <span class="code-keyword">def</span> <span class="code-string">forward</span>(self, x):
+        x = F.relu(self.fc1(x))
+        return self.fc2(x)
+
+<span class="code-keyword">class</span> <span class="code-string">MoELayer</span>(nn.Module):
+    <span class="code-comment">"""Sparsely-Gated Mixture of Experts Layer"""</span>
+    <span class="code-keyword">def</span> <span class="code-string">__init__</span>(self, input_dim, hidden_dim, output_dim, num_experts, top_k=2):
+        super().__init__()
+        self.num_experts = num_experts
+        self.top_k = top_k
+        
+        <span class="code-comment"># Create expert networks</span>
+        self.experts = nn.ModuleList([
+            Expert(input_dim, hidden_dim, output_dim)
+            for _ in range(num_experts)
+        ])
+        
+        <span class="code-comment"># Gating network</span>
+        self.gate = nn.Linear(input_dim, num_experts)
+    
+    <span class="code-keyword">def</span> <span class="code-string">forward</span>(self, x, noise_std=0.1):
+        batch_size = x.shape[0]
+        
+        <span class="code-comment"># Compute gating scores with optional noise</span>
+        gate_logits = self.gate(x)
+        
+        <span class="code-comment"># Add noise for exploration during training</span>
+        <span class="code-keyword">if</span> self.training and noise_std > 0:
+            noise = torch.randn_like(gate_logits) * noise_std
+            gate_logits = gate_logits + noise
+        
+        <span class="code-comment"># Top-K selection</span>
+        top_k_logits, top_k_indices = torch.topk(gate_logits, self.top_k, dim=-1)
+        top_k_gates = F.softmax(top_k_logits, dim=-1)
+        
+        <span class="code-comment"># Compute weighted sum of expert outputs</span>
+        output = torch.zeros(batch_size, self.experts[0].fc2.out_features, device=x.device)
+        
+        <span class="code-keyword">for</span> i in range(self.top_k):
+            expert_idx = top_k_indices[:, i]
+            gate_val = top_k_gates[:, i:i+1]
+            
+            <span class="code-keyword">for</span> j in range(batch_size):
+                expert_out = self.experts[expert_idx[j]](x[j:j+1])
+                output[j] += gate_val[j] * expert_out.squeeze(0)
+        
+        return output
+
+<span class="code-comment"># Usage example</span>
+moe = MoELayer(input_dim=512, hidden_dim=2048, output_dim=512, 
+               num_experts=64, top_k=2)
+                </code>
+            </div>
+        </section>
+
+        <!-- Related Work -->
+        <section class="section">
+            <h2>🔗 Related Work</h2>
+            
+            <div class="related-grid">
+                <div class="related-card">
+                    <h4>Switch Transformers</h4>
+                    <p>Google's scaling of MoE to 1.6T parameters with simplified top-1 routing (2021)</p>
+                </div>
+                <div class="related-card">
+                    <h4>DeepSeekMoE</h4>
+                    <p>Fine-grained expert segmentation with shared expert isolation (2024)</p>
+                </div>
+                <div class="related-card">
+                    <h4>Mixtral 8x7B</h4>
+                    <p>Open-source MoE matching GPT-3.5 with Apache 2.0 license (2023)</p>
+                </div>
+                <div class="related-card">
+                    <h4>ST-MoE</h4>
+                    <p>Stable and transferable sparse expert models from Google (2022)</p>
+                </div>
+                <div class="related-card">
+                    <h4>Base Layers</h4>
+                    <p>Simplifying training of large sparse models (Lewis et al., 2021)</p>
+                </div>
+                <div class="related-card">
+                    <h4>GShard</h4>
+                    <p>Scaling giant models with conditional computation (Lepikhin et al., 2020)</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Key Takeaways -->
+        <section class="section">
+            <h2>🎓 Key Takeaways</h2>
+            
+            <ul class="feature-list">
+                <li><strong>Conditional Computation:</strong> MoE enables massive model capacity while maintaining efficient inference through sparse expert activation</li>
+                <li><strong>Specialization:</strong> Different experts naturally specialize in different types of inputs or tasks</li>
+                <li><strong>Load Balancing:</strong> Critical for training stability—auxiliary losses ensure even expert utilization</li>
+                <li><strong>Hardware Efficiency:</strong> Despite being proposed in 2017, MoE became practical with modern distributed training infrastructure</li>
+                <li><strong>Modern Adoption:</strong> Powers state-of-the-art models like DeepSeek-R1, Mixtral, and potentially GPT-4</li>
+            </ul>
+        </section>
+    </div>
+
+    <!-- Footer -->
+    <footer>
+        <p>Part of <a href="../index.html">AI Neural Networks Visualized</a> | Built with ❤️ by AI</p>
+        <p style="margin-top: 10px; font-size: 0.9rem;">Paper: "Outrageously Large Neural Networks: The Sparsely-Gated Mixture-of-Experts Layer" (ICLR 2017)</p>
+    </footer>
+</body>
+</html>
