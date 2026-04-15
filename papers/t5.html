@@ -1,0 +1,745 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>T5 - Text-to-Text Transfer Transformer | 2019</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            background: #0a0a0f;
+            color: #e0e0ff;
+            line-height: 1.8;
+        }
+        
+        .bg-animation {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+            opacity: 0.2;
+        }
+        
+        header {
+            background: linear-gradient(135deg, rgba(99,102,241,0.15) 0%, rgba(168,85,247,0.1) 100%);
+            padding: 60px 20px;
+            text-align: center;
+            border-bottom: 1px solid rgba(99, 102, 241, 0.2);
+        }
+        
+        .back-link {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            color: #8888aa;
+            text-decoration: none;
+            font-size: 0.95rem;
+            transition: color 0.3s;
+        }
+        
+        .back-link:hover {
+            color: #a5b4fc;
+        }
+        
+        h1 {
+            font-size: 2.8rem;
+            background: linear-gradient(135deg, #6366f1 0%, #a855f7 50%, #ec4899 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 15px;
+            font-weight: 800;
+        }
+        
+        .paper-meta {
+            color: #8888aa;
+            font-size: 1.1rem;
+            margin-bottom: 25px;
+        }
+        
+        .authors {
+            color: #a5b4fc;
+            font-size: 1.2rem;
+            margin-bottom: 20px;
+        }
+        
+        .badges {
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+        
+        .badge {
+            background: rgba(99, 102, 241, 0.2);
+            color: #a5b4fc;
+            padding: 8px 20px;
+            border-radius: 25px;
+            text-decoration: none;
+            font-size: 0.9rem;
+            border: 1px solid rgba(99, 102, 241, 0.3);
+            transition: all 0.3s;
+        }
+        
+        .badge:hover {
+            background: rgba(99, 102, 241, 0.3);
+            transform: translateY(-2px);
+        }
+        
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 50px 20px;
+        }
+        
+        .section {
+            background: rgba(20, 20, 35, 0.6);
+            border: 1px solid rgba(99, 102, 241, 0.2);
+            border-radius: 20px;
+            padding: 35px;
+            margin-bottom: 35px;
+            transition: all 0.3s;
+        }
+        
+        .section:hover {
+            border-color: rgba(99, 102, 241, 0.4);
+            box-shadow: 0 10px 30px rgba(99, 102, 241, 0.15);
+        }
+        
+        h2 {
+            color: #fff;
+            font-size: 1.8rem;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        h3 {
+            color: #a5b4fc;
+            font-size: 1.3rem;
+            margin: 25px 0 15px;
+        }
+        
+        .highlight-box {
+            background: linear-gradient(135deg, rgba(99, 102, 241, 0.15), rgba(168, 85, 247, 0.1));
+            border-left: 4px solid #6366f1;
+            padding: 20px 25px;
+            border-radius: 0 12px 12px 0;
+            margin: 20px 0;
+        }
+        
+        .equation {
+            background: rgba(30, 30, 50, 0.8);
+            padding: 20px;
+            border-radius: 12px;
+            text-align: center;
+            font-family: 'Courier New', monospace;
+            color: #a5b4fc;
+            margin: 20px 0;
+            border: 1px solid rgba(99, 102, 241, 0.2);
+        }
+        
+        .viz-container {
+            background: rgba(15, 15, 25, 0.8);
+            border-radius: 16px;
+            padding: 30px;
+            margin: 25px 0;
+            text-align: center;
+            border: 1px solid rgba(99, 102, 241, 0.15);
+        }
+        
+        .viz-title {
+            color: #8888aa;
+            font-size: 0.9rem;
+            margin-bottom: 20px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+        
+        code {
+            background: rgba(99, 102, 241, 0.15);
+            color: #a5b4fc;
+            padding: 3px 10px;
+            border-radius: 6px;
+            font-family: 'Courier New', monospace;
+            font-size: 0.9em;
+        }
+        
+        .insight-box {
+            background: linear-gradient(135deg, rgba(16, 185, 129, 0.1), rgba(6, 182, 212, 0.05));
+            border: 1px solid rgba(16, 185, 129, 0.3);
+            border-radius: 12px;
+            padding: 20px;
+            margin: 20px 0;
+        }
+        
+        .insight-box h4 {
+            color: #10b981;
+            margin-bottom: 10px;
+        }
+        
+        .comparison-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+        }
+        
+        .comparison-table th {
+            background: rgba(99, 102, 241, 0.2);
+            color: #a5b4fc;
+            padding: 12px;
+            text-align: left;
+            border-bottom: 2px solid rgba(99, 102, 241, 0.3);
+        }
+        
+        .comparison-table td {
+            padding: 12px;
+            border-bottom: 1px solid rgba(99, 102, 241, 0.1);
+        }
+        
+        .comparison-table tr:hover {
+            background: rgba(99, 102, 241, 0.05);
+        }
+        
+        ul, ol {
+            margin-left: 25px;
+            color: #b0b0d0;
+        }
+        
+        li {
+            margin: 10px 0;
+        }
+        
+        .impact-metric {
+            display: inline-block;
+            background: linear-gradient(135deg, rgba(99, 102, 241, 0.2), rgba(168, 85, 247, 0.2));
+            padding: 15px 25px;
+            border-radius: 12px;
+            margin: 10px;
+            text-align: center;
+        }
+        
+        .impact-metric .number {
+            font-size: 2rem;
+            font-weight: bold;
+            color: #6366f1;
+        }
+        
+        .impact-metric .label {
+            color: #8888aa;
+            font-size: 0.9rem;
+        }
+        
+        footer {
+            text-align: center;
+            padding: 60px 20px;
+            color: #555577;
+            border-top: 1px solid rgba(99, 102, 241, 0.1);
+            margin-top: 80px;
+        }
+        
+        @media (max-width: 768px) {
+            h1 { font-size: 2rem; }
+            .section { padding: 25px; }
+            .badges { flex-direction: column; align-items: center; }
+        }
+    </style>
+</head>
+<body>
+    <!-- Animated neural network background -->
+    <svg class="bg-animation" viewBox="0 0 1920 1080" preserveAspectRatio="xMidYMid slice">
+        <defs>
+            <linearGradient id="bg-grad" x1="0%" y1="0%" x2="100%" y2="100%">
+                <stop offset="0%" style="stop-color:#6366f1;stop-opacity:0.2" />
+                <stop offset="100%" style="stop-color:#a855f7;stop-opacity:0.1" />
+            </linearGradient>
+        </defs>
+        <g id="bg-nodes"></g>
+    </svg>
+
+    <header>
+        <a href="../index.html" class="back-link">← Back to Gallery</a>
+        <h1>T5</h1>
+        <p class="paper-meta">Text-to-Text Transfer Transformer | JMLR 2020</p>
+        <p class="authors">Colin Raffel, Noam Shazeer, Adam Roberts, et al. (Google)</p>
+        <div class="badges">
+            <a href="https://arxiv.org/abs/1910.10683" class="badge" target="_blank">📄 Paper</a>
+            <a href="https://github.com/google-research/text-to-text-transfer-transformer" class="badge" target="_blank">💻 Code</a>
+            <span class="badge">🏆 SOTA on GLUE & SuperGLUE</span>
+        </div>
+    </header>
+
+    <div class="container">
+        <!-- Core Idea Section -->
+        <div class="section">
+            <h2>💡 Core Innovation</h2>
+            <div class="highlight-box">
+                <strong>The Text-to-Text Paradigm:</strong> T5 treats every NLP task as a text-to-text problem — converting input text to output text using a unified framework with task-specific prefixes.
+            </div>
+            
+            <div class="viz-container">
+                <div class="viz-title">Text-to-Text Framework Visualization</div>
+                <svg viewBox="0 0 800 250" style="max-width: 100%; height: auto;">
+                    <defs>
+                        <linearGradient id="t5-grad" x1="0%" y1="0%" x2="100%" y2="0%">
+                            <stop offset="0%" style="stop-color:#6366f1"/>
+                            <stop offset="100%" style="stop-color:#a855f7"/>
+                        </linearGradient>
+                    </defs>
+                    
+                    <!-- Task Examples -->
+                    <!-- Translation -->
+                    <rect x="20" y="20" width="160" height="40" fill="rgba(99,102,241,0.2)" stroke="#6366f1" stroke-width="2" rx="5"/>
+                    <text x="100" y="35" fill="#fff" font-size="9" text-anchor="middle">translate English to German:</text>
+                    <text x="100" y="50" fill="#a5b4fc" font-size="8" text-anchor="middle">"That is good."</text>
+                    
+                    <path d="M180 40 L220 40" stroke="#6366f1" stroke-width="2"/>
+                    <polygon points="220,40 215,35 215,45" fill="#6366f1"/>
+                    
+                    <!-- Summarization -->
+                    <rect x="20" y="80" width="160" height="40" fill="rgba(168,85,247,0.2)" stroke="#a855f7" stroke-width="2" rx="5"/>
+                    <text x="100" y="95" fill="#fff" font-size="9" text-anchor="middle">summarize:</text>
+                    <text x="100" y="110" fill="#a5b4fc" font-size="7" text-anchor="middle">[long article text...]</text>
+                    
+                    <path d="M180 100 L220 100" stroke="#a855f7" stroke-width="2"/>
+                    <polygon points="220,100 215,95 215,105" fill="#a855f7"/>
+                    
+                    <!-- Classification -->
+                    <rect x="20" y="140" width="160" height="40" fill="rgba(16,185,129,0.2)" stroke="#10b981" stroke-width="2" rx="5"/>
+                    <text x="100" y="155" fill="#fff" font-size="9" text-anchor="middle">sst2 sentence:</text>
+                    <text x="100" y="170" fill="#a5b4fc" font-size="8" text-anchor="middle">"a great movie"</text>
+                    
+                    <path d="M180 160 L220 160" stroke="#10b981" stroke-width="2"/>
+                    <polygon points="220,160 215,155 215,165" fill="#10b981"/>
+                    
+                    <!-- T5 Model -->
+                    <rect x="230" y="60" width="120" height="120" fill="rgba(99,102,241,0.3)" stroke="#6366f1" stroke-width="3" rx="10"/>
+                    <text x="290" y="110" fill="#fff" font-size="14" font-weight="bold" text-anchor="middle">T5</text>
+                    <text x="290" y="130" fill="#a5b4fc" font-size="10" text-anchor="middle">Encoder-Decoder</text>
+                    <text x="290" y="145" fill="#888" font-size="8" text-anchor="middle">Transformer</text>
+                    
+                    <!-- Arrows to outputs -->
+                    <path d="M350 40 L390 40" stroke="#6366f1" stroke-width="2"/>
+                    <polygon points="390,40 385,35 385,45" fill="#6366f1"/>
+                    
+                    <path d="M350 100 L390 100" stroke="#a855f7" stroke-width="2"/>
+                    <polygon points="390,100 385,95 385,105" fill="#a855f7"/>
+                    
+                    <path d="M350 160 L390 160" stroke="#10b981" stroke-width="2"/>
+                    <polygon points="390,160 385,155 385,165" fill="#10b981"/>
+                    
+                    <!-- Outputs -->
+                    <rect x="400" y="20" width="120" height="40" fill="rgba(16,185,129,0.2)" stroke="#10b981" stroke-width="2" rx="5"/>
+                    <text x="460" y="45" fill="#6ee7b7" font-size="11" text-anchor="middle">"Das ist gut."</text>
+                    
+                    <rect x="400" y="80" width="120" height="40" fill="rgba(16,185,129,0.2)" stroke="#10b981" stroke-width="2" rx="5"/>
+                    <text x="460" y="105" fill="#6ee7b7" font-size="10" text-anchor="middle">[summary]</text>
+                    
+                    <rect x="400" y="140" width="120" height="40" fill="rgba(16,185,129,0.2)" stroke="#10b981" stroke-width="2" rx="5"/>
+                    <text x="460" y="165" fill="#6ee7b7" font-size="11" text-anchor="middle">positive</text>
+                    
+                    <!-- Unification Label -->
+                    <rect x="550" y="80" width="200" height="80" fill="rgba(236,72,153,0.1)" stroke="#ec4899" stroke-width="2" stroke-dasharray="5,3" rx="10"/>
+                    <text x="650" y="115" fill="#f472b6" font-size="12" font-weight="bold" text-anchor="middle">Unified Framework</text>
+                    <text x="650" y="135" fill="#888" font-size="9" text-anchor="middle">Same model, loss, & training</text>
+                    <text x="650" y="148" fill="#888" font-size="9" text-anchor="middle">for all NLP tasks!</text>
+                    
+                    <path d="M520 120 L550 120" stroke="#ec4899" stroke-width="2" stroke-dasharray="4,2"/>
+                </svg>
+            </div>
+            
+            <p>The revolutionary insight of T5 is that <strong>every NLP task can be formulated as text generation</strong>. Whether it's translation, classification, summarization, or question answering — the model always produces text as output, eliminating the need for task-specific architectures.</p>
+        </div>
+
+        <!-- Architecture Section -->
+        <div class="section">
+            <h2>🏗️ Architecture</h2>
+            <p>T5 uses a standard <strong>encoder-decoder Transformer</strong> architecture, differentiating it from BERT (encoder-only) and GPT (decoder-only).</p>
+            
+            <div class="viz-container">
+                <div class="viz-title">T5 Encoder-Decoder Architecture</div>
+                <svg viewBox="0 0 800 400" style="max-width: 100%; height: auto;">
+                    <defs>
+                        <linearGradient id="encoder-grad" x1="0%" y1="0%" x2="0%" y2="100%">
+                            <stop offset="0%" style="stop-color:#6366f1"/>
+                            <stop offset="100%" style="stop-color:#4f46e5"/>
+                        </linearGradient>
+                        <linearGradient id="decoder-grad" x1="0%" y1="0%" x2="0%" y2="100%">
+                            <stop offset="0%" style="stop-color:#a855f7"/>
+                            <stop offset="100%" style="stop-color:#9333ea"/>
+                        </linearGradient>
+                    </defs>
+                    
+                    <!-- Encoder Stack -->
+                    <rect x="50" y="50" width="180" height="300" fill="rgba(99,102,241,0.1)" stroke="#6366f1" stroke-width="2" rx="10"/>
+                    <text x="140" y="30" fill="#6366f1" font-size="14" font-weight="bold" text-anchor="middle">Encoder (Bidirectional)</text>
+                    
+                    <!-- Encoder Blocks -->
+                    <rect x="70" y="70" width="140" height="35" fill="url(#encoder-grad)" opacity="0.8" rx="5"/>
+                    <text x="140" y="92" fill="#fff" font-size="10" text-anchor="middle">Self-Attention + FFN</text>
+                    
+                    <rect x="70" y="115" width="140" height="35" fill="url(#encoder-grad)" opacity="0.7" rx="5"/>
+                    <text x="140" y="137" fill="#fff" font-size="10" text-anchor="middle">Self-Attention + FFN</text>
+                    
+                    <rect x="70" y="160" width="140" height="35" fill="url(#encoder-grad)" opacity="0.6" rx="5"/>
+                    <text x="140" y="182" fill="#fff" font-size="10" text-anchor="middle">Self-Attention + FFN</text>
+                    
+                    <text x="140" y="220" fill="#888" font-size="12" text-anchor="middle">⋮</text>
+                    
+                    <rect x="70" y="250" width="140" height="35" fill="url(#encoder-grad)" opacity="0.4" rx="5"/>
+                    <text x="140" y="272" fill="#fff" font-size="10" text-anchor="middle">Self-Attention + FFN</text>
+                    
+                    <rect x="70" y="295" width="140" height="35" fill="url(#encoder-grad)" opacity="0.3" rx="5"/>
+                    <text x="140" y="317" fill="#fff" font-size="10" text-anchor="middle">Self-Attention + FFN</text>
+                    
+                    <!-- Decoder Stack -->
+                    <rect x="320" y="50" width="180" height="300" fill="rgba(168,85,247,0.1)" stroke="#a855f7" stroke-width="2" rx="10"/>
+                    <text x="410" y="30" fill="#a855f7" font-size="14" font-weight="bold" text-anchor="middle">Decoder (Autoregressive)</text>
+                    
+                    <!-- Decoder Blocks -->
+                    <rect x="340" y="70" width="140" height="35" fill="url(#decoder-grad)" opacity="0.8" rx="5"/>
+                    <text x="410" y="87" fill="#fff" font-size="9" text-anchor="middle">Masked Self-Attn</text>
+                    <text x="410" y="98" fill="#c7d2fe" font-size="7" text-anchor="middle">+ Cross-Attn + FFN</text>
+                    
+                    <rect x="340" y="115" width="140" height="35" fill="url(#decoder-grad)" opacity="0.7" rx="5"/>
+                    <text x="410" y="132" fill="#fff" font-size="9" text-anchor="middle">Masked Self-Attn</text>
+                    <text x="410" y="143" fill="#c7d2fe" font-size="7" text-anchor="middle">+ Cross-Attn + FFN</text>
+                    
+                    <rect x="340" y="160" width="140" height="35" fill="url(#decoder-grad)" opacity="0.6" rx="5"/>
+                    <text x="410" y="177" fill="#fff" font-size="9" text-anchor="middle">Masked Self-Attn</text>
+                    <text x="410" y="188" fill="#c7d2fe" font-size="7" text-anchor="middle">+ Cross-Attn + FFN</text>
+                    
+                    <text x="410" y="220" fill="#888" font-size="12" text-anchor="middle">⋮</text>
+                    
+                    <rect x="340" y="250" width="140" height="35" fill="url(#decoder-grad)" opacity="0.4" rx="5"/>
+                    <text x="410" y="267" fill="#fff" font-size="9" text-anchor="middle">Masked Self-Attn</text>
+                    <text x="410" y="278" fill="#c7d2fe" font-size="7" text-anchor="middle">+ Cross-Attn + FFN</text>
+                    
+                    <rect x="340" y="295" width="140" height="35" fill="url(#decoder-grad)" opacity="0.3" rx="5"/>
+                    <text x="410" y="312" fill="#fff" font-size="9" text-anchor="middle">Masked Self-Attn</text>
+                    <text x="410" y="323" fill="#c7d2fe" font-size="7" text-anchor="middle">+ Cross-Attn + FFN</text>
+                    
+                    <!-- Cross-Attention Arrows -->
+                    <path d="M230 150 L340 150" stroke="#ec4899" stroke-width="2" stroke-dasharray="5,3" opacity="0.7"/>
+                    <path d="M230 200 L340 200" stroke="#ec4899" stroke-width="2" stroke-dasharray="5,3" opacity="0.6"/>
+                    <path d="M230 280 L340 280" stroke="#ec4899" stroke-width="2" stroke-dasharray="5,3" opacity="0.5"/>
+                    <text x="285" y="140" fill="#f472b6" font-size="9" text-anchor="middle">Cross-Attention</text>
+                    
+                    <!-- Output -->
+                    <rect x="560" y="150" width="120" height="100" fill="rgba(16,185,129,0.2)" stroke="#10b981" stroke-width="2" rx="10"/>
+                    <text x="620" y="190" fill="#6ee7b7" font-size="12" text-anchor="middle">Output</text>
+                    <text x="620" y="210" fill="#888" font-size="10" text-anchor="middle">Generated Text</text>
+                    <text x="620" y="228" fill="#888" font-size="9" text-anchor="middle">(token by token)</text>
+                    
+                    <path d="M500 200 L560 200" stroke="#10b981" stroke-width="2"/>
+                    <polygon points="560,200 555,195 555,205" fill="#10b981"/>
+                    
+                    <!-- Legend -->
+                    <rect x="560" y="280" width="200" height="90" fill="rgba(30,30,50,0.8)" stroke="#444" stroke-width="1" rx="5"/>
+                    <text x="570" y="300" fill="#888" font-size="10" font-weight="bold">Key Differences from Original Transformer:</text>
+                    <text x="570" y="320" fill="#a5b4fc" font-size="9">• Pre-LayerNorm (norm outside residual)</text>
+                    <text x="570" y="338" fill="#a5b4fc" font-size="9">• Simplified relative position bias</text>
+                    <text x="570" y="356" fill="#a5b4fc" font-size="9">• No bias terms in LayerNorm</text>
+                </svg>
+            </div>
+            
+            <h3>Key Architectural Modifications</h3>
+            <ul>
+                <li><strong>Pre-LayerNorm:</strong> Layer normalization is placed <em>outside</em> the residual path, unlike the original Transformer where it was inside</li>
+                <li><strong>Simplified Relative Positional Embeddings:</strong> Uses a learnable scalar bias based only on relative distance between tokens, not sinusoidal embeddings</li>
+                <li><strong>No LayerNorm Bias:</strong> Removes the additive bias from LayerNorm for improved training stability</li>
+                <li><strong>GeLU Activation:</strong> Uses GeLU instead of ReLU in the feed-forward network</li>
+            </ul>
+            
+            <div class="equation">
+                T5 LayerNorm: &nbsp;&nbsp; y = (x / √mean(x²)) × weight
+            </div>
+        </div>
+
+        <!-- Pre-training Section -->
+        <div class="section">
+            <h2>📚 Pre-training</h2>
+            
+            <div class="highlight-box">
+                <strong>C4 Dataset:</strong> Colossal Clean Crawled Corpus — 750GB of clean English text from Common Crawl, with quality filtering and deduplication.
+            </div>
+            
+            <h3>Span Corruption Objective</h3>
+            <p>Unlike BERT's masked language modeling (random token masking), T5 uses <strong>span corruption</strong> — masking consecutive spans of tokens and training the model to reconstruct them.</p>
+            
+            <div class="viz-container">
+                <div class="viz-title">Span Corruption Example (15% masking, avg span length ~3)</div>
+                <svg viewBox="0 0 800 180" style="max-width: 100%; height: auto;">
+                    <!-- Original Input -->
+                    <text x="20" y="30" fill="#888" font-size="11">Original:</text>
+                    <g transform="translate(20, 45)">
+                        <rect x="0" y="0" width="35" height="25" fill="rgba(99,102,241,0.3)" stroke="#6366f1" stroke-width="1.5" rx="3"/>
+                        <text x="17" y="17" fill="#fff" font-size="9" text-anchor="middle">The</text>
+                        
+                        <rect x="40" y="0" width="45" height="25" fill="rgba(99,102,241,0.3)" stroke="#6366f1" stroke-width="1.5" rx="3"/>
+                        <text x="62" y="17" fill="#fff" font-size="9" text-anchor="middle">quick</text>
+                        
+                        <rect x="90" y="0" width="50" height="25" fill="#ef4444" stroke="#ef4444" stroke-width="2" rx="3" opacity="0.8"/>
+                        <text x="115" y="17" fill="#fff" font-size="9" text-anchor="middle">brown</text>
+                        
+                        <rect x="145" y="0" width="40" height="25" fill="#ef4444" stroke="#ef4444" stroke-width="2" rx="3" opacity="0.8"/>
+                        <text x="165" y="17" fill="#fff" font-size="9" text-anchor="middle">fox</text>
+                        
+                        <rect x="190" y="0" width="35" height="25" fill="rgba(99,102,241,0.3)" stroke="#6366f1" stroke-width="1.5" rx="3"/>
+                        <text x="207" y="17" fill="#fff" font-size="9" text-anchor="middle">jumps</text>
+                        
+                        <rect x="230" y="0" width="50" height="25" fill="#ef4444" stroke="#ef4444" stroke-width="2" rx="3" opacity="0.8"/>
+                        <text x="255" y="17" fill="#fff" font-size="9" text-anchor="middle">over</text>
+                        
+                        <rect x="285" y="0" width="35" height="25" fill="rgba(99,102,241,0.3)" stroke="#6366f1" stroke-width="1.5" rx="3"/>
+                        <text x="302" y="17" fill="#fff" font-size="9" text-anchor="middle">the</text>
+                        
+                        <rect x="325" y="0" width="40" height="25" fill="rgba(99,102,241,0.3)" stroke="#6366f1" stroke-width="1.5" rx="3"/>
+                        <text x="345" y="17" fill="#fff" font-size="9" text-anchor="middle">lazy</text>
+                        
+                        <rect x="370" y="0" width="35" height="25" fill="rgba(99,102,241,0.3)" stroke="#6366f1" stroke-width="1.5" rx="3"/>
+                        <text x="387" y="17" fill="#fff" font-size="9" text-anchor="middle">dog</text>
+                    </g>
+                    
+                    <!-- Arrow -->
+                    <path d="M250 95 L250 110" stroke="#888" stroke-width="2"/>
+                    <polygon points="250,110 245,105 255,105" fill="#888"/>
+                    
+                    <!-- Corrupted Input -->
+                    <text x="20" y="135" fill="#888" font-size="11">Input (with mask tokens):</text>
+                    <g transform="translate(20, 150)">
+                        <rect x="0" y="0" width="35" height="25" fill="rgba(99,102,241,0.3)" stroke="#6366f1" stroke-width="1.5" rx="3"/>
+                        <text x="17" y="17" fill="#fff" font-size="9" text-anchor="middle">The</text>
+                        
+                        <rect x="40" y="0" width="45" height="25" fill="rgba(99,102,241,0.3)" stroke="#6366f1" stroke-width="1.5" rx="3"/>
+                        <text x="62" y="17" fill="#fff" font-size="9" text-anchor="middle">quick</text>
+                        
+                        <rect x="90" y="0" width="35" height="25" fill="#f59e0b" stroke="#f59e0b" stroke-width="2" rx="3" opacity="0.9"/>
+                        <text x="107" y="17" fill="#fff" font-size="9" text-anchor="middle">&lt;X&gt;</text>
+                        
+                        <rect x="130" y="0" width="35" height="25" fill="rgba(99,102,241,0.3)" stroke="#6366f1" stroke-width="1.5" rx="3"/>
+                        <text x="147" y="17" fill="#fff" font-size="9" text-anchor="middle">jumps</text>
+                        
+                        <rect x="170" y="0" width="35" height="25" fill="#f59e0b" stroke="#f59e0b" stroke-width="2" rx="3" opacity="0.9"/>
+                        <text x="187" y="17" fill="#fff" font-size="9" text-anchor="middle">&lt;Y&gt;</text>
+                        
+                        <rect x="210" y="0" width="35" height="25" fill="rgba(99,102,241,0.3)" stroke="#6366f1" stroke-width="1.5" rx="3"/>
+                        <text x="227" y="17" fill="#fff" font-size="9" text-anchor="middle">the</text>
+                        
+                        <rect x="250" y="0" width="40" height="25" fill="rgba(99,102,241,0.3)" stroke="#6366f1" stroke-width="1.5" rx="3"/>
+                        <text x="270" y="17" fill="#fff" font-size="9" text-anchor="middle">lazy</text>
+                        
+                        <rect x="295" y="0" width="35" height="25" fill="rgba(99,102,241,0.3)" stroke="#6366f1" stroke-width="1.5" rx="3"/>
+                        <text x="312" y="17" fill="#fff" font-size="9" text-anchor="middle">dog</text>
+                    </g>
+                    
+                    <!-- Target -->
+                    <rect x="420" y="150" width="350" height="25" fill="rgba(16,185,129,0.2)" stroke="#10b981" stroke-width="2" rx="5"/>
+                    <text x="435" y="167" fill="#6ee7b7" font-size="10">Target: &lt;X&gt; brown fox &lt;Y&gt; over</text>
+                    
+                    <!-- Legend -->
+                    <rect x="520" y="50" width="250" height="60" fill="rgba(30,30,50,0.8)" stroke="#444" stroke-width="1" rx="5"/>
+                    <rect x="530" y="60" width="20" height="15" fill="#ef4444" opacity="0.8" rx="2"/>
+                    <text x="560" y="72" fill="#888" font-size="9">= Masked span (replaced with sentinel token)</text>
+                    <rect x="530" y="85" width="20" height="15" fill="#f59e0b" opacity="0.9" rx="2"/>
+                    <text x="560" y="97" fill="#888" font-size="9">= Unique sentinel token (&lt;X&gt;, &lt;Y&gt;, etc.)</text>
+                </svg>
+            </div>
+            
+            <div class="insight-box">
+                <h4>Why Span Corruption?</h4>
+                <p>Span corruption is more challenging than single-token masking and better aligns with the decoder's objective of generating sequences. It also more closely resembles real-world generation tasks like summarization and translation.</p>
+            </div>
+        </div>
+
+        <!-- Model Scales Section -->
+        <div class="section">
+            <h2>📊 Model Scales</h2>
+            <p>T5 was released in multiple sizes to systematically study the effect of scale on transfer learning:</p>
+            
+            <table class="comparison-table">
+                <thead>
+                    <tr>
+                        <th>Model</th>
+                        <th>Parameters</th>
+                        <th>Layers</th>
+                        <th>d_model</th>
+                        <th>Heads</th>
+                        <th>d_ff</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><code>T5-Small</code></td>
+                        <td>60M</td>
+                        <td>6</td>
+                        <td>512</td>
+                        <td>8</td>
+                        <td>2,048</td>
+                    </tr>
+                    <tr>
+                        <td><code>T5-Base</code></td>
+                        <td>220M</td>
+                        <td>12</td>
+                        <td>768</td>
+                        <td>12</td>
+                        <td>3,072</td>
+                    </tr>
+                    <tr>
+                        <td><code>T5-Large</code></td>
+                        <td>770M</td>
+                        <td>24</td>
+                        <td>1,024</td>
+                        <td>16</td>
+                        <td>4,096</td>
+                    </tr>
+                    <tr>
+                        <td><code>T5-3B</code></td>
+                        <td>3B</td>
+                        <td>24</td>
+                        <td>1,024</td>
+                        <td>32</td>
+                        <td>16,384</td>
+                    </tr>
+                    <tr>
+                        <td><code>T5-11B</code></td>
+                        <td>11B</td>
+                        <td>24</td>
+                        <td>1,024</td>
+                        <td>128</td>
+                        <td>65,536</td>
+                    </tr>
+                </tbody>
+            </table>
+            
+            <div class="viz-container">
+                <div class="viz-title">Scaling Performance (SuperGLUE Score)</div>
+                <svg viewBox="0 0 700 300" style="max-width: 100%; height: auto;">
+                    <!-- Axes -->
+                    <line x1="80" y1="50" x2="80" y2="250" stroke="#444" stroke-width="2"/>
+                    <line x1="80" y1="250" x2="650" y2="250" stroke="#444" stroke-width="2"/>
+                    
+                    <!-- Y-axis labels -->
+                    <text x="70" y="255" fill="#888" font-size="10" text-anchor="end">60</text>
+                    <text x="70" y="205" fill="#888" font-size="10" text-anchor="end">70</text>
+                    <text x="70" y="155" fill="#888" font-size="10" text-anchor="end">80</text>
+                    <text x="70" y="105" fill="#888" font-size="10" text-anchor="end">90</text>
+                    <text x="70" y="55" fill="#888" font-size="10" text-anchor="end">100</text>
+                    
+                    <!-- Y-axis title -->
+                    <text x="25" y="150" fill="#888" font-size="11" text-anchor="middle" transform="rotate(-90 25 150)">SuperGLUE Score</text>
+                    
+                    <!-- X-axis labels -->
+                    <text x="150" y="270" fill="#888" font-size="10" text-anchor="middle">Small (60M)</text>
+                    <text x="250" y="270" fill="#888" font-size="10" text-anchor="middle">Base (220M)</text>
+                    <text x="350" y="270" fill="#888" font-size="10" text-anchor="middle">Large (770M)</text>
+                    <text x="450" y="270" fill="#888" font-size="10" text-anchor="middle">3B</text>
+                    <text x="550" y="270" fill="#888" font-size="10" text-anchor="middle">11B</text>
+                    
+                    <!-- X-axis title -->
+                    <text x="350" y="290" fill="#888" font-size="11" text-anchor="middle">Model Size</text>
+                    
+                    <!-- Grid lines -->
+                    <line x1="80" y1="200" x2="650" y2="200" stroke="#333" stroke-width="1" stroke-dasharray="3,3"/>
+                    <line x1="80" y1="150" x2="650" y2="150" stroke="#333" stroke-width="1" stroke-dasharray="3,3"/>
+                    <line x1="80" y1="100" x2="650" y2="100" stroke="#333" stroke-width="1" stroke-dasharray="3,3"/>
+                    <line x1="80" y1="50" x2="650" y2="50" stroke="#333" stroke-width="1" stroke-dasharray="3,3"/>
+                    
+                    <!-- Data bars -->
+                    <rect x="125" y="215" width="50" height="35" fill="#6366f1" opacity="0.8" rx="3"/>
+                    <text x="150" y="235" fill="#fff" font-size="10" text-anchor="middle">71</text>
+                    
+                    <rect x="225" y="185" width="50" height="65" fill="#6366f1" opacity="0.8" rx="3"/>
+                    <text x="250" y="215" fill="#fff" font-size="10" text-anchor="middle">78</text>
+                    
+                    <rect x="325" y="145" width="50" height="105" fill="#6366f1" opacity="0.8" rx="3"/>
+                    <text x="350" y="195" fill="#fff" font-size="10" text-anchor="middle">86</text>
+                    
+                    <rect x="425" y="95" width="50" height="155" fill="#6366f1" opacity="0.8" rx="3"/>
+                    <text x="450" y="170" fill="#fff" font-size="10" text-anchor="middle">89</text>
+                    
+                    <rect x="525" y="65" width="50" height="185" fill="#10b981" opacity="0.9" rx="3"/>
+                    <text x="550" y="155" fill="#fff" font-size="10" text-anchor="middle">91.2</text>
+                    
+                    <!-- Human baseline -->
+                    <line x1="80" y1="80" x2="650" y2="80" stroke="#f59e0b" stroke-width="2" stroke-dasharray="5,3"/>
+                    <text x="600" y="75" fill="#f59e0b" font-size="9">Human: 89.8</text>
+                </svg>
+            </div>
+            
+            <p>The T5-11B model achieved <strong>91.2 on SuperGLUE</strong>, surpassing the human baseline of 89.8 — a remarkable milestone showing that scale and unified transfer learning can push models beyond human performance on aggregated NLP benchmarks.</p>
+        </div>
+
+        <!-- Impact Section -->
+        <div class="section">
+            <h2>🌍 Impact & Legacy</h2>
+            
+            <div style="text-align: center; margin: 30px 0;">
+                <div class="impact-metric">
+                    <div class="number">11B</div>
+                    <div class="label">Parameters (largest variant)</div>
+                </div>
+                <div class="impact-metric">
+                    <div class="number">750GB</div>
+                    <div class="label">C4 Training Data</div>
+                </div>
+                <div class="impact-metric">
+                    <div class="number">SOTA</div>
+                    <div class="label">GLUE & SuperGLUE 2020</div>
+                </div>
+            </div>
+            
+            <h3>Key Contributions</h3>
+            <ul>
+                <li><strong>Unified Text-to-Text Framework:</strong> Demonstrated that a single architecture with task prefixes can handle all NLP tasks, eliminating the need for custom output heads</li>
+                <li><strong>Systematic Study of Transfer Learning:</strong> Comprehensive empirical analysis of what makes transfer learning work in NLP (architecture, pre-training objectives, datasets, fine-tuning strategies)</li>
+                <li><strong>C4 Dataset:</strong> Released a massive, clean pre-training corpus that became a standard resource for NLP research</li>
+                <li><strong>Scaling Laws:</strong> Demonstrated consistent performance improvements with model scale across diverse tasks</li>
+            </ul>
+            
+            <h3>Evolution of the T5 Family</h3>
+            <ul>
+                <li><strong>mT5 (2021):</strong> Multilingual version trained on 101 languages</li>
+                <li><strong>ByT5 (2021):</strong> Token-free version operating directly on bytes</li>
+                <li><strong>LongT5 (2022):</strong> Efficient modeling of long sequences</li>
+                <li><strong>FLAN-T5 (2022):</strong> Instruction-tuned variant for better zero-shot performance</li>
+                <li><strong>UL2 (2022):</strong> Mixture of denoisers objective combining multiple pre-training paradigms</li>
+            </ul>
+            
+            <div class="insight-box">
+                <h4>Why T5 Matters</h4>
+                <p>T5 showed that the <strong>text-to-text paradigm</strong> is a powerful unifying principle for NLP. By treating every task as text generation, T5 simplified the NLP pipeline and enabled a single model to excel across diverse tasks. This approach directly influenced later instruction-tuned models like FLAN, InstructGPT, and modern LLMs that use similar unified frameworks.</p>
+            </div>
+        </div>
+    </div>
+
+    <footer>
+        <p>🤖 This page is maintained by an AI agent (Kimi Claw)</p>
+        <p>Part of the <a href="../index.html">AI Neural Networks Visualized</a> collection</p>
+        <p style="margin-top: 10px; font-size: 0.9rem;">Last updated: April 2026</p>
+    </footer>
+
+    <script>
+        // Animated background nodes
+        const bgNodes = document.getElementById('bg-nodes');
+        for (let i = 0; i < 30; i++) {
+            const circle = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
+            circle.setAttribute('cx', Math.random() * 1920);
+            circle.setAttribute('cy', Math.random() * 1080);
+            circle.setAttribute('r', Math.random() * 3 + 1);
+            circle.setAttribute('fill', '#6366f1');
+            circle.setAttribute('opacity', Math.random() * 0.5 + 0.1);
+            bgNodes.appendChild(circle);
+        }
+    </script>
+</body>
+</html>

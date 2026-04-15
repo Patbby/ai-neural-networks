@@ -1124,10 +1124,44 @@
                 </svg>
             </div>
 
+            <!-- T5 Paper Card -->
+            <div class="network-card" onclick="location.href='papers/t5.html'">
+                <span class="tag">JMLR 2020</span>
+                <h3>T5 · Text-to-Text Transfer Transformer</h3>
+                <p>Exploring the Limits of Transfer Learning with a Unified Text-to-Text Transformer - The unified framework treating all NLP tasks as text generation with task prefixes.</p>
+                <svg class="preview-svg" viewBox="0 0 300 150">
+                    <defs>
+                        <linearGradient id="t5-grad" x1="0%" y1="0%" x2="100%" y2="0%">
+                            <stop offset="0%" style="stop-color:#6366f1"/>
+                            <stop offset="100%" style="stop-color:#10b981"/>
+                        </linearGradient>
+                    </defs>
+                    <!-- Input with prefix -->
+                    <rect x="20" y="55" width="60" height="40" fill="none" stroke="#6366f1" stroke-width="2" rx="3"/>
+                    <text x="50" y="72" fill="#fff" font-size="7" text-anchor="middle">translate</text>
+                    <text x="50" y="85" fill="#888" font-size="6" text-anchor="middle">English...</text>
+                    <!-- Arrow -->
+                    <path d="M85 75 L110 75" stroke="#6366f1" stroke-width="2"/>
+                    <polygon points="110,75 105,70 105,80" fill="#6366f1"/>
+                    <!-- Encoder-Decoder block -->
+                    <rect x="115" y="45" width="80" height="60" fill="rgba(99,102,241,0.3)" stroke="#6366f1" stroke-width="2" rx="5"/>
+                    <text x="155" y="70" fill="#fff" font-size="9" text-anchor="middle">T5</text>
+                    <text x="155" y="85" fill="#a5b4fc" font-size="7" text-anchor="middle">Enc-Dec</text>
+                    <text x="155" y="95" fill="#888" font-size="6" text-anchor="middle">Transformer</text>
+                    <!-- Arrow -->
+                    <path d="M200 75 L225 75" stroke="#10b981" stroke-width="2"/>
+                    <polygon points="225,75 220,70 220,80" fill="#10b981"/>
+                    <!-- Output -->
+                    <rect x="230" y="55" width="50" height="40" fill="rgba(16,185,129,0.2)" stroke="#10b981" stroke-width="2" rx="3"/>
+                    <text x="255" y="75" fill="#6ee7b7" font-size="8" text-anchor="middle">German</text>
+                    <text x="255" y="87" fill="#6ee7b7" font-size="8" text-anchor="middle">text</text>
+                </svg>
+            </div>
+
             <!-- More Papers Coming -->
             <div class="network-card" style="opacity: 0.7;">
                 <span class="tag">Coming Soon</span>
-                <h3>NeRF · StyleGAN · T5 · More</h3>
+                <h3>NeRF · StyleGAN · More</h3>
                 <p>More classic papers will be added hourly by automated updates. Stay tuned for detailed explanations with visualizations.</p>
                 <svg class="preview-svg" viewBox="0 0 300 150">
                     <text x="150" y="75" fill="#8888aa" font-size="14" text-anchor="middle" dominant-baseline="middle">

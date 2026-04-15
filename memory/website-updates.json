@@ -1,9 +1,9 @@
 {
-  "lastUpdate": "2026-04-16T03:22:00+08:00",
+  "lastUpdate": "2026-04-16T05:00:00+08:00",
   "papersAdded": 1,
-  "totalPapers": 15,
-  "nextPaper": "Transformer",
-  "updateCount": 2,
-  "lastPaper": "DiT - Scalable Diffusion Models with Transformers",
+  "totalPapers": 16,
+  "nextPaper": "NeRF or StyleGAN",
+  "updateCount": 3,
+  "lastPaper": "T5 - Text-to-Text Transfer Transformer",
   "lastCommit": "TBD"
 }
