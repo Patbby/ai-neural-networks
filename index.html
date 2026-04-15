@@ -515,6 +515,64 @@
                 </svg>
             </div>
 
+            <!-- StyleGAN Paper Card -->
+            <div class="network-card" onclick="location.href='papers/stylegan.html'">
+                <span class="tag">CVPR 2019</span>
+                <h3>StyleGAN</h3>
+                <p>A Style-Based Generator Architecture for GANs - High-quality image generation with disentangled latent space and style control at each layer.</p>
+                <svg class="preview-svg" viewBox="0 0 300 150">
+                    <defs>
+                        <linearGradient id="stylegan-grad" x1="0%" y1="0%" x2="100%" y2="0%">
+                            <stop offset="0%" style="stop-color:#ec4899"/>
+                            <stop offset="50%" style="stop-color:#a855f7"/>
+                            <stop offset="100%" style="stop-color:#6366f1"/>
+                        </linearGradient>
+                    </defs>
+                    <!-- Latent Z -->
+                    <rect x="20" y="55" width="35" height="40" fill="rgba(99,102,241,0.3)" stroke="#6366f1" stroke-width="2" rx="3"/>
+                    <text x="37" y="72" fill="#fff" font-size="8" text-anchor="middle">z∈Z</text>
+                    <text x="37" y="85" fill="#c7d2fe" font-size="7" text-anchor="middle">512</text>
+                    
+                    <!-- Mapping Network -->
+                    <rect x="70" y="45" width="50" height="60" fill="rgba(168,85,247,0.3)" stroke="#a855f7" stroke-width="2" rx="3"/>
+                    <text x="95" y="65" fill="#fff" font-size="8" text-anchor="middle">Mapping</text>
+                    <text x="95" y="78" fill="#fff" font-size="8" text-anchor="middle">f:Z→W</text>
+                    <text x="95" y="92" fill="#e9d5ff" font-size="7" text-anchor="middle">8 FC</text>
+                    
+                    <!-- W Space -->
+                    <rect x="135" y="55" width="35" height="40" fill="rgba(236,72,153,0.3)" stroke="#ec4899" stroke-width="2" rx="3"/>
+                    <text x="152" y="72" fill="#fff" font-size="8" text-anchor="middle">w∈W</text>
+                    <text x="152" y="85" fill="#fbcfe8" font-size="7" text-anchor="middle">512</text>
+                    
+                    <!-- Synthesis blocks -->
+                    <g transform="translate(185, 35)">
+                        <!-- Learned constant -->
+                        <rect x="0" y="25" width="25" height="25" fill="#3b82f6" stroke="#60a5fa" stroke-width="1.5" rx="2"/>
+                        <text x="12" y="42" fill="#fff" font-size="6" text-anchor="middle">Const</text>
+                        <!-- Conv blocks -->
+                        <rect x="30" y="10" width="20" height="20" fill="rgba(16,185,129,0.4)" stroke="#10b981" stroke-width="1.5" rx="2"/>
+                        <rect x="30" y="35" width="20" height="20" fill="rgba(16,185,129,0.4)" stroke="#10b981" stroke-width="1.5" rx="2"/>
+                        <rect x="30" y="60" width="20" height="20" fill="rgba(16,185,129,0.4)" stroke="#10b981" stroke-width="1.5" rx="2"/>
+                        <!-- Style inputs -->
+                        <line x1="-15" y1="20" x2="30" y2="20" stroke="#ec4899" stroke-width="1" opacity="0.6"/>
+                        <line x1="-15" y1="45" x2="30" y2="45" stroke="#ec4899" stroke-width="1" opacity="0.6"/>
+                        <line x1="-15" y1="70" x2="30" y2="70" stroke="#ec4899" stroke-width="1" opacity="0.6"/>
+                    </g>
+                    <text x="210" y="110" fill="#10b981" font-size="7" text-anchor="middle">AdaIN Layers</text>
+                    
+                    <!-- Output -->
+                    <rect x="255" y="50" width="35" height="50" fill="rgba(245,158,11,0.3)" stroke="#f59e0b" stroke-width="2" rx="3"/>
+                    <text x="272" y="72" fill="#fff" font-size="8" text-anchor="middle">Image</text>
+                    <text x="272" y="85" fill="#fde68a" font-size="7" text-anchor="middle">1024²</text>
+                    
+                    <!-- Arrows -->
+                    <path d="M55 75 L70 75" stroke="#6366f1" stroke-width="2"/>
+                    <path d="M120 75 L135 75" stroke="#a855f7" stroke-width="2"/>
+                    <path d="M170 75 L185 75" stroke="#ec4899" stroke-width="2"/>
+                    <path d="M235 75 L255 75" stroke="#10b981" stroke-width="2"/>
+                </svg>
+            </div>
+
             <!-- Deep Learning Nature Paper Card -->
             <div class="network-card" onclick="location.href='papers/deep-learning-nature.html'">
                 <span class="tag">Nature 2015 · Turing Award</span>
