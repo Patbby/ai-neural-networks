@@ -1,0 +1,717 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GPT-2: Language Models are Unsupervised Multitask Learners | 神经漫游者</title>
+    <meta name="description" content="GPT-2: 展示无监督多任务学习的革命性语言模型，15亿参数开启零样本学习时代">
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600;700&family=Noto+Sans+SC:wght@400;500;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --neon-green: #00ff88;
+            --neon-purple: #b026ff;
+            --neon-blue: #00d4ff;
+            --dark-bg: #0a0a0f;
+            --card-bg: rgba(255,255,255,0.03);
+        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Noto Sans SC', sans-serif;
+            background: var(--dark-bg);
+            color: #e0e0e0;
+            line-height: 1.8;
+            overflow-x: hidden;
+        }
+        .neural-bg {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            pointer-events: none;
+            z-index: 0;
+        }
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: 40px 20px;
+            position: relative;
+            z-index: 1;
+        }
+        .paper-hero {
+            background: linear-gradient(135deg, rgba(0,255,136,0.1), rgba(176,38,255,0.1));
+            border: 1px solid rgba(0,255,136,0.3);
+            border-radius: 20px;
+            padding: 60px 40px;
+            margin-bottom: 50px;
+            position: relative;
+            overflow: hidden;
+        }
+        .paper-hero::before {
+            content: '';
+            position: absolute;
+            top: -50%; left: -50%;
+            width: 200%; height: 200%;
+            background: radial-gradient(circle, rgba(0,255,136,0.1) 0%, transparent 70%);
+            animation: pulse 4s ease-in-out infinite;
+        }
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); opacity: 0.5; }
+            50% { transform: scale(1.1); opacity: 0.8; }
+        }
+        .hero-content { position: relative; z-index: 1; }
+        .paper-year {
+            display: inline-block;
+            background: linear-gradient(135deg, var(--neon-green), var(--neon-purple));
+            color: #000;
+            padding: 8px 20px;
+            border-radius: 20px;
+            font-weight: 700;
+            margin-bottom: 20px;
+            font-family: 'JetBrains Mono', monospace;
+        }
+        .paper-title {
+            font-size: 2.5em;
+            font-weight: 700;
+            margin-bottom: 20px;
+            line-height: 1.3;
+            background: linear-gradient(135deg, #fff, var(--neon-green));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        .paper-subtitle {
+            font-size: 1.3em;
+            color: #aaa;
+            margin-bottom: 30px;
+        }
+        .paper-meta {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+        .meta-item {
+            background: rgba(0,255,136,0.1);
+            border: 1px solid rgba(0,255,136,0.3);
+            padding: 10px 20px;
+            border-radius: 10px;
+            font-size: 0.9em;
+        }
+        .paper-links {
+            display: flex;
+            gap: 15px;
+            flex-wrap: wrap;
+        }
+        .paper-link {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 12px 25px;
+            background: linear-gradient(135deg, var(--neon-green), var(--neon-purple));
+            color: #000;
+            text-decoration: none;
+            border-radius: 8px;
+            font-weight: 600;
+            transition: all 0.3s;
+        }
+        .paper-link:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 30px rgba(0,255,136,0.3);
+        }
+        .section {
+            background: var(--card-bg);
+            border: 1px solid rgba(255,255,255,0.1);
+            border-radius: 15px;
+            padding: 40px;
+            margin-bottom: 40px;
+            backdrop-filter: blur(10px);
+        }
+        .section-title {
+            font-size: 1.8em;
+            font-weight: 700;
+            margin-bottom: 25px;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+        .section-title::before {
+            content: '';
+            width: 4px;
+            height: 30px;
+            background: linear-gradient(180deg, var(--neon-green), var(--neon-purple));
+            border-radius: 2px;
+        }
+        .problem-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 25px;
+        }
+        .problem-card {
+            background: rgba(0,0,0,0.3);
+            border: 1px solid rgba(0,255,136,0.2);
+            border-radius: 12px;
+            padding: 25px;
+        }
+        .problem-card h3 {
+            color: var(--neon-green);
+            font-size: 1.1em;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .highlight-box {
+            background: linear-gradient(135deg, rgba(0,255,136,0.1), rgba(176,38,255,0.1));
+            border-left: 4px solid var(--neon-green);
+            padding: 25px;
+            border-radius: 0 12px 12px 0;
+            margin: 25px 0;
+        }
+        .highlight-box p {
+            font-size: 1.15em;
+            color: #fff;
+        }
+        .architecture-diagram {
+            background: rgba(0,0,0,0.5);
+            border: 1px solid rgba(0,255,136,0.3);
+            border-radius: 15px;
+            padding: 40px;
+            margin: 30px 0;
+            text-align: center;
+        }
+        .arch-flow {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+            max-width: 600px;
+            margin: 0 auto;
+        }
+        .arch-layer {
+            background: linear-gradient(135deg, rgba(0,255,136,0.15), rgba(176,38,255,0.15));
+            border: 1px solid rgba(0,255,136,0.4);
+            border-radius: 12px;
+            padding: 20px;
+            position: relative;
+        }
+        .arch-layer::after {
+            content: '↓';
+            position: absolute;
+            bottom: -25px;
+            left: 50%;
+            transform: translateX(-50%);
+            color: var(--neon-green);
+            font-size: 1.5em;
+        }
+        .arch-layer:last-child::after { display: none; }
+        .arch-layer h4 {
+            color: var(--neon-green);
+            margin-bottom: 10px;
+        }
+        .arch-specs {
+            display: flex;
+            justify-content: center;
+            gap: 30px;
+            flex-wrap: wrap;
+            margin-top: 15px;
+            font-size: 0.9em;
+            color: #aaa;
+            font-family: 'JetBrains Mono', monospace;
+        }
+        .model-sizes {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 15px;
+            margin-top: 30px;
+        }
+        .size-card {
+            background: rgba(0,0,0,0.4);
+            border: 1px solid rgba(0,255,136,0.2);
+            border-radius: 10px;
+            padding: 20px;
+            text-align: center;
+        }
+        .size-card.highlight {
+            border-color: var(--neon-green);
+            background: rgba(0,255,136,0.1);
+        }
+        .size-name {
+            font-weight: 700;
+            color: var(--neon-green);
+            margin-bottom: 5px;
+        }
+        .size-params {
+            font-size: 1.3em;
+            font-weight: 700;
+            color: #fff;
+        }
+        .results-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 25px 0;
+        }
+        .results-table th,
+        .results-table td {
+            padding: 15px;
+            text-align: left;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+        }
+        .results-table th {
+            background: rgba(0,255,136,0.1);
+            color: var(--neon-green);
+            font-weight: 600;
+        }
+        .results-table tr:hover {
+            background: rgba(0,255,136,0.05);
+        }
+        .impact-list {
+            list-style: none;
+        }
+        .impact-list li {
+            padding: 15px 0;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+            display: flex;
+            align-items: flex-start;
+            gap: 15px;
+        }
+        .impact-list li::before {
+            content: '▸';
+            color: var(--neon-green);
+            font-size: 1.5em;
+            line-height: 1;
+        }
+        .code-block {
+            background: #1a1a2e;
+            border: 1px solid rgba(0,255,136,0.2);
+            border-radius: 12px;
+            overflow: hidden;
+            margin: 25px 0;
+        }
+        .code-header {
+            background: rgba(0,255,136,0.1);
+            padding: 12px 20px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            border-bottom: 1px solid rgba(0,255,136,0.2);
+        }
+        .code-header span {
+            color: var(--neon-green);
+            font-weight: 600;
+            font-size: 0.9em;
+        }
+        pre {
+            padding: 25px;
+            overflow-x: auto;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.95em;
+            line-height: 1.6;
+        }
+        code {
+            color: #e0e0e0;
+        }
+        .related-papers {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+        }
+        .related-card {
+            background: rgba(0,0,0,0.3);
+            border: 1px solid rgba(0,255,136,0.2);
+            border-radius: 12px;
+            padding: 25px;
+            transition: all 0.3s;
+        }
+        .related-card:hover {
+            border-color: var(--neon-green);
+            transform: translateY(-3px);
+        }
+        .related-card h4 {
+            color: var(--neon-green);
+            margin-bottom: 10px;
+            font-size: 1.1em;
+        }
+        .related-card .year {
+            color: #888;
+            font-size: 0.9em;
+            font-family: 'JetBrains Mono', monospace;
+        }
+        .related-card p {
+            margin-top: 10px;
+            color: #aaa;
+            font-size: 0.95em;
+        }
+        .back-nav {
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            color: var(--neon-green);
+            text-decoration: none;
+            font-weight: 600;
+            margin-bottom: 30px;
+            transition: all 0.3s;
+        }
+        .back-nav:hover {
+            gap: 15px;
+        }
+        @media (max-width: 768px) {
+            .paper-title { font-size: 1.8em; }
+            .paper-hero { padding: 40px 25px; }
+            .section { padding: 25px; }
+            .model-sizes { grid-template-columns: 1fr; }
+        }
+    </style>
+</head>
+<body>
+    <svg class="neural-bg" viewBox="0 0 1920 1080" preserveAspectRatio="xMidYMid slice">
+        <defs>
+            <linearGradient id="grad1" x1="0%" y1="0%" x2="100%" y2="100%">
+                <stop offset="0%" style="stop-color:#00ff88;stop-opacity:0.05"/>
+                <stop offset="100%" style="stop-color:#b026ff;stop-opacity:0.05"/>
+            </linearGradient>
+        </defs>
+        <rect width="1920" height="1080" fill="url(#grad1)"/>
+        <g stroke="#00ff88" stroke-width="1" fill="none" opacity="0.1">
+            <line x1="200" y1="200" x2="600" y2="400">
+                <animate attributeName="opacity" values="0.1;0.3;0.1" dur="3s" repeatCount="indefinite"/>
+            </line>
+            <line x1="600" y1="400" x2="1000" y2="300">
+                <animate attributeName="opacity" values="0.1;0.3;0.1" dur="3s" repeatCount="indefinite" begin="0.5s"/>
+            </line>
+            <line x1="1000" y1="300" x2="1400" y2="500">
+                <animate attributeName="opacity" values="0.1;0.3;0.1" dur="3s" repeatCount="indefinite" begin="1s"/>
+            </line>
+            <circle cx="200" cy="200" r="5" fill="#00ff88" opacity="0.3">
+                <animate attributeName="r" values="5;8;5" dur="2s" repeatCount="indefinite"/>
+            </circle>
+            <circle cx="600" cy="400" r="5" fill="#00ff88" opacity="0.3">
+                <animate attributeName="r" values="5;8;5" dur="2s" repeatCount="indefinite" begin="0.5s"/>
+            </circle>
+            <circle cx="1000" cy="300" r="5" fill="#b026ff" opacity="0.3">
+                <animate attributeName="r" values="5;8;5" dur="2s" repeatCount="indefinite" begin="1s"/>
+            </circle>
+            <circle cx="1400" cy="500" r="5" fill="#b026ff" opacity="0.3">
+                <animate attributeName="r" values="5;8;5" dur="2s" repeatCount="indefinite" begin="1.5s"/>
+            </circle>
+        </g>
+    </svg>
+
+    <div class="container">
+        <a href="index.html" class="back-nav">← 返回论文库</a>
+
+        <div class="paper-hero">
+            <div class="hero-content">
+                <span class="paper-year">2019</span>
+                <h1 class="paper-title">GPT-2</h1>
+                <p class="paper-subtitle">Language Models are Unsupervised Multitask Learners</p>
+                <p style="font-size: 1.1em; margin-bottom: 30px;">语言模型是无监督的多任务学习器</p>
+                
+                <div class="paper-meta">
+                    <div class="meta-item">📄 OpenAI Technical Report</div>
+                    <div class="meta-item">👥 Alec Radford, Jeffrey Wu, Rewon Child, David Luan, Dario Amodei, Ilya Sutskever</div>
+                    <div class="meta-item">📅 February 2019</div>
+                </div>
+
+                <div class="paper-links">
+                    <a href="https://cdn.openai.com/better-language-models/language_models_are_unsupervised_multitask_learners.pdf" class="paper-link" target="_blank">
+                        <span>📄</span> 论文 PDF
+                    </a>
+                    <a href="https://github.com/openai/gpt-2" class="paper-link" target="_blank">
+                        <span>💻</span> 官方代码
+                    </a>
+                    <a href="https://openai.com/research/better-language-models" class="paper-link" target="_blank">
+                        <span>🔗</span> OpenAI Blog
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <div class="section">
+            <h2 class="section-title">问题背景</h2>
+            <div class="problem-grid">
+                <div class="problem-card">
+                    <h3>🎯 传统方法的局限</h3>
+                    <p>传统 NLP 系统通常是针对特定任务训练的"狭窄专家"，需要大量标注数据和监督学习，难以适应新任务或领域变化。</p>
+                </div>
+                <div class="problem-card">
+                    <h3>📊 多任务学习的瓶颈</h3>
+                    <p>虽然多任务学习有潜力，但传统方法只能处理10-17个数据集-目标对，远不足以实现真正的通用智能。</p>
+                </div>
+                <div class="problem-card">
+                    <h3>🔄 预训练+微调的依赖</h3>
+                    <p>GPT-1 证明了预训练+微调的有效性，但仍需要任务特定的标注数据进行调整，无法实现真正的零样本学习。</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="section">
+            <h2 class="section-title">核心创新</h2>
+            <div class="highlight-box">
+                <p><strong>核心洞察：</strong>当语言模型在足够大且多样化的无标签文本语料上进行训练时，它们可以在没有任何明确监督的情况下，执行许多下游任务。这是<strong>零样本学习（Zero-Shot Learning）</strong>的开端。</p>
+            </div>
+            
+            <p style="margin-bottom: 20px;">GPT-2 的核心假设是：<strong>语言建模目标本身就等同于多任务学习</strong>——只是评估指标的范围不同。通过最大化条件概率 P(output|input)，模型实际上在学习执行各种任务。</p>
+
+            <div class="problem-grid">
+                <div class="problem-card">
+                    <h3>🌐 WebText 数据集</h3>
+                    <p>创建了 WebText 数据集：从 Reddit 外链中抓取的 4500 万网页，约 40GB 高质量文本，包含 800 万篇文档。这是当时最大的开放文本数据集之一。</p>
+                </div>
+                <div class="problem-card">
+                    <h3>🚀 规模扩展</h3>
+                    <p>将模型规模从 GPT-1 的 1.17 亿参数扩展到最大 15 亿参数（GPT-2 XL），验证"更大模型=更好性能"的假设。</p>
+                </div>
+                <div class="problem-card">
+                    <h3>🔤 Byte-Level BPE</h3>
+                    <p>使用字节级字节对编码（Byte-Level BPE），词汇表扩展到 50,257，支持任意 Unicode 字符，无需预处理。</p>
+                </div>
+                <div class="problem-card">
+                    <h3>⚡ 架构改进</h3>
+                    <p>LayerNorm 移至子块输入（Pre-LN），改进残差初始化，上下文长度扩展到 1024 tokens。</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="section">
+            <h2 class="section-title">模型架构</h2>
+            <p style="margin-bottom: 25px;">GPT-2 基于改进的 Transformer Decoder 架构，通过四种不同规模验证缩放法则：</p>
+            
+            <div class="model-sizes">
+                <div class="size-card">
+                    <div class="size-name">Small</div>
+                    <div class="size-params">117M</div>
+                    <div style="color: #888; font-size: 0.9em;">12 层 / 768 维 / 12 头</div>
+                </div>
+                <div class="size-card">
+                    <div class="size-name">Medium</div>
+                    <div class="size-params">345M</div>
+                    <div style="color: #888; font-size: 0.9em;">24 层 / 1024 维 / 16 头</div>
+                </div>
+                <div class="size-card">
+                    <div class="size-name">Large</div>
+                    <div class="size-params">762M</div>
+                    <div style="color: #888; font-size: 0.9em;">36 层 / 1280 维 / 20 头</div>
+                </div>
+                <div class="size-card highlight">
+                    <div class="size-name">XL</div>
+                    <div class="size-params">1.5B</div>
+                    <div style="color: #888; font-size: 0.9em;">48 层 / 1600 维 / 25 头</div>
+                </div>
+            </div>
+
+            <div class="architecture-diagram">
+                <h3 style="color: var(--neon-green); margin-bottom: 30px;">GPT-2 架构流程</h3>
+                <div class="arch-flow">
+                    <div class="arch-layer">
+                        <h4>输入嵌入层</h4>
+                        <p>Token Embeddings + Position Embeddings</p>
+                        <div class="arch-specs">
+                            <span>Vocab: 50,257</span>
+                            <span>Context: 1024</span>
+                        </div>
+                    </div>
+                    <div class="arch-layer">
+                        <h4>Transformer Decoder × 48</h4>
+                        <p>Masked Multi-Head Self-Attention + FFN</p>
+                        <div class="arch-specs">
+                            <span>Hidden: 1600</span>
+                            <span>Heads: 25</span>
+                            <span>FFN: 6400</span>
+                        </div>
+                    </div>
+                    <div class="arch-layer">
+                        <h4>输出层</h4>
+                        <p>LayerNorm → Linear → Softmax</p>
+                        <div class="arch-specs">
+                            <span>输出: 词汇概率分布</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="section">
+            <h2 class="section-title">实验结果</h2>
+            <p style="margin-bottom: 20px;">GPT-2 在 8 个语言建模数据集中的 7 个上实现了 SOTA，并在多项任务上展示了强大的零样本能力：</p>
+            
+            <table class="results-table">
+                <thead>
+                    <tr>
+                        <th>任务</th>
+                        <th>数据集</th>
+                        <th>指标</th>
+                        <th>GPT-2 (XL) 表现</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>语言建模</td>
+                        <td>WikiText-2</td>
+                        <td>Perplexity</td>
+                        <td>18.34 (SOTA)</td>
+                    </tr>
+                    <tr>
+                        <td>阅读理解</td>
+                        <td>CoQA</td>
+                        <td>F1</td>
+                        <td>55.0 (接近监督方法)</td>
+                    </tr>
+                    <tr>
+                        <td>机器翻译</td>
+                        <td>WMT-14 (En-Fr)</td>
+                        <td>BLEU</td>
+                        <td>11.5 (无监督)</td>
+                    </tr>
+                    <tr>
+                        <td>摘要</td>
+                        <td>CNN/DailyMail</td>
+                        <td>ROUGE-1</td>
+                        <td>21.0 (接近监督方法)</td>
+                    </tr>
+                    <tr>
+                        <td>问答</td>
+                        <td>Natural Questions</td>
+                        <td>Accuracy</td>
+                        <td>4.1% (L1距离: 3.5%)</td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <div class="highlight-box">
+                <p><strong>关键发现：</strong>模型规模与性能呈现明显的<strong>幂律关系（Power Law）</strong>——更大的模型在所有任务上都表现更好，这为后续 GPT-3 的 175B 参数奠定了理论基础。</p>
+            </div>
+        </div>
+
+        <div class="section">
+            <h2 class="section-title">影响与意义</h2>
+            <ul class="impact-list">
+                <li>
+                    <div>
+                        <strong style="color: var(--neon-green);">零样本学习的开创</strong>
+                        <p>首次证明大型语言模型可以在没有任何任务特定训练的情况下执行多种 NLP 任务，开启了提示工程（Prompt Engineering）时代。</p>
+                    </div>
+                </li>
+                <li>
+                    <div>
+                        <strong style="color: var(--neon-green);">缩放法则的验证</strong>
+                        <p>实验数据支持"规模就是一切"的观点，直接推动了 GPT-3、PaLM、LLaMA 等超大规模模型的研发。</p>
+                    </div>
+                </li>
+                <li>
+                    <div>
+                        <strong style="color: var(--neon-green);">AI 安全讨论</strong>
+                        <p>OpenAI 因担心滥用风险，最初选择分阶段发布模型（先发布 117M 版本），引发了关于 AI 研究开放性的重要讨论。</p>
+                    </div>
+                </li>
+                <li>
+                    <div>
+                        <strong style="color: var(--neon-green);">通用人工智能的路径</strong>
+                        <p>展示了通过无监督预训练实现通用语言理解的潜力，为 AGI 研究提供了新的方向。</p>
+                    </div>
+                </li>
+                <li>
+                    <div>
+                        <strong style="color: var(--neon-green);">开源生态</strong>
+                        <p>尽管模型最初受限，但 GPT-2 的开源最终催生了大量复现、改进和应用，包括 Hugging Face Transformers 库的早期发展。</p>
+                    </div>
+                </li>
+            </ul>
+        </div>
+
+        <div class="section">
+            <h2 class="section-title">代码实现</h2>
+            <div class="code-block">
+                <div class="code-header">
+                    <span>🐍 PyTorch 简化版 GPT-2 推理</span>
+                </div>
+                <pre><code>import torch
+import torch.nn as nn
+
+class GPT2Block(nn.Module):
+    def __init__(self, d_model=1600, n_heads=25, d_ff=6400):
+        super().__init__()
+        self.ln1 = nn.LayerNorm(d_model)
+        self.attn = nn.MultiheadAttention(d_model, n_heads)
+        self.ln2 = nn.LayerNorm(d_model)
+        self.ffn = nn.Sequential(
+            nn.Linear(d_model, d_ff),
+            nn.GELU(),
+            nn.Linear(d_ff, d_model)
+        )
+    
+    def forward(self, x):
+        # Pre-LN: LayerNorm before attention
+        attn_out, _ = self.attn(self.ln1(x), x, x)
+        x = x + attn_out
+        # Pre-LN: LayerNorm before FFN
+        x = x + self.ffn(self.ln2(x))
+        return x
+
+class GPT2(nn.Module):
+    def __init__(self, vocab_size=50257, d_model=1600, 
+                 n_layers=48, n_heads=25, max_len=1024):
+        super().__init__()
+        self.token_emb = nn.Embedding(vocab_size, d_model)
+        self.pos_emb = nn.Embedding(max_len, d_model)
+        self.blocks = nn.ModuleList([
+            GPT2Block(d_model, n_heads) for _ in range(n_layers)
+        ])
+        self.ln_f = nn.LayerNorm(d_model)
+        self.head = nn.Linear(d_model, vocab_size, bias=False)
+    
+    def forward(self, x):
+        b, t = x.size()
+        pos = torch.arange(0, t, device=x.device).unsqueeze(0)
+        x = self.token_emb(x) + self.pos_emb(pos)
+        for block in self.blocks:
+            x = block(x)
+        x = self.ln_f(x)
+        return self.head(x)
+
+# 使用 transformers 库加载预训练模型
+from transformers import GPT2LMHeadModel, GPT2Tokenizer
+
+model = GPT2LMHeadModel.from_pretrained('gpt2-xl')
+tokenizer = GPT2Tokenizer.from_pretrained('gpt2-xl')
+
+input_text = "Neural networks are"
+inputs = tokenizer(input_text, return_tensors='pt')
+outputs = model.generate(**inputs, max_length=50)
+print(tokenizer.decode(outputs[0]))</code></pre>
+            </div>
+        </div>
+
+        <div class="section">
+            <h2 class="section-title">相关论文</h2>
+            <div class="related-papers">
+                <div class="related-card">
+                    <h4>GPT-1: Improving Language Understanding by Generative Pre-Training</h4>
+                    <div class="year">2018 | OpenAI</div>
+                    <p>提出预训练+微调的范式，GPT-2 的直接前身。</p>
+                </div>
+                <div class="related-card">
+                    <h4>GPT-3: Language Models are Few-Shot Learners</h4>
+                    <div class="year">2020 | OpenAI</div>
+                    <p>将参数规模扩展到 175B，展示小样本学习（Few-Shot）能力。</p>
+                </div>
+                <div class="related-card">
+                    <h4>Transformer: Attention Is All You Need</h4>
+                    <div class="year">2017 | Google</div>
+                    <p>GPT 系列的基础架构，自注意力机制的奠基之作。</p>
+                </div>
+                <div class="related-card">
+                    <h4>BERT: Pre-training of Deep Bidirectional Transformers</h4>
+                    <div class="year">2019 | Google</div>
+                    <p>同期的重要工作，采用双向编码器架构。</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="section" style="text-align: center; border-color: rgba(0,255,136,0.3);">
+            <h2 style="color: var(--neon-green); margin-bottom: 20px;">关于本页</h2>
+            <p style="color: #888; max-width: 600px; margin: 0 auto;">
+                本页面是<a href="index.html" style="color: var(--neon-green);">神经漫游者</a>论文库的一部分。<br>
+                我们致力于用中文解读最具影响力的 AI 论文，让知识触手可及。<br><br>
+                <span style="font-size: 0.9em;">最后更新：2026年4月15日</span>
+            </p>
+        </div>
+    </div>
+</body>
+</html>
