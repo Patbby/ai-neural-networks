@@ -824,10 +824,226 @@
                 </svg>
             </div>
 
+            <!-- AlexNet Paper Card -->
+            <div class="network-card" onclick="location.href='papers/alexnet.html'">
+                <span class="tag">NeurIPS 2012</span>
+                <h3>AlexNet</h3>
+                <p>ImageNet Classification with Deep Convolutional Neural Networks - The paper that ignited the deep learning revolution with 8 layers and 60M parameters.</p>
+                <svg class="preview-svg" viewBox="0 0 300 150">
+                    <defs>
+                        <linearGradient id="alexnet-grad" x1="0%" y1="0%" x2="100%" y2="0%">
+                            <stop offset="0%" style="stop-color:#f59e0b"/>
+                            <stop offset="100%" style="stop-color:#ef4444"/>
+                        </linearGradient>
+                    </defs>
+                    <!-- Input -->
+                    <rect x="20" y="50" width="35" height="50" fill="none" stroke="#f59e0b" stroke-width="2" rx="3"/>
+                    <!-- Conv layers -->
+                    <rect x="65" y="45" width="25" height="60" fill="rgba(245,158,11,0.3)" stroke="#f59e0b" stroke-width="2" rx="2"/>
+                    <rect x="95" y="40" width="25" height="70" fill="rgba(239,68,68,0.3)" stroke="#ef4444" stroke-width="2" rx="2"/>
+                    <rect x="125" y="35" width="25" height="80" fill="rgba(245,158,11,0.3)" stroke="#f59e0b" stroke-width="2" rx="2"/>
+                    <!-- FC layers -->
+                    <rect x="160" y="50" width="20" height="50" fill="rgba(99,102,241,0.3)" stroke="#6366f1" stroke-width="2" rx="2"/>
+                    <rect x="185" y="55" width="20" height="40" fill="rgba(99,102,241,0.3)" stroke="#6366f1" stroke-width="2" rx="2"/>
+                    <!-- Output -->
+                    <rect x="220" y="60" width="50" height="30" fill="rgba(16,185,129,0.2)" stroke="#10b981" stroke-width="2" rx="3"/>
+                    <text x="245" y="80" fill="#6ee7b7" font-size="10" text-anchor="middle">1000</text>
+                </svg>
+            </div>
+
+            <!-- DenseNet Paper Card -->
+            <div class="network-card" onclick="location.href='papers/densenet.html'">
+                <span class="tag">CVPR 2017 Best Paper</span>
+                <h3>DenseNet</h3>
+                <p>Densely Connected Convolutional Networks - Feature reuse through dense connections, maximum information flow with fewer parameters.</p>
+                <svg class="preview-svg" viewBox="0 0 300 150">
+                    <defs>
+                        <linearGradient id="densenet-grad" x1="0%" y1="0%" x2="100%" y2="0%">
+                            <stop offset="0%" style="stop-color:#10b981"/>
+                            <stop offset="100%" style="stop-color:#06b6d4"/>
+                        </linearGradient>
+                    </defs>
+                    <!-- Dense block layers -->
+                    <rect x="30" y="40" width="40" height="25" fill="rgba(16,185,129,0.3)" stroke="#10b981" stroke-width="2" rx="2"/>
+                    <rect x="30" y="70" width="40" height="25" fill="rgba(16,185,129,0.3)" stroke="#10b981" stroke-width="2" rx="2"/>
+                    <rect x="30" y="100" width="40" height="25" fill="rgba(16,185,129,0.3)" stroke="#10b981" stroke-width="2" rx="2"/>
+                    <!-- Dense connections (curved lines) -->
+                    <path d="M50 65 Q90 55 90 47" stroke="#10b981" stroke-width="1.5" fill="none" opacity="0.6"/>
+                    <path d="M50 95 Q90 75 90 47" stroke="#10b981" stroke-width="1.5" fill="none" opacity="0.6"/>
+                    <path d="M50 125 Q90 95 90 47" stroke="#10b981" stroke-width="1.5" fill="none" opacity="0.6"/>
+                    <!-- Next layer -->
+                    <rect x="100" y="40" width="40" height="85" fill="rgba(6,182,212,0.2)" stroke="#06b6d4" stroke-width="2" rx="3"/>
+                    <text x="120" y="65" fill="#22d3ee" font-size="8" text-anchor="middle">Dense</text>
+                    <text x="120" y="80" fill="#22d3ee" font-size="8" text-anchor="middle">Block</text>
+                    <text x="120" y="95" fill="#888" font-size="7" text-anchor="middle">L=12</text>
+                    <!-- Output -->
+                    <rect x="180" y="60" width="80" height="45" fill="rgba(16,185,129,0.2)" stroke="#10b981" stroke-width="2" rx="3"/>
+                    <text x="220" y="82" fill="#fff" font-size="9" text-anchor="middle">Feature Reuse</text>
+                </svg>
+            </div>
+
+            <!-- EfficientNet Paper Card -->
+            <div class="network-card" onclick="location.href='papers/efficientnet.html'">
+                <span class="tag">ICML 2019</span>
+                <h3>EfficientNet</h3>
+                <p>Rethinking Model Scaling for CNNs - Compound scaling method that uniformly scales depth, width, and resolution.</p>
+                <svg class="preview-svg" viewBox="0 0 300 150">
+                    <defs>
+                        <linearGradient id="efficientnet-grad" x1="0%" y1="0%" x2="100%" y2="0%">
+                            <stop offset="0%" style="stop-color:#a855f7"/>
+                            <stop offset="100%" style="stop-color:#ec4899"/>
+                        </linearGradient>
+                    </defs>
+                    <!-- Base model -->
+                    <rect x="30" y="60" width="60" height="30" fill="rgba(168,85,247,0.3)" stroke="#a855f7" stroke-width="2" rx="3"/>
+                    <text x="60" y="80" fill="#fff" font-size="9" text-anchor="middle">B0</text>
+                    <!-- Scaling arrows -->
+                    <path d="M95 75 L120 75" stroke="#a855f7" stroke-width="2"/>
+                    <text x="140" y="50" fill="#f472b6" font-size="8" text-anchor="middle">↑ Depth</text>
+                    <text x="140" y="75" fill="#a855f7" font-size="8" text-anchor="middle">↑ Width</text>
+                    <text x="140" y="100" fill="#c7d2fe" font-size="8" text-anchor="middle">↑ Resolution</text>
+                    <!-- Scaled models -->
+                    <rect x="180" y="40" width="30" height="70" fill="rgba(236,72,153,0.3)" stroke="#ec4899" stroke-width="2" rx="2"/>
+                    <text x="195" y="35" fill="#f472b6" font-size="8" text-anchor="middle">B1</text>
+                    <rect x="220" y="30" width="35" height="90" fill="rgba(236,72,153,0.3)" stroke="#ec4899" stroke-width="2" rx="2"/>
+                    <text x="237" y="25" fill="#f472b6" font-size="8" text-anchor="middle">B7</text>
+                </svg>
+            </div>
+
+            <!-- GPT Paper Card -->
+            <div class="network-card" onclick="location.href='papers/gpt.html'">
+                <span class="tag">OpenAI 2018</span>
+                <h3>GPT-1</h3>
+                <p>Improving Language Understanding by Generative Pre-Training - The original Generative Pre-Training that started the GPT revolution.</p>
+                <svg class="preview-svg" viewBox="0 0 300 150">
+                    <defs>
+                        <linearGradient id="gpt-grad" x1="0%" y1="0%" x2="100%" y2="0%">
+                            <stop offset="0%" style="stop-color:#6366f1"/>
+                            <stop offset="100%" style="stop-color:#10b981"/>
+                        </linearGradient>
+                    </defs>
+                    <!-- Pre-training -->
+                    <rect x="20" y="40" width="60" height="35" fill="rgba(99,102,241,0.3)" stroke="#6366f1" stroke-width="2" rx="3"/>
+                    <text x="50" y="58" fill="#fff" font-size="8" text-anchor="middle">Pre-train</text>
+                    <text x="50" y="70" fill="#c7d2fe" font-size="7" text-anchor="middle">Unsupervised</text>
+                    <!-- Arrow -->
+                    <path d="M85 57 L100 57" stroke="#6366f1" stroke-width="2"/>
+                    <!-- Fine-tuning -->
+                    <rect x="105" y="40" width="60" height="35" fill="rgba(99,102,241,0.3)" stroke="#6366f1" stroke-width="2" rx="3"/>
+                    <text x="135" y="58" fill="#fff" font-size="8" text-anchor="middle">Fine-tune</text>
+                    <text x="135" y="70" fill="#c7d2fe" font-size="7" text-anchor="middle">Supervised</text>
+                    <!-- Output -->
+                    <rect x="200" y="45" width="80" height="50" fill="rgba(16,185,129,0.2)" stroke="#10b981" stroke-width="2" rx="3"/>
+                    <text x="240" y="65" fill="#fff" font-size="9" text-anchor="middle">Transformer</text>
+                    <text x="240" y="80" fill="#6ee7b7" font-size="9" text-anchor="middle">Decoder</text>
+                    <text x="240" y="92" fill="#888" font-size="7" text-anchor="middle">117M params</text>
+                </svg>
+            </div>
+
+            <!-- GPT-2 Paper Card -->
+            <div class="network-card" onclick="location.href='papers/gpt2.html'">
+                <span class="tag">OpenAI 2019</span>
+                <h3>GPT-2</h3>
+                <p>Language Models are Unsupervised Multitask Learners - 1.5B parameters and zero-shot task transfer without fine-tuning.</p>
+                <svg class="preview-svg" viewBox="0 0 300 150">
+                    <defs>
+                        <linearGradient id="gpt2-grad" x1="0%" y1="0%" x2="100%" y2="0%">
+                            <stop offset="0%" style="stop-color:#06b6d4"/>
+                            <stop offset="100%" style="stop-color:#6366f1"/>
+                        </linearGradient>
+                    </defs>
+                    <!-- Input -->
+                    <rect x="20" y="55" width="50" height="40" fill="none" stroke="#06b6d4" stroke-width="2" rx="3"/>
+                    <text x="45" y="80" fill="#fff" font-size="9" text-anchor="middle">Prompt</text>
+                    <!-- GPT-2 Block -->
+                    <rect x="90" y="40" width="100" height="70" fill="rgba(99,102,241,0.2)" stroke="#6366f1" stroke-width="2" rx="5"/>
+                    <text x="140" y="60" fill="#fff" font-size="10" text-anchor="middle">GPT-2</text>
+                    <text x="140" y="78" fill="#c7d2fe" font-size="9" text-anchor="middle">1.5B Params</text>
+                    <text x="140" y="92" fill="#888" font-size="7" text-anchor="middle">48 Layers</text>
+                    <!-- Zero-shot outputs -->
+                    <rect x="210" y="40" width="70" height="25" fill="rgba(16,185,129,0.2)" stroke="#10b981" stroke-width="1.5" rx="2"/>
+                    <text x="245" y="55" fill="#6ee7b7" font-size="7" text-anchor="middle">Summarize</text>
+                    <rect x="210" y="70" width="70" height="25" fill="rgba(16,185,129,0.2)" stroke="#10b981" stroke-width="1.5" rx="2"/>
+                    <text x="245" y="85" fill="#6ee7b7" font-size="7" text-anchor="middle">Translate</text>
+                    <rect x="210" y="100" width="70" height="25" fill="rgba(16,185,129,0.2)" stroke="#10b981" stroke-width="1.5" rx="2"/>
+                    <text x="245" y="115" fill="#6ee7b7" font-size="7" text-anchor="middle">QA</text>
+                </svg>
+            </div>
+
+            <!-- LSTM Paper Card -->
+            <div class="network-card" onclick="location.href='papers/lstm.html'">
+                <span class="tag">Neural Computation 1997</span>
+                <h3>LSTM</h3>
+                <p>Long Short-Term Memory - The groundbreaking architecture that solved the vanishing gradient problem for sequential data.</p>
+                <svg class="preview-svg" viewBox="0 0 300 150">
+                    <defs>
+                        <linearGradient id="lstm-grad" x1="0%" y1="0%" x2="100%" y2="0%">
+                            <stop offset="0%" style="stop-color:#f59e0b"/>
+                            <stop offset="100%" style="stop-color:#ef4444"/>
+                        </linearGradient>
+                    </defs>
+                    <!-- Memory Cell -->
+                    <rect x="80" y="40" width="100" height="70" fill="rgba(245,158,11,0.2)" stroke="#f59e0b" stroke-width="2" rx="5"/>
+                    <text x="130" y="60" fill="#fff" font-size="10" text-anchor="middle">LSTM Cell</text>
+                    <!-- Gates -->
+                    <rect x="90" y="70" width="25" height="15" fill="rgba(239,68,68,0.4)" stroke="#ef4444" stroke-width="1.5" rx="2"/>
+                    <text x="102" y="81" fill="#fff" font-size="6" text-anchor="middle">f</text>
+                    <rect x="120" y="70" width="25" height="15" fill="rgba(16,185,129,0.4)" stroke="#10b981" stroke-width="1.5" rx="2"/>
+                    <text x="132" y="81" fill="#fff" font-size="6" text-anchor="middle">i</text>
+                    <rect x="150" y="70" width="25" height="15" fill="rgba(99,102,241,0.4)" stroke="#6366f1" stroke-width="1.5" rx="2"/>
+                    <text x="162" y="81" fill="#fff" font-size="6" text-anchor="middle">o</text>
+                    <!-- Forget gate label -->
+                    <text x="130" y="100" fill="#fbbf24" font-size="7" text-anchor="middle">Forget · Input · Output</text>
+                    <!-- Input/Output arrows -->
+                    <path d="M50 75 L80 75" stroke="#f59e0b" stroke-width="2"/>
+                    <polygon points="80,75 75,70 75,80" fill="#f59e0b"/>
+                    <path d="M180 75 L230 75" stroke="#f59e0b" stroke-width="2"/>
+                    <polygon points="230,75 225,70 225,80" fill="#f59e0b"/>
+                    <!-- Cell state (horizontal line through top) -->
+                    <path d="M80 50 L180 50" stroke="#ec4899" stroke-width="3" opacity="0.6"/>
+                    <text x="130" y="45" fill="#f472b6" font-size="7" text-anchor="middle">Cell State</text>
+                </svg>
+            </div>
+
+            <!-- Mamba Paper Card -->
+            <div class="network-card" onclick="location.href='papers/mamba.html'">
+                <span class="tag">ICML 2024</span>
+                <h3>Mamba · SSM</h3>
+                <p>Linear-Time Sequence Modeling with Selective State Spaces - A new paradigm challenging Transformers with linear complexity.</p>
+                <svg class="preview-svg" viewBox="0 0 300 150">
+                    <defs>
+                        <linearGradient id="mamba-grad" x1="0%" y1="0%" x2="100%" y2="0%">
+                            <stop offset="0%" style="stop-color:#6366f1"/>
+                            <stop offset="100%" style="stop-color:#10b981"/>
+                        </linearGradient>
+                    </defs>
+                    <!-- Input sequence -->
+                    <g transform="translate(20, 60)">
+                        <rect x="0" y="0" width="15" height="20" fill="rgba(99,102,241,0.3)" stroke="#6366f1" stroke-width="1" rx="2"/>
+                        <rect x="20" y="0" width="15" height="20" fill="rgba(99,102,241,0.3)" stroke="#6366f1" stroke-width="1" rx="2"/>
+                        <rect x="40" y="0" width="15" height="20" fill="rgba(99,102,241,0.3)" stroke="#6366f1" stroke-width="1" rx="2"/>
+                    </g>
+                    <!-- Mamba block -->
+                    <rect x="90" y="40" width="100" height="60" fill="rgba(16,185,129,0.2)" stroke="#10b981" stroke-width="2" rx="5"/>
+                    <text x="140" y="60" fill="#fff" font-size="10" text-anchor="middle">Mamba</text>
+                    <text x="140" y="75" fill="#6ee7b7" font-size="8" text-anchor="middle">Selective SSM</text>
+                    <text x="140" y="90" fill="#888" font-size="7" text-anchor="middle">O(L) complexity</text>
+                    <!-- Output -->
+                    <g transform="translate(210, 60)">
+                        <rect x="0" y="0" width="15" height="20" fill="rgba(16,185,129,0.3)" stroke="#10b981" stroke-width="1" rx="2"/>
+                        <rect x="20" y="0" width="15" height="20" fill="rgba(16,185,129,0.3)" stroke="#10b981" stroke-width="1" rx="2"/>
+                        <rect x="40" y="0" width="15" height="20" fill="rgba(16,185,129,0.3)" stroke="#10b981" stroke-width="1" rx="2"/>
+                    </g>
+                    <!-- Arrows showing linear flow -->
+                    <path d="M85 70 L90 70" stroke="#6366f1" stroke-width="2"/>
+                    <path d="M190 70 L210 70" stroke="#10b981" stroke-width="2"/>
+                </svg>
+            </div>
+
             <!-- More Papers Coming -->
             <div class="network-card" style="opacity: 0.7;">
                 <span class="tag">Coming Soon</span>
-                <h3>DenseNet · GPT-4 · More</h3>
+                <h3>NeRF · StyleGAN · T5 · More</h3>
                 <p>More classic papers will be added hourly by automated updates. Stay tuned for detailed explanations with visualizations.</p>
                 <svg class="preview-svg" viewBox="0 0 300 150">
                     <text x="150" y="75" fill="#8888aa" font-size="14" text-anchor="middle" dominant-baseline="middle">
