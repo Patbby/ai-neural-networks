@@ -171,6 +171,51 @@
             📚 Classic Papers
         </h2>
         <div class="network-grid">
+            <!-- LeNet Paper Card -->
+            <div class="network-card" onclick="location.href='papers/lenet.html'">
+                <span class="tag">Proceedings of IEEE 1998</span>
+                <h3>LeNet-5</h3>
+                <p>Gradient-Based Learning Applied to Document Recognition - The CNN "Hello World" that started the deep learning revolution, used in banks for check recognition.</p>
+                <svg class="preview-svg" viewBox="0 0 300 150">
+                    <defs>
+                        <linearGradient id="lenet-grad" x1="0%" y1="0%" x2="100%" y2="0%">
+                            <stop offset="0%" style="stop-color:#10b981"/>
+                            <stop offset="100%" style="stop-color:#6366f1"/>
+                        </linearGradient>
+                    </defs>
+                    <!-- Input 32x32 -->
+                    <rect x="20" y="50" width="30" height="30" fill="none" stroke="#10b981" stroke-width="2" rx="2"/>
+                    <text x="35" y="95" fill="#10b981" font-size="8" text-anchor="middle">32×32</text>
+                    <!-- Arrow -->
+                    <path d="M55 65 L70 65" stroke="#10b981" stroke-width="2"/>
+                    <!-- C1 Conv -->
+                    <rect x="75" y="45" width="25" height="25" fill="rgba(16,185,129,0.3)" stroke="#10b981" stroke-width="2" rx="2"/>
+                    <text x="87" y="80" fill="#10b981" font-size="7" text-anchor="middle">C1</text>
+                    <!-- Arrow -->
+                    <path d="M105 65 L115 65" stroke="#10b981" stroke-width="2"/>
+                    <!-- S2 Pool -->
+                    <rect x="120" y="50" width="20" height="20" fill="rgba(168,85,247,0.3)" stroke="#a855f7" stroke-width="2" rx="2"/>
+                    <text x="130" y="80" fill="#a855f7" font-size="7" text-anchor="middle">S2</text>
+                    <!-- Arrow -->
+                    <path d="M145 65 L155 65" stroke="#a855f7" stroke-width="2"/>
+                    <!-- C3 Conv -->
+                    <rect x="160" y="45" width="25" height="25" fill="rgba(16,185,129,0.3)" stroke="#10b981" stroke-width="2" rx="2"/>
+                    <text x="172" y="80" fill="#10b981" font-size="7" text-anchor="middle">C3</text>
+                    <!-- Arrow -->
+                    <path d="M190 65 L200 65" stroke="#10b981" stroke-width="2"/>
+                    <!-- FC layers -->
+                    <rect x="205" y="40" width="20" height="15" fill="rgba(245,158,11,0.3)" stroke="#f59e0b" stroke-width="1.5" rx="2"/>
+                    <rect x="205" y="57" width="20" height="15" fill="rgba(245,158,11,0.3)" stroke="#f59e0b" stroke-width="1.5" rx="2"/>
+                    <rect x="205" y="74" width="20" height="15" fill="rgba(245,158,11,0.3)" stroke="#f59e0b" stroke-width="1.5" rx="2"/>
+                    <text x="245" y="68" fill="#f59e0b" font-size="7" text-anchor="middle">FC</text>
+                    <!-- Output -->
+                    <rect x="260" y="55" width="25" height="20" fill="rgba(16,185,129,0.2)" stroke="#10b981" stroke-width="2" rx="2"/>
+                    <text x="272" y="69" fill="#6ee7b7" font-size="7" text-anchor="middle">10</text>
+                    <!-- Arrow to FC -->
+                    <path d="M230 65 L255 65" stroke="#f59e0b" stroke-width="1.5"/>
+                </svg>
+            </div>
+
             <!-- ResNet Paper Card -->
             <div class="network-card" onclick="location.href='papers/resnet.html'">
                 <span class="tag">CVPR 2016 Best Paper</span>
