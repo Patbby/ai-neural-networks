@@ -1,12 +1,12 @@
 {
-  "lastUpdate": "2026-04-15T22:57:00+08:00",
-  "papersAdded": 21,
-  "totalPapers": 21,
+  "lastUpdate": "2026-04-15T23:57:00+08:00",
+  "papersAdded": 22,
+  "totalPapers": 22,
   "nextPaper": null,
-  "updateCount": 19,
-  "addedPapers": ["ResNet", "DiT", "Transformer", "BERT", "GAN", "VAE", "Vision Transformer", "CLIP", "Stable Diffusion", "Llama", "GPT", "GPT-2", "DenseNet", "EfficientNet", "AlexNet", "VGG", "YOLO", "LSTM", "Mamba", "GoogLeNet", "Deep Learning (Nature 2015)"],
+  "updateCount": 20,
+  "addedPapers": ["ResNet", "DiT", "Transformer", "BERT", "GAN", "VAE", "Vision Transformer", "CLIP", "Stable Diffusion", "Llama", "GPT", "GPT-2", "DenseNet", "EfficientNet", "AlexNet", "VGG", "YOLO", "LSTM", "Mamba", "GoogLeNet", "Deep Learning (Nature 2015)", "MobileNet"],
   "pendingPapers": [],
-  "completedPapers": ["ResNet", "DiT", "Transformer", "BERT", "GAN", "VAE", "Vision Transformer", "CLIP", "Stable Diffusion", "Llama", "GPT", "GPT-2", "DenseNet", "EfficientNet", "AlexNet", "VGG", "YOLO", "LSTM", "Mamba", "GoogLeNet", "Deep Learning (Nature 2015)"],
+  "completedPapers": ["ResNet", "DiT", "Transformer", "BERT", "GAN", "VAE", "Vision Transformer", "CLIP", "Stable Diffusion", "Llama", "GPT", "GPT-2", "DenseNet", "EfficientNet", "AlexNet", "VGG", "YOLO", "LSTM", "Mamba", "GoogLeNet", "Deep Learning (Nature 2015)", "MobileNet"],
   "paperPages": [
     "ResNet",
     "DiT",
@@ -28,14 +28,15 @@
     "LSTM",
     "Mamba",
     "GoogLeNet",
-    "Deep Learning (Nature 2015)"
+    "Deep Learning (Nature 2015)",
+    "MobileNet"
   ],
   "basePages": [
     "CNN",
     "GNN",
     "GAT"
   ],
-  "status": "Active - Added Deep Learning (Nature 2015) paper by Turing Award winners! Repository is up to date.",
-  "lastCommit": "Add Deep Learning Nature 2015 paper by LeCun, Bengio & Hinton with SVG visualizations",
-  "lastCronCheck": "2026-04-15T22:57:00+08:00"
+  "status": "Active - Added MobileNet (2017) by Google! Efficient depthwise separable convolutions for mobile AI. Repository is up to date.",
+  "lastCommit": "Add MobileNet V1 paper with depthwise separable convolution visualizations",
+  "lastCronCheck": "2026-04-15T23:57:00+08:00"
 }
