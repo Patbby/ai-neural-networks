@@ -470,6 +470,49 @@
                 </svg>
             </div>
 
+            <!-- Deep Learning Nature Paper Card -->
+            <div class="network-card" onclick="location.href='papers/deep-learning-nature.html'">
+                <span class="tag">Nature 2015 · Turing Award</span>
+                <h3>Deep Learning</h3>
+                <p>The seminal review by LeCun, Bengio & Hinton that established deep learning as a revolutionary field in AI - 50,000+ citations.</p>
+                <svg class="preview-svg" viewBox="0 0 300 150">
+                    <defs>
+                        <linearGradient id="nature-grad" x1="0%" y1="0%" x2="100%" y2="0%">
+                            <stop offset="0%" style="stop-color:#f59e0b"/>
+                            <stop offset="50%" style="stop-color:#a855f7"/>
+                            <stop offset="100%" style="stop-color:#6366f1"/>
+                        </linearGradient>
+                    </defs>
+                    <!-- Input layer -->
+                    <rect x="20" y="60" width="35" height="30" fill="none" stroke="#6366f1" stroke-width="2" rx="3"/>
+                    <text x="37" y="80" fill="#fff" font-size="8" text-anchor="middle">In</text>
+                    
+                    <!-- Hidden layers with gradient -->
+                    <rect x="70" y="50" width="35" height="50" fill="rgba(99,102,241,0.3)" stroke="#6366f1" stroke-width="2" rx="3"/>
+                    <text x="87" y="78" fill="#fff" font-size="7" text-anchor="middle">L1</text>
+                    
+                    <rect x="120" y="40" width="35" height="70" fill="rgba(168,85,247,0.3)" stroke="#a855f7" stroke-width="2" rx="3"/>
+                    <text x="137" y="78" fill="#fff" font-size="7" text-anchor="middle">L2</text>
+                    
+                    <rect x="170" y="30" width="35" height="90" fill="rgba(245,158,11,0.3)" stroke="#f59e0b" stroke-width="2" rx="3"/>
+                    <text x="187" y="78" fill="#fff" font-size="7" text-anchor="middle">L3</text>
+                    
+                    <!-- Output -->
+                    <rect x="230" y="60" width="45" height="30" fill="rgba(16,185,129,0.2)" stroke="#10b981" stroke-width="2" rx="3"/>
+                    <text x="252" y="80" fill="#6ee7b7" font-size="8" text-anchor="middle">Out</text>
+                    
+                    <!-- Connections -->
+                    <path d="M55 75 L70 75" stroke="#6366f1" stroke-width="1.5" opacity="0.5"/>
+                    <path d="M105 75 L120 75" stroke="#a855f7" stroke-width="1.5" opacity="0.5"/>
+                    <path d="M155 75 L170 75" stroke="#f59e0b" stroke-width="1.5" opacity="0.5"/>
+                    <path d="M205 75 L230 75" stroke="#10b981" stroke-width="1.5" opacity="0.5"/>
+                    
+                    <!-- Turing Award badge -->
+                    <circle cx="260" cy="30" r="12" fill="#f59e0b" opacity="0.9"/>
+                    <text x="260" y="35" fill="#000" font-size="10" font-weight="bold" text-anchor="middle">🏆</text>
+                </svg>
+            </div>
+
             <!-- LLaMA Paper Card -->
             <div class="network-card" onclick="location.href='papers/llama.html'">
                 <span class="tag">Foundation LLM 2023</span>

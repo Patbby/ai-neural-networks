@@ -1,12 +1,12 @@
 {
-  "lastUpdate": "2026-04-15T10:27:00+08:00",
-  "papersAdded": 20,
-  "totalPapers": 20,
+  "lastUpdate": "2026-04-15T22:57:00+08:00",
+  "papersAdded": 21,
+  "totalPapers": 21,
   "nextPaper": null,
-  "updateCount": 18,
-  "addedPapers": ["ResNet", "DiT", "Transformer", "BERT", "GAN", "VAE", "Vision Transformer", "CLIP", "Stable Diffusion", "Llama", "GPT", "GPT-2", "DenseNet", "EfficientNet", "AlexNet", "VGG", "YOLO", "LSTM", "Mamba", "GoogLeNet"],
+  "updateCount": 19,
+  "addedPapers": ["ResNet", "DiT", "Transformer", "BERT", "GAN", "VAE", "Vision Transformer", "CLIP", "Stable Diffusion", "Llama", "GPT", "GPT-2", "DenseNet", "EfficientNet", "AlexNet", "VGG", "YOLO", "LSTM", "Mamba", "GoogLeNet", "Deep Learning (Nature 2015)"],
   "pendingPapers": [],
-  "completedPapers": ["ResNet", "DiT", "Transformer", "BERT", "GAN", "VAE", "Vision Transformer", "CLIP", "Stable Diffusion", "Llama", "GPT", "GPT-2", "DenseNet", "EfficientNet", "AlexNet", "VGG", "YOLO", "LSTM", "Mamba", "GoogLeNet"],
+  "completedPapers": ["ResNet", "DiT", "Transformer", "BERT", "GAN", "VAE", "Vision Transformer", "CLIP", "Stable Diffusion", "Llama", "GPT", "GPT-2", "DenseNet", "EfficientNet", "AlexNet", "VGG", "YOLO", "LSTM", "Mamba", "GoogLeNet", "Deep Learning (Nature 2015)"],
   "paperPages": [
     "ResNet",
     "DiT",
@@ -27,14 +27,15 @@
     "YOLO",
     "LSTM",
     "Mamba",
-    "GoogLeNet"
+    "GoogLeNet",
+    "Deep Learning (Nature 2015)"
   ],
   "basePages": [
     "CNN",
     "GNN",
     "GAT"
   ],
-  "status": "Active - All priority papers completed! Repository is up to date.",
-  "lastCommit": "a433fdf - Update ResNet paper page with enhanced SVG visualizations and Chinese localization; Add GPT-2 paper page",
-  "lastCronCheck": "2026-04-15T10:27:00+08:00"
+  "status": "Active - Added Deep Learning (Nature 2015) paper by Turing Award winners! Repository is up to date.",
+  "lastCommit": "Add Deep Learning Nature 2015 paper by LeCun, Bengio & Hinton with SVG visualizations",
+  "lastCronCheck": "2026-04-15T22:57:00+08:00"
 }
