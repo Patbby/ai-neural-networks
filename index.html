@@ -698,6 +698,45 @@
                 </svg>
             </div>
 
+            <!-- Xception Paper Card -->
+            <div class="network-card" onclick="location.href='papers/xception.html'">
+                <span class="tag">CVPR 2017</span>
+                <h3>Xception</h3>
+                <p>Deep Learning with Depthwise Separable Convolutions - The "Extreme Inception" that fully decouples cross-channel and spatial correlations.</p>
+                <svg class="preview-svg" viewBox="0 0 300 150">
+                    <defs>
+                        <linearGradient id="xception-grad" x1="0%" y1="0%" x2="100%" y2="0%">
+                            <stop offset="0%" style="stop-color:#10b981"/>
+                            <stop offset="100%" style="stop-color:#06b6d4"/>
+                        </linearGradient>
+                    </defs>
+                    <!-- Input -->
+                    <rect x="20" y="55" width="30" height="40" fill="none" stroke="#10b981" stroke-width="2" rx="3"/>
+                    <text x="35" y="78" fill="#fff" font-size="8" text-anchor="middle">In</text>
+                    <!-- Depthwise Separable Block -->
+                    <g transform="translate(70, 30)">
+                        <!-- Depthwise -->
+                        <rect x="0" y="10" width="50" height="40" fill="rgba(16,185,129,0.3)" stroke="#10b981" stroke-width="2" rx="3"/>
+                        <text x="25" y="30" fill="#fff" font-size="8" text-anchor="middle">Depthwise</text>
+                        <text x="25" y="42" fill="#fff" font-size="8" text-anchor="middle">Conv</text>
+                        <!-- Pointwise -->
+                        <rect x="60" y="15" width="50" height="30" fill="rgba(6,182,212,0.3)" stroke="#06b6d4" stroke-width="2" rx="3"/>
+                        <text x="85" y="30" fill="#fff" font-size="8" text-anchor="middle">1×1 Conv</text>
+                        <text x="85" y="42" fill="#8888aa" font-size="7" text-anchor="middle">(Pointwise)</text>
+                    </g>
+                    <text x="120" y="95" fill="#10b981" font-size="8" text-anchor="middle">Separable Conv</text>
+                    <!-- Residual connection -->
+                    <path d="M50 55 L50 35 L70 35" stroke="#f59e0b" stroke-width="1.5" stroke-dasharray="3,2" fill="none"/>
+                    <text x="45" y="28" fill="#f59e0b" font-size="7" text-anchor="middle">Res</text>
+                    <!-- Output -->
+                    <rect x="240" y="50" width="40" height="50" fill="rgba(16,185,129,0.2)" stroke="#10b981" stroke-width="2" rx="3"/>
+                    <text x="260" y="80" fill="#6ee7b7" font-size="9" text-anchor="middle">Class</text>
+                    <!-- Arrows -->
+                    <path d="M50 75 L70 75" stroke="#10b981" stroke-width="2"/>
+                    <path d="M180 75 L240 75" stroke="#06b6d4" stroke-width="2"/>
+                </svg>
+            </div>
+
             <!-- MoE Paper Card -->
             <div class="network-card" onclick="location.href='papers/moe.html'">
                 <span class="tag">NeurIPS 2017</span>
