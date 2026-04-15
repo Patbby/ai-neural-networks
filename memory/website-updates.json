@@ -1,12 +1,12 @@
 {
-  "lastUpdate": "2026-04-15T04:27:00+08:00",
-  "papersAdded": 19,
-  "totalPapers": 19,
+  "lastUpdate": "2026-04-15T10:27:00+08:00",
+  "papersAdded": 20,
+  "totalPapers": 20,
   "nextPaper": null,
-  "updateCount": 17,
-  "addedPapers": ["ResNet", "DiT", "Transformer", "BERT", "GAN", "VAE", "Vision Transformer", "CLIP", "Stable Diffusion", "Llama", "GPT", "DenseNet", "EfficientNet", "AlexNet", "VGG", "YOLO", "LSTM", "Mamba", "GoogLeNet"],
+  "updateCount": 18,
+  "addedPapers": ["ResNet", "DiT", "Transformer", "BERT", "GAN", "VAE", "Vision Transformer", "CLIP", "Stable Diffusion", "Llama", "GPT", "GPT-2", "DenseNet", "EfficientNet", "AlexNet", "VGG", "YOLO", "LSTM", "Mamba", "GoogLeNet"],
   "pendingPapers": [],
-  "completedPapers": ["ResNet", "DiT", "Transformer", "BERT", "GAN", "VAE", "Vision Transformer", "CLIP", "Stable Diffusion", "Llama", "GPT", "DenseNet", "EfficientNet", "AlexNet", "VGG", "YOLO", "LSTM", "Mamba", "GoogLeNet"],
+  "completedPapers": ["ResNet", "DiT", "Transformer", "BERT", "GAN", "VAE", "Vision Transformer", "CLIP", "Stable Diffusion", "Llama", "GPT", "GPT-2", "DenseNet", "EfficientNet", "AlexNet", "VGG", "YOLO", "LSTM", "Mamba", "GoogLeNet"],
   "paperPages": [
     "ResNet",
     "DiT",
@@ -19,6 +19,7 @@
     "Stable Diffusion",
     "Llama",
     "GPT",
+    "GPT-2",
     "DenseNet",
     "EfficientNet",
     "AlexNet",
@@ -34,6 +35,6 @@
     "GAT"
   ],
   "status": "Active - All priority papers completed! Repository is up to date.",
-  "lastCommit": "3d4107c - Enhance ResNet page: Improved styling, SVG visualizations, and layout",
-  "lastCronCheck": "2026-04-15T04:27:00+08:00"
+  "lastCommit": "a433fdf - Update ResNet paper page with enhanced SVG visualizations and Chinese localization; Add GPT-2 paper page",
+  "lastCronCheck": "2026-04-15T10:27:00+08:00"
 }
