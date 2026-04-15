@@ -477,6 +477,82 @@
             </div>
             
             <div class="svg-container">
+                <div class="svg-title">Bottleneck Block (ResNet-50/101/152)</div>
+                <svg viewBox="0 0 800 400" style="width: 100%; max-width: 800px; display: block; margin: 0 auto;">
+                    <rect width="800" height="400" fill="#12121a"/>
+                    
+                    <!-- Title -->
+                    <text x="400" y="30" text-anchor="middle" fill="#6366f1" font-size="16" font-weight="bold">Bottleneck Block: 1×1 → 3×3 → 1×1</text>
+                    
+                    <!-- Main Path (F(x)) - Bottleneck -->
+                    <rect x="260" y="50" width="280" height="280" fill="none" stroke="#6366f1" stroke-width="2" stroke-dasharray="5,5" rx="10"/>
+                    <text x="400" y="75" text-anchor="middle" fill="#6366f1" font-size="12">F(x) - Bottleneck Transformation</text>
+                    
+                    <!-- 1x1 Conv (Reduce) -->
+                    <rect x="320" y="90" width="160" height="45" fill="#1e1e2e" stroke="#f59e0b" stroke-width="2" rx="5"/>
+                    <text x="400" y="108" text-anchor="middle" fill="#f59e0b" font-size="11">1×1 Conv</text>
+                    <text x="400" y="125" text-anchor="middle" fill="#a1a1aa" font-size="9">reduce channels (256→64)</text>
+                    
+                    <!-- BN + ReLU -->
+                    <rect x="340" y="145" width="120" height="25" fill="#1e1e2e" stroke="#10b981" stroke-width="1" rx="3"/>
+                    <text x="400" y="162" text-anchor="middle" fill="#10b981" font-size="10">BN → ReLU</text>
+                    
+                    <!-- 3x3 Conv -->
+                    <rect x="320" y="180" width="160" height="45" fill="#1e1e2e" stroke="#a855f7" stroke-width="2" rx="5"/>
+                    <text x="400" y="198" text-anchor="middle" fill="#e4e4e7" font-size="11">3×3 Conv</text>
+                    <text x="400" y="215" text-anchor="middle" fill="#a1a1aa" font-size="9">process at 64 channels</text>
+                    
+                    <!-- BN + ReLU -->
+                    <rect x="340" y="235" width="120" height="25" fill="#1e1e2e" stroke="#10b981" stroke-width="1" rx="3"/>
+                    <text x="400" y="252" text-anchor="middle" fill="#10b981" font-size="10">BN → ReLU</text>
+                    
+                    <!-- 1x1 Conv (Expand) -->
+                    <rect x="320" y="270" width="160" height="45" fill="#1e1e2e" stroke="#f59e0b" stroke-width="2" rx="5"/>
+                    <text x="400" y="288" text-anchor="middle" fill="#f59e0b" font-size="11">1×1 Conv</text>
+                    <text x="400" y="305" text-anchor="middle" fill="#a1a1aa" font-size="9">expand channels (64→256)</text>
+                    
+                    <!-- BN -->
+                    <rect x="340" y="325" width="120" height="20" fill="#1e1e2e" stroke="#10b981" stroke-width="1" rx="3"/>
+                    <text x="400" y="339" text-anchor="middle" fill="#10b981" font-size="10">BN</text>
+                    
+                    <!-- Input -->
+                    <rect x="50" y="170" width="100" height="60" fill="#1e1e2e" stroke="#6366f1" stroke-width="2" rx="5"/>
+                    <text x="100" y="195" text-anchor="middle" fill="#e4e4e7" font-size="12">Input x</text>
+                    <text x="100" y="215" text-anchor="middle" fill="#a1a1aa" font-size="9">256 channels</text>
+                    
+                    <!-- Arrow Input to Main Path -->
+                    <line x1="150" y1="200" x2="320" y2="200" stroke="#6366f1" stroke-width="2"/>
+                    
+                    <!-- Skip Connection (Projection) -->
+                    <path d="M 150 200 L 200 200 L 200 360 L 600 360 L 600 330" fill="none" stroke="#f59e0b" stroke-width="3" stroke-dasharray="8,4"/>
+                    <rect x="220" y="345" width="120" height="30" fill="#1e1e2e" stroke="#f59e0b" stroke-width="2" rx="3"/>
+                    <text x="280" y="365" text-anchor="middle" fill="#f59e0b" font-size="10">1×1 Conv</text>
+                    <text x="400" y="380" text-anchor="middle" fill="#f59e0b" font-size="11">Projection Shortcut (when dimensions change)</text>
+                    
+                    <!-- Addition -->
+                    <circle cx="630" cy="310" r="25" fill="#1e1e2e" stroke="#ec4899" stroke-width="3"/>
+                    <text x="630" y="318" text-anchor="middle" fill="#ec4899" font-size="20" font-weight="bold">+</text>
+                    
+                    <!-- Arrow from Main Path to Addition -->
+                    <line x1="480" y1="335" x2="605" y2="315" stroke="#6366f1" stroke-width="2"/>
+                    
+                    <!-- Arrow from Skip to Addition -->
+                    <line x1="600" y1="330" x2="620" y2="320" stroke="#f59e0b" stroke-width="2"/>
+                    
+                    <!-- ReLU after addition -->
+                    <rect x="680" y="295" width="80" height="30" fill="#1e1e2e" stroke="#10b981" stroke-width="2" rx="5"/>
+                    <text x="720" y="315" text-anchor="middle" fill="#10b981" font-size="12">ReLU</text>
+                    
+                    <!-- Output -->
+                    <rect x="790" y="290" width="100" height="40" fill="#1e1e2e" stroke="#6366f1" stroke-width="2" rx="5"/>
+                    <text x="840" y="315" text-anchor="middle" fill="#e4e4e7" font-size="12">Output</text>
+                    
+                    <!-- Formula at bottom -->
+                    <text x="400" y="395" text-anchor="middle" fill="#a1a1aa" font-size="12">Bottleneck reduces computation: O(256·64) + O(64·64) + O(64·256) vs O(256·256·9)</text>
+                </svg>
+            </div>
+            
+            <div class="svg-container">
                 <div class="svg-title">ResNet-34 Architecture Overview</div>
                 <svg viewBox="0 0 900 500" style="width: 100%; max-width: 900px; display: block; margin: 0 auto;">
                     <rect width="900" height="500" fill="#12121a"/>
@@ -711,7 +787,7 @@
     
     <footer>
         <p>AI Neural Networks Knowledge Base • Auto-generated Paper Summary</p>
-        <p style="margin-top: 0.5rem; font-size: 0.875rem;">Last updated: April 16, 2026</p>
+        <p style="margin-top: 0.5rem; font-size: 0.875rem;">Last updated: April 16, 2026 (Enhanced with Bottleneck visualization)</p>
     </footer>
 </body>
 </html>
