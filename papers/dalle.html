@@ -1,0 +1,856 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DALL-E - Zero-Shot Text-to-Image Generation | 2021</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: #0a0a0f;
+            color: #e0e0ff;
+            line-height: 1.7;
+        }
+        
+        nav {
+            background: rgba(20, 20, 35, 0.95);
+            padding: 15px 30px;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            backdrop-filter: blur(10px);
+            border-bottom: 1px solid rgba(99, 102, 241, 0.2);
+        }
+        
+        nav a {
+            color: #8888aa;
+            text-decoration: none;
+            margin-right: 25px;
+            transition: color 0.3s;
+        }
+        
+        nav a:hover {
+            color: #6366f1;
+        }
+        
+        .paper-hero {
+            background: linear-gradient(135deg, rgba(99,102,241,0.15) 0%, rgba(236,72,153,0.1) 100%);
+            padding: 60px 20px;
+            text-align: center;
+            border-bottom: 1px solid rgba(99, 102, 241, 0.2);
+        }
+        
+        .paper-hero h1 {
+            font-size: 2.2rem;
+            background: linear-gradient(135deg, #6366f1 0%, #ec4899 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 20px;
+            max-width: 900px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+        
+        .paper-meta {
+            color: #8888aa;
+            font-size: 1rem;
+            margin-bottom: 25px;
+        }
+        
+        .paper-meta span {
+            margin: 0 15px;
+        }
+        
+        .badges {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            flex-wrap: wrap;
+        }
+        
+        .badge {
+            background: rgba(99, 102, 241, 0.2);
+            color: #a5b4fc;
+            padding: 8px 20px;
+            border-radius: 20px;
+            font-size: 0.9rem;
+            text-decoration: none;
+            border: 1px solid rgba(99, 102, 241, 0.3);
+            transition: all 0.3s;
+        }
+        
+        .badge:hover {
+            background: rgba(99, 102, 241, 0.3);
+            transform: translateY(-2px);
+        }
+        
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 40px 20px;
+        }
+        
+        h2 {
+            color: #fff;
+            margin: 50px 0 25px;
+            font-size: 1.8rem;
+            border-left: 4px solid #6366f1;
+            padding-left: 20px;
+        }
+        
+        h3 {
+            color: #a5b4fc;
+            margin: 30px 0 15px;
+            font-size: 1.3rem;
+        }
+        
+        p {
+            margin-bottom: 20px;
+            color: #b0b0cc;
+        }
+        
+        .highlight-box {
+            background: rgba(99, 102, 241, 0.1);
+            border: 1px solid rgba(99, 102, 241, 0.3);
+            border-radius: 10px;
+            padding: 20px;
+            margin: 25px 0;
+        }
+        
+        .highlight-box strong {
+            color: #a5b4fc;
+        }
+        
+        .problem-box {
+            background: rgba(239, 68, 68, 0.1);
+            border: 1px solid rgba(239, 68, 68, 0.3);
+            border-radius: 10px;
+            padding: 20px;
+            margin: 25px 0;
+        }
+        
+        .problem-box strong {
+            color: #fca5a5;
+        }
+        
+        .solution-box {
+            background: rgba(16, 185, 129, 0.1);
+            border: 1px solid rgba(16, 185, 129, 0.3);
+            border-radius: 10px;
+            padding: 20px;
+            margin: 25px 0;
+        }
+        
+        .solution-box strong {
+            color: #6ee7b7;
+        }
+        
+        .metric {
+            display: inline-block;
+            background: rgba(99, 102, 241, 0.2);
+            padding: 5px 15px;
+            border-radius: 15px;
+            font-size: 0.9rem;
+            margin: 5px;
+            color: #a5b4fc;
+        }
+        
+        ul {
+            margin: 20px 0;
+            padding-left: 30px;
+        }
+        
+        li {
+            margin: 12px 0;
+            color: #b0b0cc;
+        }
+        
+        .code-block {
+            background: rgba(10, 10, 15, 0.8);
+            border: 1px solid rgba(99, 102, 241, 0.2);
+            border-radius: 10px;
+            padding: 20px;
+            margin: 20px 0;
+            overflow-x: auto;
+        }
+        
+        .code-block pre {
+            color: #e0e0ff;
+            font-family: 'Consolas', 'Monaco', monospace;
+            font-size: 0.9rem;
+            line-height: 1.6;
+        }
+        
+        .code-block .comment {
+            color: #6b7280;
+        }
+        
+        .code-block .keyword {
+            color: #c084fc;
+        }
+        
+        .code-block .string {
+            color: #86efac;
+        }
+        
+        .code-block .function {
+            color: #60a5fa;
+        }
+        
+        .related-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin: 25px 0;
+        }
+        
+        .related-card {
+            background: rgba(99, 102, 241, 0.1);
+            border: 1px solid rgba(99, 102, 241, 0.2);
+            border-radius: 10px;
+            padding: 15px;
+            text-decoration: none;
+            color: inherit;
+            transition: all 0.3s;
+        }
+        
+        .related-card:hover {
+            background: rgba(99, 102, 241, 0.2);
+            transform: translateY(-3px);
+        }
+        
+        .related-card h4 {
+            color: #a5b4fc;
+            margin-bottom: 8px;
+        }
+        
+        .related-card p {
+            font-size: 0.85rem;
+            color: #8888aa;
+            margin: 0;
+        }
+        
+        .svg-container {
+            background: rgba(20, 20, 35, 0.5);
+            border-radius: 15px;
+            padding: 30px;
+            margin: 30px 0;
+            text-align: center;
+        }
+        
+        .svg-title {
+            color: #a5b4fc;
+            font-size: 1.1rem;
+            margin-bottom: 20px;
+        }
+        
+        .author-list {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 10px;
+            margin: 20px 0;
+        }
+        
+        .author {
+            background: rgba(99, 102, 241, 0.15);
+            padding: 5px 15px;
+            border-radius: 15px;
+            font-size: 0.9rem;
+            color: #b0b0cc;
+        }
+        
+        @media (max-width: 600px) {
+            .paper-hero h1 {
+                font-size: 1.5rem;
+            }
+            
+            h2 {
+                font-size: 1.4rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <nav>
+        <a href="../index.html">← Back to Papers</a>
+        <a href="../cnn.html">CNN</a>
+        <a href="../gnn.html">GNN</a>
+        <a href="../gat.html">GAT</a>
+    </nav>
+    
+    <div class="paper-hero">
+        <h1>DALL-E: Zero-Shot Text-to-Image Generation</h1>
+        <div class="paper-meta">
+            <span>📅 ICML 2021</span>
+            <span>🏢 OpenAI</span>
+            <span>📊 12B Parameters</span>
+        </div>
+        <div class="author-list">
+            <span class="author">Aditya Ramesh</span>
+            <span class="author">Mikhail Pavlov</span>
+            <span class="author">Gabriel Goh</span>
+            <span class="author">Scott Gray</span>
+            <span class="author">Chelsea Voss</span>
+            <span class="author">Alec Radford</span>
+            <span class="author">Mark Chen</span>
+            <span class="author">Ilya Sutskever</span>
+        </div>
+        <div class="badges">
+            <a href="https://arxiv.org/abs/2102.12092" class="badge" target="_blank">📄 Paper (arXiv)</a>
+            <a href="https://openai.com/blog/dall-e/" class="badge" target="_blank">📝 Blog Post</a>
+            <a href="https://github.com/openai/DALL-E" class="badge" target="_blank">💻 Code (dVAE)</a>
+            <a href="https://github.com/lucidrains/DALLE-pytorch" class="badge" target="_blank">🔥 PyTorch Implementation</a>
+        </div>
+    </div>
+    
+    <div class="container">
+        <h2>🎯 Problem Statement</h2>
+        
+        <div class="problem-box">
+            <strong>Before DALL-E: The Challenge of Text-to-Image Generation</strong><br><br>
+            Generating images from text descriptions was a long-standing challenge in AI with several fundamental problems:
+            <ul>
+                <li><strong>High Dimensionality:</strong> Directly modeling pixel space (256×256×3 = 196,608 values) was computationally prohibitive for transformer architectures</li>
+                <li><strong>Fixed Vocabulary:</strong> Previous approaches required training on fixed datasets with predefined categories, limiting generalization</li>
+                <li><strong>Poor Compositional Generalization:</strong> Models struggled to combine concepts in novel ways (e.g., "an armchair in the shape of an avocado")</li>
+                <li><strong>Limited Zero-Shot Capability:</strong> Most systems couldn't generate images from text prompts never seen during training</li>
+                <li><strong>Mode Collapse:</strong> GAN-based approaches often produced limited diversity in outputs</li>
+            </ul>
+        </div>
+        
+        <h2>💡 Key Innovation</h2>
+        
+        <div class="solution-box">
+            <strong>DALL-E's Two-Stage Architecture: dVAE + Autoregressive Transformer</strong><br><br>
+            DALL-E introduced a groundbreaking approach that treats images as "foreign languages" that can be tokenized and generated by language models:
+            <ul>
+                <li><strong>Discrete VAE (dVAE):</strong> Compresses 256×256 images into a 32×32 grid of discrete tokens (1,024 tokens) from a vocabulary of 8,192 possible values</li>
+                <li><strong>Unified Token Stream:</strong> Text (256 BPE tokens) and image tokens (1,024 tokens) are concatenated into a single 1,280-token sequence</li>
+                <li><strong>12B Parameter Transformer:</strong> An autoregressive decoder-only transformer (based on GPT-3) models the joint distribution over text and image tokens</li>
+                <li><strong>Zero-Shot Composition:</strong> Can combine concepts learned separately but never seen together during training</li>
+            </ul>
+        </div>
+        
+        <div class="highlight-box">
+            <strong>🎨 The Name "DALL-E"</strong><br>
+            Named after two cultural icons: <strong>Salvador Dalí</strong>, the surrealist painter known for dreamlike imagery, and <strong>WALL-E</strong>, the Pixar robot with a creative, emotional personality. The name perfectly captures the model's ability to create surreal, imaginative images from simple text descriptions.
+        </div>
+        
+        <h2>🏗️ Architecture</h2>
+        
+        <h3>Two-Stage Training Process</h3>
+        
+        <div class="svg-container">
+            <div class="svg-title">DALL-E Two-Stage Architecture</div>
+            <svg viewBox="0 0 900 450" style="max-width: 100%; height: auto;">
+                <!-- Background -->
+                <rect width="900" height="450" fill="none"/>
+                
+                <!-- Stage 1 Box -->
+                <rect x="20" y="20" width="400" height="410" rx="15" fill="rgba(99,102,241,0.1)" stroke="#6366f1" stroke-width="2"/>
+                <text x="220" y="50" text-anchor="middle" fill="#a5b4fc" font-size="16" font-weight="bold">Stage 1: dVAE Training</text>
+                
+                <!-- Image Input -->
+                <rect x="50" y="70" width="100" height="100" fill="rgba(16,185,129,0.2)" stroke="#10b981" stroke-width="2"/>
+                <text x="100" y="120" text-anchor="middle" fill="#6ee7b7" font-size="12">256×256×3</text>
+                <text x="100" y="140" text-anchor="middle" fill="#6ee7b7" font-size="10">RGB Image</text>
+                
+                <!-- Encoder Arrow -->
+                <path d="M 160 120 L 200 120" stroke="#6366f1" stroke-width="3" marker-end="url(#arrowhead)"/>
+                <text x="180" y="110" fill="#8888aa" font-size="10">Encode</text>
+                
+                <!-- dVAE Encoder -->
+                <rect x="210" y="80" width="80" height="80" rx="8" fill="rgba(245,158,11,0.2)" stroke="#f59e0b" stroke-width="2"/>
+                <text x="250" y="115" text-anchor="middle" fill="#fcd34d" font-size="11">dVAE</text>
+                <text x="250" y="130" text-anchor="middle" fill="#fcd34d" font-size="9">Encoder</text>
+                <text x="250" y="145" text-anchor="middle" fill="#fcd34d" font-size="9">(Gumbel-Softmax)</text>
+                
+                <!-- Quantization Arrow -->
+                <path d="M 300 120 L 340 120" stroke="#6366f1" stroke-width="3" marker-end="url(#arrowhead)"/>
+                
+                <!-- Discrete Tokens -->
+                <g transform="translate(350, 90)">
+                    <rect x="0" y="0" width="20" height="20" fill="#6366f1" stroke="#a5b4fc" stroke-width="1"/>
+                    <rect x="22" y="0" width="20" height="20" fill="#8b5cf6" stroke="#a5b4fc" stroke-width="1"/>
+                    <rect x="44" y="0" width="20" height="20" fill="#ec4899" stroke="#a5b4fc" stroke-width="1"/>
+                    <text x="75" y="15" fill="#8888aa" font-size="12">...</text>
+                    <rect x="0" y="25" width="20" height="20" fill="#10b981" stroke="#a5b4fc" stroke-width="1"/>
+                    <rect x="22" y="25" width="20" height="20" fill="#f59e0b" stroke="#a5b4fc" stroke-width="1"/>
+                    <rect x="44" y="25" width="20" height="20" fill="#ef4444" stroke="#a5b4fc" stroke-width="1"/>
+                    <text x="75" y="40" fill="#8888aa" font-size="12">...</text>
+                </g>
+                <text x="400" y="145" text-anchor="middle" fill="#a5b4fc" font-size="10">32×32 Image Tokens</text>
+                <text x="400" y="158" text-anchor="middle" fill="#8888aa" font-size="9">Vocab: 8,192</text>
+                
+                <!-- Decoder Arrow -->
+                <path d="M 400 170 L 400 200 L 340 200 L 340 230" stroke="#6366f1" stroke-width="2" fill="none" marker-end="url(#arrowhead)"/>
+                
+                <!-- dVAE Decoder -->
+                <rect x="260" y="230" width="80" height="80" rx="8" fill="rgba(245,158,11,0.2)" stroke="#f59e0b" stroke-width="2"/>
+                <text x="300" y="265" text-anchor="middle" fill="#fcd34d" font-size="11">dVAE</text>
+                <text x="300" y="280" text-anchor="middle" fill="#fcd34d" font-size="9">Decoder</text>
+                <text x="300" y="295" text-anchor="middle" fill="#fcd34d" font-size="9">(Reconstruction)</text>
+                
+                <!-- Reconstruction Arrow -->
+                <path d="M 250 270 L 160 270" stroke="#6366f1" stroke-width="3" marker-end="url(#arrowhead)"/>
+                
+                <!-- Output Image -->
+                <rect x="50" y="240" width="100" height="100" fill="rgba(16,185,129,0.2)" stroke="#10b981" stroke-width="2" stroke-dasharray="5,5"/>
+                <text x="100" y="290" text-anchor="middle" fill="#6ee7b7" font-size="12">Reconstructed</text>
+                <text x="100" y="310" text-anchor="middle" fill="#6ee7b7" font-size="10">256×256×3</text>
+                
+                <!-- Stage 2 Box -->
+                <rect x="460" y="20" width="420" height="410" rx="15" fill="rgba(236,72,153,0.1)" stroke="#ec4899" stroke-width="2"/>
+                <text x="670" y="50" text-anchor="middle" fill="#f9a8d4" font-size="16" font-weight="bold">Stage 2: Transformer Training</text>
+                
+                <!-- Text Input -->
+                <rect x="490" y="70" width="120" height="60" rx="8" fill="rgba(99,102,241,0.2)" stroke="#6366f1" stroke-width="2"/>
+                <text x="550" y="95" text-anchor="middle" fill="#a5b4fc" font-size="11">Text Prompt</text>
+                <text x="550" y="110" text-anchor="middle" fill="#a5b4fc" font-size="9">"an armchair in the</text>
+                <text x="550" y="122" text-anchor="middle" fill="#a5b4fc" font-size="9">shape of an avocado"</text>
+                
+                <!-- BPE Tokenization -->
+                <path d="M 610 100 L 650 100" stroke="#ec4899" stroke-width="2" marker-end="url(#arrowhead)"/>
+                <text x="630" y="90" fill="#f9a8d4" font-size="9">BPE</text>
+                
+                <!-- Text Tokens -->
+                <g transform="translate(660, 85)">
+                    <rect x="0" y="0" width="25" height="30" fill="#6366f1" stroke="#a5b4fc" stroke-width="1"/>
+                    <text x="12" y="20" text-anchor="middle" fill="#fff" font-size="8">an</text>
+                    <rect x="28" y="0" width="40" height="30" fill="#8b5cf6" stroke="#a5b4fc" stroke-width="1"/>
+                    <text x="48" y="20" text-anchor="middle" fill="#fff" font-size="8">armchair</text>
+                    <text x="90" y="20" fill="#8888aa" font-size="10">...</text>
+                </g>
+                <text x="725" y="130" fill="#a5b4fc" font-size="9">256 Text Tokens</text>
+                
+                <!-- Concatenation -->
+                <path d="M 550 135 L 550 160" stroke="#8888aa" stroke-width="2"/>
+                <path d="M 550 160 L 550 200" stroke="#8888aa" stroke-width="2" stroke-dasharray="3,3"/>
+                
+                <!-- Image Tokens (during generation) -->
+                <g transform="translate(660, 155)">
+                    <rect x="0" y="0" width="20" height="20" fill="#f59e0b" stroke="#fcd34d" stroke-width="1"/>
+                    <rect x="23" y="0" width="20" height="20" fill="#10b981" stroke="#6ee7b7" stroke-width="1"/>
+                    <rect x="46" y="0" width="20" height="20" fill="#ec4899" stroke="#f9a8d4" stroke-width="1"/>
+                    <text x="85" y="15" fill="#8888aa" font-size="10">... 1,024 tokens</text>
+                </g>
+                
+                <!-- Transformer Block -->
+                <rect x="550" y="210" width="240" height="120" rx="10" fill="rgba(16,185,129,0.15)" stroke="#10b981" stroke-width="2"/>
+                <text x="670" y="235" text-anchor="middle" fill="#6ee7b7" font-size="14" font-weight="bold">12B Parameter Transformer</text>
+                
+                <!-- Attention Visualization -->
+                <g transform="translate(570, 250)">
+                    <circle cx="0" cy="0" r="8" fill="#6366f1"/>
+                    <circle cx="25" cy="0" r="8" fill="#6366f1"/>
+                    <circle cx="50" cy="0" r="8" fill="#6366f1"/>
+                    <circle cx="75" cy="0" r="8" fill="#6366f1"/>
+                    <circle cx="0" cy="25" r="8" fill="#ec4899"/>
+                    <circle cx="25" cy="25" r="8" fill="#ec4899"/>
+                    <circle cx="50" cy="25" r="8" fill="#ec4899"/>
+                    <circle cx="75" cy="25" r="8" fill="#ec4899"/>
+                    <path d="M 8 0 L 17 0 M 33 0 L 42 0 M 58 0 L 67 0" stroke="#a5b4fc" stroke-width="1"/>
+                    <path d="M 0 8 L 0 17 M 25 8 L 25 17 M 50 8 L 50 17 M 75 8 L 75 17" stroke="#f9a8d4" stroke-width="1"/>
+                    <path d="M 8 25 L 50 8" stroke="#f9a8d4" stroke-width="1" opacity="0.5"/>
+                </g>
+                <text x="700" y="305" fill="#6ee7b7" font-size="10">Causal Self-Attention</text>
+                
+                <!-- Output Arrow -->
+                <path d="M 670 335 L 670 360" stroke="#ec4899" stroke-width="3" marker-end="url(#arrowhead)"/>
+                
+                <!-- Generated Image Tokens -->
+                <g transform="translate(610, 370)">
+                    <rect x="0" y="0" width="15" height="15" fill="#6366f1"/>
+                    <rect x="17" y="0" width="15" height="15" fill="#8b5cf6"/>
+                    <rect x="34" y="0" width="15" height="15" fill="#ec4899"/>
+                    <rect x="51" y="0" width="15" height="15" fill="#10b981"/>
+                    <rect x="68" y="0" width="15" height="15" fill="#f59e0b"/>
+                    <rect x="85" y="0" width="15" height="15" fill="#ef4444"/>
+                    <rect x="102" y="0" width="15" height="15" fill="#06b6d4"/>
+                    <text x="130" y="12" fill="#a5b4fc" font-size="10">... 32×32 tokens</text>
+                </g>
+                
+                <!-- Final Image -->
+                <rect x="620" y="395" width="100" height="25" rx="5" fill="rgba(16,185,129,0.3)" stroke="#10b981" stroke-width="2"/>
+                <text x="670" y="412" text-anchor="middle" fill="#6ee7b7" font-size="10">dVAE Decoder → 256×256 Image</text>
+                
+                <!-- Arrowhead marker -->
+                <defs>
+                    <marker id="arrowhead" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto">
+                        <polygon points="0 0, 10 3.5, 0 7" fill="#6366f1"/>
+                    </marker>
+                </defs>
+                
+                <!-- Training Data Label -->
+                <text x="670" y="180" text-anchor="middle" fill="#8888aa" font-size="10">Trained on 250M text-image pairs</text>
+            </svg>
+        </div>
+        
+        <h3>Stage 1: Discrete Variational Autoencoder (dVAE)</h3>
+        
+        <p>
+            The dVAE learns to compress images into a discrete latent space, similar to VQ-VAE but using Gumbel-Softmax relaxation instead of straight-through estimation:
+        </p>
+        
+        <ul>
+            <li><strong>Encoder:</strong> Maps 256×256 RGB images to a 32×32 grid of discrete tokens</li>
+            <li><strong>Codebook:</strong> 8,192 possible discrete values (vocabulary size)</li>
+            <li><strong>Compression:</strong> Reduces image size by 192× (from 196,608 values to 1,024 tokens)</li>
+            <li><strong>Gumbel-Softmax:</strong> Enables gradient flow through discrete sampling during training</li>
+            <li><strong>Decoder:</strong> Reconstructs images from discrete tokens</li>
+        </ul>
+        
+        <div class="svg-container">
+            <div class="svg-title">dVAE Architecture Detail</div>
+            <svg viewBox="0 0 700 200" style="max-width: 100%; height: auto;">
+                <!-- Input -->
+                <rect x="20" y="50" width="80" height="100" fill="rgba(16,185,129,0.2)" stroke="#10b981" stroke-width="2"/>
+                <text x="60" y="95" text-anchor="middle" fill="#6ee7b7" font-size="11">256×256</text>
+                <text x="60" y="115" text-anchor="middle" fill="#6ee7b7" font-size="10">RGB Image</text>
+                
+                <!-- Conv Layers -->
+                <rect x="120" y="70" width="60" height="60" rx="5" fill="rgba(99,102,241,0.2)" stroke="#6366f1" stroke-width="2"/>
+                <text x="150" y="95" text-anchor="middle" fill="#a5b4fc" font-size="9">Conv</text>
+                <text x="150" y="108" text-anchor="middle" fill="#a5b4fc" font-size="8">128×128</text>
+                <text x="150" y="120" text-anchor="middle" fill="#a5b4fc" font-size="8">128 ch</text>
+                
+                <path d="M 105 100 L 115 100" stroke="#6366f1" stroke-width="2"/>
+                <path d="M 180 100 L 200 100" stroke="#6366f1" stroke-width="2"/>
+                
+                <rect x="200" y="70" width="60" height="60" rx="5" fill="rgba(99,102,241,0.2)" stroke="#6366f1" stroke-width="2"/>
+                <text x="230" y="95" text-anchor="middle" fill="#a5b4fc" font-size="9">Conv</text>
+                <text x="230" y="108" text-anchor="middle" fill="#a5b4fc" font-size="8">64×64</text>
+                <text x="230" y="120" text-anchor="middle" fill="#a5b4fc" font-size="8">256 ch</text>
+                
+                <path d="M 260 100 L 280 100" stroke="#6366f1" stroke-width="2"/>
+                
+                <rect x="280" y="70" width="60" height="60" rx="5" fill="rgba(99,102,241,0.2)" stroke="#6366f1" stroke-width="2"/>
+                <text x="310" y="95" text-anchor="middle" fill="#a5b4fc" font-size="9">Conv</text>
+                <text x="310" y="108" text-anchor="middle" fill="#a5b4fc" font-size="8">32×32</text>
+                <text x="310" y="120" text-anchor="middle" fill="#a5b4fc" font-size="8">8192 ch</text>
+                
+                <!-- Gumbel Softmax -->
+                <path d="M 340 100 L 360 100" stroke="#f59e0b" stroke-width="2"/>
+                <rect x="360" y="55" width="100" height="90" rx="8" fill="rgba(245,158,11,0.2)" stroke="#f59e0b" stroke-width="2"/>
+                <text x="410" y="80" text-anchor="middle" fill="#fcd34d" font-size="10">Gumbel-Softmax</text>
+                <text x="410" y="95" text-anchor="middle" fill="#fcd34d" font-size="9">τ=0.9→0.07</text>
+                <text x="410" y="110" text-anchor="middle" fill="#fcd34d" font-size="9">Ancestral</text>
+                <text x="410" y="125" text-anchor="middle" fill="#fcd34d" font-size="9">Sampling</text>
+                
+                <!-- Output Tokens -->
+                <path d="M 460 100 L 480 100" stroke="#6366f1" stroke-width="2"/>
+                <g transform="translate(485, 70)">
+                    <rect x="0" y="0" width="25" height="25" fill="#6366f1" stroke="#a5b4fc"/>
+                    <rect x="30" y="0" width="25" height="25" fill="#8b5cf6" stroke="#a5b4fc"/>
+                    <rect x="60" y="0" width="25" height="25" fill="#ec4899" stroke="#a5b4fc"/>
+                    <text x="100" y="18" fill="#a5b4fc" font-size="11">... 32×32</text>
+                    <text x="50" y="50" text-anchor="middle" fill="#a5b4fc" font-size="11">Discrete Image Tokens</text>
+                    <text x="50" y="65" text-anchor="middle" fill="#8888aa" font-size="9">Vocabulary: 8,192</text>
+                </g>
+                
+                <!-- Decoder Arrow -->
+                <path d="M 485 145 L 410 145" stroke="#10b981" stroke-width="2" stroke-dasharray="5,5"/>
+                <text x="445" y="160" text-anchor="middle" fill="#6ee7b7" font-size="9">Decoder (symmetric)</text>
+            </svg>
+        </div>
+        
+        <h3>Stage 2: Autoregressive Transformer</h3>
+        
+        <p>
+            The transformer learns to model the joint distribution of text and image tokens autoregressively:
+        </p>
+        
+        <ul>
+            <li><strong>Architecture:</strong> Decoder-only transformer (similar to GPT-3)</li>
+            <li><strong>Parameters:</strong> 12 billion parameters</li>
+            <li><strong>Context Length:</strong> 1,280 tokens (256 text + 1,024 image)</li>
+            <li><strong>Text Encoding:</strong> BPE (Byte Pair Encoding) with vocabulary of 16,384</li>
+            <li><strong>Training Data:</strong> 250 million text-image pairs from the internet</li>
+            <li><strong>Objective:</strong> Maximize log-likelihood of the token sequence</li>
+        </ul>
+        
+        <div class="highlight-box">
+            <strong>🎯 Key Architectural Insight</strong><br><br>
+            Unlike previous text-to-image approaches that required complex conditioning mechanisms or auxiliary losses, DALL-E treats image generation as a simple "next token prediction" problem. By tokenizing images into a discrete space, the same autoregressive objective that works for text can be applied directly to images.
+        </div>
+        
+        <h2>📊 Results & Impact</h2>
+        
+        <h3>Zero-Shot Capabilities</h3>
+        
+        <p>
+            DALL-E demonstrated remarkable zero-shot abilities that previous systems couldn't achieve:
+        </p>
+        
+        <ul>
+            <li><strong>Concept Combination:</strong> Can combine unrelated concepts (e.g., "a professional high-quality illustration of a giraffe dragon chimera")</li>
+            <li><strong>Attribute Control:</strong> Can control multiple object attributes simultaneously (shape, color, texture)</li>
+            <li><strong>Spatial Relationships:</strong> Understands and renders spatial prepositions (on, under, behind, in front of)</li>
+            <li><strong>Perspective & 3D:</strong> Can render objects from different viewpoints and with 3D understanding</li>
+            <li><strong>Zero-Shot Image-to-Image:</strong> Can perform controlled editing (e.g., adding/removing objects)</li>
+        </ul>
+        
+        <div class="svg-container">
+            <div class="svg-title">Zero-Shot Compositional Generation Examples</div>
+            <svg viewBox="0 0 800 300" style="max-width: 100%; height: auto;">
+                <!-- Example 1 -->
+                <rect x="20" y="20" width="230" height="260" rx="10" fill="rgba(99,102,241,0.1)" stroke="#6366f1" stroke-width="1"/>
+                <text x="135" y="45" text-anchor="middle" fill="#a5b4fc" font-size="11" font-weight="bold">Concept Combination</text>
+                <rect x="40" y="60" width="190" height="100" rx="5" fill="rgba(16,185,129,0.15)" stroke="#10b981" stroke-width="1"/>
+                <text x="135" y="85" text-anchor="middle" fill="#6ee7b7" font-size="10">"An armchair in the</text>
+                <text x="135" y="100" text-anchor="middle" fill="#6ee7b7" font-size="10">shape of an avocado...</text>
+                <text x="135" y="115" text-anchor="middle" fill="#6ee7b7" font-size="10">with a purple paisley</text>
+                <text x="135" y="130" text-anchor="middle" fill="#6ee7b7" font-size="10">pattern upholstery"</text>
+                <text x="135" y="155" text-anchor="middle" fill="#8888aa" font-size="9">→ Generated Image</text>
+                <rect x="65" y="175" width="140" height="90" rx="5" fill="rgba(245,158,11,0.2)" stroke="#f59e0b" stroke-width="2"/>
+                <text x="135" y="220" text-anchor="middle" fill="#fcd34d" font-size="11">[Avocado Chair</text>
+                <text x="135" y="240" text-anchor="middle" fill="#fcd34d" font-size="11">with Pattern]</text>
+                
+                <!-- Example 2 -->
+                <rect x="275" y="20" width="230" height="260" rx="10" fill="rgba(236,72,153,0.1)" stroke="#ec4899" stroke-width="1"/>
+                <text x="390" y="45" text-anchor="middle" fill="#f9a8d4" font-size="11" font-weight="bold">Spatial Relationships</text>
+                <rect x="295" y="60" width="190" height="100" rx="5" fill="rgba(16,185,129,0.15)" stroke="#10b981" stroke-width="1"/>
+                <text x="390" y="90" text-anchor="middle" fill="#6ee7b7" font-size="10">"A small red block</text>
+                <text x="390" y="108" text-anchor="middle" fill="#6ee7b7" font-size="10">sitting on a large</text>
+                <text x="390" y="126" text-anchor="middle" fill="#6ee7b7" font-size="10">green sphere in</text>
+                <text x="390" y="144" text-anchor="middle" fill="#6ee7b7" font-size="10">front of a blue wall"</text>
+                <text x="390" y="165" text-anchor="middle" fill="#8888aa" font-size="9">→ Generated Image</text>
+                <rect x="320" y="175" width="140" height="90" rx="5" fill="rgba(245,158,11,0.2)" stroke="#f59e0b" stroke-width="2"/>
+                <text x="390" y="220" text-anchor="middle" fill="#fcd34d" font-size="11">[3D Scene with</text>
+                <text x="390" y="240" text-anchor="middle" fill="#fcd34d" font-size="11">Correct Relations]</text>
+                
+                <!-- Example 3 -->
+                <rect x="530" y="20" width="250" height="260" rx="10" fill="rgba(16,185,129,0.1)" stroke="#10b981" stroke-width="1"/>
+                <text x="655" y="45" text-anchor="middle" fill="#6ee7b7" font-size="11" font-weight="bold">Anthropomorphization</text>
+                <rect x="550" y="60" width="210" height="100" rx="5" fill="rgba(99,102,241,0.15)" stroke="#6366f1" stroke-width="1"/>
+                <text x="655" y="85" text-anchor="middle" fill="#a5b4fc" font-size="10">"A baby daikon radish</text>
+                <text x="655" y="103" text-anchor="middle" fill="#a5b4fc" font-size="10">in a tutu walking a dog,</text>
+                <text x="655" y="121" text-anchor="middle" fill="#a5b4fc" font-size="10">illustration style, digital</text>
+                <text x="655" y="139" text-anchor="middle" fill="#a5b4fc" font-size="10">art, trending on artstation"</text>
+                <text x="655" y="165" text-anchor="middle" fill="#8888aa" font-size="9">→ Generated Image</text>
+                <rect x="575" y="175" width="160" height="90" rx="5" fill="rgba(245,158,11,0.2)" stroke="#f59e0b" stroke-width="2"/>
+                <text x="655" y="220" text-anchor="middle" fill="#fcd34d" font-size="11">[Anthropomorphic</text>
+                <text x="655" y="240" text-anchor="middle" fill="#fcd34d" font-size="11">Radish Character]</text>
+            </svg>
+        </div>
+        
+        <h3>Key Metrics</h3>
+        
+        <div style="text-align: center; margin: 25px 0;">
+            <span class="metric">📊 12B Parameters</span>
+            <span class="metric">🖼️ 250M Training Pairs</span>
+            <span class="metric">📝 256 Text Tokens</span>
+            <span class="metric">🎨 1,024 Image Tokens</span>
+            <span class="metric">🔤 8,192 Vocab Size</span>
+            <span class="metric">📐 256×256 Output</span>
+            <span class="metric">🎯 Zero-Shot</span>
+            <span class="metric">⚡ Autoregressive</span>
+        </div>
+        
+        <h2>💻 Code Implementation</h2>
+        
+        <h3>PyTorch-Style Pseudocode</h3>
+        
+        <div class="code-block">
+            <pre>
+<span class="keyword">import</span> torch
+<span class="keyword">import</span> torch.nn <span class="keyword">as</span> nn
+
+<span class="keyword">class</span> <span class="function">DiscreteVAE</span>(nn.Module):
+    <span class="string">"""dVAE: Discrete Variational Autoencoder for DALL-E"""</span>
+    
+    <span class="keyword">def</span> <span class="function">__init__</span>(self, img_size=<span class="function">256</span>, codebook_size=<span class="function">8192</span>, latent_dim=<span class="function">32</span>):
+        super().__init__()
+        self.img_size = img_size
+        self.codebook_size = codebook_size
+        self.latent_dim = latent_dim  <span class="comment"># 32x32 = 1024 tokens</span>
+        
+        <span class="comment"># Encoder: 256x256 -> 32x32x8192</span>
+        self.encoder = nn.Sequential(
+            nn.Conv2d(<span class="function">3</span>, <span class="function">128</span>, <span class="function">4</span>, stride=<span class="function">2</span>, padding=<span class="function">1</span>),   <span class="comment"># 128x128</span>
+            nn.ReLU(),
+            nn.Conv2d(<span class="function">128</span>, <span class="function">256</span>, <span class="function">4</span>, stride=<span class="function">2</span>, padding=<span class="function">1</span>),  <span class="comment"># 64x64</span>
+            nn.ReLU(),
+            nn.Conv2d(<span class="function">256</span>, codebook_size, <span class="function">4</span>, stride=<span class="function">2</span>, padding=<span class="function">1</span>),  <span class="comment"># 32x32x8192</span>
+        )
+        
+        <span class="comment"># Codebook embedding</span>
+        self.codebook = nn.Embedding(codebook_size, <span class="function">256</span>)
+        
+        <span class="comment"># Decoder: 32x32 -> 256x256</span>
+        self.decoder = nn.Sequential(
+            nn.ConvTranspose2d(<span class="function">256</span>, <span class="function">256</span>, <span class="function">4</span>, stride=<span class="function">2</span>, padding=<span class="function">1</span>),  <span class="comment"># 64x64</span>
+            nn.ReLU(),
+            nn.ConvTranspose2d(<span class="function">256</span>, <span class="function">128</span>, <span class="function">4</span>, stride=<span class="function">2</span>, padding=<span class="function">1</span>),  <span class="comment"># 128x128</span>
+            nn.ReLU(),
+            nn.ConvTranspose2d(<span class="function">128</span>, <span class="function">3</span>, <span class="function">4</span>, stride=<span class="function">2</span>, padding=<span class="function">1</span>),    <span class="comment"># 256x256</span>
+        )
+    
+    <span class="keyword">def</span> <span class="function">encode</span>(self, x):
+        <span class="string">"""Encode image to discrete tokens using Gumbel-Softmax"""</span>
+        logits = self.encoder(x)  <span class="comment"># [B, 8192, 32, 32]</span>
+        b, c, h, w = logits.shape
+        logits = logits.permute(<span class="function">0</span>, <span class="function">2</span>, <span class="function">3</span>, <span class="function">1</span>).reshape(b, h*w, c)  <span class="comment"># [B, 1024, 8192]</span>
+        
+        <span class="comment"># Gumbel-Softmax sampling during training</span>
+        <span class="keyword">if</span> self.training:
+            tokens = torch.nn.functional.gumbel_softmax(
+                logits, tau=<span class="function">0.9</span>, hard=<span class="function">False</span>, dim=-<span class="function">1</span>
+            )
+        <span class="keyword">else</span>:
+            <span class="comment"># Hard quantization during inference</span>
+            indices = torch.argmax(logits, dim=-<span class="function">1</span>)
+            tokens = torch.nn.functional.one_hot(indices, self.codebook_size).float()
+        
+        <span class="keyword">return</span> tokens, indices
+    
+    <span class="keyword">def</span> <span class="function">decode</span>(self, tokens):
+        <span class="string">"""Decode tokens back to image"""</span>
+        <span class="comment"># tokens: [B, 1024, 8192] -> weighted sum of codebook</span>
+        z = torch.matmul(tokens, self.codebook.weight)  <span class="comment"># [B, 1024, 256]</span>
+        z = z.reshape(b, <span class="function">32</span>, <span class="function">32</span>, <span class="function">256</span>).permute(<span class="function">0</span>, <span class="function">3</span>, <span class="function">1</span>, <span class="function">2</span>)
+        <span class="keyword">return</span> torch.sigmoid(self.decoder(z))
+
+<span class="keyword">class</span> <span class="function">DALLE</span>(nn.Module):
+    <span class="string">"""DALL-E: Text-to-Image Generation with Autoregressive Transformer"""</span>
+    
+    <span class="keyword">def</span> <span class="function">__init__</span>(self, vocab_size=<span class="function">16384</span>, codebook_size=<span class="function">8192</span>, 
+                 n_layers=<span class="function">64</span>, d_model=<span class="function">2048</span>, n_heads=<span class="function">32</span>):
+        super().__init__()
+        self.dvae = DiscreteVAE()
+        
+        <span class="comment"># Token embeddings</span>
+        self.text_embed = nn.Embedding(vocab_size, d_model)
+        self.image_embed = nn.Embedding(codebook_size, d_model)
+        
+        <span class="comment"># 12B parameter autoregressive transformer</span>
+        self.transformer = GPT3Decoder(
+            n_layers=n_layers,
+            d_model=d_model,
+            n_heads=n_heads,
+            causal=<span class="function">True</span>
+        )
+        
+        <span class="comment"># Output heads</span>
+        self.text_head = nn.Linear(d_model, vocab_size)
+        self.image_head = nn.Linear(d_model, codebook_size)
+    
+    <span class="keyword">def</span> <span class="function">forward</span>(self, text_tokens, image_tokens=<span class="function">None</span>):
+        <span class="string">"""
+        text_tokens: [B, 256] - BPE encoded text
+        image_tokens: [B, 1024] - dVAE image tokens (optional, for training)
+        """</span>
+        <span class="comment"># Embed tokens</span>
+        text_emb = self.text_embed(text_tokens)
+        
+        <span class="keyword">if</span> image_tokens <span class="keyword">is</span> <span class="keyword">not</span> <span class="function">None</span>:
+            image_emb = self.image_embed(image_tokens)
+            <span class="comment"># Concatenate: [B, 256+1024, D]</span>
+            x = torch.cat([text_emb, image_emb], dim=<span class="function">1</span>)
+        <span class="keyword">else</span>:
+            x = text_emb
+        
+        <span class="comment"># Autoregressive generation</span>
+        h = self.transformer(x)
+        
+        <span class="comment"># Predict next tokens</span>
+        text_logits = self.text_head(h[:, :<span class="function">256</span>])
+        image_logits = self.image_head(h[:, <span class="function">256</span>:])
+        
+        <span class="keyword">return</span> text_logits, image_logits
+    
+    <span class="keyword">def</span> <span class="function">generate</span>(self, text_prompt, temperature=<span class="function">1.0</span>, top_k=<span class="function">512</span>):
+        <span class="string">"""Generate image from text prompt"""</span>
+        <span class="comment"># Encode text with BPE</span>
+        text_tokens = bpe_encode(text_prompt)  <span class="comment"># [256]</span>
+        
+        <span class="comment"># Autoregressively generate image tokens</span>
+        image_tokens = []
+        <span class="keyword">for</span> i <span class="keyword">in</span> range(<span class="function">1024</span>):  <span class="comment"># 32x32 image tokens</span>
+            logits = self.forward(text_tokens, image_tokens)[<span class="function">1</span>]
+            next_token = sample_top_k(logits[:, -<span class="function">1</span>], k=top_k, temp=temperature)
+            image_tokens.append(next_token)
+        
+        <span class="comment"># Decode with dVAE</span>
+        image = self.dvae.decode(torch.stack(image_tokens))
+        <span class="keyword">return</span> image
+</pre>
+        </div>
+        
+        <h2>📚 Related Work</h2>
+        
+        <h3>Papers That Inspired DALL-E</h3>
+        
+        <div class="related-grid">
+            <a href="transformer.html" class="related-card">
+                <h4>Attention Is All You Need</h4>
+                <p>Vaswani et al., 2017 • Transformer architecture that DALL-E builds upon</p>
+            </a>
+            <a href="gpt3.html" class="related-card">
+                <h4>GPT-3</h4>
+                <p>Brown et al., 2020 • 175B parameter language model showing scale matters</p>
+            </a>
+            <a href="vae.html" class="related-card">
+                <h4>VAE / VQ-VAE</h4>
+                <p>Kingma & Welling, 2013 • Foundation of discrete latent representations</p>
+            </a>
+            <a href="clip.html" class="related-card">
+                <h4>CLIP</h4>
+                <p>Radford et al., 2021 • Released concurrently; connects vision and language</p>
+            </a>
+        </div>
+        
+        <h3>Follow-up Papers</h3>
+        
+        <div class="related-grid">
+            <a href="https://cdn.openai.com/papers/dall-e-2.pdf" class="related-card" target="_blank">
+                <h4>DALL-E 2</h4>
+                <p>Ramesh et al., 2022 • Uses CLIP + diffusion for higher quality</p>
+            </a>
+            <a href="stable-diffusion.html" class="related-card">
+                <h4>Stable Diffusion</h4>
+                <p>Rombach et al., 2022 • Latent diffusion model, open-source alternative</p>
+            </a>
+            <a href="dit.html" class="related-card">
+                <h4>DiT</h4>
+                <p>Peebles & Xie, 2022 • Diffusion Transformers, evolution of the concept</p>
+            </a>
+            <a href="mae.html" class="related-card">
+                <h4>MAE</h4>
+                <p>He et al., 2022 • Masked autoencoders for vision, similar tokenization idea</p>
+            </a>
+        </div>
+        
+        <h2>🎓 Lessons & Impact</h2>
+        
+        <div class="highlight-box">
+            <strong>Key Takeaways from DALL-E</strong><br><br>
+            <ol>
+                <li><strong>Tokenization Unifies Modalities:</strong> By treating images as sequences of discrete tokens, the same architectures and training objectives that work for text can work for images.</li>
+                <li><strong>Scale Enables Zero-Shot:</strong> Training on 250M examples with 12B parameters enabled compositional generalization that smaller models couldn't achieve.</li>
+                <li><strong>Simple Objectives Work:</strong> Despite the complexity of image generation, a simple next-token prediction objective proved sufficient at scale.</li>
+                <li><strong>Discrete Latents Are Powerful:</strong> The dVAE's discrete codebook learned meaningful visual concepts that could be manipulated through language.</li>
+                <li><strong>Opened New Era:</strong> DALL-E sparked the modern text-to-image generation revolution, leading to DALL-E 2, Stable Diffusion, Midjourney, and more.</li>
+            </ol>
+        </div>
+        
+        <div class="solution-box">
+            <strong>🚀 Impact on the Field</strong><br><br>
+            DALL-E's release in January 2021 marked a watershed moment in generative AI. It demonstrated that:
+            <ul>
+                <li>Large language model techniques could be extended to vision</li>
+                <li>Zero-shot composition of visual concepts was possible</li>
+                <li>Text-to-image generation could work at scale with simple architectures</li>
+            </ul>
+            The model inspired countless follow-up works and laid the groundwork for the generative AI explosion of 2022-2023.
+        </div>
+    </div>
+</body>
+</html>
