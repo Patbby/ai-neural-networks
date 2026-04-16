@@ -448,6 +448,69 @@
                 </svg>
             </div>
 
+            <!-- MAE Paper Card -->
+            <div class="network-card" onclick="location.href='papers/mae.html'">
+                <span class="tag">CVPR 2022 · Best Paper Nominee</span>
+                <h3>MAE</h3>
+                <p>Masked Autoencoders Are Scalable Vision Learners - Self-supervised learning with 75% masking and asymmetric encoder-decoder architecture.</p>
+                <svg class="preview-svg" viewBox="0 0 300 150">
+                    <defs>
+                        <linearGradient id="mae-grad" x1="0%" y1="0%" x2="100%" y2="0%">
+                            <stop offset="0%" style="stop-color:#6366f1"/>
+                            <stop offset="100%" style="stop-color:#ec4899"/>
+                        </linearGradient>
+                    </defs>
+                    <!-- Input image patches -->
+                    <g transform="translate(20, 35)">
+                        <!-- 4x4 grid showing masking -->
+                        <rect x="0" y="0" width="12" height="12" fill="none" stroke="#6366f1" stroke-width="1.5" rx="1"/>
+                        <rect x="13" y="0" width="12" height="12" fill="#1a1a2e" stroke="#71717a" stroke-width="1" stroke-dasharray="2,2" rx="1"/>
+                        <rect x="26" y="0" width="12" height="12" fill="none" stroke="#6366f1" stroke-width="1.5" rx="1"/>
+                        <rect x="39" y="0" width="12" height="12" fill="#1a1a2e" stroke="#71717a" stroke-width="1" stroke-dasharray="2,2" rx="1"/>
+                        
+                        <rect x="0" y="13" width="12" height="12" fill="#1a1a2e" stroke="#71717a" stroke-width="1" stroke-dasharray="2,2" rx="1"/>
+                        <rect x="13" y="13" width="12" height="12" fill="#1a1a2e" stroke="#71717a" stroke-width="1" stroke-dasharray="2,2" rx="1"/>
+                        <rect x="26" y="13" width="12" height="12" fill="none" stroke="#6366f1" stroke-width="1.5" rx="1"/>
+                        <rect x="39" y="13" width="12" height="12" fill="none" stroke="#6366f1" stroke-width="1.5" rx="1"/>
+                        
+                        <rect x="0" y="26" width="12" height="12" fill="none" stroke="#6366f1" stroke-width="1.5" rx="1"/>
+                        <rect x="13" y="26" width="12" height="12" fill="#1a1a2e" stroke="#71717a" stroke-width="1" stroke-dasharray="2,2" rx="1"/>
+                        <rect x="26" y="26" width="12" height="12" fill="#1a1a2e" stroke="#71717a" stroke-width="1" stroke-dasharray="2,2" rx="1"/>
+                        <rect x="39" y="26" width="12" height="12" fill="none" stroke="#6366f1" stroke-width="1.5" rx="1"/>
+                        
+                        <rect x="0" y="39" width="12" height="12" fill="#1a1a2e" stroke="#71717a" stroke-width="1" stroke-dasharray="2,2" rx="1"/>
+                        <rect x="13" y="39" width="12" height="12" fill="none" stroke="#6366f1" stroke-width="1.5" rx="1"/>
+                        <rect x="26" y="39" width="12" height="12" fill="#1a1a2e" stroke="#71717a" stroke-width="1" stroke-dasharray="2,2" rx="1"/>
+                        <rect x="39" y="39" width="12" height="12" fill="#1a1a2e" stroke="#71717a" stroke-width="1" stroke-dasharray="2,2" rx="1"/>
+                    </g>
+                    <text x="45" y="95" fill="#6366f1" font-size="7" text-anchor="middle">75% Masked</text>
+                    
+                    <!-- Arrow -->
+                    <path d="M90 60 L115 60" stroke="#6366f1" stroke-width="2"/>
+                    <polygon points="115,60 110,55 110,65" fill="#6366f1"/>
+                    
+                    <!-- Encoder (heavy) -->
+                    <rect x="120" y="35" width="40" height="50" fill="rgba(99,102,241,0.4)" stroke="#6366f1" stroke-width="2" rx="3"/>
+                    <text x="140" y="52" fill="#fff" font-size="8" text-anchor="middle">Encoder</text>
+                    <text x="140" y="64" fill="#c7d2fe" font-size="7" text-anchor="middle">(ViT)</text>
+                    <text x="140" y="76" fill="#c7d2fe" font-size="7" text-anchor="middle">25%</text>
+                    
+                    <!-- Arrow to decoder -->
+                    <path d="M165 60 L185 60" stroke="#a855f7" stroke-width="2"/>
+                    <polygon points="185,60 180,55 180,65" fill="#a855f7"/>
+                    
+                    <!-- Decoder (lightweight) -->
+                    <rect x="190" y="40" width="35" height="40" fill="rgba(168,85,247,0.3)" stroke="#a855f7" stroke-width="2" rx="3"/>
+                    <text x="207" y="55" fill="#fff" font-size="7" text-anchor="middle">Decoder</text>
+                    <text x="207" y="68" fill="#e9d5ff" font-size="6" text-anchor="middle">Light</text>
+                    
+                    <!-- Output -->
+                    <path d="M230 60 L255 60" stroke="#ec4899" stroke-width="2"/>
+                    <rect x="260" y="45" width="30" height="30" fill="rgba(16,185,129,0.2)" stroke="#10b981" stroke-width="2" rx="3"/>
+                    <text x="275" y="65" fill="#6ee7b7" font-size="8" text-anchor="middle">Img</text>
+                </svg>
+            </div>
+
             <!-- CLIP Paper Card -->
             <div class="network-card" onclick="location.href='papers/clip.html'">
                 <span class="tag">ICML 2021</span>
