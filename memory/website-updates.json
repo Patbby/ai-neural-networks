@@ -1,10 +1,10 @@
 {
-  "lastUpdate": "2026-04-16T12:40:00+08:00",
-  "papersAdded": 36,
-  "totalPapers": 36,
-  "nextPaper": "DDPM - Denoising Diffusion Probabilistic Models (NeurIPS 2020)",
-  "updateCount": 8,
-  "lastPaper": "AlphaGo - Mastering the Game of Go with Deep Neural Networks and Tree Search (Nature 2016)",
-  "lastCommit": "38e077a",
-  "lastCommitMessage": "Add NeRF, StyleGAN, and AlphaGo papers to homepage"
+  "lastUpdate": "2026-04-16T18:57:00+08:00",
+  "papersAdded": 37,
+  "totalPapers": 37,
+  "nextPaper": "Mask R-CNN - Instance Segmentation (ICCV 2017)",
+  "updateCount": 9,
+  "lastPaper": "Faster R-CNN - Towards Real-Time Object Detection with Region Proposal Networks (NeurIPS 2015)",
+  "lastCommit": "TBD",
+  "lastCommitMessage": "Add Faster R-CNN paper with SVG visualization"
 }
