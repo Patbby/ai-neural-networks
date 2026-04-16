@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>YOLO - You Only Look Once | AI Neural Networks</title>
+    <title>YOLO - You Only Look Once: Unified Real-Time Object Detection | AI Neural Networks</title>
     <style>
         * {
             margin: 0;
@@ -15,10 +15,11 @@
             font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
             background: #0a0a0f;
             color: #e0e0ff;
-            line-height: 1.8;
+            line-height: 1.7;
             overflow-x: hidden;
         }
         
+        /* Animated background */
         .bg-animation {
             position: fixed;
             top: 0;
@@ -29,144 +30,196 @@
             opacity: 0.2;
         }
         
-        header {
-            text-align: center;
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        
+        /* Hero Section */
+        .hero {
             padding: 60px 20px 40px;
-            background: linear-gradient(180deg, rgba(16,185,129,0.15) 0%, transparent 100%);
+            text-align: center;
+            background: linear-gradient(180deg, rgba(245, 158, 11, 0.1) 0%, transparent 100%);
+            border-bottom: 1px solid rgba(245, 158, 11, 0.2);
+            margin-bottom: 40px;
         }
         
-        .back-link {
-            position: absolute;
-            top: 20px;
-            left: 20px;
-            color: #8888aa;
-            text-decoration: none;
-            font-size: 0.9rem;
-            transition: color 0.3s;
-        }
-        
-        .back-link:hover {
-            color: #10b981;
-        }
-        
-        h1 {
+        .hero h1 {
             font-size: 2.8rem;
-            background: linear-gradient(135deg, #10b981 0%, #06b6d4 50%, #6366f1 100%);
+            background: linear-gradient(135deg, #f59e0b 0%, #ef4444 50%, #ec4899 100%);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
             background-clip: text;
-            margin-bottom: 10px;
+            margin-bottom: 15px;
             font-weight: 800;
         }
         
-        .paper-meta {
+        .hero .subtitle {
+            font-size: 1.2rem;
             color: #8888aa;
-            font-size: 1.1rem;
-            margin-bottom: 15px;
+            margin-bottom: 25px;
+        }
+        
+        .hero .meta {
+            display: flex;
+            justify-content: center;
+            gap: 30px;
+            flex-wrap: wrap;
+            font-size: 0.95rem;
+            color: #aaaacc;
+        }
+        
+        .hero .meta span {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .badges {
+            margin-top: 25px;
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            flex-wrap: wrap;
         }
         
         .badge {
             display: inline-block;
-            background: linear-gradient(135deg, #10b981, #06b6d4);
-            color: #fff;
-            padding: 6px 16px;
+            padding: 8px 18px;
             border-radius: 20px;
             font-size: 0.85rem;
-            margin: 5px;
-            font-weight: 600;
+            font-weight: 500;
+            text-decoration: none;
+            transition: all 0.3s ease;
         }
         
-        .container {
-            max-width: 1000px;
-            margin: 0 auto;
-            padding: 40px 20px;
+        .badge.pdf {
+            background: rgba(239, 68, 68, 0.2);
+            color: #fca5a5;
+            border: 1px solid rgba(239, 68, 68, 0.4);
         }
         
+        .badge.pdf:hover {
+            background: rgba(239, 68, 68, 0.3);
+            transform: translateY(-2px);
+        }
+        
+        .badge.arxiv {
+            background: rgba(99, 102, 241, 0.2);
+            color: #a5b4fc;
+            border: 1px solid rgba(99, 102, 241, 0.4);
+        }
+        
+        .badge.arxiv:hover {
+            background: rgba(99, 102, 241, 0.3);
+            transform: translateY(-2px);
+        }
+        
+        .badge.code {
+            background: rgba(16, 185, 129, 0.2);
+            color: #6ee7b7;
+            border: 1px solid rgba(16, 185, 129, 0.4);
+        }
+        
+        .badge.code:hover {
+            background: rgba(16, 185, 129, 0.3);
+            transform: translateY(-2px);
+        }
+        
+        /* Section Styles */
         .section {
-            background: rgba(20, 20, 35, 0.8);
-            border: 1px solid rgba(16, 185, 129, 0.2);
-            border-radius: 16px;
+            margin-bottom: 50px;
             padding: 30px;
-            margin-bottom: 30px;
+            background: rgba(255, 255, 255, 0.02);
+            border-radius: 16px;
+            border: 1px solid rgba(255, 255, 255, 0.05);
         }
         
         .section h2 {
-            color: #fff;
-            font-size: 1.6rem;
+            font-size: 1.8rem;
             margin-bottom: 20px;
+            color: #f59e0b;
             display: flex;
             align-items: center;
-            gap: 10px;
+            gap: 12px;
+        }
+        
+        .section h2::before {
+            content: '';
+            display: inline-block;
+            width: 4px;
+            height: 28px;
+            background: linear-gradient(180deg, #f59e0b, #ef4444);
+            border-radius: 2px;
         }
         
         .section p {
-            color: #a0a0c0;
             margin-bottom: 15px;
+            color: #b0b0d0;
         }
         
-        .highlight-box {
-            background: linear-gradient(135deg, rgba(16,185,129,0.15), rgba(6,182,212,0.1));
+        /* Problem Statement Box */
+        .problem-box {
+            background: rgba(239, 68, 68, 0.08);
+            border-left: 4px solid #ef4444;
+            padding: 20px;
+            border-radius: 0 12px 12px 0;
+            margin: 20px 0;
+        }
+        
+        .problem-box h3 {
+            color: #fca5a5;
+            margin-bottom: 10px;
+            font-size: 1.1rem;
+        }
+        
+        /* Innovation Box */
+        .innovation-box {
+            background: rgba(16, 185, 129, 0.08);
             border-left: 4px solid #10b981;
             padding: 20px;
             border-radius: 0 12px 12px 0;
             margin: 20px 0;
         }
         
-        .highlight-box p {
-            margin: 0;
-            color: #e0e0ff;
+        .innovation-box h3 {
+            color: #6ee7b7;
+            margin-bottom: 10px;
+            font-size: 1.1rem;
         }
         
-        .formula {
-            background: rgba(10, 10, 20, 0.8);
-            padding: 20px;
-            border-radius: 12px;
-            font-family: 'Georgia', serif;
+        /* Architecture Diagram */
+        .arch-diagram {
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 16px;
+            padding: 30px;
+            margin: 25px 0;
             text-align: center;
-            color: #10b981;
-            font-size: 1.2rem;
-            margin: 20px 0;
-            border: 1px solid rgba(16, 185, 129, 0.3);
+            border: 1px solid rgba(245, 158, 11, 0.2);
         }
         
-        .architecture-diagram {
-            width: 100%;
-            height: 400px;
-            margin: 30px 0;
+        .arch-diagram svg {
+            max-width: 100%;
+            height: auto;
         }
         
-        .comparison-table {
-            width: 100%;
-            border-collapse: collapse;
-            margin: 20px 0;
-        }
-        
-        .comparison-table th,
-        .comparison-table td {
-            padding: 12px 15px;
-            text-align: left;
-            border-bottom: 1px solid rgba(16, 185, 129, 0.2);
-        }
-        
-        .comparison-table th {
-            background: rgba(16, 185, 129, 0.2);
-            color: #fff;
-            font-weight: 600;
-        }
-        
-        .comparison-table tr:hover {
-            background: rgba(16, 185, 129, 0.05);
-        }
-        
+        /* Code Block */
         .code-block {
-            background: rgba(10, 10, 20, 0.9);
+            background: rgba(0, 0, 0, 0.4);
             border-radius: 12px;
             padding: 20px;
-            overflow-x: auto;
-            font-family: 'Fira Code', 'Consolas', monospace;
-            font-size: 0.9rem;
-            border: 1px solid rgba(16, 185, 129, 0.2);
             margin: 20px 0;
+            overflow-x: auto;
+            border: 1px solid rgba(255, 255, 255, 0.08);
+        }
+        
+        .code-block pre {
+            margin: 0;
+            font-family: 'Consolas', 'Monaco', 'Courier New', monospace;
+            font-size: 0.9rem;
+            line-height: 1.6;
+            color: #e0e0ff;
         }
         
         .code-block .comment {
@@ -174,829 +227,641 @@
         }
         
         .code-block .keyword {
-            color: #ec4899;
-        }
-        
-        .code-block .function {
-            color: #10b981;
+            color: #c084fc;
         }
         
         .code-block .string {
+            color: #6ee7b7;
+        }
+        
+        .code-block .function {
+            color: #60a5fa;
+        }
+        
+        /* Key Points */
+        .key-points {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 20px;
+            margin: 25px 0;
+        }
+        
+        .key-point {
+            background: rgba(255, 255, 255, 0.03);
+            padding: 20px;
+            border-radius: 12px;
+            border: 1px solid rgba(255, 255, 255, 0.06);
+        }
+        
+        .key-point h4 {
             color: #f59e0b;
+            margin-bottom: 10px;
+            font-size: 1.05rem;
         }
         
-        .code-block .number {
-            color: #6366f1;
+        .key-point p {
+            font-size: 0.95rem;
+            margin: 0;
         }
         
-        .stats-grid {
+        /* Metrics */
+        .metrics {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
             gap: 20px;
-            margin: 30px 0;
+            margin: 25px 0;
         }
         
-        .stat-card {
-            background: linear-gradient(135deg, rgba(16,185,129,0.15), rgba(6,182,212,0.1));
-            border: 1px solid rgba(16, 185, 129, 0.3);
-            border-radius: 12px;
-            padding: 20px;
+        .metric-card {
+            background: linear-gradient(135deg, rgba(245, 158, 11, 0.1), rgba(239, 68, 68, 0.05));
+            padding: 25px;
+            border-radius: 16px;
             text-align: center;
+            border: 1px solid rgba(245, 158, 11, 0.15);
         }
         
-        .stat-card .number {
-            font-size: 2rem;
-            font-weight: 700;
-            background: linear-gradient(135deg, #10b981, #06b6d4);
+        .metric-card .number {
+            font-size: 2.5rem;
+            font-weight: 800;
+            background: linear-gradient(135deg, #f59e0b, #ef4444);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
             background-clip: text;
         }
         
-        .stat-card .label {
-            color: #8888aa;
+        .metric-card .label {
             font-size: 0.9rem;
-            margin-top: 5px;
-        }
-        
-        .applications-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-            gap: 20px;
-            margin: 20px 0;
-        }
-        
-        .app-card {
-            background: rgba(20, 20, 35, 0.6);
-            border: 1px solid rgba(16, 185, 129, 0.2);
-            border-radius: 12px;
-            padding: 20px;
-            transition: all 0.3s ease;
-        }
-        
-        .app-card:hover {
-            border-color: rgba(16, 185, 129, 0.5);
-            transform: translateY(-3px);
-        }
-        
-        .app-card h4 {
-            color: #fff;
-            margin-bottom: 10px;
-        }
-        
-        .app-card p {
             color: #8888aa;
-            font-size: 0.9rem;
-            margin: 0;
+            margin-top: 8px;
         }
         
-        .pros-cons {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 20px;
-            margin: 20px 0;
-        }
-        
-        .pros, .cons {
-            padding: 20px;
-            border-radius: 12px;
-        }
-        
-        .pros {
-            background: rgba(16, 185, 129, 0.1);
-            border: 1px solid rgba(16, 185, 129, 0.3);
-        }
-        
-        .cons {
-            background: rgba(239, 68, 68, 0.1);
-            border: 1px solid rgba(239, 68, 68, 0.3);
-        }
-        
-        .pros h4 {
-            color: #10b981;
-            margin-bottom: 15px;
-        }
-        
-        .cons h4 {
-            color: #ef4444;
-            margin-bottom: 15px;
-        }
-        
-        .pros ul, .cons ul {
+        /* Impact Section */
+        .impact-list {
             list-style: none;
             padding: 0;
         }
         
-        .pros li, .cons li {
-            padding: 8px 0;
-            padding-left: 25px;
-            position: relative;
-            color: #a0a0c0;
-        }
-        
-        .pros li::before {
-            content: "✓";
-            position: absolute;
-            left: 0;
-            color: #10b981;
-            font-weight: bold;
-        }
-        
-        .cons li::before {
-            content: "✗";
-            position: absolute;
-            left: 0;
-            color: #ef4444;
-            font-weight: bold;
-        }
-        
-        .paper-links {
+        .impact-list li {
+            padding: 15px 0;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
             display: flex;
-            flex-wrap: wrap;
+            align-items: flex-start;
+            gap: 15px;
+        }
+        
+        .impact-list li::before {
+            content: '→';
+            color: #f59e0b;
+            font-weight: bold;
+        }
+        
+        .impact-list li:last-child {
+            border-bottom: none;
+        }
+        
+        /* Navigation */
+        .nav {
+            padding: 20px 0;
+            margin-bottom: 20px;
+        }
+        
+        .nav a {
+            color: #8888aa;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            transition: color 0.3s;
+        }
+        
+        .nav a:hover {
+            color: #f59e0b;
+        }
+        
+        /* Related Papers */
+        .related-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
             gap: 15px;
             margin: 20px 0;
         }
         
-        .paper-links a {
-            display: inline-flex;
-            align-items: center;
-            gap: 8px;
-            background: rgba(16, 185, 129, 0.2);
-            color: #a5f3fc;
-            padding: 10px 20px;
-            border-radius: 8px;
-            text-decoration: none;
-            font-weight: 500;
-            transition: all 0.3s ease;
-            border: 1px solid rgba(16, 185, 129, 0.3);
-        }
-        
-        .paper-links a:hover {
-            background: rgba(16, 185, 129, 0.4);
-            color: #fff;
-            transform: translateY(-2px);
-        }
-        
-        .grid-container {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-            gap: 20px;
-            margin: 20px 0;
-        }
-        
-        .grid-box {
-            background: rgba(10, 10, 20, 0.6);
-            border: 1px solid rgba(16, 185, 129, 0.2);
-            border-radius: 12px;
+        .related-card {
+            background: rgba(255, 255, 255, 0.02);
             padding: 20px;
+            border-radius: 12px;
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            text-decoration: none;
+            color: inherit;
+            transition: all 0.3s ease;
         }
         
-        .grid-box h4 {
-            color: #10b981;
-            margin-bottom: 15px;
-            font-size: 1.1rem;
+        .related-card:hover {
+            background: rgba(255, 255, 255, 0.05);
+            border-color: rgba(245, 158, 11, 0.3);
+            transform: translateY(-3px);
         }
         
+        .related-card h4 {
+            color: #f59e0b;
+            margin-bottom: 8px;
+            font-size: 1rem;
+        }
+        
+        .related-card p {
+            font-size: 0.85rem;
+            color: #8888aa;
+            margin: 0;
+        }
+        
+        /* Grid visualization */
+        .grid-visual {
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+            gap: 2px;
+            max-width: 300px;
+            margin: 20px auto;
+        }
+        
+        .grid-cell {
+            aspect-ratio: 1;
+            background: rgba(245, 158, 11, 0.2);
+            border-radius: 2px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.6rem;
+            color: rgba(245, 158, 11, 0.6);
+        }
+        
+        .grid-cell.active {
+            background: rgba(239, 68, 68, 0.6);
+            color: #fff;
+        }
+        
+        /* YOLO Process Steps */
+        .process-steps {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 20px;
+            flex-wrap: wrap;
+            margin: 30px 0;
+        }
+        
+        .process-step {
+            text-align: center;
+            padding: 20px;
+            background: rgba(245, 158, 11, 0.1);
+            border-radius: 12px;
+            min-width: 150px;
+            border: 1px solid rgba(245, 158, 11, 0.2);
+        }
+        
+        .process-step .icon {
+            font-size: 2rem;
+            margin-bottom: 10px;
+        }
+        
+        .process-step .label {
+            font-size: 0.9rem;
+            color: #b0b0d0;
+        }
+        
+        .process-arrow {
+            font-size: 1.5rem;
+            color: #f59e0b;
+        }
+        
+        /* Footer */
         footer {
             text-align: center;
             padding: 40px 20px;
-            color: #555577;
-            border-top: 1px solid rgba(16, 185, 129, 0.1);
-            margin-top: 60px;
+            border-top: 1px solid rgba(255, 255, 255, 0.05);
+            color: #666688;
+            font-size: 0.9rem;
         }
         
-        footer a {
-            color: #10b981;
-            text-decoration: none;
-        }
-        
+        /* Responsive */
         @media (max-width: 768px) {
-            h1 {
-                font-size: 1.8rem;
+            .hero h1 {
+                font-size: 2rem;
             }
-            .pros-cons {
-                grid-template-columns: 1fr;
+            
+            .hero .meta {
+                flex-direction: column;
+                gap: 10px;
             }
-            .grid-container {
-                grid-template-columns: 1fr;
+            
+            .section {
+                padding: 20px;
+            }
+            
+            .section h2 {
+                font-size: 1.4rem;
             }
         }
     </style>
 </head>
 <body>
-    <!-- Animated background -->
-    <svg class="bg-animation" viewBox="0 0 1920 1080" preserveAspectRatio="xMidYMid slice">
+    <!-- Animated Background -->
+    <svg class="bg-animation" viewBox="0 0 1000 1000" preserveAspectRatio="none">
         <defs>
             <linearGradient id="bgGrad" x1="0%" y1="0%" x2="100%" y2="100%">
-                <stop offset="0%" style="stop-color:#10b981;stop-opacity:0.2" />
-                <stop offset="50%" style="stop-color:#06b6d4;stop-opacity:0.1" />
-                <stop offset="100%" style="stop-color:#6366f1;stop-opacity:0.05" />
+                <stop offset="0%" style="stop-color:#f59e0b;stop-opacity:0.3">
+                    <animate attributeName="stop-opacity" values="0.3;0.5;0.3" dur="8s" repeatCount="indefinite"/>
+                </stop>
+                <stop offset="50%" style="stop-color:#ef4444;stop-opacity:0.2">
+                    <animate attributeName="stop-opacity" values="0.2;0.4;0.2" dur="10s" repeatCount="indefinite"/>
+                </stop>
+                <stop offset="100%" style="stop-color:#ec4899;stop-opacity:0.1">
+                    <animate attributeName="stop-opacity" values="0.1;0.3;0.1" dur="12s" repeatCount="indefinite"/>
+                </stop>
             </linearGradient>
         </defs>
-        <g id="bg-nodes"></g>
+        <rect width="100%" height="100%" fill="url(#bgGrad)"/>
+        <g opacity="0.1">
+            <circle cx="200" cy="200" r="100" fill="#f59e0b">
+                <animate attributeName="r" values="100;120;100" dur="6s" repeatCount="indefinite"/>
+                <animate attributeName="opacity" values="0.1;0.2;0.1" dur="6s" repeatCount="indefinite"/>
+            </circle>
+            <circle cx="800" cy="600" r="150" fill="#ef4444">
+                <animate attributeName="r" values="150;170;150" dur="8s" repeatCount="indefinite"/>
+                <animate attributeName="opacity" values="0.1;0.2;0.1" dur="8s" repeatCount="indefinite"/>
+            </circle>
+            <circle cx="500" cy="800" r="80" fill="#ec4899">
+                <animate attributeName="r" values="80;100;80" dur="7s" repeatCount="indefinite"/>
+                <animate attributeName="opacity" values="0.1;0.2;0.1" dur="7s" repeatCount="indefinite"/>
+            </circle>
+        </g>
     </svg>
 
-    <header>
-        <a href="../index.html" class="back-link">← Back to Home</a>
-        <h1>You Only Look Once</h1>
-        <p class="paper-meta">Joseph Redmon, Santosh Divvala, Ross Girshick, Ali Farhadi</p>
-        <p class="paper-meta">University of Washington, Allen Institute for AI, FAIR · CVPR 2016</p>
-        <span class="badge">⚡ Real-time Detection</span>
-        <span class="badge">🎯 Unified Architecture</span>
-    </header>
-
     <div class="container">
-        <!-- Problem Statement -->
-        <div class="section">
-            <h2>🎯 Problem Statement</h2>
-            <p>Before YOLO, object detection systems faced a fundamental speed-accuracy trade-off:</p>
-            <ul style="color: #a0a0c0; margin-left: 20px;">
-                <li><strong>Two-stage detectors (R-CNN, Fast R-CNN, Faster R-CNN):</strong> Generate region proposals first, then classify each region. Accurate but slow (~7 FPS).</li>
-                <li><strong>Complex pipelines:</strong> Multiple separate components (region proposal, feature extraction, classification, bounding box regression).</li>
-                <li><strong>Non-realtime performance:</strong> Could not achieve real-time processing required for autonomous vehicles, robotics, and video analysis.</li>
-                <li><strong>Background errors:</strong> Traditional methods struggle with distinguishing background regions from objects.</li>
-            </ul>
-            <div class="highlight-box">
-                <p><strong>Key Question:</strong> Can we create a unified, single-shot object detector that processes images in real-time while maintaining competitive accuracy?</p>
+        <!-- Navigation -->
+        <nav class="nav">
+            <a href="../index.html">← Back to Papers</a>
+        </nav>
+
+        <!-- Hero Section -->
+        <header class="hero">
+            <h1>YOLO</h1>
+            <p class="subtitle">You Only Look Once: Unified Real-Time Object Detection</p>
+            <div class="meta">
+                <span>📅 CVPR 2016</span>
+                <span>👥 Joseph Redmon, Santosh Divvala, Ross Girshick, Ali Farhadi</span>
+                <span>🏛️ University of Washington, Allen Institute for AI, Facebook AI Research</span>
             </div>
-        </div>
+            <div class="badges">
+                <a href="https://arxiv.org/abs/1506.02640" class="badge arxiv" target="_blank">📄 arXiv</a>
+                <a href="https://www.cv-foundation.org/openaccess/content_cvpr_2016/papers/Redmon_You_Only_Look_CVPR_2016_paper.pdf" class="badge pdf" target="_blank">📑 PDF</a>
+                <a href="https://pjreddie.com/darknet/yolo/" class="badge code" target="_blank">💻 Code</a>
+            </div>
+        </header>
+
+        <!-- Problem Statement -->
+        <section class="section">
+            <h2>The Problem</h2>
+            <div class="problem-box">
+                <h3>Before YOLO: Slow Multi-Stage Detection</h3>
+                <p>Prior object detection systems like R-CNN and DPM used complex multi-stage pipelines:</p>
+                <ul style="margin: 10px 0 10px 20px; color: #b0b0d0;">
+                    <li>Generate region proposals (selective search or RPN)</li>
+                    <li>Extract features from each region</li>
+                    <li>Run classifier on each region</li>
+                    <li>Apply post-processing (NMS, bbox refinement)</li>
+                </ul>
+                <p style="margin-top: 15px;">These pipelines were slow (7-10 FPS), hard to optimize, and each component required separate training.</p>
+            </div>
+            
+            <p>Object detection at the time was treated as a classification problem applied to multiple regions. This approach was computationally expensive and prevented real-time applications like autonomous driving or video analysis.</p>
+        </section>
 
         <!-- Key Innovation -->
-        <div class="section">
-            <h2>💡 Core Innovation</h2>
-            <p>YOLO introduced a paradigm shift by treating object detection as a <strong>single regression problem</strong>:</p>
-            
-            <div class="highlight-box">
-                <p><strong>Unified Architecture:</strong> A single neural network predicts bounding boxes AND class probabilities directly from full images in one evaluation. No separate region proposal stage needed!</p>
+        <section class="section">
+            <h2>Key Innovation</h2>
+            <div class="innovation-box">
+                <h3>Reframing Detection as Regression</h3>
+                <p>YOLO treats object detection as a single regression problem: <strong>directly from image pixels to bounding box coordinates and class probabilities</strong>. A single neural network predicts both bounding boxes AND class probabilities in one forward pass.</p>
             </div>
             
-            <div class="grid-container">
-                <div class="grid-box">
-                    <h4>🔄 Single Forward Pass</h4>
-                    <p style="color: #a0a0c0; font-size: 0.95rem;">Unlike two-stage detectors, YOLO looks at the image once and directly predicts what objects are present and where they are.</p>
+            <div class="key-points">
+                <div class="key-point">
+                    <h4>🎯 Unified Architecture</h4>
+                    <p>One network, one pass. The entire detection pipeline is a single convolutional network optimized end-to-end.</p>
                 </div>
-                <div class="grid-box">
-                    <h4>⚡ Real-time Speed</h4>
-                    <p style="color: #a0a0c0; font-size: 0.95rem;">Base YOLO achieves 45 FPS on Titan X GPU. Fast YOLO reaches 155 FPS with slight accuracy trade-off.</p>
+                <div class="key-point">
+                    <h4>⚡ Real-Time Speed</h4>
+                    <p>Base YOLO: 45 FPS. Fast YOLO: 155 FPS — while achieving double the mAP of other real-time detectors.</p>
                 </div>
-                <div class="grid-box">
-                    <h4>🌍 Global Context</h4>
-                    <p style="color: #a0a0c0; font-size: 0.95rem;">The network reasons globally about the full image and all objects simultaneously, reducing background errors.</p>
+                <div class="key-point">
+                    <h4>🌍 Generalization</h4>
+                    <p>YOLO learns general object representations, outperforming other methods when generalizing to new domains like artwork.</p>
                 </div>
-                <div class="grid-box">
-                    <h4>🎓 Generalizable</h4>
-                    <p style="color: #a0a0c0; font-size: 0.95rem;">Learns generalizable representations of objects. When trained on natural images, performs well on artwork.</p>
+                <div class="key-point">
+                    <h4>🧠 Global Context</h4>
+                    <p>By seeing the entire image during training and testing, YOLO encodes contextual information about classes and their appearance.</p>
                 </div>
             </div>
-        </div>
+        </section>
 
-        <!-- Architecture Visualization -->
-        <div class="section">
-            <h2>🏗️ Architecture</h2>
-            <svg class="architecture-diagram" viewBox="0 0 900 450">
-                <defs>
-                    <linearGradient id="inputGrad" x1="0%" y1="0%" x2="100%" y2="100%">
-                        <stop offset="0%" style="stop-color:#10b981"/>
-                        <stop offset="100%" style="stop-color:#06b6d4"/>
-                    </linearGradient>
-                    <linearGradient id="convGrad" x1="0%" y1="0%" x2="100%" y2="100%">
-                        <stop offset="0%" style="stop-color:#6366f1"/>
-                        <stop offset="100%" style="stop-color:#8b5cf6"/>
-                    </linearGradient>
-                    <linearGradient id="fcGrad" x1="0%" y1="0%" x2="100%" y2="100%">
-                        <stop offset="0%" style="stop-color:#ec4899"/>
-                        <stop offset="100%" style="stop-color:#f43f5e"/>
-                    </linearGradient>
-                    <linearGradient id="outputGrad" x1="0%" y1="0%" x2="100%" y2="100%">
-                        <stop offset="0%" style="stop-color:#f59e0b"/>
-                        <stop offset="100%" style="stop-color:#ef4444"/>
-                    </linearGradient>
-                    <marker id="arrowGreen2" markerWidth="10" markerHeight="10" refX="9" refY="3" orient="auto">
-                        <path d="M0,0 L0,6 L9,3 z" fill="#10b981"/>
-                    </marker>
-                    <marker id="arrowBlue2" markerWidth="10" markerHeight="10" refX="9" refY="3" orient="auto">
-                        <path d="M0,0 L0,6 L9,3 z" fill="#6366f1"/>
-                    </marker>
-                </defs>
-                
-                <!-- Title -->
-                <text x="450" y="30" fill="#fff" font-size="18" font-weight="bold" text-anchor="middle">YOLO Architecture: Image → S×S Grid → Bounding Boxes + Classes</text>
-                
-                <!-- Input Image -->
-                <rect x="20" y="80" width="80" height="80" fill="url(#inputGrad)" opacity="0.3" stroke="#10b981" stroke-width="2" rx="5"/>
-                <text x="60" y="125" fill="#10b981" font-size="12" font-weight="bold" text-anchor="middle">448×448</text>
-                <text x="60" y="145" fill="#10b981" font-size="10" text-anchor="middle">Input</text>
-                <text x="60" y="180" fill="#8888aa" font-size="10" text-anchor="middle">Image</text>
-                
-                <!-- Arrow to Backbone -->
-                <path d="M100 120 L140 120" stroke="#10b981" stroke-width="2" marker-end="url(#arrowGreen2)"/>
-                
-                <!-- Feature Extraction (Darknet-19 backbone) -->
-                <rect x="140" y="60" width="220" height="120" fill="url(#convGrad)" opacity="0.2" stroke="#6366f1" stroke-width="2" rx="10"/>
-                <text x="250" y="85" fill="#6366f1" font-size="14" font-weight="bold" text-anchor="middle">Darknet-19 Backbone</text>
-                
-                <!-- Conv layers visualization -->
-                <rect x="160" y="100" width="35" height="60" fill="#2d2d44" stroke="#6366f1" stroke-width="1.5" rx="3"/>
-                <rect x="200" y="105" width="35" height="50" fill="#2d2d44" stroke="#6366f1" stroke-width="1.5" rx="3"/>
-                <rect x="240" y="110" width="35" height="40" fill="#2d2d44" stroke="#6366f1" stroke-width="1.5" rx="3"/>
-                <rect x="280" y="115" width="35" height="30" fill="#2d2d44" stroke="#6366f1" stroke-width="1.5" rx="3"/>
-                <text x="320" y="135" fill="#8888aa" font-size="10">...24 conv layers</text>
-                
-                <!-- Arrow to FC layers -->
-                <path d="M360 120 L410 120" stroke="#6366f1" stroke-width="2" marker-end="url(#arrowBlue2)"/>
-                
-                <!-- Fully Connected Layers -->
-                <rect x="410" y="60" width="180" height="120" fill="url(#fcGrad)" opacity="0.2" stroke="#ec4899" stroke-width="2" rx="10"/>
-                <text x="500" y="85" fill="#ec4899" font-size="14" font-weight="bold" text-anchor="middle">FC Layers</text>
-                
-                <!-- FC visualization -->
-                <circle cx="450" cy="110" r="8" fill="#2d2d44" stroke="#ec4899" stroke-width="1.5"/>
-                <circle cx="450" cy="130" r="8" fill="#2d2d44" stroke="#ec4899" stroke-width="1.5"/>
-                <circle cx="450" cy="150" r="8" fill="#2d2d44" stroke="#ec4899" stroke-width="1.5"/>
-                
-                <circle cx="500" cy="110" r="8" fill="#2d2d44" stroke="#ec4899" stroke-width="1.5"/>
-                <circle cx="500" cy="130" r="8" fill="#2d2d44" stroke="#ec4899" stroke-width="1.5"/>
-                <circle cx="500" cy="150" r="8" fill="#2d2d44" stroke="#ec4899" stroke-width="1.5"/>
-                
-                <circle cx="550" cy="110" r="8" fill="#2d2d44" stroke="#ec4899" stroke-width="1.5"/>
-                <circle cx="550" cy="130" r="8" fill="#2d2d44" stroke="#ec4899" stroke-width="1.5"/>
-                <circle cx="550" cy="150" r="8" fill="#2d2d44" stroke="#ec4899" stroke-width="1.5"/>
-                
-                <!-- Connections -->
-                <line x1="458" y1="110" x2="492" y2="110" stroke="#ec4899" stroke-width="1" opacity="0.5"/>
-                <line x1="458" y1="130" x2="492" y2="130" stroke="#ec4899" stroke-width="1" opacity="0.5"/>
-                <line x1="508" y1="110" x2="542" y2="110" stroke="#ec4899" stroke-width="1" opacity="0.5"/>
-                <line x1="508" y1="130" x2="542" y2="130" stroke="#ec4899" stroke-width="1" opacity="0.5"/>
-                
-                <!-- Arrow to Output -->
-                <path d="M590 120 L640 120" stroke="#ec4899" stroke-width="2" marker-end="url(#arrowBlue2)"/>
-                
-                <!-- Output Grid -->
-                <g transform="translate(640, 60)">
-                    <rect width="200" height="200" fill="url(#outputGrad)" opacity="0.2" stroke="#f59e0b" stroke-width="2" rx="10"/>
-                    <text x="100" y="25" fill="#f59e0b" font-size="12" font-weight="bold" text-anchor="middle">S×S Grid Output</text>
-                    
-                    <!-- Grid lines -->
-                    <line x1="0" y1="67" x2="200" y2="67" stroke="#f59e0b" stroke-width="0.5" opacity="0.5"/>
-                    <line x1="0" y1="133" x2="200" y2="133" stroke="#f59e0b" stroke-width="0.5" opacity="0.5"/>
-                    <line x1="67" y1="40" x2="67" y2="200" stroke="#f59e0b" stroke-width="0.5" opacity="0.5"/>
-                    <line x1="133" y1="40" x2="133" y2="200" stroke="#f59e0b" stroke-width="0.5" opacity="0.5"/>
-                    
-                    <!-- Sample bounding boxes in grid -->
-                    <rect x="75" y="75" width="40" height="35" fill="none" stroke="#10b981" stroke-width="2" rx="2">
-                        <animate attributeName="stroke-opacity" values="1;0.3;1" dur="2s" repeatCount="indefinite"/>
-                    </rect>
-                    <text x="95" y="95" fill="#10b981" font-size="8" text-anchor="middle">B=2</text>
-                    
-                    <rect x="20" y="145" width="35" height="40" fill="none" stroke="#6366f1" stroke-width="2" rx="2"/>
-                    
-                    <text x="100" y="180" fill="#8888aa" font-size="9" text-anchor="middle">Each cell: (x,y,w,h,confidence)</text>
-                    <text x="100" y="195" fill="#8888aa" font-size="9" text-anchor="middle">× B boxes + C class probs</text>
-                </g>
-                
-                <!-- Legend -->
-                <rect x="50" y="250" width="800" height="180" fill="rgba(20,20,35,0.8)" stroke="rgba(255,255,255,0.1)" stroke-width="1" rx="10"/>
-                <text x="450" y="275" fill="#fff" font-size="14" font-weight="bold" text-anchor="middle">Output Encoding: S×S×(B×5 + C)</text>
-                
-                <text x="70" y="310" fill="#10b981" font-size="12" font-weight="bold">S = 7</text>
-                <text x="70" y="330" fill="#a0a0c0" font-size="11">Grid size (7×7)</text>
-                
-                <text x="200" y="310" fill="#6366f1" font-size="12" font-weight="bold">B = 2</text>
-                <text x="200" y="330" fill="#a0a0c0" font-size="11">Boxes per cell</text>
-                
-                <text x="330" y="310" fill="#ec4899" font-size="12" font-weight="bold">C = 20</text>
-                <text x="330" y="330" fill="#a0a0c0" font-size="11">Classes (VOC)</text>
-                
-                <text x="460" y="310" fill="#f59e0b" font-size="12" font-weight="bold">x, y</text>
-                <text x="460" y="330" fill="#a0a0c0" font-size="11">Box center</text>
-                
-                <text x="560" y="310" fill="#f43f5e" font-size="12" font-weight="bold">w, h</text>
-                <text x="560" y="330" fill="#a0a0c0" font-size="11">Box dimensions</text>
-                
-                <text x="670" y="310" fill="#a855f7" font-size="12" font-weight="bold">conf</text>
-                <text x="670" y="330" fill="#a0a0c0" font-size="11">Objectness score</text>
-                
-                <line x1="70" y1="345" x2="750" y2="345" stroke="rgba(255,255,255,0.2)" stroke-width="1"/>
-                
-                <text x="450" y="370" fill="#fff" font-size="13" text-anchor="middle">Total predictions: 7×7×(2×5 + 20) = 7×7×30 = 1,470 values</text>
-                <text x="450" y="395" fill="#10b981" font-size="12" text-anchor="middle">Final tensor shape: 7×7×30</text>
-                <text x="450" y="415" fill="#8888aa" font-size="11" text-anchor="middle">(Reshaped from 4096-dim FC output)</text>
-            </svg>
-        </div>
-
-        <!-- Detection Visualization -->
-        <div class="section">
-            <h2>🔍 Detection Process</h2>
-            <p>YOLO divides the input image into an S×S grid. Each grid cell predicts:</p>
+        <!-- Architecture -->
+        <section class="section">
+            <h2>Architecture & Method</h2>
+            <p>YOLO divides the input image into an S × S grid. If an object's center falls into a grid cell, that cell is responsible for detecting that object.</p>
             
-            <svg viewBox="0 0 900 350" style="width: 100%; height: 300px; margin: 30px 0;">
-                <!-- Input Image -->
-                <rect x="50" y="50" width="200" height="200" fill="url(#inputGrad)" opacity="0.3" stroke="#10b981" stroke-width="2" rx="5"/>
-                <text x="150" y="35" fill="#fff" font-size="14" font-weight="bold" text-anchor="middle">Input Image</text>
-                
-                <!-- Grid overlay -->
-                <g opacity="0.4">
-                    <line x1="100" y1="50" x2="100" y2="250" stroke="#10b981" stroke-width="1"/>
-                    <line x1="150" y1="50" x2="150" y2="250" stroke="#10b981" stroke-width="1"/>
-                    <line x1="200" y1="50" x2="200" y2="250" stroke="#10b981" stroke-width="1"/>
-                    <line x1="50" y1="100" x2="250" y2="100" stroke="#10b981" stroke-width="1"/>
-                    <line x1="50" y1="150" x2="250" y2="150" stroke="#10b981" stroke-width="1"/>
-                    <line x1="50" y1="200" x2="250" y2="200" stroke="#10b981" stroke-width="1"/>
-                </g>
-                
-                <!-- Object in cell -->
-                <rect x="110" y="110" width="60" height="50" fill="rgba(236,72,153,0.3)" stroke="#ec4899" stroke-width="2" rx="3"/>
-                <text x="140" y="140" fill="#fff" font-size="10" text-anchor="middle">Dog</text>
-                
-                <!-- Arrow -->
-                <path d="M270 150 L320 150" stroke="#6366f1" stroke-width="2" marker-end="url(#arrowBlue2)"/>
-                <text x="295" y="140" fill="#8888aa" font-size="10" text-anchor="middle">Grid</text>
-                <text x="295" y="170" fill="#8888aa" font-size="10" text-anchor="middle">Cell</text>
-                
-                <!-- Predictions -->
-                <rect x="330" y="30" width="220" height="260" fill="rgba(20,20,35,0.9)" stroke="#ec4899" stroke-width="2" rx="10"/>
-                <text x="440" y="55" fill="#ec4899" font-size="13" font-weight="bold" text-anchor="middle">Predictions</text>
-                
-                <!-- Box 1 -->
-                <rect x="350" y="70" width="180" height="50" fill="rgba(99,102,241,0.2)" stroke="#6366f1" stroke-width="1" rx="5"/>
-                <text x="360" y="90" fill="#6366f1" font-size="11" font-weight="bold">Box 1:</text>
-                <text x="360" y="110" fill="#a0a0c0" font-size="10">x=0.6, y=0.5, w=0.4, h=0.3</text>
-                <text x="520" y="100" fill="#10b981" font-size="12" font-weight="bold">conf: 0.85</text>
-                
-                <!-- Box 2 -->
-                <rect x="350" y="130" width="180" height="50" fill="rgba(99,102,241,0.2)" stroke="#6366f1" stroke-width="1" rx="5"/>
-                <text x="360" y="150" fill="#6366f1" font-size="11" font-weight="bold">Box 2:</text>
-                <text x="360" y="170" fill="#a0a0c0" font-size="10">x=0.5, y=0.4, w=0.3, h=0.2</text>
-                <text x="520" y="160" fill="#ef4444" font-size="12" font-weight="bold">conf: 0.32</text>
-                
-                <!-- Class probs -->
-                <rect x="350" y="190" width="180" height="90" fill="rgba(245,158,11,0.2)" stroke="#f59e0b" stroke-width="1" rx="5"/>
-                <text x="440" y="210" fill="#f59e0b" font-size="11" font-weight="bold" text-anchor="middle">Class Probabilities</text>
-                <text x="360" y="230" fill="#a0a0c0" font-size="10">dog: 0.92</text>
-                <text x="360" y="245" fill="#a0a0c0" font-size="10">cat: 0.03</text>
-                <text x="360" y="260" fill="#a0a0c0" font-size="10">person: 0.02</text>
-                <text x="360" y="275" fill="#a0a0c0" font-size="10">...</text>
-                
-                <!-- Arrow to NMS -->
-                <path d="M560 150 L610 150" stroke="#f59e0b" stroke-width="2" marker-end="url(#arrowBlue2)"/>
-                
-                <!-- NMS -->
-                <rect x="620" y="70" width="220" height="160" fill="rgba(16,185,129,0.2)" stroke="#10b981" stroke-width="2" rx="10"/>
-                <text x="730" y="95" fill="#10b981" font-size="13" font-weight="bold" text-anchor="middle">Non-Max Suppression</text>
-                <text x="730" y="120" fill="#a0a0c0" font-size="11" text-anchor="middle">1. Filter by confidence threshold</text>
-                <text x="730" y="140" fill="#a0a0c0" font-size="11" text-anchor="middle">2. Sort by confidence</text>
-                <text x="730" y="160" fill="#a0a0c0" font-size="11" text-anchor="middle">3. Suppress overlapping boxes</text>
-                <text x="730" y="180" fill="#a0a0c0" font-size="11" text-anchor="middle">   (IoU > threshold)</text>
-                
-                <!-- Final output -->
-                <rect x="650" y="195" width="160" height="25" fill="rgba(236,72,153,0.3)" stroke="#ec4899" stroke-width="1" rx="3"/>
-                <text x="730" y="212" fill="#fff" font-size="11" text-anchor="middle">🐕 Dog: 92% (Box 1)</text>
-            </svg>
-            
-            <div class="highlight-box">
-                <p><strong>Key Insight:</strong> Each grid cell is responsible for detecting objects whose center falls within that cell. This enforces spatial diversity in predictions and reduces multiple detections of the same object.</p>
+            <div class="arch-diagram">
+                <svg viewBox="0 0 800 400" xmlns="http://www.w3.org/2000/svg">
+                    <!-- Background -->
+                    <rect width="800" height="400" fill="rgba(0,0,0,0.3)" rx="12"/>
+                    
+                    <!-- Title -->
+                    <text x="400" y="30" text-anchor="middle" fill="#f59e0b" font-size="16" font-weight="bold">YOLO Detection Pipeline</text>
+                    
+                    <!-- Input Image -->
+                    <g transform="translate(50, 80)">
+                        <rect width="120" height="120" fill="rgba(245,158,11,0.2)" stroke="#f59e0b" stroke-width="2" rx="8"/>
+                        <text x="60" y="65" text-anchor="middle" fill="#f59e0b" font-size="14">Input</text>
+                        <text x="60" y="85" text-anchor="middle" fill="#aaa" font-size="12">448×448×3</text>
+                        <!-- Grid overlay -->
+                        <g opacity="0.3">
+                            <line x1="40" y1="0" x2="40" y2="120" stroke="#f59e0b" stroke-width="1"/>
+                            <line x1="80" y1="0" x2="80" y2="120" stroke="#f59e0b" stroke-width="1"/>
+                            <line x1="0" y1="40" x2="120" y2="40" stroke="#f59e0b" stroke-width="1"/>
+                            <line x1="0" y1="80" x2="120" y2="80" stroke="#f59e0b" stroke-width="1"/>
+                        </g>
+                    </g>
+                    
+                    <!-- Arrow -->
+                    <text x="190" y="145" fill="#888" font-size="24">→</text>
+                    
+                    <!-- CNN Feature Extraction -->
+                    <g transform="translate(220, 60)">
+                        <rect width="140" height="160" fill="rgba(99,102,241,0.2)" stroke="#6366f1" stroke-width="2" rx="8"/>
+                        <text x="70" y="30" text-anchor="middle" fill="#6366f1" font-size="14" font-weight="bold">CNN</text>
+                        <text x="70" y="55" text-anchor="middle" fill="#aaa" font-size="11">24 Conv Layers</text>
+                        <text x="70" y="75" text-anchor="middle" fill="#aaa" font-size="11">+ 2 FC Layers</text>
+                        <text x="70" y="105" text-anchor="middle" fill="#ec4899" font-size="11">Feature Maps</text>
+                        <text x="70" y="125" text-anchor="middle" fill="#aaa" font-size="11">7×7×1024</text>
+                        <!-- Layer visualization -->
+                        <rect x="20" y="135" width="100" height="15" fill="rgba(236,72,153,0.3)" rx="3"/>
+                    </g>
+                    
+                    <!-- Arrow -->
+                    <text x="380" y="145" fill="#888" font-size="24">→</text>
+                    
+                    <!-- Output Grid -->
+                    <g transform="translate(410, 80)">
+                        <rect width="120" height="120" fill="rgba(16,185,129,0.2)" stroke="#10b981" stroke-width="2" rx="8"/>
+                        <text x="60" y="35" text-anchor="middle" fill="#10b981" font-size="13" font-weight="bold">S×S Grid</text>
+                        <text x="60" y="55" text-anchor="middle" fill="#aaa" font-size="11">7×7 Cells</text>
+                        
+                        <!-- Grid cells with predictions -->
+                        <g transform="translate(20, 70)">
+                            <rect width="12" height="12" fill="rgba(239,68,68,0.6)" rx="2"/>
+                            <rect x="14" width="12" height="12" fill="rgba(245,158,11,0.3)" rx="2"/>
+                            <rect x="28" width="12" height="12" fill="rgba(245,158,11,0.3)" rx="2"/>
+                            <rect x="42" width="12" height="12" fill="rgba(239,68,68,0.6)" rx="2"/>
+                            <rect y="14" width="12" height="12" fill="rgba(245,158,11,0.3)" rx="2"/>
+                            <rect x="14" y="14" width="12" height="12" fill="rgba(16,185,129,0.6)" rx="2"/>
+                            <rect x="28" y="14" width="12" height="12" fill="rgba(16,185,129,0.6)" rx="2"/>
+                            <rect x="42" y="14" width="12" height="12" fill="rgba(245,158,11,0.3)" rx="2"/>
+                        </g>
+                    </g>
+                    
+                    <!-- Arrow -->
+                    <text x="550" y="145" fill="#888" font-size="24">→</text>
+                    
+                    <!-- Predictions -->
+                    <g transform="translate(580, 60)">
+                        <rect width="180" height="160" fill="rgba(239,68,68,0.1)" stroke="#ef4444" stroke-width="2" rx="8"/>
+                        <text x="90" y="30" text-anchor="middle" fill="#ef4444" font-size="14" font-weight="bold">Predictions</text>
+                        
+                        <!-- BBox 1 -->
+                        <g transform="translate(15, 50)">
+                            <rect width="70" height="40" fill="rgba(99,102,241,0.2)" stroke="#6366f1" rx="4"/>
+                            <text x="35" y="16" text-anchor="middle" fill="#a5b4fc" font-size="9">BBOX 1</text>
+                            <text x="35" y="30" text-anchor="middle" fill="#aaa" font-size="8">x,y,w,h,conf</text>
+                        </g>
+                        
+                        <!-- BBox 2 -->
+                        <g transform="translate(95, 50)">
+                            <rect width="70" height="40" fill="rgba(99,102,241,0.2)" stroke="#6366f1" rx="4"/>
+                            <text x="35" y="16" text-anchor="middle" fill="#a5b4fc" font-size="9">BBOX 2</text>
+                            <text x="35" y="30" text-anchor="middle" fill="#aaa" font-size="8">x,y,w,h,conf</text>
+                        </g>
+                        
+                        <!-- Class Probabilities -->
+                        <g transform="translate(15, 100)">
+                            <rect width="150" height="45" fill="rgba(16,185,129,0.2)" stroke="#10b981" rx="4"/>
+                            <text x="75" y="18" text-anchor="middle" fill="#6ee7b7" font-size="10">Class Probabilities</text>
+                            <text x="75" y="35" text-anchor="middle" fill="#aaa" font-size="9">P(Class|Object) × 20 classes</text>
+                        </g>
+                    </g>
+                    
+                    <!-- Output tensor info -->
+                    <text x="670" y="245" text-anchor="middle" fill="#aaa" font-size="11">Output: 7×7×30 tensor</text>
+                    
+                    <!-- Legend -->
+                    <g transform="translate(50, 320)">
+                        <rect width="12" height="12" fill="rgba(239,68,68,0.6)" rx="2"/>
+                        <text x="20" y="10" fill="#aaa" font-size="11">Object Center</text>
+                        
+                        <rect x="120" width="12" height="12" fill="rgba(16,185,129,0.6)" rx="2"/>
+                        <text x="140" y="10" fill="#aaa" font-size="11">High Confidence</text>
+                        
+                        <rect x="240" width="12" height="12" fill="rgba(245,158,11,0.3)" rx="2"/>
+                        <text x="260" y="10" fill="#aaa" font-size="11">Background</text>
+                    </g>
+                </svg>
             </div>
-        </div>
+            
+            <h3 style="color: #f59e0b; margin: 25px 0 15px;">How It Works</h3>
+            <div class="process-steps">
+                <div class="process-step">
+                    <div class="icon">1️⃣</div>
+                    <div class="label">Divide image<br>into S×S grid</div>
+                </div>
+                <div class="process-arrow">→</div>
+                <div class="process-step">
+                    <div class="icon">2️⃣</div>
+                    <div class="label">Each cell predicts<br>B bounding boxes</div>
+                </div>
+                <div class="process-arrow">→</div>
+                <div class="process-step">
+                    <div class="icon">3️⃣</div>
+                    <div class="label">Each box has:<br>x, y, w, h, confidence</div>
+                </div>
+                <div class="process-arrow">→</div>
+                <div class="process-step">
+                    <div class="icon">4️⃣</div>
+                    <div class="label">Class probabilities<br>conditional on object</div>
+                </div>
+            </div>
+            
+            <p>Each grid cell predicts B bounding boxes and confidence scores for those boxes. These confidence scores reflect how confident the model is that the box contains an object and how accurate it thinks the box is. Each bounding box consists of 5 predictions: x, y, w, h, and confidence.</p>
+            
+            <p>If a grid cell contains an object center, it also predicts C conditional class probabilities (P(Class|Object)). At test time, we multiply the conditional class probabilities and the individual box confidence predictions:</p>
+            
+            <div class="code-block">
+                <pre>P(Class|Object) × P(Object) × IOU = P(Class) × IOU</pre>
+            </div>
+            
+            <p>This gives class-specific confidence scores for each box, encoding both the probability of that class appearing in the box and how well the predicted box fits the object.</p>
+        </section>
 
         <!-- Results & Impact -->
-        <div class="section">
-            <h2>📊 Results & Impact</h2>
+        <section class="section">
+            <h2>Results & Impact</h2>
             
-            <div class="stats-grid">
-                <div class="stat-card">
-                    <div class="number">45 FPS</div>
-                    <div class="label">Base YOLO Speed</div>
+            <div class="metrics">
+                <div class="metric-card">
+                    <div class="number">45</div>
+                    <div class="label">FPS (Base YOLO)</div>
                 </div>
-                <div class="stat-card">
-                    <div class="number">155 FPS</div>
-                    <div class="label">Fast YOLO Speed</div>
+                <div class="metric-card">
+                    <div class="number">155</div>
+                    <div class="label">FPS (Fast YOLO)</div>
                 </div>
-                <div class="stat-card">
+                <div class="metric-card">
                     <div class="number">63.4</div>
                     <div class="label">mAP on VOC 2007</div>
                 </div>
-                <div class="stat-card">
-                    <div class="number">52.7%</div>
-                    <div class="label">Top-5 Accuracy</div>
+                <div class="metric-card">
+                    <div class="number">2×</div>
+                    <div class="label">Better than R-CNN<br>(real-time comparison)</div>
                 </div>
             </div>
             
-            <table class="comparison-table" style="margin-top: 30px;">
-                <thead>
-                    <tr>
-                        <th>Model</th>
-                        <th>Speed (FPS)</th>
-                        <th>mAP</th>
-                        <th>Real-time?</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr>
-                        <td>R-CNN</td>
-                        <td>0.02</td>
-                        <td>66.0</td>
-                        <td>❌ No</td>
-                    </tr>
-                    <tr>
-                        <td>Fast R-CNN</td>
-                        <td>0.5</td>
-                        <td>70.0</td>
-                        <td>❌ No</td>
-                    </tr>
-                    <tr>
-                        <td>Faster R-CNN (VGG-16)</td>
-                        <td>7</td>
-                        <td>73.2</td>
-                        <td>❌ No</td>
-                    </tr>
-                    <tr>
-                        <td><strong>YOLO</strong></td>
-                        <td><strong>45</strong></td>
-                        <td>63.4</td>
-                        <td>✅ Yes</td>
-                    </tr>
-                    <tr>
-                        <td><strong>Fast YOLO</strong></td>
-                        <td><strong>155</strong></td>
-                        <td>52.7</td>
-                        <td>✅ Yes</td>
-                    </tr>
-                </tbody>
-            </table>
+            <h3 style="color: #f59e0b; margin: 25px 0 15px;">Key Achievements</h3>
+            <ul class="impact-list">
+                <li><strong>First real-time object detector</strong> with competitive accuracy — enabled applications like autonomous driving, robotics, and live video analysis</li>
+                <li><strong>End-to-end trainable</strong> — the entire system can be trained jointly, optimizing detection performance directly</li>
+                <li><strong>Generalizes better</strong> — when tested on artwork datasets (Picasso, People-Art), YOLO significantly outperformed R-CNN and DPM</li>
+                <li><strong>Global reasoning</strong> — by seeing the full image, YOLO encodes contextual information, reducing false positives on background</li>
+                <li><strong>Foundation for YOLO family</strong> — spawned YOLOv2, YOLOv3, YOLOv4, YOLOv5, YOLOv8 and countless derivatives</li>
+            </ul>
             
-            <div class="highlight-box" style="margin-top: 20px;">
-                <p><strong>Trade-off:</strong> YOLO sacrificed some accuracy for massive speed gains. While Faster R-CNN achieved 73.2 mAP at 7 FPS, YOLO achieved 63.4 mAP at 45 FPS — making real-time object detection practical for the first time.</p>
-            </div>
-        </div>
-
-        <!-- Pros and Cons -->
-        <div class="section">
-            <h2>⚖️ Advantages & Limitations</h2>
-            
-            <div class="pros-cons">
-                <div class="pros">
-                    <h4>✓ Advantages</h4>
-                    <ul>
-                        <li>Extremely fast (45-155 FPS)</li>
-                        <li>Single network evaluation</li>
-                        <li>Global context reasoning</li>
-                        <li>Learns generalizable features</li>
-                        <li>Real-time capable</li>
-                        <li>Simple unified architecture</li>
-                        <li>Open source implementation</li>
-                    </ul>
+            <h3 style="color: #f59e0b; margin: 25px 0 15px;">Trade-offs</h3>
+            <p>YOLO made some intentional trade-offs:</p>
+            <div class="key-points">
+                <div class="key-point">
+                    <h4>✓ Strengths</h4>
+                    <p>Extremely fast, global context, generalizes well, simple unified architecture</p>
                 </div>
-                <div class="cons">
+                <div class="key-point">
                     <h4>✗ Limitations</h4>
-                    <ul>
-                        <li>Lower accuracy than two-stage methods</li>
-                        <li>Struggles with small objects</li>
-                        <li>Localization errors on unusual aspect ratios</li>
-                        <li>Each cell predicts only 2 boxes</li>
-                        <li>Spatial constraints on nearby objects</li>
-                        <li>Coarse feature maps hurt precision</li>
-                        <li>Fixed grid size limits detail</li>
-                    </ul>
+                    <p>Struggles with small objects, makes more localization errors than region-based methods, coarse grid limits precision</p>
                 </div>
             </div>
-        </div>
-
-        <!-- Applications -->
-        <div class="section">
-            <h2>🌐 Real-World Applications</h2>
-            
-            <div class="applications-grid">
-                <div class="app-card">
-                    <h4>🚗 Autonomous Vehicles</h4>
-                    <p>Real-time detection of pedestrians, vehicles, traffic signs, and obstacles for self-driving cars.</p>
-                </div>
-                <div class="app-card">
-                    <h4>🤖 Robotics</h4>
-                    <p>Object recognition for manipulation tasks, navigation, and human-robot interaction.</p>
-                </div>
-                <div class="app-card">
-                    <h4>🏭 Manufacturing</h4>
-                    <p>Quality control, defect detection, and inventory management in production lines.</p>
-                </div>
-                <div class="app-card">
-                    <h4>🔒 Security</h4>
-                    <p>Surveillance systems, intrusion detection, and crowd monitoring in real-time.</p>
-                </div>
-                <div class="app-card">
-                    <h4>🩺 Medical Imaging</h4>
-                    <p>Detection of anomalies in X-rays, CT scans, and pathology slides.</p>
-                </div>
-                <div class="app-card">
-                    <h4>📱 Mobile Apps</h4>
-                    <p>Augmented reality, camera apps, and accessibility features for visually impaired users.</p>
-                </div>
-            </div>
-        </div>
+        </section>
 
         <!-- Code Implementation -->
-        <div class="section">
-            <h2>💻 PyTorch Implementation</h2>
+        <section class="section">
+            <h2>Code Implementation</h2>
+            <p>Here's a simplified PyTorch implementation showing the core YOLO architecture:</p>
             
             <div class="code-block">
-<span class="comment"># YOLOv1 Simplified Implementation</span>
-<span class="keyword">import</span> torch
+                <pre><span class="keyword">import</span> torch
 <span class="keyword">import</span> torch.nn <span class="keyword">as</span> nn
 
-<span class="keyword">class</span> <span class="function">YOLOv1</span>(nn.Module):
-    <span class="keyword">def</span> <span class="function">__init__</span>(self, S=<span class="number">7</span>, B=<span class="number">2</span>, C=<span class="number">20</span>):
-        <span class="string">"""S: grid size, B: boxes per cell, C: number of classes"""</span>
-        super(YOLOv1, self).__init__()
-        self.S = S
-        self.B = B
-        self.C = C
+<span class="keyword">class</span> <span class="function">YOLO</span>(nn.Module):
+    <span class="keyword">def</span> <span class="function">__init__</span>(self, num_classes=<span class="string">20</span>, S=<span class="string">7</span>, B=<span class="string">2</span>):
+        <span class="function">super</span>(YOLO, self).<span class="function">__init__</span>()
+        self.S = S  <span class="comment"># Grid size (S×S)</span>
+        self.B = B  <span class="comment"># Bounding boxes per cell</span>
+        self.num_classes = num_classes
         
-        <span class="comment"># Darknet-19 inspired backbone</span>
-        self.backbone = nn.Sequential(
-            <span class="comment"># Conv layers (simplified)</span>
-            self._conv_block(<span class="number">3</span>, <span class="number">64</span>, <span class="number">7</span>, stride=<span class="number">2</span>),
-            nn.MaxPool2d(<span class="number">2</span>, stride=<span class="number">2</span>),
-            self._conv_block(<span class="number">64</span>, <span class="number">192</span>, <span class="number">3</span>),
-            nn.MaxPool2d(<span class="number">2</span>, stride=<span class="number">2</span>),
-            self._conv_block(<span class="number">192</span>, <span class="number">128</span>, <span class="number">1</span>),
-            self._conv_block(<span class="number">128</span>, <span class="number">256</span>, <span class="number">3</span>),
-            self._conv_block(<span class="number">256</span>, <span class="number">256</span>, <span class="number">1</span>),
-            self._conv_block(<span class="number">256</span>, <span class="number">512</span>, <span class="number">3</span>),
-            nn.MaxPool2d(<span class="number">2</span>, stride=<span class="number">2</span>),
-            <span class="comment"># ... more conv layers</span>
+        <span class="comment"># 24 convolutional layers + 2 FC layers</span>
+        self.conv_layers = nn.Sequential(
+            <span class="comment"># First conv block</span>
+            nn.Conv2d(<span class="string">3</span>, <span class="string">64</span>, kernel_size=<span class="string">7</span>, stride=<span class="string">2</span>, padding=<span class="string">3</span>),
+            nn.LeakyReLU(<span class="string">0.1</span>),
+            nn.MaxPool2d(<span class="string">2</span>, stride=<span class="string">2</span>),
+            
+            <span class="comment"># ... more conv layers ...</span>
+            nn.Conv2d(<span class="string">512</span>, <span class="string">1024</span>, kernel_size=<span class="string">3</span>, padding=<span class="string">1</span>),
+            nn.LeakyReLU(<span class="string">0.1</span>),
+            nn.MaxPool2d(<span class="string">2</span>, stride=<span class="string">2</span>),
         )
         
         <span class="comment"># Fully connected layers</span>
         self.fc = nn.Sequential(
             nn.Flatten(),
-            nn.Linear(<span class="number">512</span> * S * S, <span class="number">4096</span>),
-            nn.LeakyReLU(<span class="number">0.1</span>),
-            nn.Dropout(<span class="number">0.5</span>),
-            nn.Linear(<span class="number">4096</span>, S * S * (B * <span class="number">5</span> + C)),
-        )
-    
-    <span class="keyword">def</span> <span class="function">_conv_block</span>(self, in_ch, out_ch, kernel, stride=<span class="number">1</span>):
-        <span class="keyword">return</span> nn.Sequential(
-            nn.Conv2d(in_ch, out_ch, kernel, stride, padding=kernel//<span class="number">2</span>),
-            nn.BatchNorm2d(out_ch),
-            nn.LeakyReLU(<span class="number">0.1</span>)
+            nn.Linear(<span class="string">1024</span> * S * S, <span class="string">4096</span>),
+            nn.LeakyReLU(<span class="string">0.1</span>),
+            nn.Dropout(<span class="string">0.5</span>),
+            <span class="comment"># Output: S×S×(B*5 + C) = 7×7×30 for VOC</span>
+            nn.Linear(<span class="string">4096</span>, S * S * (B * <span class="string">5</span> + num_classes))
         )
     
     <span class="keyword">def</span> <span class="function">forward</span>(self, x):
-        x = self.backbone(x)
+        x = self.conv_layers(x)
         x = self.fc(x)
-        <span class="keyword">return</span> x.view(-<span class="number">1</span>, self.S, self.S, self.B * <span class="number">5</span> + self.C)
-
-<span class="comment"># Loss Function Components</span>
-<span class="keyword">class</span> <span class="function">YOLOLoss</span>(nn.Module):
-    <span class="keyword">def</span> <span class="function">__init__</span>(self, S=<span class="number">7</span>, B=<span class="number">2</span>, C=<span class="number">20</span>):
-        super().__init__()
-        self.S, self.B, self.C = S, B, C
-        self.lambda_coord = <span class="number">5</span>
-        self.lambda_noobj = <span class="number">0.5</span>
-    
-    <span class="keyword">def</span> <span class="function">forward</span>(self, predictions, target):
-        <span class="comment"># predictions: (batch, S, S, B*5+C)</span>
-        <span class="comment"># Each box: [x, y, w, h, confidence]</span>
-        <span class="comment"># Followed by C class probabilities</span>
-        
-        <span class="comment"># 1. Coordinate loss (for responsible predictor)</span>
-        <span class="comment"># 2. Confidence loss (object present)</span>
-        <span class="comment"># 3. No-object confidence loss</span>
-        <span class="comment"># 4. Classification loss (conditional on object)</span>
-        <span class="keyword">pass</span>  <span class="comment"># Implementation details omitted for brevity</span>
+        <span class="comment"># Reshape to (batch, S, S, B*5 + C)</span>
+        <span class="keyword">return</span> x.view(-<span class="string">1</span>, self.S, self.S, self.B * <span class="string">5</span> + self.num_classes)</pre>
             </div>
-        </div>
-
-        <!-- YOLO Evolution -->
-        <div class="section">
-            <h2>🔄 YOLO Evolution</h2>
-            <p>Since the original YOLO paper in 2016, the architecture has evolved significantly:</p>
             
-            <table class="comparison-table">
-                <thead>
-                    <tr>
-                        <th>Version</th>
-                        <th>Year</th>
-                        <th>Key Innovation</th>
-                        <th>mAP</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr>
-                        <td><strong>YOLOv1</strong></td>
-                        <td>2016</td>
-                        <td>Single-shot unified detector</td>
-                        <td>63.4</td>
-                    </tr>
-                    <tr>
-                        <td><strong>YOLOv2 (YOLO9000)</strong></td>
-                        <td>2017</td>
-                        <td>Batch norm, anchor boxes, multi-scale</td>
-                        <td>78.6</td>
-                    </tr>
-                    <tr>
-                        <td><strong>YOLOv3</strong></td>
-                        <td>2018</td>
-                        <td>Darknet-53, feature pyramid, 3 scales</td>
-                        <td>~81</td>
-                    </tr>
-                    <tr>
-                        <td><strong>YOLOv4</strong></td>
-                        <td>2020</td>
-                        <td>CSPDarknet53, SPP, PANet, mosaic</td>
-                        <td>~88</td>
-                    </tr>
-                    <tr>
-                        <td><strong>YOLOv5</strong></td>
-                        <td>2020</td>
-                        <td>PyTorch, auto-anchor, focus layer</td>
-                        <td>~90</td>
-                    </tr>
-                    <tr>
-                        <td><strong>YOLOv8</strong></td>
-                        <td>2023</td>
-                        <td>Anchor-free, decoupled head, C2f</td>
-                        <td>~93</td>
-                    </tr>
-                </tbody>
-            </table>
-        </div>
+            <h3 style="color: #f59e0b; margin: 25px 0 15px;">Loss Function</h3>
+            <p>YOLO uses a multi-part loss function combining:</p>
+            <div class="code-block">
+                <pre>Loss = λ_coord × (localization loss) 
+     + λ_noobj × (confidence loss for no-object)
+     + (confidence loss for object)
+     + (classification loss)
 
-        <!-- Paper Links -->
-        <div class="section">
-            <h2>📄 References</h2>
+where:
+- λ_coord = 5 (emphasize coordinate predictions)
+- λ_noobj = 0.5 (down-weight no-object loss)</pre>
+            </div>
+        </section>
+
+        <!-- Related Work -->
+        <section class="section">
+            <h2>Related Work</h2>
+            <p>YOLO built upon and inspired numerous detection systems:</p>
             
-            <div class="paper-links">
-                <a href="https://arxiv.org/abs/1506.02640" target="_blank">
-                    📄 Paper (arXiv)
+            <h3 style="color: #f59e0b; margin: 20px 0 15px;">Papers That Inspired YOLO</h3>
+            <div class="related-grid">
+                <a href="rcnn.html" class="related-card">
+                    <h4>R-CNN</h4>
+                    <p>Region-based CNN approach that YOLO sought to improve upon for speed</p>
                 </a>
-                <a href="https://pjreddie.com/darknet/yolo/" target="_blank">
-                    🌐 Project Website
+                <a href="fasterrcnn.html" class="related-card">
+                    <h4>Faster R-CNN</h4>
+                    <p>Two-stage detector with region proposal network</p>
                 </a>
-                <a href="https://github.com/pjreddie/darknet" target="_blank">
-                    💻 Official Code (Darknet)
-                </a>
-                <a href="https://github.com/aladdinpersson/Machine-Learning-Collection" target="_blank">
-                    🐍 PyTorch Implementation
-                </a>
-                <a href="../index.html">
-                    🏠 Back to Home
+                <a href="alexnet.html" class="related-card">
+                    <h4>AlexNet</h4>
+                    <p>Convolutional architecture foundations</p>
                 </a>
             </div>
             
-            <div class="highlight-box" style="margin-top: 20px;">
-                <p><strong>Citation:</strong> Redmon, J., Divvala, S., Girshick, R., & Farhadi, A. (2016). You Only Look Once: Unified, Real-Time Object Detection. In Proceedings of the IEEE Conference on Computer Vision and Pattern Recognition (CVPR), pp. 779-788.</p>
+            <h3 style="color: #f59e0b; margin: 25px 0 15px;">Follow-up Work</h3>
+            <div class="related-grid">
+                <a href="yolov2.html" class="related-card">
+                    <h4>YOLO9000 (YOLOv2)</h4>
+                    <p>Better, faster, stronger — batch normalization, anchor boxes, multi-scale training</p>
+                </a>
+                <a href="yolov3.html" class="related-card">
+                    <h4>YOLOv3</h4>
+                    <p>Incremental improvements with multi-scale predictions</p>
+                </a>
+                <a href="ssd.html" class="related-card">
+                    <h4>SSD</h4>
+                    <p>Single Shot MultiBox Detector — simultaneous competitor</p>
+                </a>
+                <a href="retinanet.html" class="related-card">
+                    <h4>RetinaNet</h4>
+                    <p>Focal loss for dense object detection</p>
+                </a>
             </div>
-        </div>
+        </section>
+
+        <!-- Footer -->
+        <footer>
+            <p>Part of the <a href="../index.html" style="color: #f59e0b;">AI Neural Networks</a> paper collection</p>
+            <p style="margin-top: 10px; font-size: 0.8rem;">Last updated: April 16, 2026</p>
+        </footer>
     </div>
-
-    <footer>
-        <p>Built with ❤️ by <a href="https://github.com/Patbby">Patbby</a> (Kimi Claw)</p>
-        <p>Open source on <a href="https://github.com/Patbby/ai-neural-networks">GitHub</a></p>
-    </footer>
-
-    <script>
-        // Animated background nodes
-        const bgSvg = document.getElementById('bg-nodes');
-        const nodeCount = 25;
-        const nodes = [];
-        
-        for (let i = 0; i < nodeCount; i++) {
-            const circle = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
-            const x = Math.random() * 1920;
-            const y = Math.random() * 1080;
-            const r = Math.random() * 4 + 1;
-            
-            circle.setAttribute('cx', x);
-            circle.setAttribute('cy', y);
-            circle.setAttribute('r', r);
-            circle.setAttribute('fill', Math.random() > 0.5 ? '#10b981' : '#06b6d4');
-            circle.setAttribute('opacity', Math.random() * 0.4 + 0.2);
-            
-            bgSvg.appendChild(circle);
-            nodes.push({
-                element: circle,
-                x: x,
-                y: y,
-                vx: (Math.random() - 0.5) * 0.4,
-                vy: (Math.random() - 0.5) * 0.4
-            });
-        }
-        
-        function animateNodes() {
-            nodes.forEach(node => {
-                node.x += node.vx;
-                node.y += node.vy;
-                
-                if (node.x < 0 || node.x > 1920) node.vx *= -1;
-                if (node.y < 0 || node.y > 1080) node.vy *= -1;
-                
-                node.element.setAttribute('cx', node.x);
-                node.element.setAttribute('cy', node.y);
-            });
-            requestAnimationFrame(animateNodes);
-        }
-        animateNodes();
-    </script>
 </body>
 </html>
