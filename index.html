@@ -171,6 +171,44 @@
             📚 Classic Papers
         </h2>
         <div class="network-grid">
+            <!-- InstructGPT Paper Card -->
+            <div class="network-card" onclick="location.href='papers/instructgpt.html'">
+                <span class="tag">NeurIPS 2022 (Oral)</span>
+                <h3>InstructGPT</h3>
+                <p>Training language models to follow instructions with human feedback. The RLHF breakthrough that powers ChatGPT - aligning AI with human intent through reinforcement learning.</p>
+                <svg class="preview-svg" viewBox="0 0 300 150">
+                    <defs>
+                        <linearGradient id="instructgpt-grad" x1="0%" y1="0%" x2="100%" y2="0%">
+                            <stop offset="0%" style="stop-color:#6366f1"/>
+                            <stop offset="50%" style="stop-color:#a855f7"/>
+                            <stop offset="100%" style="stop-color:#ec4899"/>
+                        </linearGradient>
+                    </defs>
+                    <!-- Human feedback loop -->
+                    <circle cx="150" cy="75" r="50" fill="none" stroke="url(#instructgpt-grad)" stroke-width="2" stroke-dasharray="5,3"/>
+                    <!-- GPT base -->
+                    <rect x="120" y="50" width="60" height="50" rx="5" fill="rgba(99,102,241,0.3)" stroke="#6366f1" stroke-width="2"/>
+                    <text x="150" y="78" fill="#fff" font-size="10" text-anchor="middle">GPT</text>
+                    <!-- Human icon -->
+                    <circle cx="80" cy="75" r="15" fill="rgba(16,185,129,0.3)" stroke="#10b981" stroke-width="2"/>
+                    <text x="80" y="80" fill="#10b981" font-size="8" text-anchor="middle">👤</text>
+                    <!-- Reward arrow -->
+                    <path d="M 95 75 L 115 75" stroke="#10b981" stroke-width="2" marker-end="url(#arrow-green)"/>
+                    <!-- Output arrow -->
+                    <path d="M 180 75 L 200 75" stroke="#6366f1" stroke-width="2" marker-end="url(#arrow-blue)"/>
+                    <defs>
+                        <marker id="arrow-green" markerWidth="10" markerHeight="10" refX="9" refY="3" orient="auto">
+                            <polygon points="0 0, 10 3, 0 6" fill="#10b981"/>
+                        </marker>
+                        <marker id="arrow-blue" markerWidth="10" markerHeight="10" refX="9" refY="3" orient="auto">
+                            <polygon points="0 0, 10 3, 0 6" fill="#6366f1"/>
+                        </marker>
+                    </defs>
+                    <!-- RL loop label -->
+                    <text x="150" y="140" fill="#888" font-size="8" text-anchor="middle">RLHF Pipeline</text>
+                </svg>
+            </div>
+
             <!-- LeNet Paper Card -->
             <div class="network-card" onclick="location.href='papers/lenet.html'">
                 <span class="tag">Proceedings of IEEE 1998</span>
