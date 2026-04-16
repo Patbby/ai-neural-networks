@@ -1688,6 +1688,54 @@
                 </svg>
             </div>
 
+            <!-- WaveNet Paper Card -->
+            <div class="network-card" onclick="location.href='papers/wavenet.html'">
+                <span class="tag">arXiv 2016</span>
+                <h3>WaveNet</h3>
+                <p>A Generative Model for Raw Audio - DeepMind's breakthrough that revolutionized text-to-speech with dilated causal convolutions and natural-sounding synthesis.</p>
+                <svg class="preview-svg" viewBox="0 0 300 150">
+                    <defs>
+                        <linearGradient id="wavenet-grad" x1="0%" y1="0%" x2="100%" y2="0%">
+                            <stop offset="0%" style="stop-color:#06b6d4"/>
+                            <stop offset="50%" style="stop-color:#6366f1"/>
+                            <stop offset="100%" style="stop-color:#a855f7"/>
+                        </linearGradient>
+                    </defs>
+                    <!-- Audio waveform input -->
+                    <path d="M20 75 Q30 55 40 75 T60 75 T80 75" fill="none" stroke="#06b6d4" stroke-width="2" opacity="0.7"/>
+                    <text x="50" y="95" fill="#888" font-size="7" text-anchor="middle">Audio</text>
+                    
+                    <!-- Dilated convolution layers -->
+                    <rect x="90" y="40" width="30" height="20" fill="rgba(99,102,241,0.3)" stroke="#6366f1" stroke-width="1.5" rx="2"/>
+                    <text x="105" y="54" fill="#fff" font-size="6" text-anchor="middle">d=1</text>
+                    
+                    <rect x="90" y="65" width="30" height="20" fill="rgba(99,102,241,0.3)" stroke="#6366f1" stroke-width="1.5" rx="2"/>
+                    <text x="105" y="79" fill="#fff" font-size="6" text-anchor="middle">d=2</text>
+                    
+                    <rect x="90" y="90" width="30" height="20" fill="rgba(99,102,241,0.3)" stroke="#6366f1" stroke-width="1.5" rx="2"/>
+                    <text x="105" y="104" fill="#fff" font-size="6" text-anchor="middle">d=4</text>
+                    
+                    <!-- Skip connections -->
+                    <path d="M120 50 L150 45" stroke="#ec4899" stroke-width="1.5" opacity="0.6"/>
+                    <path d="M120 75 L150 60" stroke="#ec4899" stroke-width="1.5" opacity="0.6"/>
+                    <path d="M120 100 L150 75" stroke="#ec4899" stroke-width="1.5" opacity="0.6"/>
+                    
+                    <!-- Skip aggregation -->
+                    <rect x="150" y="45" width="40" height="40" fill="rgba(236,72,153,0.2)" stroke="#ec4899" stroke-width="1.5" rx="3"/>
+                    <text x="170" y="65" fill="#f472b6" font-size="7" text-anchor="middle">Skip</text>
+                    <text x="170" y="78" fill="#f472b6" font-size="7" text-anchor="middle">Sum</text>
+                    
+                    <!-- Output -->
+                    <rect x="210" y="50" width="70" height="30" fill="rgba(16,185,129,0.2)" stroke="#10b981" stroke-width="2" rx="3"/>
+                    <text x="245" y="65" fill="#6ee7b7" font-size="8" text-anchor="middle">μ-law</text>
+                    <text x="245" y="78" fill="#6ee7b7" font-size="8" text-anchor="middle">256 levels</text>
+                    
+                    <!-- Arrow -->
+                    <path d="M195 65 L210 65" stroke="#6366f1" stroke-width="2"/>
+                    <polygon points="210,65 205,60 205,70" fill="#6366f1"/>
+                </svg>
+            </div>
+
             <!-- More Papers Coming -->
             <div class="network-card" style="opacity: 0.7;">
                 <span class="tag">Coming Soon</span>
