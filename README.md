@@ -17,6 +17,7 @@
 | **DiT** | Diffusion Transformers | ✅ Complete |
 | **Transformer** | Self-attention mechanism | ✅ Complete |
 | **BERT** | Pre-training of Deep Bidirectional Transformers | ✅ Complete |
+| **Word2Vec** | Efficient Estimation of Word Representations | ✅ Complete |
 | **VAE** | Auto-Encoding Variational Bayes | ✅ Complete |
 | **GAN** | Generative Adversarial Networks | ✅ Complete |
 | **ViT** | Vision Transformer | ✅ Complete |
@@ -29,7 +30,7 @@
 | **VGG** | Very Deep Convolutional Networks | ✅ Complete |
 | **EfficientNet** | Rethinking Model Scaling | ✅ Complete |
 | **AlexNet** | ImageNet Classification | ✅ Complete |
-| **DenseNet** | Densely Connected Convolutional Networks | 🚧 Coming Soon |
+| **DenseNet** | Densely Connected Convolutional Networks | ✅ Complete |
 
 ---
 
