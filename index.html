@@ -481,6 +481,55 @@
                 </svg>
             </div>
 
+            <!-- U-Net Paper Card -->
+            <div class="network-card" onclick="location.href='papers/unet.html'">
+                <span class="tag">MICCAI 2015 · Most Influential</span>
+                <h3>U-Net</h3>
+                <p>Convolutional Networks for Biomedical Image Segmentation - The symmetric encoder-decoder architecture with skip connections that revolutionized image segmentation.</p>
+                <svg class="preview-svg" viewBox="0 0 300 150">
+                    <defs>
+                        <linearGradient id="unet-grad" x1="0%" y1="0%" x2="100%" y2="0%">
+                            <stop offset="0%" style="stop-color:#10b981"/>
+                            <stop offset="100%" style="stop-color:#06b6d4"/>
+                        </linearGradient>
+                    </defs>
+                    <!-- Input -->
+                    <rect x="20" y="55" width="25" height="40" fill="none" stroke="#10b981" stroke-width="2" rx="3"/>
+                    <text x="32" y="78" fill="#fff" font-size="7" text-anchor="middle">In</text>
+                    
+                    <!-- Encoder path -->
+                    <rect x="55" y="50" width="30" height="20" fill="rgba(16,185,129,0.4)" stroke="#10b981" stroke-width="2" rx="2"/>
+                    <text x="70" y="63" fill="#fff" font-size="6" text-anchor="middle">Enc1</text>
+                    <rect x="55" y="80" width="30" height="20" fill="rgba(16,185,129,0.3)" stroke="#10b981" stroke-width="2" rx="2"/>
+                    <text x="70" y="93" fill="#fff" font-size="6" text-anchor="middle">Enc2</text>
+                    
+                    <!-- Bottleneck -->
+                    <rect x="95" y="55" width="25" height="40" fill="rgba(245,158,11,0.3)" stroke="#f59e0b" stroke-width="2" rx="3"/>
+                    <text x="107" y="78" fill="#f59e0b" font-size="7" text-anchor="middle">Bridge</text>
+                    
+                    <!-- Decoder path -->
+                    <rect x="130" y="50" width="30" height="20" fill="rgba(6,182,212,0.4)" stroke="#06b6d4" stroke-width="2" rx="2"/>
+                    <text x="145" y="63" fill="#fff" font-size="6" text-anchor="middle">Dec1</text>
+                    <rect x="130" y="80" width="30" height="20" fill="rgba(6,182,212,0.3)" stroke="#06b6d4" stroke-width="2" rx="2"/>
+                    <text x="145" y="93" fill="#fff" font-size="6" text-anchor="middle">Dec2</text>
+                    
+                    <!-- Skip connections -->
+                    <path d="M70 70 L70 50" stroke="#6366f1" stroke-width="1.5" stroke-dasharray="3,2" fill="none"/>
+                    <path d="M70 100 L70 120 L145 120 L145 100" stroke="#6366f1" stroke-width="1.5" stroke-dasharray="3,2" fill="none"/>
+                    <text x="107" y="130" fill="#6366f1" font-size="7" text-anchor="middle">Skip</text>
+                    
+                    <!-- Output -->
+                    <rect x="170" y="55" width="25" height="40" fill="rgba(236,72,153,0.2)" stroke="#ec4899" stroke-width="2" rx="3"/>
+                    <text x="182" y="78" fill="#ec4899" font-size="7" text-anchor="middle">Out</text>
+                    
+                    <!-- Metrics -->
+                    <rect x="210" y="45" width="70" height="60" fill="none" stroke="#10b981" stroke-width="1" rx="3" opacity="0.5"/>
+                    <text x="245" y="65" fill="#10b981" font-size="9" font-weight="bold" text-anchor="middle">92K+</text>
+                    <text x="245" y="80" fill="#8888aa" font-size="7" text-anchor="middle">Citations</text>
+                    <text x="245" y="95" fill="#06b6d4" font-size="8" text-anchor="middle">30 images</text>
+                </svg>
+            </div>
+
             <!-- Stable Diffusion Paper Card -->
             <div class="network-card" onclick="location.href='papers/stable-diffusion.html'">
                 <span class="tag">CVPR 2022</span>
