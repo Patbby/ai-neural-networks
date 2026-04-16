@@ -5,6 +5,6 @@
   "nextPaper": "Mask R-CNN - Instance Segmentation (ICCV 2017)",
   "updateCount": 9,
   "lastPaper": "Faster R-CNN - Towards Real-Time Object Detection with Region Proposal Networks (NeurIPS 2015)",
-  "lastCommit": "TBD",
+  "lastCommit": "b0b8c04",
   "lastCommitMessage": "Add Faster R-CNN paper with SVG visualization"
 }
