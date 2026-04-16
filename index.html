@@ -209,6 +209,55 @@
                 </svg>
             </div>
 
+            <!-- Seq2Seq Paper Card -->
+            <div class="network-card" onclick="location.href='papers/seq2seq.html'">
+                <span class="tag">NIPS 2014</span>
+                <h3>Seq2Seq</h3>
+                <p>Sequence to Sequence Learning with Neural Networks - The foundational encoder-decoder architecture that revolutionized machine translation and paved the way for modern NLP.</p>
+                <svg class="preview-svg" viewBox="0 0 300 150">
+                    <defs>
+                        <linearGradient id="seq2seq-grad" x1="0%" y1="0%" x2="100%" y2="0%">
+                            <stop offset="0%" style="stop-color:#6366f1"/>
+                            <stop offset="50%" style="stop-color:#a855f7"/>
+                            <stop offset="100%" style="stop-color:#ec4899"/>
+                        </linearGradient>
+                        <linearGradient id="vector-grad" x1="0%" y1="0%" x2="100%" y2="100%">
+                            <stop offset="0%" style="stop-color:#fbbf24"/>
+                            <stop offset="100%" style="stop-color:#f59e0b"/>
+                        </linearGradient>
+                    </defs>
+                    <!-- Input sequence -->
+                    <rect x="10" y="50" width="30" height="20" rx="2" fill="rgba(99,102,241,0.3)" stroke="#6366f1" stroke-width="1.5"/>
+                    <text x="25" y="64" fill="#fff" font-size="7" text-anchor="middle">A</text>
+                    <rect x="45" y="50" width="30" height="20" rx="2" fill="rgba(99,102,241,0.3)" stroke="#6366f1" stroke-width="1.5"/>
+                    <text x="60" y="64" fill="#fff" font-size="7" text-anchor="middle">B</text>
+                    <rect x="80" y="50" width="30" height="20" rx="2" fill="rgba(99,102,241,0.3)" stroke="#6366f1" stroke-width="1.5"/>
+                    <text x="95" y="64" fill="#fff" font-size="7" text-anchor="middle">C</text>
+                    <!-- Encoder -->
+                    <rect x="20" y="85" width="80" height="30" rx="3" fill="rgba(99,102,241,0.4)" stroke="#6366f1" stroke-width="2"/>
+                    <text x="60" y="105" fill="#fff" font-size="9" text-anchor="middle">Encoder LSTM</text>
+                    <!-- Thought vector -->
+                    <circle cx="150" cy="100" r="20" fill="url(#vector-grad)"/>
+                    <text x="150" y="97" fill="#000" font-size="7" text-anchor="middle" font-weight="bold">z</text>
+                    <text x="150" y="107" fill="#000" font-size="6" text-anchor="middle">vector</text>
+                    <!-- Decoder -->
+                    <rect x="190" y="85" width="80" height="30" rx="3" fill="rgba(236,72,153,0.4)" stroke="#ec4899" stroke-width="2"/>
+                    <text x="230" y="105" fill="#fff" font-size="9" text-anchor="middle">Decoder LSTM</text>
+                    <!-- Output sequence -->
+                    <rect x="180" y="50" width="30" height="20" rx="2" fill="rgba(236,72,153,0.3)" stroke="#ec4899" stroke-width="1.5"/>
+                    <text x="195" y="64" fill="#fff" font-size="7" text-anchor="middle">α</text>
+                    <rect x="215" y="50" width="30" height="20" rx="2" fill="rgba(236,72,153,0.3)" stroke="#ec4899" stroke-width="1.5"/>
+                    <text x="230" y="64" fill="#fff" font-size="7" text-anchor="middle">β</text>
+                    <rect x="250" y="50" width="30" height="20" rx="2" fill="rgba(236,72,153,0.3)" stroke="#ec4899" stroke-width="1.5"/>
+                    <text x="265" y="64" fill="#fff" font-size="7" text-anchor="middle">γ</text>
+                    <!-- Arrows -->
+                    <path d="M 50 70 L 50 85" stroke="#6366f1" stroke-width="1.5"/>
+                    <path d="M 100 100 L 130 100" stroke="#f59e0b" stroke-width="2"/>
+                    <path d="M 170 100 L 190 100" stroke="#f59e0b" stroke-width="2"/>
+                    <path d="M 230 85 L 230 70" stroke="#ec4899" stroke-width="1.5"/>
+                </svg>
+            </div>
+
             <!-- LeNet Paper Card -->
             <div class="network-card" onclick="location.href='papers/lenet.html'">
                 <span class="tag">Proceedings of IEEE 1998</span>
