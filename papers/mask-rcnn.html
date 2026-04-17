@@ -1,0 +1,747 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mask R-CNN - Instance Segmentation & Object Detection | AI Neural Networks</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            background: #0a0a0f;
+            color: #e0e0ff;
+            line-height: 1.7;
+            overflow-x: hidden;
+        }
+        
+        .bg-animation {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+            opacity: 0.2;
+        }
+        
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        
+        .hero {
+            padding: 60px 20px 40px;
+            text-align: center;
+            background: linear-gradient(180deg, rgba(99,102,241,0.1) 0%, transparent 100%);
+            border-bottom: 1px solid rgba(99, 102, 241, 0.2);
+            margin-bottom: 40px;
+        }
+        
+        .hero h1 {
+            font-size: 2.8rem;
+            background: linear-gradient(135deg, #6366f1 0%, #a855f7 50%, #ec4899 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 15px;
+            font-weight: 800;
+        }
+        
+        .hero .subtitle {
+            font-size: 1.2rem;
+            color: #8888aa;
+            margin-bottom: 25px;
+        }
+        
+        .hero .meta {
+            display: flex;
+            justify-content: center;
+            gap: 30px;
+            flex-wrap: wrap;
+            font-size: 0.95rem;
+            color: #aaaacc;
+        }
+        
+        .hero .meta span {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .badges {
+            margin-top: 25px;
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            flex-wrap: wrap;
+        }
+        
+        .badge {
+            display: inline-block;
+            padding: 8px 18px;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            font-weight: 500;
+            text-decoration: none;
+            transition: all 0.3s ease;
+        }
+        
+        .badge.pdf {
+            background: rgba(239, 68, 68, 0.2);
+            color: #fca5a5;
+            border: 1px solid rgba(239, 68, 68, 0.4);
+        }
+        
+        .badge.arxiv {
+            background: rgba(99, 102, 241, 0.2);
+            color: #a5b4fc;
+            border: 1px solid rgba(99, 102, 241, 0.4);
+        }
+        
+        .badge.code {
+            background: rgba(16, 185, 129, 0.2);
+            color: #6ee7b7;
+            border: 1px solid rgba(16, 185, 129, 0.4);
+        }
+        
+        .badge:hover {
+            transform: translateY(-2px);
+            opacity: 0.9;
+        }
+        
+        .section {
+            margin-bottom: 50px;
+            padding: 30px;
+            background: rgba(20, 20, 35, 0.6);
+            border: 1px solid rgba(99, 102, 241, 0.15);
+            border-radius: 16px;
+        }
+        
+        .section h2 {
+            font-size: 1.8rem;
+            color: #fff;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        
+        .section h2 .icon {
+            font-size: 1.5rem;
+        }
+        
+        .section p {
+            color: #b8b8d0;
+            margin-bottom: 15px;
+            font-size: 1.05rem;
+        }
+        
+        .highlight-box {
+            background: linear-gradient(135deg, rgba(99,102,241,0.15) 0%, rgba(168,85,247,0.15) 100%);
+            border-left: 4px solid #6366f1;
+            padding: 20px;
+            border-radius: 0 12px 12px 0;
+            margin: 20px 0;
+        }
+        
+        .highlight-box strong {
+            color: #fff;
+        }
+        
+        .arch-diagram {
+            background: rgba(10, 10, 15, 0.8);
+            border-radius: 12px;
+            padding: 30px;
+            margin: 25px 0;
+            text-align: center;
+            border: 1px solid rgba(99, 102, 241, 0.2);
+        }
+        
+        .code-block {
+            background: #0d0d12;
+            border: 1px solid rgba(99, 102, 241, 0.2);
+            border-radius: 12px;
+            padding: 20px;
+            overflow-x: auto;
+            margin: 20px 0;
+        }
+        
+        .code-block pre {
+            margin: 0;
+            font-family: 'JetBrains Mono', 'Fira Code', Consolas, monospace;
+            font-size: 0.9rem;
+            line-height: 1.6;
+            color: #a5b4fc;
+        }
+        
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin: 25px 0;
+        }
+        
+        .stat-card {
+            background: rgba(99, 102, 241, 0.1);
+            border: 1px solid rgba(99, 102, 241, 0.2);
+            border-radius: 12px;
+            padding: 20px;
+            text-align: center;
+        }
+        
+        .stat-card .number {
+            font-size: 2rem;
+            font-weight: 700;
+            color: #6366f1;
+        }
+        
+        .stat-card .label {
+            color: #8888aa;
+            font-size: 0.9rem;
+            margin-top: 5px;
+        }
+        
+        .innovation-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+            margin: 25px 0;
+        }
+        
+        .innovation-card {
+            background: rgba(20, 20, 35, 0.8);
+            border: 1px solid rgba(99, 102, 241, 0.2);
+            border-radius: 12px;
+            padding: 25px;
+        }
+        
+        .innovation-card h3 {
+            color: #a855f7;
+            margin-bottom: 10px;
+            font-size: 1.2rem;
+        }
+        
+        .innovation-card p {
+            color: #b8b8d0;
+            font-size: 0.95rem;
+        }
+        
+        .formula-box {
+            background: rgba(99, 102, 241, 0.1);
+            border: 1px solid rgba(99, 102, 241, 0.3);
+            border-radius: 12px;
+            padding: 20px;
+            margin: 20px 0;
+            text-align: center;
+            font-family: 'Times New Roman', serif;
+            font-size: 1.2rem;
+            color: #e0e0ff;
+        }
+        
+        .related-papers {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 15px;
+            margin: 20px 0;
+        }
+        
+        .paper-card {
+            background: rgba(20, 20, 35, 0.8);
+            border: 1px solid rgba(99, 102, 241, 0.2);
+            border-radius: 10px;
+            padding: 20px;
+            transition: all 0.3s ease;
+        }
+        
+        .paper-card:hover {
+            border-color: rgba(99, 102, 241, 0.4);
+            transform: translateY(-2px);
+        }
+        
+        .paper-card h4 {
+            color: #fff;
+            margin-bottom: 8px;
+            font-size: 1rem;
+        }
+        
+        .paper-card .paper-meta {
+            color: #8888aa;
+            font-size: 0.85rem;
+        }
+        
+        .paper-card .paper-desc {
+            color: #b8b8d0;
+            font-size: 0.9rem;
+            margin-top: 10px;
+        }
+        
+        .nav-links {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 40px;
+            padding-top: 30px;
+            border-top: 1px solid rgba(99, 102, 241, 0.2);
+        }
+        
+        .nav-links a {
+            color: #8888aa;
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            transition: color 0.3s ease;
+        }
+        
+        .nav-links a:hover {
+            color: #6366f1;
+        }
+        
+        @media (max-width: 768px) {
+            .hero h1 {
+                font-size: 2rem;
+            }
+            
+            .hero .meta {
+                flex-direction: column;
+                gap: 10px;
+            }
+            
+            .section {
+                padding: 20px;
+            }
+            
+            .nav-links {
+                flex-direction: column;
+                gap: 15px;
+            }
+        }
+        
+        .back-link {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            color: #8888aa;
+            text-decoration: none;
+            margin-bottom: 20px;
+            transition: color 0.3s ease;
+        }
+        
+        .back-link:hover {
+            color: #6366f1;
+        }
+    </style>
+</head>
+<body>
+    <svg class="bg-animation" viewBox="0 0 1000 1000" preserveAspectRatio="none">
+        <defs>
+            <linearGradient id="grad1" x1="0%" y1="0%" x2="100%" y2="100%">
+                <stop offset="0%" style="stop-color:#6366f1;stop-opacity:0.3" />
+                <stop offset="100%" style="stop-color:#a855f7;stop-opacity:0.1" />
+            </linearGradient>
+        </defs>
+        <circle cx="200" cy="200" r="300" fill="url(#grad1)">
+            <animate attributeName="cy" values="200;250;200" dur="10s" repeatCount="indefinite"/>
+            <animate attributeName="cx" values="200;250;200" dur="12s" repeatCount="indefinite"/>
+        </circle>
+        <circle cx="800" cy="700" r="400" fill="url(#grad1)">
+            <animate attributeName="cy" values="700;650;700" dur="11s" repeatCount="indefinite"/>
+            <animate attributeName="cx" values="800;750;800" dur="13s" repeatCount="indefinite"/>
+        </circle>
+    </svg>
+
+    <div class="container">
+        <a href="../index.html" class="back-link">← Back to Papers</a>
+        
+        <section class="hero">
+            <h1>Mask R-CNN</h1>
+            <p class="subtitle">Instance Segmentation & Object Detection with Pixel-Level Precision</p>
+            <div class="meta">
+                <span>📅 ICCV 2017 (Best Paper)</span>
+                <span>👥 Kaiming He, Georgia Gkioxari, Piotr Dollár, Ross Girshick</span>
+                <span>🏛️ Facebook AI Research (FAIR)</span>
+            </div>
+            <div class="badges">
+                <a href="https://arxiv.org/pdf/1703.06870.pdf" class="badge pdf" target="_blank">📄 PDF</a>
+                <a href="https://arxiv.org/abs/1703.06870" class="badge arxiv" target="_blank">📚 arXiv</a>
+                <a href="https://github.com/facebookresearch/Detectron" class="badge code" target="_blank">💻 Code</a>
+            </div>
+        </section>
+
+        <section class="section">
+            <h2><span class="icon">🎯</span> Problem Statement</h2>
+            <p>Before Mask R-CNN, the computer vision community faced a significant gap between <strong>object detection</strong> and <strong>instance segmentation</strong>:</p>
+            
+            <div class="highlight-box">
+                <strong>Core Challenge:</strong> How can we simultaneously detect objects in an image AND generate high-quality segmentation masks for each individual instance, all within a unified framework?
+            </div>
+            
+            <p>Previous approaches like R-CNN, Fast R-CNN, and Faster R-CNN excelled at object detection but couldn't perform pixel-level segmentation. Meanwhile, semantic segmentation methods like FCN could classify pixels but couldn't distinguish between different instances of the same class.</p>
+            
+            <p>The key technical hurdle was the <strong>misalignment problem</strong>: Faster R-CNN's RoIPool operation performed coarse spatial quantization, causing feature misalignment that severely degraded mask quality for pixel-level prediction tasks.</p>
+        </section>
+
+        <section class="section">
+            <h2><span class="icon">💡</span> Key Innovation</h2>
+            
+            <div class="highlight-box">
+                <strong>Core Idea:</strong> Extend Faster R-CNN by adding a parallel branch for predicting segmentation masks on each Region of Interest (RoI), combined with a novel RoIAlign layer that preserves exact spatial locations through bilinear interpolation.
+            </div>
+            
+            <div class="innovation-grid">
+                <div class="innovation-card">
+                    <h3>🔄 RoIAlign Layer</h3>
+                    <p>Replaces RoIPool with a quantization-free alignment mechanism using bilinear interpolation. Despite seeming minor, this improves mask accuracy by 10-50% relative improvement.</p>
+                </div>
+                <div class="innovation-card">
+                    <h3>🔀 Decoupled Prediction</h3>
+                    <p>Predicts a binary mask for each class independently, without competition among classes. Classification and segmentation are separate tasks, unlike FCN's multi-class per-pixel approach.</p>
+                </div>
+                <div class="innovation-card">
+                    <h3>📐 FCN for Masks</h3>
+                    <p>Uses a small Fully Convolutional Network (FCN) to predict m×m masks from each RoI, maintaining explicit spatial layout without collapsing features into vectors.</p>
+                </div>
+                <div class="innovation-card">
+                    <h3>⚡ Multi-Task Learning</h3>
+                    <p>Single framework handles object detection, instance segmentation, and human pose estimation simultaneously at 5 FPS with state-of-the-art results on all tasks.</p>
+                </div>
+            </div>
+        </section>
+
+        <section class="section">
+            <h2><span class="icon">🏗️</span> Architecture</h2>
+            
+            <div class="arch-diagram">
+                <svg viewBox="0 0 900 550" width="100%" height="auto">
+                    <defs>
+                        <linearGradient id="inputGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+                            <stop offset="0%" style="stop-color:#3b82f6"/>
+                            <stop offset="100%" style="stop-color:#2563eb"/>
+                        </linearGradient>
+                        <linearGradient id="backboneGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+                            <stop offset="0%" style="stop-color:#8b5cf6"/>
+                            <stop offset="100%" style="stop-color:#7c3aed"/>
+                        </linearGradient>
+                        <linearGradient id="rpnGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+                            <stop offset="0%" style="stop-color:#ec4899"/>
+                            <stop offset="100%" style="stop-color:#db2777"/>
+                        </linearGradient>
+                        <linearGradient id="roiGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+                            <stop offset="0%" style="stop-color:#10b981"/>
+                            <stop offset="100%" style="stop-color:#059669"/>
+                        </linearGradient>
+                        <linearGradient id="headGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+                            <stop offset="0%" style="stop-color:#f59e0b"/>
+                            <stop offset="100%" style="stop-color:#d97706"/>
+                        </linearGradient>
+                        <linearGradient id="maskGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+                            <stop offset="0%" style="stop-color:#06b6d4"/>
+                            <stop offset="100%" style="stop-color:#0891b2"/>
+                        </linearGradient>
+                        <marker id="arrowhead" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto">
+                            <polygon points="0 0, 10 3.5, 0 7" fill="#6366f1" opacity="0.6"/>
+                        </marker>
+                    </defs>
+                    
+                    <!-- Title -->
+                    <text x="450" y="30" text-anchor="middle" font-size="18" font-weight="bold" fill="#fff">Mask R-CNN Architecture</text>
+                    
+                    <!-- Input Image -->
+                    <rect x="30" y="80" width="100" height="100" rx="8" fill="url(#inputGrad)"/>
+                    <text x="80" y="135" text-anchor="middle" font-size="13" fill="#fff" font-weight="600">Input</text>
+                    <text x="80" y="155" text-anchor="middle" font-size="11" fill="#bfdbfe">Image</text>
+                    
+                    <!-- Arrow to Backbone -->
+                    <line x1="130" y1="130" x2="180" y2="130" stroke="#6366f1" stroke-width="2" marker-end="url(#arrowhead)"/>
+                    
+                    <!-- Backbone (ResNet + FPN) -->
+                    <rect x="180" y="70" width="120" height="120" rx="8" fill="url(#backboneGrad)"/>
+                    <text x="240" y="115" text-anchor="middle" font-size="13" fill="#fff" font-weight="600">Backbone</text>
+                    <text x="240" y="135" text-anchor="middle" font-size="11" fill="#ddd6fe">ResNet + FPN</text>
+                    <text x="240" y="155" text-anchor="middle" font-size="10" fill="#c4b5fd">Feature Maps</text>
+                    <text x="240" y="172" text-anchor="middle" font-size="9" fill="#a78bfa">{P2, P3, P4, P5, P6}</text>
+                    
+                    <!-- Arrow to RPN -->
+                    <line x1="300" y1="110" x2="350" y2="80" stroke="#6366f1" stroke-width="2" marker-end="url(#arrowhead)"/>
+                    
+                    <!-- RPN -->
+                    <rect x="350" y="50" width="100" height="80" rx="8" fill="url(#rpnGrad)"/>
+                    <text x="400" y="85" text-anchor="middle" font-size="13" fill="#fff" font-weight="600">RPN</text>
+                    <text x="400" y="105" text-anchor="middle" font-size="11" fill="#fbcfe8">Region Proposal</text>
+                    <text x="400" y="120" text-anchor="middle" font-size="10" fill="#f9a8d4">~300 RoIs</text>
+                    
+                    <!-- Arrow to RoIAlign -->
+                    <line x1="450" y1="90" x2="520" y2="110" stroke="#6366f1" stroke-width="2" marker-end="url(#arrowhead)"/>
+                    
+                    <!-- RoIAlign -->
+                    <rect x="520" y="70" width="120" height="100" rx="8" fill="url(#roiGrad)"/>
+                    <text x="580" y="105" text-anchor="middle" font-size="13" fill="#fff" font-weight="600">RoIAlign</text>
+                    <text x="580" y="125" text-anchor="middle" font-size="11" fill="#a7f3d0">Bilinear Interp</text>
+                    <text x="580" y="142" text-anchor="middle" font-size="10" fill="#6ee7b7">7×7 Features</text>
+                    
+                    <!-- Arrow to Heads -->
+                    <line x1="640" y1="120" x2="700" y2="120" stroke="#6366f1" stroke-width="2"/>
+                    <line x1="700" y1="120" x2="700" y2="120" stroke="#6366f1" stroke-width="2" marker-end="url(#arrowhead)"/>
+                    
+                    <!-- Split to three heads -->
+                    <line x1="700" y1="120" x2="700" y2="200" stroke="#6366f1" stroke-width="2"/>
+                    <line x1="700" y1="200" x2="580" y2="200" stroke="#6366f1" stroke-width="2"/>
+                    <line x1="700" y1="200" x2="820" y2="200" stroke="#6366f1" stroke-width="2"/>
+                    
+                    <!-- Classification Head -->
+                    <rect x="520" y="220" width="120" height="90" rx="8" fill="url(#headGrad)"/>
+                    <text x="580" y="250" text-anchor="middle" font-size="12" fill="#fff" font-weight="600">Class Head</text>
+                    <text x="580" y="270" text-anchor="middle" font-size="10" fill="#fde68a">FC Layers</text>
+                    <text x="580" y="290" text-anchor="middle" font-size="11" fill="#fff">K Classes + BG</text>
+                    
+                    <!-- Arrow up from RoIAlign -->
+                    <line x1="580" y1="170" x2="580" y2="200" stroke="#6366f1" stroke-width="2" marker-end="url(#arrowhead)"/>
+                    
+                    <!-- Box Regression Head -->
+                    <rect x="680" y="220" width="120" height="90" rx="8" fill="url(#headGrad)"/>
+                    <text x="740" y="250" text-anchor="middle" font-size="12" fill="#fff" font-weight="600">Box Head</text>
+                    <text x="740" y="270" text-anchor="middle" font-size="10" fill="#fde68a">FC Layers</text>
+                    <text x="740" y="290" text-anchor="middle" font-size="11" fill="#fff">4×(x, y, w, h)</text>
+                    
+                    <line x1="740" y1="170" x2="740" y2="200" stroke="#6366f1" stroke-width="2" marker-end="url(#arrowhead)"/>
+                    
+                    <!-- Mask Head (NEW) -->
+                    <rect x="760" y="220" width="120" height="90" rx="8" fill="url(#maskGrad)"/>
+                    <text x="820" y="250" text-anchor="middle" font-size="12" fill="#fff" font-weight="600">Mask Head</text>
+                    <text x="820" y="270" text-anchor="middle" font-size="10" fill="#a5f3fc">FCN (CONV)</text>
+                    <text x="820" y="290" text-anchor="middle" font-size="11" fill="#fff">K × m×m Masks</text>
+                    
+                    <line x1="820" y1="170" x2="820" y2="200" stroke="#6366f1" stroke-width="2" marker-end="url(#arrowhead)"/>
+                    
+                    <!-- Outputs -->
+                    <line x1="580" y1="310" x2="580" y2="340" stroke="#6366f1" stroke-width="2" marker-end="url(#arrowhead)"/>
+                    <line x1="740" y1="310" x2="740" y2="340" stroke="#6366f1" stroke-width="2" marker-end="url(#arrowhead)"/>
+                    <line x1="820" y1="310" x2="820" y2="340" stroke="#6366f1" stroke-width="2" marker-end="url(#arrowhead)"/>
+                    
+                    <rect x="530" y="350" width="100" height="50" rx="6" fill="rgba(99,102,241,0.3)" stroke="#6366f1"/>
+                    <text x="580" y="380" text-anchor="middle" font-size="12" fill="#fff">Class Scores</text>
+                    
+                    <rect x="690" y="350" width="100" height="50" rx="6" fill="rgba(99,102,241,0.3)" stroke="#6366f1"/>
+                    <text x="740" y="380" text-anchor="middle" font-size="12" fill="#fff">BBox Offsets</text>
+                    
+                    <rect x="770" y="350" width="100" height="50" rx="6" fill="rgba(99,102,241,0.3)" stroke="#6366f1"/>
+                    <text x="820" y="380" text-anchor="middle" font-size="12" fill="#fff">Mask Output</text>
+                    
+                    <!-- RoIAlign Detail Box -->
+                    <rect x="30" y="420" width="840" height="110" rx="10" fill="rgba(16,185,129,0.1)" stroke="#10b981" stroke-width="1"/>
+                    <text x="450" y="445" text-anchor="middle" font-size="14" font-weight="bold" fill="#10b981">RoIAlign: The Key Innovation</text>
+                    
+                    <!-- RoIPool vs RoIAlign comparison -->
+                    <text x="50" y="475" font-size="11" fill="#a7f3d0">RoIPool (Old):</text>
+                    <text x="50" y="495" font-size="10" fill="#b8b8d0">Quantized coords → Misalignment</text>
+                    <text x="50" y="512" font-size="10" fill="#b8b8d0">MaxPool within quantized bins</text>
+                    
+                    <text x="320" y="475" font-size="20" fill="#6366f1">→</text>
+                    
+                    <text x="380" y="475" font-size="11" fill="#a7f3d0">RoIAlign (New):</text>
+                    <text x="380" y="495" font-size="10" fill="#b8b8d0">No quantization → Exact alignment</text>
+                    <text x="380" y="512" font-size="10" fill="#b8b8d0">Bilinear interpolation at sample points</text>
+                    
+                    <!-- Visualization of RoIAlign -->
+                    <g transform="translate(620, 445)">
+                        <rect x="0" y="0" width="40" height="40" fill="none" stroke="#6366f1" stroke-width="1"/>
+                        <line x1="20" y1="0" x2="20" y2="40" stroke="#6366f1" stroke-width="1" stroke-dasharray="2"/>
+                        <line x1="0" y1="20" x2="40" y2="20" stroke="#6366f1" stroke-width="1" stroke-dasharray="2"/>
+                        <circle cx="15" cy="12" r="2" fill="#ec4899"/>
+                        <circle cx="28" cy="18" r="2" fill="#ec4899"/>
+                        <circle cx="12" cy="30" r="2" fill="#ec4899"/>
+                        <circle cx="32" cy="32" r="2" fill="#ec4899"/>
+                    </g>
+                    <text x="670" y="480" font-size="10" fill="#b8b8d0">4 sampling points</text>
+                    <text x="670" y="495" font-size="10" fill="#b8b8d0">per bin (2×2)</text>
+                    <text x="670" y="515" font-size="11" fill="#10b981" font-weight="bold">+10-50% AP!</text>
+                </svg>
+            </div>
+            
+            <p>The architecture follows a two-stage approach: (1) <strong>Region Proposal Network (RPN)</strong> generates candidate object proposals, and (2) For each RoI, the network predicts a class label, bounding box offset, AND a binary mask. The mask branch is a small FCN applied to each RoI independently.</p>
+        </section>
+
+        <section class="section">
+            <h2><span class="icon">📊</span> Results & Impact</h2>
+            
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="number">37.1</div>
+                    <div class="label">Mask AP (COCO)</div>
+                </div>
+                <div class="stat-card">
+                    <div class="number">39.6</div>
+                    <div class="label">Box AP (COCO)</div>
+                </div>
+                <div class="stat-card">
+                    <div class="number">5</div>
+                    <div class="label">FPS (Real-time)</div>
+                </div>
+                <div class="stat-card">
+                    <div class="number">62.7</div>
+                    <div class="label">Keypoint AP</div>
+                </div>
+            </div>
+            
+            <div class="highlight-box">
+                <strong>COCO 2016 Challenge:</strong> Mask R-CNN outperformed all single-model entries including the heavily-engineered competition winners, achieving state-of-the-art results in instance segmentation, object detection, AND person keypoint detection — all with a single unified model.
+            </div>
+            
+            <p><strong>Key Achievements:</strong></p>
+            <ul style="color: #b8b8d0; margin-left: 20px; margin-bottom: 15px;">
+                <li>First unified framework for detection, segmentation, and keypoint estimation</li>
+                <li>RoIAlign improves mask accuracy by 10-50% over RoIPool</li>
+                <li>Simple to train — only adds small overhead to Faster R-CNN</li>
+                <li>Easy to generalize to other tasks (demonstrated on human pose estimation)</li>
+                <li>Trains in 1-2 days on single 8-GPU machine</li>
+            </ul>
+            
+            <p><strong>Citation Impact:</strong> With over 35,000 citations, Mask R-CNN has become the de facto baseline for instance segmentation and has inspired countless follow-up works including Mask Scoring R-CNN, PANet, HTC, and modern transformer-based detectors.</p>
+        </section>
+
+        <section class="section">
+            <h2><span class="icon">🧮</span> Loss Function</h2>
+            
+            <p>Mask R-CNN is trained with a multi-task loss on each sampled RoI:</p>
+            
+            <div class="formula-box">
+                L = L<sub>cls</sub> + L<sub>box</sub> + L<sub>mask</sub>
+            </div>
+            
+            <ul style="color: #b8b8d0; margin-left: 20px; margin-bottom: 15px;">
+                <li><strong>L<sub>cls</sub></strong>: Classification loss (cross-entropy over K+1 classes)</li>
+                <li><strong>L<sub>box</sub></strong>: Bounding box regression loss (Smooth L1)</li>
+                <li><strong>L<sub>mask</sub></strong>: Mask loss defined only on positive RoIs (IoU > 0.5 with GT)</li>
+            </ul>
+            
+            <p>For the mask branch, Mask R-CNN outputs K binary masks of resolution m×m (typically 28×28), one for each of the K classes. Only the mask corresponding to the ground-truth class contributes to the loss (average binary cross-entropy loss). This decouples mask prediction from classification.</p>
+            
+            <div class="code-block">
+                <pre># Mask loss computation (simplified)
+# mask_pred: [N, K, H, W] - predicted masks for all classes
+# mask_target: [N, H, W] - ground truth mask
+# class_targets: [N] - ground truth class labels
+
+# Select mask for the ground-truth class only
+pred_mask_for_gt_class = mask_pred[range(N), class_targets]
+
+# Binary cross-entropy loss
+mask_loss = F.binary_cross_entropy_with_logits(
+    pred_mask_for_gt_class, mask_target
+)</pre>
+            </div>
+        </section>
+
+        <section class="section">
+            <h2><span class="icon">💻</span> PyTorch Implementation</h2>
+            
+            <div class="code-block">
+                <pre>import torch
+import torch.nn as nn
+import torchvision
+from torchvision.models.detection import maskrcnn_resnet50_fpn
+from torchvision.models.detection.faster_rcnn import FastRCNNPredictor
+from torchvision.models.detection.mask_rcnn import MaskRCNNPredictor
+
+# Load pre-trained Mask R-CNN with ResNet-50-FPN backbone
+model = maskrcnn_resnet50_fpn(pretrained=True)
+
+# Modify for custom number of classes (e.g., 5 object classes + background)
+num_classes = 6
+
+# Replace box predictor
+in_features = model.roi_heads.box_predictor.cls_score.in_features
+model.roi_heads.box_predictor = FastRCNNPredictor(in_features, num_classes)
+
+# Replace mask predictor
+in_features_mask = model.roi_heads.mask_predictor.conv5_mask.in_channels
+hidden_layer = 256
+model.roi_heads.mask_predictor = MaskRCNNPredictor(
+    in_features_mask, hidden_layer, num_classes
+)
+
+# Inference
+model.eval()
+with torch.no_grad():
+    predictions = model(images)  # List of dicts with 'boxes', 'labels', 'scores', 'masks'
+    
+# Each prediction contains:
+# - boxes: [N, 4] bounding box coordinates
+# - labels: [N] class labels
+# - scores: [N] confidence scores
+# - masks: [N, 1, H,W] binary masks (after sigmoid)</pre>
+            </div>
+            
+            <p><strong>Training Configuration:</strong></p>
+            <ul style="color: #b8b8d0; margin-left: 20px; margin-bottom: 15px;">
+                <li>Backbone: ResNet-50/101 + FPN</li>
+                <li>Image size: Short side 800px</li>
+                <li>RoIAlign output: 7×7 for box, 14×14 for mask</li>
+                <li>Mask resolution: 28×28</li>
+                <li>Batch size: 16 (2 images per GPU × 8 GPUs)</li>
+                <li>Learning rate: 0.02, decay at iterations 120k and 160k</li>
+                <li>Training iterations: 180k (COCO trainval35k)</li>
+            </ul>
+        </section>
+
+        <section class="section">
+            <h2><span class="icon">📚</span> Related Work</h2>
+            
+            <div class="related-papers">
+                <div class="paper-card">
+                    <h4>Faster R-CNN</h4>
+                    <div class="paper-meta">Ren et al., NeurIPS 2015</div>
+                    <div class="paper-desc">The foundation that Mask R-CNN extends, introducing the Region Proposal Network (RPN) for end-to-end object detection.</div>
+                </div>
+                <div class="paper-card">
+                    <h4>FCIS (Fully Convolutional Instance Segmentation)</h4>
+                    <div class="paper-meta">Li et al., CVPR 2017</div>
+                    <div class="paper-desc">Contemporary work on instance segmentation that uses position-sensitive score maps but suffers from systematic errors on overlapping instances.</div>
+                </div>
+                <div class="paper-card">
+                    <h4>Feature Pyramid Networks (FPN)</h4>
+                    <div class="paper-meta">Lin et al., CVPR 2017</div>
+                    <div class="paper-desc">The multi-scale feature extraction backbone used in Mask R-CNN, combining low-resolution and high-resolution features.</div>
+                </div>
+                <div class="paper-card">
+                    <h4>Mask Scoring R-CNN</h4>
+                    <div class="paper-meta">Huang et al., CVPR 2019</div>
+                    <div class="paper-desc">Improvement that learns to score mask quality directly, addressing the misalignment between classification confidence and mask quality.</div>
+                </div>
+                <div class="paper-card">
+                    <h4>PANet</h4>
+                    <div class="paper-meta">Liu et al., CVPR 2018</div>
+                    <div class="paper-desc">Path Aggregation Network that improves information flow in FPN-style architectures for instance segmentation.</div>
+                </div>
+                <div class="paper-card">
+                    <h4>HTC (Hybrid Task Cascade)</h4>
+                    <div class="paper-meta">Chen et al., CVPR 2019</div>
+                    <div class="paper-desc">Multi-stage instance segmentation framework that interweaves detection and segmentation features for better performance.</div>
+                </div>
+            </div>
+        </section>
+
+        <section class="section">
+            <h2><span class="icon">🎓</span> Key Takeaways</h2>
+            
+            <ol style="color: #b8b8d0; margin-left: 20px;">
+                <li style="margin-bottom: 12px;"><strong>Pixel alignment matters:</strong> The seemingly simple change from RoIPool to RoIAlign had massive impact (10-50% improvement), showing the importance of careful architectural decisions for pixel-level tasks.</li>
+                <li style="margin-bottom: 12px;"><strong>Decouple when possible:</strong> Separating mask prediction from classification (binary mask per class vs. multi-class softmax) avoids competition between classes and improves results.</li>
+                <li style="margin-bottom: 12px;"><strong>Multi-task is powerful:</strong> A single framework can excel at detection, segmentation, and keypoint estimation simultaneously, suggesting shared representations are beneficial.</li>
+                <li style="margin-bottom: 12px;"><strong>Simplicity wins:</strong> Mask R-CNN's elegance and ease of implementation helped it become a standard baseline, despite more complex contemporaries.</li>
+                <li><strong>Generalization is key:</strong> The framework readily extends to new tasks (pose estimation), demonstrating the value of flexible, modular architectures.</li>
+            </ol>
+        </section>
+
+        <div class="nav-links">
+            <a href="faster-rcnn.html">← Previous: Faster R-CNN</a>
+            <a href="../index.html">Next: All Papers →</a>
+        </div>
+    </div>
+</body>
+</html>
