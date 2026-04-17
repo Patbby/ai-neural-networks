@@ -258,6 +258,42 @@
                 </svg>
             </div>
 
+            <!-- SVM Paper Card -->
+            <div class="network-card" onclick="location.href='papers/svm.html'">
+                <span class="tag">Machine Learning 1995</span>
+                <h3>Support-Vector Networks (SVM)</h3>
+                <p>The foundational algorithm for maximum margin classification and kernel methods. Revolutionized machine learning with 50,000+ citations and the theoretical framework for generalization.</p>
+                <svg class="preview-svg" viewBox="0 0 300 150">
+                    <defs>
+                        <linearGradient id="svm-grad" x1="0%" y1="0%" x2="100%" y2="0%">
+                            <stop offset="0%" style="stop-color:#ff6b6b"/>
+                            <stop offset="50%" style="stop-color:#4ecdc4"/>
+                            <stop offset="100%" style="stop-color:#6366f1"/>
+                        </linearGradient>
+                    </defs>
+                    <!-- Decision boundary -->
+                    <line x1="80" y1="125" x2="220" y2="25" stroke="#4ecdc4" stroke-width="3"/>
+                    <text x="230" y="30" fill="#4ecdc4" font-size="9" font-weight="bold">Hyperplane</text>
+                    <!-- Margin lines -->
+                    <line x1="65" y1="115" x2="205" y2="15" stroke="#ff6b6b" stroke-width="1.5" stroke-dasharray="4,2"/>
+                    <line x1="95" y1="135" x2="235" y2="35" stroke="#ff6b6b" stroke-width="1.5" stroke-dasharray="4,2"/>
+                    <!-- Class A points -->
+                    <circle cx="100" cy="90" r="8" fill="#ff6b6b" stroke="#fff" stroke-width="1"/>
+                    <circle cx="130" cy="70" r="8" fill="#ff6b6b" stroke="#fff" stroke-width="1"/>
+                    <circle cx="160" cy="50" r="8" fill="#ff6b6b" stroke="#fff" stroke-width="1"/>
+                    <!-- Support vector highlighted -->
+                    <circle cx="130" cy="70" r="12" fill="none" stroke="#ffd93d" stroke-width="2"/>
+                    <!-- Class B points -->
+                    <circle cx="170" cy="110" r="8" fill="#4ecdc4" stroke="#fff" stroke-width="1"/>
+                    <circle cx="200" cy="80" r="8" fill="#4ecdc4" stroke="#fff" stroke-width="1"/>
+                    <circle cx="230" cy="60" r="8" fill="#4ecdc4" stroke="#fff" stroke-width="1"/>
+                    <!-- Support vector highlighted -->
+                    <circle cx="170" cy="110" r="12" fill="none" stroke="#ffd93d" stroke-width="2"/>
+                    <!-- Labels -->
+                    <text x="150" y="145" fill="#888" font-size="8" text-anchor="middle">Max Margin</text>
+                </svg>
+            </div>
+
             <!-- LeNet Paper Card -->
             <div class="network-card" onclick="location.href='papers/lenet.html'">
                 <span class="tag">Proceedings of IEEE 1998</span>
