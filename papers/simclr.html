@@ -1,0 +1,603 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SimCLR | AI Neural Networks</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            background: #0a0a0f;
+            color: #e0e0ff;
+            line-height: 1.6;
+        }
+        
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: 40px 20px;
+        }
+        
+        .back-link {
+            display: inline-block;
+            margin-bottom: 30px;
+            color: #6366f1;
+            text-decoration: none;
+            font-weight: 500;
+            transition: color 0.3s;
+        }
+        
+        .back-link:hover {
+            color: #a855f7;
+        }
+        
+        .paper-header {
+            background: linear-gradient(135deg, rgba(99,102,241,0.1) 0%, rgba(168,85,247,0.1) 100%);
+            border: 1px solid rgba(99, 102, 241, 0.3);
+            border-radius: 20px;
+            padding: 40px;
+            margin-bottom: 40px;
+        }
+        
+        h1 {
+            font-size: 2.5rem;
+            background: linear-gradient(135deg, #6366f1 0%, #a855f7 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 15px;
+        }
+        
+        .paper-meta {
+            color: #8888aa;
+            font-size: 1.1rem;
+            margin-bottom: 20px;
+        }
+        
+        .paper-links {
+            display: flex;
+            gap: 15px;
+            flex-wrap: wrap;
+        }
+        
+        .paper-link {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 10px 20px;
+            background: rgba(99, 102, 241, 0.2);
+            border: 1px solid rgba(99, 102, 241, 0.4);
+            border-radius: 25px;
+            color: #a5b4fc;
+            text-decoration: none;
+            font-size: 0.9rem;
+            transition: all 0.3s;
+        }
+        
+        .paper-link:hover {
+            background: rgba(99, 102, 241, 0.3);
+            border-color: #6366f1;
+            transform: translateY(-2px);
+        }
+        
+        h2 {
+            font-size: 1.8rem;
+            color: #a855f7;
+            margin: 40px 0 20px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid rgba(168, 85, 247, 0.3);
+        }
+        
+        h3 {
+            font-size: 1.4rem;
+            color: #6366f1;
+            margin: 30px 0 15px;
+        }
+        
+        p {
+            margin-bottom: 20px;
+            color: #c0c0e0;
+        }
+        
+        .highlight-box {
+            background: rgba(99, 102, 241, 0.1);
+            border-left: 4px solid #6366f1;
+            padding: 20px;
+            margin: 25px 0;
+            border-radius: 0 10px 10px 0;
+        }
+        
+        .key-innovation {
+            background: linear-gradient(135deg, rgba(16, 185, 129, 0.1) 0%, rgba(99, 102, 241, 0.1) 100%);
+            border: 1px solid rgba(16, 185, 129, 0.3);
+            border-radius: 15px;
+            padding: 25px;
+            margin: 30px 0;
+        }
+        
+        .key-innovation h3 {
+            color: #10b981;
+            margin-top: 0;
+        }
+        
+        .svg-container {
+            background: rgba(20, 20, 35, 0.8);
+            border: 1px solid rgba(99, 102, 241, 0.2);
+            border-radius: 15px;
+            padding: 30px;
+            margin: 30px 0;
+            text-align: center;
+        }
+        
+        .svg-container svg {
+            max-width: 100%;
+            height: auto;
+        }
+        
+        .code-block {
+            background: #0d0d12;
+            border: 1px solid rgba(99, 102, 241, 0.2);
+            border-radius: 10px;
+            padding: 20px;
+            overflow-x: auto;
+            font-family: 'Consolas', 'Monaco', monospace;
+            font-size: 0.9rem;
+            color: #a5b4fc;
+            margin: 20px 0;
+        }
+        
+        .code-comment {
+            color: #6b7280;
+        }
+        
+        .code-keyword {
+            color: #c084fc;
+        }
+        
+        .code-string {
+            color: #10b981;
+        }
+        
+        .code-function {
+            color: #60a5fa;
+        }
+        
+        .results-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin: 30px 0;
+        }
+        
+        .result-card {
+            background: rgba(20, 20, 35, 0.8);
+            border: 1px solid rgba(99, 102, 241, 0.2);
+            border-radius: 12px;
+            padding: 20px;
+            text-align: center;
+        }
+        
+        .result-value {
+            font-size: 2rem;
+            font-weight: 700;
+            color: #10b981;
+        }
+        
+        .result-label {
+            color: #8888aa;
+            font-size: 0.9rem;
+            margin-top: 5px;
+        }
+        
+        ul, ol {
+            margin: 20px 0;
+            padding-left: 30px;
+        }
+        
+        li {
+            margin-bottom: 10px;
+            color: #c0c0e0;
+        }
+        
+        .related-papers {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            margin: 30px 0;
+        }
+        
+        .related-card {
+            background: rgba(20, 20, 35, 0.8);
+            border: 1px solid rgba(99, 102, 241, 0.2);
+            border-radius: 12px;
+            padding: 20px;
+            transition: all 0.3s;
+        }
+        
+        .related-card:hover {
+            border-color: rgba(99, 102, 241, 0.5);
+            transform: translateY(-3px);
+        }
+        
+        .related-card h4 {
+            color: #a855f7;
+            margin-bottom: 10px;
+        }
+        
+        .related-card p {
+            font-size: 0.9rem;
+            margin: 0;
+        }
+        
+        .formula {
+            background: rgba(99, 102, 241, 0.1);
+            border-radius: 10px;
+            padding: 20px;
+            text-align: center;
+            font-family: 'Times New Roman', serif;
+            font-size: 1.2rem;
+            color: #e0e0ff;
+            margin: 20px 0;
+        }
+        
+        .augmentation-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 15px;
+            margin: 20px 0;
+        }
+        
+        .augmentation-item {
+            background: rgba(99, 102, 241, 0.1);
+            border-radius: 10px;
+            padding: 15px;
+            text-align: center;
+        }
+        
+        .augmentation-icon {
+            font-size: 2rem;
+            margin-bottom: 8px;
+        }
+        
+        .augmentation-name {
+            font-size: 0.85rem;
+            color: #a5b4fc;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <a href="../index.html" class="back-link">← Back to Neural Networks</a>
+        
+        <div class="paper-header">
+            <h1>SimCLR</h1>
+            <p class="paper-meta">
+                <strong>A Simple Framework for Contrastive Learning of Visual Representations</strong><br>
+                Ting Chen, Simon Kornblith, Mohammad Norouzi, Geoffrey Hinton<br>
+                Google Research, Brain Team | ICML 2020
+            </p>
+            <div class="paper-links">
+                <a href="https://arxiv.org/abs/2002.05709" class="paper-link" target="_blank">📄 arXiv</a>
+                <a href="https://github.com/google-research/simclr" class="paper-link" target="_blank">💻 Code</a>
+                <a href="https://proceedings.mlr.press/v119/chen20j.html" class="paper-link" target="_blank">📚 ICML</a>
+            </div>
+        </div>
+        
+        <h2>Problem Statement</h2>
+        <p>
+            Learning effective visual representations without human supervision has long been a fundamental challenge in computer vision. Before SimCLR, most self-supervised approaches fell into two categories:
+        </p>
+        <ul>
+            <li><strong>Generative approaches</strong> - Learn to model pixels directly, which is computationally expensive and may be unnecessary for representation learning</li>
+            <li><strong>Discriminative approaches</strong> - Rely on heuristics to design pretext tasks, limiting the generality of learned representations</li>
+        </ul>
+        <p>
+            Previous contrastive learning methods required specialized architectures (like memory banks) and complex engineering, making them difficult to adopt and scale.
+        </p>
+        
+        <div class="highlight-box">
+            <strong>Key Question:</strong> Can we design a simpler framework for contrastive learning that achieves state-of-the-art results without specialized architectures or memory banks?
+        </div>
+        
+        <h2>Key Innovation</h2>
+        <div class="key-innovation">
+            <h3>🔍 Simplicity Through Systematic Study</h3>
+            <p>
+                SimCLR demonstrates that contrastive learning can be simplified to four essential components, with careful study revealing which factors matter most:
+            </p>
+            <ol>
+                <li><strong>Data Augmentation Composition</strong> - Multiple augmentation operations are crucial for defining effective predictive tasks</li>
+                <li><strong>Nonlinear Projection Head</strong> - A learnable transformation between representation and contrastive loss substantially improves quality</li>
+                <li><strong>Normalized Embeddings</strong> - L2 normalization and temperature scaling are critical for performance</li>
+                <li><strong>Large Batch Sizes</strong> - Unlike supervised learning, contrastive learning benefits significantly from larger batches</li>
+            </ol>
+        </div>
+        
+        <h2>Architecture & Method</h2>
+        
+        <h3>SimCLR Framework Overview</h3>
+        <div class="svg-container">
+            <svg viewBox="0 0 900 400" xmlns="http://www.w3.org/2000/svg">
+                <defs>
+                    <linearGradient id="grad1" x1="0%" y1="0%" x2="100%" y2="100%">
+                        <stop offset="0%" style="stop-color:#6366f1;stop-opacity:1" />
+                        <stop offset="100%" style="stop-color:#a855f7;stop-opacity:1" />
+                    </linearGradient>
+                    <linearGradient id="grad2" x1="0%" y1="0%" x2="100%" y2="100%">
+                        <stop offset="0%" style="stop-color:#10b981;stop-opacity:1" />
+                        <stop offset="100%" style="stop-color:#6366f1;stop-opacity:1" />
+                    </linearGradient>
+                    <marker id="arrowhead" markerWidth="10" markerHeight="10" refX="9" refY="3" orient="auto">
+                        <polygon points="0 0, 10 3, 0 6" fill="#6366f1" />
+                    </marker>
+                </defs>
+                
+                <!-- Title -->
+                <text x="450" y="30" text-anchor="middle" fill="#e0e0ff" font-size="20" font-weight="bold">SimCLR Framework</text>
+                
+                <!-- Input Image -->
+                <rect x="50" y="70" width="80" height="80" rx="5" fill="url(#grad1)" opacity="0.3" stroke="#6366f1" stroke-width="2"/>
+                <text x="90" y="115" text-anchor="middle" fill="#e0e0ff" font-size="14">Input</text>
+                <text x="90" y="130" text-anchor="middle" fill="#8888aa" font-size="10">Image x</text>
+                
+                <!-- Augmentation Arrow -->
+                <line x1="130" y1="110" x2="170" y2="110" stroke="#6366f1" stroke-width="2" marker-end="url(#arrowhead)"/>
+                <text x="150" y="100" text-anchor="middle" fill="#8888aa" font-size="10">t, t' ~ T</text>
+                
+                <!-- Two augmented views -->
+                <rect x="180" y="60" width="70" height="70" rx="5" fill="url(#grad2)" opacity="0.3" stroke="#10b981" stroke-width="2"/>
+                <text x="215" y="95" text-anchor="middle" fill="#e0e0ff" font-size="12">x̂ᵢ</text>
+                <text x="215" y="110" text-anchor="middle" fill="#8888aa" font-size="9">Augmented</text>
+                
+                <rect x="180" y="150" width="70" height="70" rx="5" fill="url(#grad2)" opacity="0.3" stroke="#10b981" stroke-width="2"/>
+                <text x="215" y="185" text-anchor="middle" fill="#e0e0ff" font-size="12">x̂ⱼ</text>
+                <text x="215" y="200" text-anchor="middle" fill="#8888aa" font-size="9">Augmented</text>
+                
+                <!-- Encoder f() -->
+                <rect x="280" y="60" width="100" height="70" rx="8" fill="rgba(99,102,241,0.2)" stroke="#6366f1" stroke-width="2"/>
+                <text x="330" y="95" text-anchor="middle" fill="#e0e0ff" font-size="14" font-weight="bold">Encoder f()</text>
+                <text x="330" y="115" text-anchor="middle" fill="#8888aa" font-size="10">ResNet-50</text>
+                
+                <rect x="280" y="150" width="100" height="70" rx="8" fill="rgba(99,102,241,0.2)" stroke="#6366f1" stroke-width="2"/>
+                <text x="330" y="185" text-anchor="middle" fill="#e0e0ff" font-size="14" font-weight="bold">Encoder f()</text>
+                <text x="330" y="205" text-anchor="middle" fill="#8888aa" font-size="10">ResNet-50</text>
+                
+                <!-- Representations h -->
+                <rect x="410" y="60" width="70" height="70" rx="5" fill="rgba(168,85,247,0.2)" stroke="#a855f7" stroke-width="2"/>
+                <text x="445" y="95" text-anchor="middle" fill="#e0e0ff" font-size="12">hᵢ</text>
+                <text x="445" y="110" text-anchor="middle" fill="#8888aa" font-size="9">Representation</text>
+                
+                <rect x="410" y="150" width="70" height="70" rx="5" fill="rgba(168,85,247,0.2)" stroke="#a855f7" stroke-width="2"/>
+                <text x="445" y="185" text-anchor="middle" fill="#e0e0ff" font-size="12">hⱼ</text>
+                <text x="445" y="200" text-anchor="middle" fill="#8888aa" font-size="9">Representation</text>
+                
+                <!-- Projection Head g() -->
+                <rect x="510" y="60" width="100" height="70" rx="8" fill="rgba(236,72,153,0.2)" stroke="#ec4899" stroke-width="2"/>
+                <text x="560" y="90" text-anchor="middle" fill="#e0e0ff" font-size="13" font-weight="bold">Projection</text>
+                <text x="560" y="108" text-anchor="middle" fill="#e0e0ff" font-size="13" font-weight="bold">Head g()</text>
+                <text x="560" y="125" text-anchor="middle" fill="#8888aa" font-size="9">MLP (2 layers)</text>
+                
+                <rect x="510" y="150" width="100" height="70" rx="8" fill="rgba(236,72,153,0.2)" stroke="#ec4899" stroke-width="2"/>
+                <text x="560" y="180" text-anchor="middle" fill="#e0e0ff" font-size="13" font-weight="bold">Projection</text>
+                <text x="560" y="198" text-anchor="middle" fill="#e0e0ff" font-size="13" font-weight="bold">Head g()</text>
+                <text x="560" y="215" text-anchor="middle" fill="#8888aa" font-size="9">MLP (2 layers)</text>
+                
+                <!-- Projections z -->
+                <rect x="640" y="60" width="60" height="70" rx="5" fill="rgba(245,158,11,0.2)" stroke="#f59e0b" stroke-width="2"/>
+                <text x="670" y="95" text-anchor="middle" fill="#e0e0ff" font-size="12">zᵢ</text>
+                <text x="670" y="112" text-anchor="middle" fill="#8888aa" font-size="9">Projection</text>
+                
+                <rect x="640" y="150" width="60" height="70" rx="5" fill="rgba(245,158,11,0.2)" stroke="#f59e0b" stroke-width="2"/>
+                <text x="670" y="185" text-anchor="middle" fill="#e0e0ff" font-size="12">zⱼ</text>
+                <text x="670" y="202" text-anchor="middle" fill="#8888aa" font-size="9">Projection</text>
+                
+                <!-- NT-Xent Loss -->
+                <ellipse cx="780" cy="140" rx="80" ry="50" fill="rgba(16,185,129,0.2)" stroke="#10b981" stroke-width="2"/>
+                <text x="780" y="130" text-anchor="middle" fill="#e0e0ff" font-size="13" font-weight="bold">NT-Xent Loss</text>
+                <text x="780" y="150" text-anchor="middle" fill="#8888aa" font-size="10">Normalized Temp-Scaled</text>
+                <text x="780" y="165" text-anchor="middle" fill="#8888aa" font-size="10">Cross-Entropy</text>
+                
+                <!-- Flow arrows -->
+                <line x1="250" y1="95" x2="280" y2="95" stroke="#6366f1" stroke-width="2" marker-end="url(#arrowhead)"/>
+                <line x1="250" y1="185" x2="280" y2="185" stroke="#6366f1" stroke-width="2" marker-end="url(#arrowhead)"/>
+                <line x1="380" y1="95" x2="410" y2="95" stroke="#a855f7" stroke-width="2" marker-end="url(#arrowhead)"/>
+                <line x1="380" y1="185" x2="410" y2="185" stroke="#a855f7" stroke-width="2" marker-end="url(#arrowhead)"/>
+                <line x1="480" y1="95" x2="510" y2="95" stroke="#ec4899" stroke-width="2" marker-end="url(#arrowhead)"/>
+                <line x1="480" y1="185" x2="510" y2="185" stroke="#ec4899" stroke-width="2" marker-end="url(#arrowhead)"/>
+                <line x1="610" y1="95" x2="640" y2="95" stroke="#f59e0b" stroke-width="2" marker-end="url(#arrowhead)"/>
+                <line x1="610" y1="185" x2="640" y2="185" stroke="#f59e0b" stroke-width="2" marker-end="url(#arrowhead)"/>
+                
+                <!-- Curved lines to loss -->
+                <path d="M 700 95 Q 740 95 740 110" stroke="#10b981" stroke-width="2" fill="none" marker-end="url(#arrowhead)"/>
+                <path d="M 700 185 Q 740 185 740 170" stroke="#10b981" stroke-width="2" fill="none" marker-end="url(#arrowhead)"/>
+                
+                <!-- Legend -->
+                <text x="450" y="300" text-anchor="middle" fill="#8888aa" font-size="12">Training: Maximize agreement between positive pairs (zᵢ, zⱼ)</text>
+                <text x="450" y="320" text-anchor="middle" fill="#8888aa" font-size="12">After training: Discard g(), use f() and h for downstream tasks</text>
+                
+                <!-- Positive pair label -->
+                <text x="215" y="245" text-anchor="middle" fill="#10b981" font-size="11">Positive Pair</text>
+                <line x1="215" y1="140" x2="215" y2="235" stroke="#10b981" stroke-width="1" stroke-dasharray="3,3"/>
+            </svg>
+        </div>
+        
+        <h3>Data Augmentation Pipeline</h3>
+        <div class="augmentation-grid">
+            <div class="augmentation-item">
+                <div class="augmentation-icon">🖼️</div>
+                <div class="augmentation-name">Random Crop + Resize</div>
+            </div>
+            <div class="augmentation-item">
+                <div class="augmentation-icon">🌈</div>
+                <div class="augmentation-name">Color Distortion</div>
+            </div>
+            <div class="augmentation-item">
+                <div class="augmentation-icon">🔲</div>
+                <div class="augmentation-name">Gaussian Blur</div>
+            </div>
+        </div>
+        
+        <div class="highlight-box">
+            <strong>Critical Finding:</strong> The composition of random crop and color distortion is essential. Without color distortion, the model learns shortcut solutions by matching color histograms rather than semantic content.
+        </div>
+        
+        <h3>NT-Xent Loss Function</h3>
+        <div class="formula">
+            ℓ<sub>i,j</sub> = -log <sup>exp(sim(zᵢ, zⱼ) / τ)</sup> ⁄ <sub>∑<sub>k</sub> 𝟙<sub>[k≠i]</sub> exp(sim(zᵢ, z<sub>k</sub>) / τ)</sub>
+        </div>
+        <p>where sim(u, v) = u<sup>T</sup>v / ||u|| ||v|| is the cosine similarity, and τ is a temperature parameter.</p>
+        
+        <h2>Results & Impact</h2>
+        
+        <h3>Key Achievements</h3>
+        <div class="results-grid">
+            <div class="result-card">
+                <div class="result-value">76.5%</div>
+                <div class="result-label">Top-1 Accuracy (Linear Eval)</div>
+            </div>
+            <div class="result-card">
+                <div class="result-value">+7%</div>
+                <div class="result-label">Relative Improvement over SOTA</div>
+            </div>
+            <div class="result-card">
+                <div class="result-value">85.8%</div>
+                <div class="result-label">Top-5 Accuracy (1% Labels)</div>
+            </div>
+            <div class="result-card">
+                <div class="result-value">100×</div>
+                <div class="result-label">Fewer Labels than AlexNet</div>
+            </div>
+        </div>
+        
+        <div class="highlight-box">
+            <strong>Breakthrough Result:</strong> A linear classifier trained on SimCLR representations matched the performance of a fully supervised ResNet-50, demonstrating that self-supervised learning can rival supervised learning.
+        </div>
+        
+        <h3>Ablation Study Findings</h3>
+        <ul>
+            <li><strong>Projection Head:</strong> Removing the nonlinear projection head (using h directly) degrades performance by &gt;10%</li>
+            <li><strong>Batch Size:</strong> Increasing batch size from 256 to 8192 improves linear evaluation by ~4%</li>
+            <li><strong>Training Steps:</strong> Longer training consistently improves performance - 1000 epochs &gt; 100 epochs</li>
+            <li><strong>Normalization:</strong> L2 normalization and appropriate temperature scaling are critical</li>
+        </ul>
+        
+        <h2>Code Implementation</h2>
+        
+        <div class="code-block">
+<span class="code-comment"># SimCLR Core Implementation (PyTorch-style pseudocode)</span>
+
+<span class="code-keyword">import</span> torch
+<span class="code-keyword">import</span> torch.nn <span class="code-keyword">as</span> nn
+<span class="code-keyword">import</span> torch.nn.functional <span class="code-keyword">as</span> F
+
+<span class="code-keyword">class</span> <span class="code-function">SimCLR</span>(nn.Module):
+    <span class="code-keyword">def</span> <span class="code-function">__init__</span>(self, base_encoder, projection_dim=<span class="code-string">128</span>, hidden_dim=<span class="code-string">2048</span>):
+        <span class="code-function">super</span>(SimCLR, self).__init__()
+        
+        <span class="code-comment"># Base encoder (e.g., ResNet-50)</span>
+        self.encoder = base_encoder
+        
+        <span class="code-comment"># Projection head: 2-layer MLP</span>
+        self.projection = nn.Sequential(
+            nn.Linear(hidden_dim, hidden_dim),
+            nn.ReLU(),
+            nn.Linear(hidden_dim, projection_dim)
+        )
+    
+    <span class="code-keyword">def</span> <span class="code-function">forward</span>(self, x_i, x_j):
+        <span class="code-comment"># Get representations</span>
+        h_i = self.encoder(x_i)
+        h_j = self.encoder(x_j)
+        
+        <span class="code-comment"># Get projections</span>
+        z_i = self.projection(h_i)
+        z_j = self.projection(h_j)
+        
+        <span class="code-keyword">return</span> h_i, h_j, z_i, z_j
+
+<span class="code-keyword">def</span> <span class="code-function">nt_xent_loss</span>(z_i, z_j, temperature=<span class="code-string">0.5</span>):
+    <span class="code-comment"># Normalize embeddings</span>
+    z_i = F.normalize(z_i, dim=<span class="code-string">1</span>)
+    z_j = F.normalize(z_j, dim=<span class="code-string">1</span>)
+    
+    <span class="code-comment"># Concatenate z_i and z_j to form all embeddings</span>
+    z_all = torch.cat([z_i, z_j], dim=<span class="code-string">0</span>)
+    
+    <span class="code-comment"># Compute similarity matrix</span>
+    sim_matrix = torch.mm(z_all, z_all.t()) / temperature
+    
+    <span class="code-comment"># Create positive pair mask (i pairs with i+N)</span>
+    batch_size = z_i.size(<span class="code-string">0</span>)
+    mask = torch.eye(<span class="code-string">2</span> * batch_size, dtype=torch.bool, device=z_i.device)
+    
+    <span class="code-comment"># Get positive pairs (i, j) and (j, i)</span>
+    positives = sim_matrix[mask].view(<span class="code-string">2</span> * batch_size, <span class="code-string">-1</span>)
+    
+    <span class="code-comment"># Get all negatives</span>
+    negatives = sim_matrix[~mask].view(<span class="code-string">2</span> * batch_size, <span class="code-string">-1</span>)
+    
+    <span class="code-comment"># Compute loss</span>
+    logits = torch.cat([positives, negatives], dim=<span class="code-string">1</span>)
+    labels = torch.zeros(<span class="code-string">2</span> * batch_size, device=z_i.device, dtype=torch.long)
+    
+    <span class="code-keyword">return</span> F.cross_entropy(logits, labels)
+        </div>
+        
+        <h2>Related Work</h2>
+        
+        <div class="related-papers">
+            <div class="related-card">
+                <h4>🔬 MoCo</h4>
+                <p>Momentum Contrast (He et al., 2020) - Uses a momentum encoder and memory bank for contrastive learning. SimCLR showed that with large enough batches, memory banks are unnecessary.</p>
+            </div>
+            <div class="related-card">
+                <h4>🔬 CPC</h4>
+                <p>Contrastive Predictive Coding (van den Oord et al., 2018) - Early contrastive learning approach using autoregressive models in latent space.</p>
+            </div>
+            <div class="related-card">
+                <h4>🔬 SimCLRv2</h4>
+                <p>Big Self-Supervised Models are Strong Semi-Supervised Learners (Chen et al., 2020) - Extended SimCLR with larger models and distillation.</p>
+            </div>
+            <div class="related-card">
+                <h4>🔬 BYOL</h4>
+                <p>Bootstrap Your Own Latent (Grill et al., 2020) - Shows contrastive learning works even without negative pairs, inspired by SimCLR's findings.</p>
+            </div>
+            <div class="related-card">
+                <h4>🔬 SwAV</h4>
+                <p>Swapping Assignments Between Views (Caron et al., 2020) - Online clustering approach that eliminates the need for large batches.</p>
+            </div>
+            <div class="related-card">
+                <h4>🔬 CLIP</h4>
+                <p>Learning Transferable Visual Models (Radford et al., 2021) - Extends contrastive learning to vision-language alignment, inspired by SimCLR's design principles.</p>
+            </div>
+        </div>
+        
+        <h2>Impact & Legacy</h2>
+        <p>
+            SimCLR has fundamentally reshaped the landscape of self-supervised learning in computer vision:
+        </p>
+        <ul>
+            <li><strong>Democratized Self-Supervised Learning</strong> - Showed that complex architectures aren't necessary, making the approach accessible</li>
+            <li><strong>Established Best Practices</strong> - Its findings on data augmentation, projection heads, and batch sizes became standard across the field</li>
+            <li><strong>Paved the Way for CLIP</strong> - The design principles directly influenced multimodal contrastive learning</li>
+            <li><strong>Industrial Adoption</strong> - Widely adopted in production systems at Google and other tech companies</li>
+        </ul>
+        
+        <div class="key-innovation">
+            <h3>🎯 Core Insight</h3>
+            <p>
+                "SimCLR demonstrates that the complexity of previous self-supervised methods was largely unnecessary. By systematically studying each component, we found that simple design choices—composition of augmentations, nonlinear projections, and large batches—are what truly matter for learning good representations."
+            </p>
+            <p style="text-align: right; font-size: 0.9rem; color: #8888aa;">
+                — Ting Chen et al., ICML 2020
+            </p>
+        </div>
+    </div>
+</body>
+</html>
