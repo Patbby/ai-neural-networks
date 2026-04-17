@@ -1200,6 +1200,67 @@
                 </svg>
             </div>
 
+            <!-- Faster R-CNN Paper Card -->
+            <div class="network-card" onclick="location.href='papers/faster-rcnn.html'">
+                <span class="tag">NeurIPS 2015</span>
+                <h3>Faster R-CNN</h3>
+                <p>Towards Real-Time Object Detection with Region Proposal Networks - The breakthrough that unified region proposal and detection into a single network, achieving 5 FPS with near cost-free region proposals.</p>
+                <svg class="preview-svg" viewBox="0 0 300 150">
+                    <defs>
+                        <linearGradient id="fasterrcnn-grad" x1="0%" y1="0%" x2="100%" y2="0%">
+                            <stop offset="0%" style="stop-color:#6366f1"/>
+                            <stop offset="50%" style="stop-color:#f59e0b"/>
+                            <stop offset="100%" style="stop-color:#ec4899"/>
+                        </linearGradient>
+                    </defs>
+                    <!-- Input Image -->
+                    <rect x="15" y="45" width="40" height="40" fill="none" stroke="#6366f1" stroke-width="2" rx="3"/>
+                    <text x="35" y="68" fill="#a5b4fc" font-size="10" text-anchor="middle">🖼️</text>
+                    <!-- Arrow -->
+                    <path d="M55 65 L70 65" stroke="#6366f1" stroke-width="2"/>
+                    <!-- Conv Backbone -->
+                    <rect x="75" y="40" width="50" height="50" fill="rgba(99,102,241,0.3)" stroke="#6366f1" stroke-width="2" rx="5"/>
+                    <text x="100" y="60" fill="#fff" font-size="8" text-anchor="middle">Conv</text>
+                    <text x="100" y="75" fill="#a0a0cc" font-size="7" text-anchor="middle">VGG16</text>
+                    <!-- Shared feature arrow -->
+                    <path d="M125 65 L140 65" stroke="#6366f1" stroke-width="2"/>
+                    <!-- Feature map -->
+                    <rect x="145" y="45" width="40" height="35" fill="rgba(16,185,129,0.3)" stroke="#10b981" stroke-width="1.5" rx="3"/>
+                    <text x="165" y="62" fill="#6ee7b7" font-size="7" text-anchor="middle">Shared</text>
+                    <text x="165" y="72" fill="#6ee7b7" font-size="6" text-anchor="middle">Features</text>
+                    <!-- Branch to RPN -->
+                    <path d="M165 80 L165 95 L105 95" stroke="#f59e0b" stroke-width="1.5"/>
+                    <path d="M105 95 L105 110" stroke="#f59e0b" stroke-width="1.5" marker-end="url(#arrow-frcnn)"/>
+                    <!-- RPN Box -->
+                    <rect x="55" y="110" width="70" height="30" fill="rgba(245,158,11,0.3)" stroke="#f59e0b" stroke-width="2" rx="3"/>
+                    <text x="90" y="125" fill="#fcd34d" font-size="9" text-anchor="middle">RPN</text>
+                    <text x="90" y="135" fill="#a0a0cc" font-size="6" text-anchor="middle">Proposals</text>
+                    <!-- Arrow to Fast R-CNN -->
+                    <path d="M125 125 L185 125" stroke="#f59e0b" stroke-width="1.5" stroke-dasharray="3,2" marker-end="url(#arrow-frcnn)"/>
+                    <!-- Branch to Fast R-CNN -->
+                    <path d="M185 80 L185 95 L220 95" stroke="#ec4899" stroke-width="1.5" marker-end="url(#arrow-frcnn)"/>
+                    <!-- Fast R-CNN -->
+                    <rect x="200" y="105" width="80" height="40" fill="rgba(236,72,153,0.3)" stroke="#ec4899" stroke-width="2" rx="5"/>
+                    <text x="240" y="122" fill="#f9a8d4" font-size="9" text-anchor="middle">Fast R-CNN</text>
+                    <text x="240" y="135" fill="#a0a0cc" font-size="6" text-anchor="middle">Cls + BBox</text>
+                    <!-- Anchor boxes visual -->
+                    <g transform="translate(270, 45)">
+                        <rect x="0" y="0" width="15" height="12" fill="rgba(99,102,241,0.4)" stroke="#6366f1" stroke-width="1" rx="1"/>
+                        <rect x="5" y="15" width="20" height="15" fill="rgba(16,185,129,0.4)" stroke="#10b981" stroke-width="1" rx="1"/>
+                        <rect x="0" y="35" width="25" height="12" fill="rgba(236,72,153,0.4)" stroke="#ec4899" stroke-width="1" rx="1"/>
+                    </g>
+                    <text x="282" y="30" fill="#888" font-size="6" text-anchor="middle">9 Anchors</text>
+                    <!-- Arrow marker def -->
+                    <defs>
+                        <marker id="arrow-frcnn" markerWidth="8" markerHeight="8" refX="7" refY="3" orient="auto">
+                            <polygon points="0 0, 8 3, 0 6" fill="#6366f1"/>
+                        </marker>
+                    </defs>
+                    <!-- Label -->
+                    <text x="150" y="145" fill="#8888aa" font-size="8" text-anchor="middle">Shared Conv + RPN + Fast R-CNN</text>
+                </svg>
+            </div>
+
             <!-- Gradient Boosting Paper Card -->
             <div class="network-card" onclick="location.href='papers/gradient-boosting.html'">
                 <span class="tag">Annals of Statistics 2001</span>
