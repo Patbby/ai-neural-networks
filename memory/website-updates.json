@@ -1,8 +1,8 @@
 {
-  "lastUpdate": "2026-04-18T03:57:00+08:00",
+  "lastUpdate": "2026-04-18T05:48:00+08:00",
   "papersAdded": 1,
-  "totalPapers": 58,
+  "totalPapers": 53,
   "nextPaper": "TBD",
-  "updateCount": 11,
-  "recentAddition": "Faster R-CNN (Ren et al., NeurIPS 2015) - Towards Real-Time Object Detection with Region Proposal Networks. Introduced the Region Proposal Network (RPN) that shares convolutional features with detection networks, making region proposals nearly cost-free. Achieved 5 FPS on VGG-16 with 73.2% mAP on PASCAL VOC 2007. Foundation of modern two-stage object detectors."
+  "updateCount": 17,
+  "recentAddition": "CycleGAN (Zhu et al., ICCV 2017) - Unpaired Image-to-Image Translation using Cycle-Consistent Adversarial Networks. Introduced cycle consistency loss for learning without paired data. Applications in style transfer, season transfer, medical imaging synthesis, and game graphics. 30,000+ citations."
 }
