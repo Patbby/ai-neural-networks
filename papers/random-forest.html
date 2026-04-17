@@ -1,0 +1,479 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Random Forest - Leo Breiman 2001 | Neural Networks</title>
+    <link rel="stylesheet" href="../assets/css/styles.css">
+    <style>
+        .paper-hero {
+            background: linear-gradient(135deg, #0f2027 0%, #203a43 50%, #2c5364 100%);
+            min-height: 60vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            padding: 2rem;
+        }
+        
+        .paper-hero h1 {
+            font-size: clamp(2rem, 5vw, 4rem);
+            margin-bottom: 1rem;
+            background: linear-gradient(135deg, #00d2ff 0%, #3a7bd5 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        
+        .paper-meta {
+            font-size: 1.2rem;
+            opacity: 0.9;
+            margin-bottom: 2rem;
+        }
+        
+        .paper-links {
+            display: flex;
+            gap: 1rem;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+        
+        .paper-link {
+            padding: 0.75rem 1.5rem;
+            border-radius: 8px;
+            background: rgba(255,255,255,0.1);
+            color: white;
+            text-decoration: none;
+            border: 1px solid rgba(255,255,255,0.2);
+            transition: all 0.3s ease;
+        }
+        
+        .paper-link:hover {
+            background: rgba(255,255,255,0.2);
+            transform: translateY(-2px);
+        }
+        
+        .section {
+            max-width: 1000px;
+            margin: 4rem auto;
+            padding: 0 2rem;
+        }
+        
+        .section h2 {
+            color: #3a7bd5;
+            border-bottom: 2px solid #3a7bd5;
+            padding-bottom: 0.5rem;
+            margin-bottom: 2rem;
+        }
+        
+        .innovation-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+            margin: 2rem 0;
+        }
+        
+        .innovation-card {
+            background: linear-gradient(145deg, #1a1a2e 0%, #16213e 100%);
+            padding: 2rem;
+            border-radius: 12px;
+            border: 1px solid rgba(58, 123, 213, 0.3);
+        }
+        
+        .innovation-card h3 {
+            color: #00d2ff;
+            margin-bottom: 1rem;
+        }
+        
+        .formula-box {
+            background: rgba(0, 0, 0, 0.3);
+            padding: 1.5rem;
+            border-radius: 8px;
+            font-family: 'Courier New', monospace;
+            margin: 1rem 0;
+            border-left: 4px solid #00d2ff;
+        }
+        
+        .code-block {
+            background: #1e1e1e;
+            padding: 1.5rem;
+            border-radius: 8px;
+            overflow-x: auto;
+            font-family: 'Courier New', monospace;
+            font-size: 0.9rem;
+            border: 1px solid #333;
+        }
+        
+        .tree-viz {
+            background: #0d1117;
+            border-radius: 12px;
+            padding: 2rem;
+            margin: 2rem 0;
+        }
+        
+        .related-papers {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1rem;
+            margin: 2rem 0;
+        }
+        
+        .related-paper {
+            background: linear-gradient(145deg, #1a1a2e 0%, #16213e 100%);
+            padding: 1.5rem;
+            border-radius: 8px;
+            border: 1px solid rgba(58, 123, 213, 0.2);
+            text-decoration: none;
+            color: inherit;
+            transition: transform 0.3s ease;
+        }
+        
+        .related-paper:hover {
+            transform: translateY(-4px);
+            border-color: rgba(58, 123, 213, 0.5);
+        }
+        
+        .impact-stat {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            padding: 1rem;
+            background: rgba(58, 123, 213, 0.1);
+            border-radius: 8px;
+            margin: 0.5rem 0;
+        }
+        
+        .impact-number {
+            font-size: 2rem;
+            font-weight: bold;
+            color: #00d2ff;
+        }
+        
+        .impact-label {
+            color: #888;
+        }
+    </style>
+</head>
+<body>
+    <nav class="navbar">
+        <div class="nav-container">
+            <a href="../index.html" class="nav-logo">Neural Networks</a>
+            <ul class="nav-menu">
+                <li><a href="../index.html">Home</a></li>
+                <li><a href="../cnn.html">CNN</a></li>
+                <li><a href="../gnn.html">GNN</a></li>
+                <li><a href="../gat.html">GAT</a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <section class="paper-hero">
+        <div>
+            <h1>Random Forests</h1>
+            <p class="paper-meta">
+                <strong>Leo Breiman</strong> • Machine Learning 45(1):5-32 • 2001
+            </p>
+            <p class="paper-meta" style="max-width: 700px; margin: 0 auto 2rem;">
+                The foundational ensemble learning method combining bagging with random feature selection, 
+                creating uncorrelated decision trees that voted together for unprecedented accuracy and robustness.
+            </p>
+            <div class="paper-links">
+                <a href="https://link.springer.com/article/10.1023/A:1010933404324" class="paper-link" target="_blank">📄 Original Paper</a>
+                <a href="https://en.wikipedia.org/wiki/Random_forest" class="paper-link" target="_blank">📚 Wikipedia</a>
+                <a href="https://scikit-learn.org/stable/modules/ensemble.html#forest" class="paper-link" target="_blank">💻 Scikit-Learn</a>
+            </div>
+        </div>
+    </section>
+
+    <section class="section">
+        <h2>🎯 Problem Statement</h2>
+        <p>
+            Before Random Forest, decision trees were powerful but problematic: they were <strong>high-variance estimators</strong> 
+            that suffered from overfitting and instability. Small changes in training data could produce dramatically different trees. 
+            While <em>bagging</em> (Bootstrap Aggregating) helped by averaging multiple trees, the trees remained correlated, 
+            limiting the variance reduction.
+        </p>
+        <p>
+            Breiman's key insight: to achieve maximum variance reduction, we need many <strong>accurate yet uncorrelated</strong> trees. 
+            The question was how to decorrelate trees while keeping them strong.
+        </p>
+    </section>
+
+    <section class="section">
+        <h2>💡 Key Innovation</h2>
+        <div class="innovation-grid">
+            <div class="innovation-card">
+                <h3>🌲 Bagging</h3>
+                <p>Bootstrap sampling with replacement creates diverse training sets. Each tree sees a different ~63.2% of the data.</p>
+                <div class="formula-box">
+                    For N samples, prob. not selected = (1-1/N)^N ≈ 1/e ≈ 36.8%
+                </div>
+            </div>
+            <div class="innovation-card">
+                <h3>🎲 Random Subspaces</h3>
+                <p>At each split, only m features (typically √p) are randomly selected. This dramatically reduces tree correlation.</p>
+                <div class="formula-box">
+                    m_try ≈ √p for classification<br>
+                    m_try ≈ p/3 for regression
+                </div>
+            </div>
+            <div class="innovation-card">
+                <h3>📊 Out-of-Bag Error</h3>
+                <p>Each tree's OOB samples (not in its bootstrap) provide built-in cross-validation—no need for separate test sets!</p>
+            </div>
+            <div class="innovation-card">
+                <h3>🔍 Variable Importance</h3>
+                <p>Permuting each variable and measuring accuracy drop reveals which features matter most for prediction.</p>
+            </div>
+        </div>
+    </section>
+
+    <section class="section">
+        <h2>🏗️ Algorithm Architecture</h2>
+        
+        <div class="tree-viz">
+            <h3 style="text-align: center; color: #3a7bd5; margin-bottom: 1.5rem;">Random Forest Training Process</h3>
+            <svg viewBox="0 0 900 550" style="width: 100%; height: auto; max-height: 500px;">
+                <!-- Background -->
+                <rect width="900" height="550" fill="#0d1117"/>
+                
+                <!-- Title -->
+                <text x="450" y="30" text-anchor="middle" fill="#fff" font-size="16" font-weight="bold">Random Forest: Bootstrap + Feature Randomness</text>
+                
+                <!-- Training Data -->
+                <rect x="350" y="50" width="200" height="60" fill="#1e3a5f" stroke="#00d2ff" stroke-width="2" rx="8"/>
+                <text x="450" y="75" text-anchor="middle" fill="#fff" font-size="12">Training Dataset (N samples)</text>
+                <text x="450" y="92" text-anchor="middle" fill="#888" font-size="10">N × p feature matrix</text>
+                
+                <!-- Bootstrap Arrows -->
+                <path d="M380 115 L200 160" stroke="#3a7bd5" stroke-width="2" marker-end="url(#arrowhead)"/>
+                <path d="M450 115 L450 160" stroke="#3a7bd5" stroke-width="2" marker-end="url(#arrowhead)"/>
+                <path d="M520 115 L700 160" stroke="#3a7bd5" stroke-width="2" marker-end="url(#arrowhead)"/>
+                
+                <defs>
+                    <marker id="arrowhead" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto">
+                        <polygon points="0 0, 10 3.5, 0 7" fill="#3a7bd5"/>
+                    </marker>
+                </defs>
+                
+                <!-- Bootstrap Samples -->
+                <rect x="120" y="165" width="160" height="50" fill="#1e3a5f" stroke="#ff6b6b" stroke-width="2" rx="5"/>
+                <text x="200" y="185" text-anchor="middle" fill="#fff" font-size="11">Bootstrap Sample 1</text>
+                <text x="200" y="200" text-anchor="middle" fill="#ff6b6b" font-size="9">~63% data used</text>
+                
+                <rect x="370" y="165" width="160" height="50" fill="#1e3a5f" stroke="#ff6b6b" stroke-width="2" rx="5"/>
+                <text x="450" y="185" text-anchor="middle" fill="#fff" font-size="11">Bootstrap Sample 2</text>
+                <text x="450" y="200" text-anchor="middle" fill="#ff6b6b" font-size="9">~37% OOB</text>
+                
+                <rect x="620" y="165" width="160" height="50" fill="#1e3a5f" stroke="#ff6b6b" stroke-width="2" rx="5"/>
+                <text x="700" y="185" text-anchor="middle" fill="#fff" font-size="11">Bootstrap Sample B</text>
+                <text x="700" y="200" text-anchor="middle" fill="#ff6b6b" font-size="9">~63% data used</text>
+                
+                <!-- Tree Arrows -->
+                <path d="M200 220 L200 260" stroke="#10b981" stroke-width="2" marker-end="url(#arrowhead2)"/>
+                <path d="M450 220 L450 260" stroke="#10b981" stroke-width="2" marker-end="url(#arrowhead2)"/>
+                <path d="M700 220 L700 260" stroke="#10b981" stroke-width="2" marker-end="url(#arrowhead2)"/>
+                
+                <defs>
+                    <marker id="arrowhead2" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto">
+                        <polygon points="0 0, 10 3.5, 0 7" fill="#10b981"/>
+                    </marker>
+                </defs>
+                
+                <!-- Decision Trees -->
+                <g transform="translate(120, 270)">
+                    <!-- Tree 1 -->
+                    <polygon points="80,0 20,80 140,80" fill="#2d3748" stroke="#10b981" stroke-width="2"/>
+                    <line x1="80" y1="80" x2="40" y2="130" stroke="#10b981" stroke-width="2"/>
+                    <line x1="80" y1="80" x2="120" y2="130" stroke="#10b981" stroke-width="2"/>
+                    <rect x="15" y="130" width="50" height="25" fill="#1e3a5f" stroke="#10b981" rx="3"/>
+                    <rect x="95" y="130" width="50" height="25" fill="#1e3a5f" stroke="#10b981" rx="3"/>
+                    <text x="80" y="55" text-anchor="middle" fill="#fff" font-size="10">Tree 1</text>
+                    <text x="40" y="145" text-anchor="middle" fill="#fff" font-size="8">leaf</text>
+                    <text x="120" y="145" text-anchor="middle" fill="#fff" font-size="8">leaf</text>
+                    <text x="80" y="175" text-anchor="middle" fill="#10b981" font-size="9">random m features</text>
+                </g>
+                
+                <g transform="translate(370, 270)">
+                    <!-- Tree 2 -->
+                    <polygon points="80,0 20,80 140,80" fill="#2d3748" stroke="#10b981" stroke-width="2"/>
+                    <line x1="80" y1="80" x2="40" y2="130" stroke="#10b981" stroke-width="2"/>
+                    <line x1="80" y1="80" x2="120" y2="130" stroke="#10b981" stroke-width="2"/>
+                    <rect x="15" y="130" width="50" height="25" fill="#1e3a5f" stroke="#10b981" rx="3"/>
+                    <rect x="95" y="130" width="50" height="25" fill="#1e3a5f" stroke="#10b981" rx="3"/>
+                    <text x="80" y="55" text-anchor="middle" fill="#fff" font-size="10">Tree 2</text>
+                    <text x="40" y="145" text-anchor="middle" fill="#fff" font-size="8">leaf</text>
+                    <text x="120" y="145" text-anchor="middle" fill="#fff" font-size="8">leaf</text>
+                    <text x="80" y="175" text-anchor="middle" fill="#10b981" font-size="9">random m features</text>
+                </g>
+                
+                <g transform="translate(620, 270)">
+                    <!-- Tree B -->
+                    <polygon points="80,0 20,80 140,80" fill="#2d3748" stroke="#10b981" stroke-width="2"/>
+                    <line x1="80" y1="80" x2="40" y2="130" stroke="#10b981" stroke-width="2"/>
+                    <line x1="80" y1="80" x2="120" y2="130" stroke="#10b981" stroke-width="2"/>
+                    <rect x="15" y="130" width="50" height="25" fill="#1e3a5f" stroke="#10b981" rx="3"/>
+                    <rect x="95" y="130" width="50" height="25" fill="#1e3a5f" stroke="#10b981" rx="3"/>
+                    <text x="80" y="55" text-anchor="middle" fill="#fff" font-size="10">Tree B</text>
+                    <text x="40" y="145" text-anchor="middle" fill="#fff" font-size="8">leaf</text>
+                    <text x="120" y="145" text-anchor="middle" fill="#fff" font-size="8">leaf</text>
+                    <text x="80" y="175" text-anchor="middle" fill="#10b981" font-size="9">random m features</text>
+                </g>
+                
+                <!-- Voting arrows -->
+                <path d="M200 450 L450 490" stroke="#f59e0b" stroke-width="2" marker-end="url(#arrowhead3)"/>
+                <path d="M450 450 L450 490" stroke="#f59e0b" stroke-width="2" marker-end="url(#arrowhead3)"/>
+                <path d="M700 450 L450 490" stroke="#f59e0b" stroke-width="2" marker-end="url(#arrowhead3)"/>
+                
+                <defs>
+                    <marker id="arrowhead3" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto">
+                        <polygon points="0 0, 10 3.5, 0 7" fill="#f59e0b"/>
+                    </marker>
+                </defs>
+                
+                <!-- Ensemble -->
+                <rect x="350" y="495" width="200" height="40" fill="#1e3a5f" stroke="#f59e0b" stroke-width="2" rx="8"/>
+                <text x="450" y="520" text-anchor="middle" fill="#fff" font-size="12">Ensemble Vote/Average</text>
+                
+                <!-- Legend -->
+                <rect x="20" y="450" width="140" height="85" fill="rgba(0,0,0,0.5)" stroke="#333" rx="5"/>
+                <text x="30" y="470" fill="#fff" font-size="11" font-weight="bold">Legend:</text>
+                <line x1="30" y1="485" x2="60" y2="485" stroke="#3a7bd5" stroke-width="3"/>
+                <text x="70" y="490" fill="#888" font-size="9">Bootstrap</text>
+                <line x1="30" y1="505" x2="60" y2="505" stroke="#10b981" stroke-width="3"/>
+                <text x="70" y="510" fill="#888" font-size="9">Tree Building</text>
+                <line x1="30" y1="525" x2="60" y2="525" stroke="#f59e0b" stroke-width="3"/>
+                <text x="70" y="530" fill="#888" font-size="9">Voting</text>
+            </svg>
+        </div>
+
+        <h3>Theoretical Foundation</h3>
+        <p>
+            The generalization error of a Random Forest depends on two factors:
+        </p>
+        <div class="formula-box">
+            Generalization Error ≤ ρ × (1-s²) / s²
+            <br><br>
+            Where:<br>
+            • ρ = correlation between any two trees (interdependence)<br>
+            • s = strength (accuracy) of individual trees
+        </div>
+        <p>
+            Random Forests reduce ρ through random feature selection while maintaining s via deep trees. 
+            As more trees are added, the ensemble error converges almost surely (Strong Law of Large Numbers).
+        </p>
+    </section>
+
+    <section class="section">
+        <h2>📈 Results & Impact</h2>
+        
+        <div class="impact-stat">
+            <div class="impact-number">100,000+</div>
+            <div class="impact-label">Citations (one of most cited ML papers)</div>
+        </div>
+        <div class="impact-stat">
+            <div class="impact-number">25+</div>
+            <div class="impact-label">Years of continuous use in production</div>
+        </div>
+        <div class="impact-stat">
+            <div class="impact-number">OOB</div>
+            <div class="impact-label">Built-in validation (no CV needed!)</div>
+        </div>
+        
+        <p>
+            On UCI benchmarks, Random Forest achieved state-of-the-art results across classification and regression tasks. 
+            Key advantages: handles high-dimensional data, provides feature importance natively, resistant to overfitting, 
+            and requires minimal hyperparameter tuning.
+        </p>
+    </section>
+
+    <section class="section">
+        <h2>💻 Code Implementation</h2>
+        
+        <div class="code-block">
+<pre><span style="color: #c586c0;">from</span> sklearn.ensemble <span style="color: #c586c0;">import</span> RandomForestClassifier
+<span style="color: #c586c0;">from</span> sklearn.datasets <span style="color: #c586c0;">import</span> load_iris
+<span style="color: #c586c0;">from</span> sklearn.model_selection <span style="color: #c586c0;">import</span> train_test_split
+
+<span style="color: #6a9955;"># Load data</span>
+iris = load_iris()
+X_train, X_test, y_train, y_test = train_test_split(
+    iris.data, iris.target, test_size=<span style="color: #b5cea8;">0.3</span>, random_state=<span style="color: #b5cea8;">42</span>
+)
+
+<span style="color: #6a9955;"># Random Forest with Breiman's recommendations</span>
+rf = RandomForestClassifier(
+    n_estimators=<span style="color: #b5cea8;">100</span>,      <span style="color: #6a9955;"># Number of trees (B)</span>
+    max_features=<span style="color: #ce9178;">'sqrt'</span>,    <span style="color: #6a9955;"># m_try ≈ √p for classification</span>
+    bootstrap=<span style="color: #569cd6;">True</span>,          <span style="color: #6a9955;"># Use bagging</span>
+    oob_score=<span style="color: #569cd6;">True</span>,          <span style="color: #6a9955;"># Out-of-bag error estimate</span>
+    max_depth=<span style="color: #569cd6;">None</span>,        <span style="color: #6a9955;"># Grow deep trees (no pruning)</span>
+    random_state=<span style="color: #b5cea8;">42</span>
+)
+
+<span style="color: #6a9955;"># Train</span>
+rf.fit(X_train, y_train)
+
+<span style="color: #6a9955;"># OOB error (Breiman's innovation)</span>
+<span style="color: #c586c0;">print</span>(<span style="color: #ce9178;">f"OOB Score: {rf.oob_score_:.3f}"</span>)
+
+<span style="color: #6a9955;"># Feature importance</span>
+<span style="color: #c586c0;">for</span> name, importance <span style="color: #c586c0;">in</span> <span style="color: #dcdcaa;">zip</span>(iris.feature_names, rf.feature_importances_):
+    <span style="color: #c586c0;">print</span>(<span style="color: #ce9178;">f"{name}: {importance:.3f}"</span>)
+
+<span style="color: #6a9955;"># Predict</span>
+predictions = rf.predict(X_test)</pre>
+        </div>
+    </section>
+
+    <section class="section">
+        <h2>🔗 Related Papers</h2>
+        
+        <div class="related-papers">
+            <a href="svm.html" class="related-paper">
+                <h4>SVM (1995)</h4>
+                <p style="color: #888; font-size: 0.9rem;">The maximum margin classifier that preceded ensemble methods as the dominant ML approach.</p>
+            </a>
+            <a href="boosting.html" class="related-paper">
+                <h4>AdaBoost (1997)</h4>
+                <p style="color: #888; font-size: 0.9rem;">Sequential ensemble method that trains on misclassified examples—an alternative ensemble philosophy.</p>
+            </a>
+            <a href="cart.html" class="related-paper">
+                <h4>CART (1984)</h4>
+                <p style="color: #888; font-size: 0.9rem;">Breiman's earlier work on Classification and Regression Trees—the foundation Random Forest builds on.</p>
+            </a>
+            <a href="xgboost.html" class="related-paper">
+                <h4>XGBoost (2016)</h4>
+                <p style="color: #888; font-size: 0.9rem;">Gradient boosting framework that often outperforms Random Forest through additive training.</p>
+            </a>
+            <a href="gradient-boosting.html" class="related-paper">
+                <h4>Gradient Boosting (1999)</h4>
+                <p style="color: #888; font-size: 0.9rem;">Friedman's method of fitting new trees to residuals—another powerful ensemble approach.</p>
+            </a>
+            <a href="extra-trees.html" class="related-paper">
+                <h4>Extra-Trees (2006)</h4>
+                <p style="color: #888; font-size: 0.9rem;">Extremely Randomized Trees—adds even more randomness by randomizing split thresholds.</p>
+            </a>
+        </div>
+    </section>
+
+    <section class="section">
+        <h2>🎯 Key Takeaways</h2>
+        <ul style="line-height: 2;">
+            <li><strong>Ensemble Power:</strong> Many weak learners can combine into a strong learner through voting.</li>
+            <li><strong>Decorrelation is Key:</strong> Random feature selection reduces tree correlation more than bagging alone.</li>
+            <li><strong>No Overfitting:</strong> Adding more trees cannot overfit—the ensemble converges to a stable prediction.</li>
+            <li><strong>Self-Validating:</strong> OOB error provides unbiased error estimates without cross-validation.</li>
+            <li><strong>Universal Applicability:</strong> Works for classification, regression, clustering, and feature selection.</li>
+            <li><strong>Minimal Tuning:</strong> Default parameters (m=√p, B=100) work well across most problems.</li>
+        </ul>
+    </section>
+
+    <footer style="text-align: center; padding: 3rem 2rem; color: #666; border-top: 1px solid #333; margin-top: 4rem;">
+        <p>Part of the <a href="../index.html" style="color: #3a7bd5;">Neural Networks & Machine Learning</a> educational project</p>
+        <p style="font-size: 0.9rem; margin-top: 1rem;">Paper added: April 17, 2026 • Citation: Breiman, L. (2001). Random forests. Machine Learning, 45(1), 5-32.</p>
+    </footer>
+
+    <script src="../assets/js/main.js"></script>
+</body>
+</html>
