@@ -1023,6 +1023,45 @@
                 </svg>
             </div>
 
+            <!-- Adam Paper Card -->
+            <div class="network-card" onclick="location.href='papers/adam.html'">
+                <span class="tag">ICLR 2015</span>
+                <h3>Adam · Adaptive Optimization</h3>
+                <p>A Method for Stochastic Optimization - Combines momentum with adaptive learning rates and bias correction. The most widely used optimizer in deep learning with 200,000+ citations.</p>
+                <svg class="preview-svg" viewBox="0 0 300 150">
+                    <defs>
+                        <linearGradient id="adam-grad" x1="0%" y1="0%" x2="100%" y2="0%">
+                            <stop offset="0%" style="stop-color:#6366f1"/>
+                            <stop offset="100%" style="stop-color:#10b981"/>
+                        </linearGradient>
+                    </defs>
+                    <!-- Parameters theta -->
+                    <rect x="20" y="55" width="40" height="40" fill="none" stroke="#6366f1" stroke-width="2" rx="3"/>
+                    <text x="40" y="80" fill="#fff" font-size="12" text-anchor="middle">θ</text>
+                    <!-- Gradients -->
+                    <rect x="80" y="45" width="35" height="25" fill="rgba(239,68,68,0.3)" stroke="#ef4444" stroke-width="1.5" rx="2"/>
+                    <text x="97" y="62" fill="#fff" font-size="8" text-anchor="middle">∇f(θ)</text>
+                    <!-- Momentum m -->
+                    <rect x="80" y="80" width="35" height="25" fill="rgba(245,158,11,0.3)" stroke="#f59e0b" stroke-width="1.5" rx="2"/>
+                    <text x="97" y="97" fill="#fff" font-size="8" text-anchor="middle">m</text>
+                    <!-- Update -->
+                    <path d="M115 75 L140 75" stroke="#6366f1" stroke-width="2"/>
+                    <polygon points="140,75 135,70 135,80" fill="#6366f1"/>
+                    <!-- First moment -->
+                    <rect x="145" y="55" width="45" height="40" fill="rgba(99,102,241,0.2)" stroke="#6366f1" stroke-width="2" rx="3"/>
+                    <text x="167" y="70" fill="#fff" font-size="8" text-anchor="middle">m̂</text>
+                    <text x="167" y="82" fill="#c7d2fe" font-size="6" text-anchor="middle">1-β₁</text>
+                    <text x="167" y="92" fill="#c7d2fe" font-size="6" text-anchor="middle">bias</text>
+                    <!-- Second moment -->
+                    <rect x="145" y="100" width="45" height="25" fill="rgba(16,185,129,0.2)" stroke="#10b981" stroke-width="1.5" rx="2" opacity="0.8"/>
+                    <text x="167" y="117" fill="#6ee7b7" font-size="7" text-anchor="middle">v̂</text>
+                    <!-- Final update -->
+                    <rect x="210" y="55" width="80" height="40" fill="rgba(16,185,129,0.2)" stroke="#10b981" stroke-width="2" rx="3"/>
+                    <text x="250" y="72" fill="#6ee7b7" font-size="8" text-anchor="middle">θ - α·m̂/(√v̂+ε)</text>
+                    <text x="250" y="88" fill="#888" font-size="7" text-anchor="middle">Adaptive Update</text>
+                </svg>
+            </div>
+
             <!-- Word2Vec Paper Card -->
             <div class="network-card" onclick="location.href='papers/word2vec.html'">
                 <span class="tag">arXiv 2013</span>
