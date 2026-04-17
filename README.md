@@ -8,7 +8,7 @@
 
 ## 📊 Collection Stats
 
-- **Total Papers**: 40 foundational works in deep learning
+- **Total Papers**: 41 foundational works in deep learning
 - **Last Updated**: April 17, 2026
 - **Coverage**: CNNs, Transformers, Generative Models, Reinforcement Learning, NLP, Computer Vision
 
@@ -97,6 +97,14 @@
 | **MoE** | 2017 | Outrageously Large Neural Networks |
 | **Mamba** | 2023 | Linear-Time Sequence Modeling |
 | **Deep Learning (Nature)** | 2015 | Deep Learning review by LeCun, Bengio, Hinton |
+
+---
+
+### 🌳 Ensemble Learning & Classical ML (2 papers)
+| Paper | Year | Description |
+|-------|------|-------------|
+| **XGBoost** | 2016 | eXtreme Gradient Boosting - KDD Best Paper Runner-Up |
+| **Dropout** | 2014 | A Simple Way to Prevent Neural Networks from Overfitting |
 
 ---
 
