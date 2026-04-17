@@ -595,6 +595,53 @@
                 </svg>
             </div>
 
+            <!-- Fast R-CNN Paper Card -->
+            <div class="network-card" onclick="location.href='papers/fast-rcnn.html'">
+                <span class="tag">ICCV 2015</span>
+                <h3>Fast R-CNN</h3>
+                <p>Fast Region-based Convolutional Networks - Revolutionary object detection that shares conv computations across region proposals, achieving 213× speedup over R-CNN with higher accuracy.</p>
+                <svg class="preview-svg" viewBox="0 0 300 150">
+                    <defs>
+                        <linearGradient id="fastrcnn-grad" x1="0%" y1="0%" x2="100%" y2="0%">
+                            <stop offset="0%" style="stop-color:#6366f1"/>
+                            <stop offset="50%" style="stop-color:#ec4899"/>
+                            <stop offset="100%" style="stop-color:#10b981"/>
+                        </linearGradient>
+                    </defs>
+                    <!-- Input Image -->
+                    <rect x="20" y="55" width="40" height="40" fill="none" stroke="#6366f1" stroke-width="2" rx="3"/>
+                    <text x="40" y="80" fill="#fff" font-size="8" text-anchor="middle">Image</text>
+                    <!-- Arrow to Conv -->
+                    <path d="M60 75 L75 75" stroke="#6366f1" stroke-width="2"/>
+                    <!-- Shared Conv -->
+                    <rect x="80" y="45" width="50" height="60" fill="rgba(99,102,241,0.3)" stroke="#6366f1" stroke-width="2" rx="3"/>
+                    <text x="105" y="65" fill="#fff" font-size="7" text-anchor="middle">Shared</text>
+                    <text x="105" y="78" fill="#fff" font-size="7" text-anchor="middle">Conv</text>
+                    <text x="105" y="91" fill="#a5b4fc" font-size="6" text-anchor="middle">Feature Map</text>
+                    <!-- Arrows to RoIs -->
+                    <path d="M130 60 L145 50" stroke="#ec4899" stroke-width="1.5"/>
+                    <path d="M130 75 L145 75" stroke="#ec4899" stroke-width="1.5"/>
+                    <path d="M130 90 L145 100" stroke="#ec4899" stroke-width="1.5"/>
+                    <!-- RoI Proposals -->
+                    <rect x="145" y="40" width="25" height="20" fill="rgba(236,72,153,0.3)" stroke="#ec4899" stroke-width="1.5" rx="2"/>
+                    <rect x="145" y="65" width="25" height="20" fill="rgba(236,72,153,0.3)" stroke="#ec4899" stroke-width="1.5" rx="2"/>
+                    <rect x="145" y="90" width="25" height="20" fill="rgba(236,72,153,0.3)" stroke="#ec4899" stroke-width="1.5" rx="2"/>
+                    <!-- RoI Pooling -->
+                    <rect x="175" y="55" width="40" height="40" fill="rgba(16,185,129,0.3)" stroke="#10b981" stroke-width="2" rx="3"/>
+                    <text x="195" y="72" fill="#fff" font-size="7" text-anchor="middle">RoI</text>
+                    <text x="195" y="85" fill="#fff" font-size="7" text-anchor="middle">Pool</text>
+                    <!-- Arrow -->
+                    <path d="M215 75 L230 75" stroke="#10b981" stroke-width="2"/>
+                    <!-- Multi-task -->
+                    <rect x="235" y="45" width="25" height="25" fill="rgba(245,158,11,0.3)" stroke="#f59e0b" stroke-width="1.5" rx="2"/>
+                    <text x="247" y="62" fill="#fff" font-size="6" text-anchor="middle">Cls</text>
+                    <rect x="235" y="80" width="25" height="25" fill="rgba(239,68,68,0.3)" stroke="#ef4444" stroke-width="1.5" rx="2"/>
+                    <text x="247" y="97" fill="#fff" font-size="6" text-anchor="middle">Reg</text>
+                    <!-- Label -->
+                    <text x="150" y="135" fill="#8888aa" font-size="8" text-anchor="middle">Single-Stage Multi-Task Training</text>
+                </svg>
+            </div>
+
             <!-- ResNet Paper Card -->
             <div class="network-card" onclick="location.href='papers/resnet.html'">
                 <span class="tag">CVPR 2016 Best Paper</span>
