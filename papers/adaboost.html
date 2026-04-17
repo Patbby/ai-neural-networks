@@ -1,0 +1,651 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AdaBoost - Freund & Schapire 1997 | Neural Networks</title>
+    <link rel="stylesheet" href="../assets/css/styles.css">
+    <style>
+        .paper-hero {
+            background: linear-gradient(135deg, #1a0a2e 0%, #2d1b4e 50%, #4a148c 100%);
+            min-height: 60vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            padding: 2rem;
+        }
+        
+        .paper-hero h1 {
+            font-size: clamp(2rem, 5vw, 4rem);
+            margin-bottom: 1rem;
+            background: linear-gradient(135deg, #8b5cf6 0%, #ec4899 50%, #f59e0b 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        
+        .paper-meta {
+            font-size: 1.2rem;
+            opacity: 0.9;
+            margin-bottom: 2rem;
+        }
+        
+        .paper-links {
+            display: flex;
+            gap: 1rem;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+        
+        .paper-link {
+            padding: 0.75rem 1.5rem;
+            border-radius: 8px;
+            background: rgba(255,255,255,0.1);
+            color: white;
+            text-decoration: none;
+            border: 1px solid rgba(255,255,255,0.2);
+            transition: all 0.3s ease;
+        }
+        
+        .paper-link:hover {
+            background: rgba(255,255,255,0.2);
+            transform: translateY(-2px);
+        }
+        
+        .section {
+            max-width: 1000px;
+            margin: 4rem auto;
+            padding: 0 2rem;
+        }
+        
+        .section h2 {
+            color: #8b5cf6;
+            border-bottom: 2px solid #8b5cf6;
+            padding-bottom: 0.5rem;
+            margin-bottom: 2rem;
+        }
+        
+        .innovation-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+            margin: 2rem 0;
+        }
+        
+        .innovation-card {
+            background: linear-gradient(145deg, #1a1a2e 0%, #16213e 100%);
+            padding: 2rem;
+            border-radius: 12px;
+            border: 1px solid rgba(139, 92, 246, 0.3);
+        }
+        
+        .innovation-card h3 {
+            color: #8b5cf6;
+            margin-bottom: 1rem;
+        }
+        
+        .formula-box {
+            background: rgba(0, 0, 0, 0.3);
+            padding: 1.5rem;
+            border-radius: 8px;
+            font-family: 'Courier New', monospace;
+            margin: 1rem 0;
+            border-left: 4px solid #8b5cf6;
+            overflow-x: auto;
+        }
+        
+        .code-block {
+            background: #1e1e1e;
+            padding: 1.5rem;
+            border-radius: 8px;
+            overflow-x: auto;
+            font-family: 'Courier New', monospace;
+            font-size: 0.9rem;
+            border: 1px solid #333;
+        }
+        
+        .adaboost-viz {
+            background: #0d1117;
+            border-radius: 12px;
+            padding: 2rem;
+            margin: 2rem 0;
+        }
+        
+        .related-papers {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1rem;
+            margin: 2rem 0;
+        }
+        
+        .related-paper {
+            background: linear-gradient(145deg, #1a1a2e 0%, #16213e 100%);
+            padding: 1.5rem;
+            border-radius: 8px;
+            border: 1px solid rgba(139, 92, 246, 0.2);
+            text-decoration: none;
+            color: inherit;
+            transition: transform 0.3s ease;
+        }
+        
+        .related-paper:hover {
+            transform: translateY(-4px);
+            border-color: rgba(139, 92, 246, 0.5);
+        }
+        
+        .impact-stat {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            padding: 1rem;
+            background: rgba(139, 92, 246, 0.1);
+            border-radius: 8px;
+            margin: 0.5rem 0;
+        }
+        
+        .impact-number {
+            font-size: 2rem;
+            font-weight: bold;
+            color: #8b5cf6;
+        }
+        
+        .round-step {
+            background: linear-gradient(145deg, #2d1b4e 0%, #1a0a2e 100%);
+            padding: 1.5rem;
+            border-radius: 8px;
+            margin: 1rem 0;
+            border-left: 4px solid #ec4899;
+        }
+        
+        .round-step h4 {
+            color: #ec4899;
+            margin-bottom: 0.5rem;
+        }
+        
+        .weight-formula {
+            display: inline-block;
+            background: rgba(236, 72, 153, 0.1);
+            padding: 0.25rem 0.5rem;
+            border-radius: 4px;
+            font-family: 'Courier New', monospace;
+            color: #ec4899;
+        }
+        
+        .margin-viz {
+            background: #0d1117;
+            padding: 2rem;
+            border-radius: 12px;
+            margin: 2rem 0;
+        }
+    </style>
+</head>
+<body>
+    <nav class="navbar">
+        <div class="nav-container">
+            <a href="../index.html" class="nav-logo">Neural Networks</a>
+            <ul class="nav-menu">
+                <li><a href="../index.html">Home</a></li>
+                <li><a href="../cnn.html">CNN</a></li>
+                <li><a href="../gnn.html">GNN</a></li>
+                <li><a href="../gat.html">GAT</a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <section class="paper-hero">
+        <div>
+            <h1>AdaBoost</h1>
+            <p class="paper-meta">
+                <strong>Yoav Freund & Robert E. Schapire</strong> • ICML 1997
+            </p>
+            <p class="paper-meta" style="max-width: 700px; margin: 0 auto 2rem;">
+                Adaptive Boosting: The first practical boosting algorithm that converts a sequence of weak learners 
+                into a strong classifier by adaptively reweighting training examples based on classification difficulty.
+            </p>
+            <div class="paper-links">
+                <a href="https://www.sciencedirect.com/science/article/abs/pii/S002200009791504X" class="paper-link" target="_blank">📄 Original Paper</a>
+                <a href="https://en.wikipedia.org/wiki/AdaBoost" class="paper-link" target="_blank">📚 Wikipedia</a>
+                <a href="https://scikit-learn.org/stable/modules/ensemble.html#adaboost" class="paper-link" target="_blank">💻 Scikit-Learn</a>
+            </div>
+        </div>
+    </section>
+
+    <section class="section">
+        <h2>🎯 Problem Statement</h2>
+        <p>
+            In the early 1990s, machine learning faced a fundamental question: <strong>Is strong PAC-learnability 
+            equivalent to weak PAC-learnability?</strong> In other words, if we can generate hypotheses that are 
+            only slightly better than random guessing (weak learners), can we combine them to achieve arbitrary 
+            accuracy (strong learners)?
+        </p>
+        <p>
+            Previous boosting algorithms (e.g., Schapire 1990, Freund 1995) proved this equivalence theoretically 
+            but were computationally impractical. They required knowing the error rate of weak learners in advance, 
+            or they were highly sensitive to noise. The challenge was to create a <strong>practical, adaptive</strong> 
+            boosting algorithm that would work in real-world scenarios.
+        </p>
+    </section>
+
+    <section class="section">
+        <h2>💡 Key Innovation</h2>
+        <div class="innovation-grid">
+            <div class="innovation-card">
+                <h3>🔄 Adaptive Reweighting</h3>
+                <p>Unlike previous boosting methods, AdaBoost automatically adjusts to the performance of weak learners. Misclassified examples get exponentially higher weights, focusing subsequent learners on "hard" examples.</p>
+                <div class="formula-box">
+                    D<sub>t+1</sub>(i) = D<sub>t</sub>(i) × exp(-α<sub>t</sub> × y<sub>i</sub> × h<sub>t</sub>(x<sub>i</sub>)) / Z<sub>t</sub>
+                </div>
+            </div>
+            <div class="innovation-card">
+                <h3>📊 Margin Maximization</h3>
+                <p>AdaBoost aggressively increases the margins of training examples—the confidence in predictions. Even after achieving zero training error, it continues pushing examples further from the decision boundary.</p>
+                <div class="formula-box">
+                    margin(x,y) = y × Σ(α<sub>t</sub> × h<sub>t</sub>(x)) / Σα<sub>t</sub> ∈ [-1, +1]
+                </div>
+            </div>
+            <div class="innovation-card">
+            <h3>⚖️ Weighted Majority Vote</h3>
+                <p>Each weak learner's contribution is weighted by its accuracy. Better classifiers get more say in the final decision through α<sub>t</sub> = ½ ln((1-ε<sub>t</sub>)/ε<sub>t</sub>).</p>
+            </div>
+            <div class="innovation-card">
+                <h3>🛡️ Noise Resistance</h3>
+                <p>While not immune to noise, AdaBoost's margin-based generalization explains why it often doesn't overfit even when run for thousands of rounds.</p>
+            </div>
+        </div>
+    </section>
+
+    <section class="section">
+        <h2>🏗️ Algorithm Architecture</h2>
+        
+        <div class="adaboost-viz">
+            <h3 style="text-align: center; color: #8b5cf6; margin-bottom: 1.5rem;">AdaBoost Training Process</h3>
+            <svg viewBox="0 0 950 500" style="width: 100%; height: auto; max-height: 450px;">
+                <!-- Background -->
+                <rect width="950" height="500" fill="#0d1117"/>
+                
+                <!-- Title -->
+                <text x="475" y="30" text-anchor="middle" fill="#fff" font-size="16" font-weight="bold">AdaBoost: Sequential Training with Adaptive Weights</text>
+                
+                <!-- Training Data -->
+                <rect x="30" y="55" width="160" height="80" fill="#1e1e3f" stroke="#8b5cf6" stroke-width="2" rx="8"/>
+                <text x="110" y="80" text-anchor="middle" fill="#fff" font-size="12">Training Data</text>
+                <text x="110" y="100" text-anchor="middle" fill="#888" font-size="10">N samples, uniform weights</text>
+                <text x="110" y="120" text-anchor="middle" fill="#8b5cf6" font-size="9">D₁(i) = 1/N</text>
+                
+                <!-- Round 1 -->
+                <path d="M190 95 L240 95" stroke="#3a7bd5" stroke-width="2" marker-end="url(#arrow-adaboost)"/>
+                
+                <rect x="240" y="55" width="140" height="80" fill="#1e1e3f" stroke="#3a7bd5" stroke-width="2" rx="8"/>
+                <text x="310" y="78" text-anchor="middle" fill="#fff" font-size="11">Round 1</text>
+                <text x="310" y="98" text-anchor="middle" fill="#3a7bd5" font-size="10">h₁(x)</text>
+                <text x="310" y="115" text-anchor="middle" fill="#888" font-size="9">error: ε₁</text>
+                
+                <!-- Arrow to weight update -->
+                <path d="M310 140 L310 160" stroke="#ec4899" stroke-width="2" marker-end="url(#arrow-adaboost)"/>
+                
+                <!-- Weight Update -->
+                <rect x="240" y="165" width="140" height="55" fill="#2d1b4e" stroke="#ec4899" stroke-width="2" rx="8"/>
+                <text x="310" y="185" text-anchor="middle" fill="#fff" font-size="10">Update Weights</text>
+                <text x="310" y="205" text-anchor="middle" fill="#ec4899" font-size="9">Increase misclassified</text>
+                
+                <!-- Feedback loop -->
+                <path d="M240 192 L190 192 L190 140 L170 140" stroke="#8b5cf6" stroke-width="1.5" fill="none" stroke-dasharray="4,4" marker-end="url(#arrow-adaboost)"/>
+                <text x="215" y="185" fill="#8b5cf6" font-size="8">D₂</text>
+                
+                <!-- Round 2 -->
+                <rect x="400" y="55" width="140" height="80" fill="#1e1e3f" stroke="#3a7bd5" stroke-width="2" rx="8"/>
+                <text x="470" y="78" text-anchor="middle" fill="#fff" font-size="11">Round 2</text>
+                <text x="470" y="98" text-anchor="middle" fill="#3a7bd5" font-size="10">h₂(x)</text>
+                <text x="470" y="115" text-anchor="middle" fill="#888" font-size="9">error: ε₂</text>
+                
+                <!-- Arrow to weight update -->
+                <path d="M470 140 L470 160" stroke="#ec4899" stroke-width="2" marker-end="url(#arrow-adaboost)"/>
+                
+                <!-- Weight Update 2 -->
+                <rect x="400" y="165" width="140" height="55" fill="#2d1b4e" stroke="#ec4899" stroke-width="2" rx="8"/>
+                <text x="470" y="185" text-anchor="middle" fill="#fff" font-size="10">Update Weights</text>
+                <text x="470" y="205" text-anchor="middle" fill="#ec4899" font-size="9">Focus on hard cases</text>
+                
+                <!-- Round T -->
+                <rect x="560" y="55" width="140" height="80" fill="#1e1e3f" stroke="#3a7bd5" stroke-width="2" rx="8"/>
+                <text x="630" y="78" text-anchor="middle" fill="#fff" font-size="11">Round T</text>
+                <text x="630" y="98" text-anchor="middle" fill="#3a7bd5" font-size="10">hₜ(x)</text>
+                <text x="630" y="115" text-anchor="middle" fill="#888" font-size="9">error: εₜ</text>
+                
+                <!-- Arrow to final -->
+                <path d="M700 95 L740 95" stroke="#f59e0b" stroke-width="2" marker-end="url(#arrow-adaboost)"/>
+                
+                <!-- Final Strong Classifier -->
+                <rect x="760" y="55" width="170" height="80" fill="#0f3460" stroke="url(#grad-final)" stroke-width="3" rx="8"/>
+                <defs>
+                    <linearGradient id="grad-final" x1="0%" y1="0%" x2="100%" y2="0%">
+                        <stop offset="0%" style="stop-color:#8b5cf6"/>
+                        <stop offset="100%" style="stop-color:#ec4899"/>
+                    </linearGradient>
+                    <marker id="arrow-adaboost" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto">
+                        <polygon points="0 0, 10 3.5, 0 7" fill="#8b5cf6"/>
+                    </marker>
+                </defs>
+                <text x="845" y="78" text-anchor="middle" fill="#fff" font-size="12">Strong Classifier</text>
+                <text x="845" y="100" text-anchor="middle" fill="#fff" font-size="10">H(x) = sign(Σαₜhₜ(x))</text>
+                <text x="845" y="120" text-anchor="middle" fill="#f59e0b" font-size="9">Weighted Majority</text>
+                
+                <!-- Legend -->
+                <rect x="30" y="250" width="200" height="100" fill="rgba(0,0,0,0.5)" stroke="#333" rx="5"/>
+                <text x="40" y="270" fill="#fff" font-size="11" font-weight="bold">Key Formula:</text>
+                <text x="40" y="290" fill="#ec4899" font-size="9" font-family="monospace">αₜ = ½ln((1-εₜ)/εₜ)</text>
+                <text x="40" y="310" fill="#888" font-size="8">Weight of weak learner t</text>
+                <text x="40" y="330" fill="#3a7bd5" font-size="9" font-family="monospace">Dₜ₊₁(i) ∝ Dₜ(i)e^(-αₜyᵢhₜ(xᵢ))</text>
+                <text x="40" y="345" fill="#888" font-size="8">Sample weight update</text>
+                
+                <!-- Training Error Bound -->
+                <rect x="260" y="250" width="280" height="100" fill="rgba(0,0,0,0.5)" stroke="#333" rx="5"/>
+                <text x="270" y="270" fill="#fff" font-size="11" font-weight="bold">Training Error Bound:</text>
+                <text x="270" y="295" fill="#8b5cf6" font-size="11" font-family="monospace">Training Error ≤ exp(-2Σ(½-εₜ)²)</text>
+                <text x="270" y="320" fill="#888" font-size="8">If each weak learner is slightly better</text>
+                <text x="270" y="335" fill="#888" font-size="8">than random (εₜ < ½), error → 0 exponentially</text>
+                
+                <!-- Margin Explanation -->
+                <rect x="560" y="250" width="370" height="140" fill="rgba(0,0,0,0.5)" stroke="#333" rx="5"/>
+                <text x="570" y="270" fill="#fff" font-size="11" font-weight="bold">Margin Theory (Schapire et al. 1998):</text>
+                <text x="570" y="295" fill="#ec4899" font-size="9" font-family="monospace">margin(x,y) = y × Σαₜhₜ(x) / Σαₜ</text>
+                <text x="570" y="315" fill="#888" font-size="8">Margin ∈ [-1, +1]: positive = correct, magnitude = confidence</text>
+                <text x="570" y="335" fill="#00ff88" font-size="8">• AdaBoost aggressively pushes small margins upward</text>
+                <text x="570" y="352" fill="#00ff88" font-size="8">• Large margins → better generalization (even with T→∞)</text>
+                <text x="570" y="370" fill="#00ff88" font-size="8">• Explains why AdaBoost often resists overfitting</text>
+            </svg>
+        </div>
+
+        <h3>Mathematical Foundation</h3>
+        <p>
+            AdaBoost maintains a distribution Dₜ over training examples. At each round t:
+        </p>
+        
+        <div class="round-step">
+            <h4>1. Train Weak Learner</h4>
+            <p>Find classifier hₜ that minimizes weighted error: εₜ = P<sub>i~Dₜ</sub>[hₜ(xᵢ) ≠ yᵢ]</p>
+        </div>
+        
+        <div class="round-step">
+            <h4>2. Compute Learner Weight</h4>
+            <p>αₜ = <span class="weight-formula">½ ln((1-εₜ)/εₜ)</span></p>
+            <p style="margin-top: 0.5rem; opacity: 0.8;">Better classifiers (lower εₜ) get exponentially higher weights. When εₜ < ½, αₜ > 0.</p>
+        </div>
+        
+        <div class="round-step">
+            <h4>3. Update Sample Weights</h4>
+            <p>Dₜ₊₁(i) = <span class="weight-formula">Dₜ(i) × exp(-αₜ × yᵢ × hₜ(xᵢ)) / Zₜ</span></p>
+            <p style="margin-top: 0.5rem; opacity: 0.8;">Misclassified examples (yᵢ ≠ hₜ(xᵢ)) get multiplied by e^(αₜ) > 1; correctly classified by e^(-αₜ) < 1.</p>
+        </div>
+        
+        <div class="round-step">
+            <h4>4. Final Classifier</h4>
+            <p>H(x) = <span class="weight-formula">sign(Σₜ αₜ × hₜ(x))</span></p>
+        </div>
+    </section>
+
+    <section class="section">
+        <h2>📈 Results & Impact</h2>
+        
+        <div class="impact-stat">
+            <div class="impact-number">50,000+</div>
+            <div>
+                <strong>Citations</strong><br>
+                <span style="opacity: 0.7;">One of the most influential ML papers, sparking the ensemble learning revolution</span>
+            </div>
+        </div>
+        
+        <div class="impact-stat">
+            <div class="impact-number">1997</div>
+            <div>
+                <strong>Gödel Prize</strong><br>
+                <span style="opacity: 0.7;">Freund and Schapire won the prestigious Gödel Prize for this work</span>
+            </div>
+        </div>
+        
+        <div class="impact-stat">
+            <div class="impact-number">∞</div>
+            <div>
+                <strong>Bias-Variance Insight</strong><br>
+                <span style="opacity: 0.7;">Boosting reduces bias; Bagging (Random Forest) reduces variance—complementary approaches</span>
+            </div>
+        </div>
+        
+        <p>
+            On the UCI repository benchmarks, AdaBoost with decision stumps or C4.5 trees dramatically outperformed 
+            single classifiers. Key results:
+        </p>
+        <ul style="padding-left: 2rem; line-height: 2; margin-top: 1rem;">
+            <li><strong>Letter recognition:</strong> Reduced error from 15% (single C4.5) to 3.1%</li>
+            <li><strong>Text categorization:</strong> Superior to naive Bayes, TF-IDF, and Rocchio methods</li>
+            <li><strong>Face detection:</strong> Viola-Jones algorithm (2001) uses AdaBoost for real-time detection</li>
+        </ul>
+    </section>
+
+    <section class="section">
+        <h2>💻 Code Implementation</h2>
+        
+        <h3 style="color: #8b5cf6; margin: 1rem 0;">Scikit-Learn (AdaBoostClassifier)</h3>
+        <div class="code-block">
+<pre><span style="color: #c586c0;">from</span> sklearn.ensemble <span style="color: #c586c0;">import</span> AdaBoostClassifier
+<span style="color: #c586c0;">from</span> sklearn.tree <span style="color: #c586c0;">import</span> DecisionTreeClassifier
+<span style="color: #c586c0;">from</span> sklearn.datasets <span style="color: #c586c0;">import</span> make_classification
+<span style="color: #c586c0;">from</span> sklearn.model_selection <span style="color: #c586c0;">import</span> train_test_split
+
+<span style="color: #6a9955;"># Create dataset</span>
+X, y = make_classification(n_samples=<span style="color: #b5cea8;">1000</span>, n_features=<span style="color: #b5cea8;">20</span>, 
+                           n_informative=<span style="color: #b5cea8;">15</span>, random_state=<span style="color: #b5cea8;">42</span>)
+X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=<span style="color: #b5cea8;">0.2</span>)
+
+<span style="color: #6a9955;"># AdaBoost with decision stumps (depth=1) as weak learners</span>
+<span style="color: #6a9955;"># This is the classic Freund & Schapire setup</span>
+ada = AdaBoostClassifier(
+    estimator=DecisionTreeClassifier(max_depth=<span style="color: #b5cea8;">1</span>),  <span style="color: #6a9955;"># Decision stumps</span>
+    n_estimators=<span style="color: #b5cea8;">200</span>,          <span style="color: #6a9955;"># Number of rounds T</span>
+    learning_rate=<span style="color: #b5cea8;">1.0</span>,          <span style="color: #6a9955;"># Shrinkage (default 1.0)</span>
+    algorithm=<span style="color: #ce9178;">'SAMME'</span>,        <span style="color: #6a9955;"># Discrete AdaBoost</span>
+    random_state=<span style="color: #b5cea8;">42</span>
+)
+
+<span style="color: #6a9955;"># Train</span>
+ada.fit(X_train, y_train)
+
+<span style="color: #6a9955;"># Staged predictions (monitor training progress)</span>
+<span style="color: #c586c0;">from</span> sklearn.metrics <span style="color: #c586c0;">import</span> accuracy_score
+
+<span style="color: #c586c0;">for</span> i, pred <span style="color: #c586c0;">in</span> enumerate(ada.staged_predict(X_test)):
+    acc = accuracy_score(y_test, pred)
+    <span style="color: #c586c0;">if</span> i % <span style="color: #b5cea8;">20</span> == <span style="color: #b5cea8;">0</span>:
+        <span style="color: #c586c0;">print</span>(<span style="color: #ce9178;">f"Round {i}: Accuracy = {acc:.4f}"</span>)
+
+<span style="color: #6a9955;"># Feature importance (aggregated across all weak learners)</span>
+<span style="color: #c586c0;">print</span>(<span style="color: #ce9178;">"\nTop 5 important features:"</span>)
+importances = ada.feature_importances_
+top_idx = np.argsort(importances)[-<span style="color: #b5cea8;">5</span>:][::-<span style="color: #b5cea8;">1</span>]
+<span style="color: #c586c0;">for</span> i <span style="color: #c586c0;">in</span> top_idx:
+    <span style="color: #c586c0;">print</span>(<span style="color: #ce9178;">f"  Feature {i}: {importances[i]:.4f}"</span>)</pre>
+        </div>
+
+        <h3 style="color: #8b5cf6; margin: 1.5rem 0 1rem 0;">Manual Implementation (Core Algorithm)</h3>
+        <div class="code-block">
+<pre><span style="color: #c586c0;">import</span> numpy <span style="color: #c586c0;">as</span> np
+
+<span style="color: #6a9955;">class</span> <span style="color: #4ec9b0;">ManualAdaBoost</span>:
+    <span style="color: #6a9955;">"""Pure NumPy implementation of AdaBoost.M1 (Freund & Schapire 1997)"""</span>
+    
+    <span style="color: #6a9955;">def</span> <span style="color: #dcdcaa;">__init__</span>(self, n_estimators=<span style="color: #b5cea8;">100</span>):
+        self.n_estimators = n_estimators
+        self.alphas = []
+        self.models = []
+    
+    <span style="color: #6a9955;">def</span> <span style="color: #dcdcaa;">fit</span>(self, X, y):
+        n_samples = len(X)
+        <span style="color: #6a9955;"># Initialize uniform distribution</span>
+        D = np.ones(n_samples) / n_samples
+        
+        <span style="color: #c586c0;">for</span> t <span style="color: #c586c0;">in</span> range(self.n_estimators):
+            <span style="color: #6a9955;"># Train weak learner on weighted data</span>
+            <span style="color: #6a9955;"># (simplified: using a basic decision stump)</span>
+            model = self._train_weak_learner(X, y, D)
+            predictions = model.predict(X)
+            
+            <span style="color: #6a9955;"># Compute weighted error</span>
+            incorrect = (predictions != y).astype(float)
+            epsilon = np.sum(D * incorrect)
+            
+            <span style="color: #6a9955;"># Avoid division by zero</span>
+            epsilon = np.clip(epsilon, <span style="color: #b5cea8;">1e-10</span>, <span style="color: #b5cea8;">1</span> - <span style="color: #b5cea8;">1e-10</span>)
+            
+            <span style="color: #6a9955;"># Compute alpha (learner weight)</span>
+            alpha = <span style="color: #b5cea8;">0.5</span> * np.log((<span style="color: #b5cea8;">1</span> - epsilon) / epsilon)
+            
+            <span style="color: #6a9955;"># Update distribution D</span>
+            D *= np.exp(-alpha * y * predictions)
+            D /= np.sum(D)  <span style="color: #6a9955;"># Normalize</span>
+            
+            self.models.append(model)
+            self.alphas.append(alpha)
+    
+    <span style="color: #6a9955;">def</span> <span style="color: #dcdcaa;">predict</span>(self, X):
+        <span style="color: #6a9955;"># Weighted majority vote</span>
+        pred = np.zeros(len(X))
+        <span style="color: #c586c0;">for</span> alpha, model <span style="color: #c586c0;">in</span> zip(self.alphas, self.models):
+            pred += alpha * model.predict(X)
+        <span style="color: #c586c0;">return</span> np.sign(pred)
+    
+    <span style="color: #6a9955;">def</span> <span style="color: #dcdcaa;">compute_margins</span>(self, X, y):
+        <span style="color: #6a9955;">"""Compute margins for all examples (Schapire et al. 1998)"""</span>
+        pred = np.zeros(len(X))
+        <span style="color: #c586c0;">for</span> alpha, model <span style="color: #c586c0;">in</span> zip(self.alphas, self.models):
+            pred += alpha * model.predict(X)
+        
+        total_alpha = np.sum(self.alphas)
+        margins = y * pred / total_alpha  <span style="color: #6a9955;"># margin ∈ [-1, +1]</span>
+        <span style="color: #c586c0;">return</span> margins</pre>
+        </div>
+    </section>
+
+    <section class="section">
+        <h2>📊 Margin Distribution Visualization</h2>
+        
+        <div class="margin-viz">
+            <h3 style="text-align: center; color: #ec4899; margin-bottom: 1.5rem;">Why AdaBoost Doesn't Overfit: The Margin Theory</h3>
+            <svg viewBox="0 0 800 350" style="width: 100%; height: auto; max-height: 300px;">
+                <!-- Background -->
+                <rect width="800" height="350" fill="#0d1117"/>
+                
+                <!-- Title -->
+                <text x="400" y="30" text-anchor="middle" fill="#fff" font-size="14" font-weight="bold">Margin Distribution Over Training Rounds</text>
+                
+                <!-- X-axis -->
+                <line x1="80" y1="280" x2="720" y2="280" stroke="#444" stroke-width="2"/>
+                <text x="400" y="305" text-anchor="middle" fill="#888" font-size="12">Margin (y × confidence) →</text>
+                
+                <!-- Y-axis -->
+                <line x1="80" y1="280" x2="80" y2="60" stroke="#444" stroke-width="2"/>
+                <text x="30" y="170" text-anchor="middle" fill="#888" font-size="12" transform="rotate(-90 30 170)">Cumulative % of Examples ↑</text>
+                
+                <!-- Margin labels -->
+                <text x="80" y="295" text-anchor="middle" fill="#ec4899" font-size="10">-1.0</text>
+                <text x="240" y="295" text-anchor="middle" fill="#666" font-size="10">-0.5</text>
+                <text x="400" y="295" text-anchor="middle" fill="#666" font-size="10">0.0</text>
+                <text x="560" y="295" text-anchor="middle" fill="#666" font-size="10">0.5</text>
+                <text x="720" y="295" text-anchor="middle" fill="#00ff88" font-size="10">+1.0</text>
+                
+                <!-- Vertical separator at 0 -->
+                <line x1="400" y1="60" x2="400" y2="280" stroke="#333" stroke-width="1" stroke-dasharray="3,3"/>
+                <text x="410" y="75" fill="#666" font-size="9">Decision boundary</text>
+                
+                <!-- Round 5 curve (dashed pink) -->
+                <path d="M80 100 Q200 120 300 150 Q400 200 500 220 Q650 250 720 270" 
+                      fill="none" stroke="#ec4899" stroke-width="2" stroke-dasharray="5,5"/>
+                <text x="120" y="90" fill="#ec4899" font-size="10">Round 5</text>
+                <text x="120" y="102" fill="#ec4899" font-size="8">(7.7% margin &lt; 0.5)</text>
+                
+                <!-- Round 100 curve (solid purple) -->
+                <path d="M80 90 Q200 95 300 100 Q400 110 500 140 Q650 200 720 270" 
+                      fill="none" stroke="#8b5cf6" stroke-width="3"/>
+                <text x="580" y="100" fill="#8b5cf6" font-size="10">Round 100</text>
+                <text x="580" y="112" fill="#8b5cf6" font-size="8">(all margins &gt; 0.6)</text>
+                
+                <!-- Highlight the push to right -->
+                <path d="M560 140 L560 220" stroke="#00ff88" stroke-width="2" marker-end="url(#arrow-margin)"/>
+                <defs>
+                    <marker id="arrow-margin" markerWidth="8" markerHeight="8" refX="4" refY="4" orient="auto">
+                        <polygon points="0 0, 8 4, 0 8" fill="#00ff88"/>
+                    </marker>
+                </defs>
+                <text x="570" y="180" fill="#00ff88" font-size="9">AdaBoost pushes</text>
+                <text x="570" y="192" fill="#00ff88" font-size="9">margins → right</text>
+                
+                <!-- Key insight box -->
+                <rect x="500" y="50" width="280" height="75" fill="rgba(0,255,136,0.1)" stroke="#00ff88" stroke-width="1" rx="5"/>
+                <text x="640" y="70" text-anchor="middle" fill="#00ff88" font-size="11" font-weight="bold">Key Insight</text>
+                <text x="640" y="90" text-anchor="middle" fill="#fff" font-size="9">Even after training error = 0,</text>
+                <text x="640" y="105" text-anchor="middle" fill="#fff" font-size="9">AdaBoost continues increasing margins</text>
+                <text x="640" y="120" text-anchor="middle" fill="#fff" font-size="9">→ better generalization!</text>
+            </svg>
+        </div>
+        
+        <p>
+            The margin theory explains AdaBoost's remarkable resistance to overfitting. Even after achieving 
+            zero training error, the algorithm continues to push example margins farther from the decision boundary. 
+            Larger margins correlate with better generalization bounds—this is why AdaBoost often improves test 
+            accuracy long after training error plateaus at zero.
+        </p>
+    </section>
+
+    <section class="section">
+        <h2>🔗 Related Papers</h2>
+        
+        <div class="related-papers">
+            <a href="random-forest.html" class="related-paper">
+                <h4>Random Forest (2001)</h4>
+                <p style="color: #888; font-size: 0.9rem;">Breiman's parallel ensemble method—reduces variance where AdaBoost reduces bias.</p>
+            </a>
+            <a href="gradient-boosting.html" class="related-paper">
+                <h4>Gradient Boosting (1999)</h4>
+                <p style="color: #888; font-size: 0.9rem;">Friedman's generalization to arbitrary loss functions—fits residuals instead of reweighting.</p>
+            </a>
+            <a href="xgboost.html" class="related-paper">
+                <h4>XGBoost (2016)</h4>
+                <p style="color: #888; font-size: 0.9rem;">Scalable gradient boosting with regularization—dominates Kaggle competitions.</p>
+            </a>
+            <a href="https://cseweb.ucsd.edu/~yfreund/papers/IntroToBoosting.pdf" class="related-paper" target="_blank">
+                <h4>A Short Introduction to Boosting</h4>
+                <p style="color: #888; font-size: 0.9rem;">Freund & Schapire's accessible overview of AdaBoost and its theory.</p>
+            </a>
+            <a href="https://www.ccs.neu.edu/home/vip/teach/MLcourse/4_boosting/materials/SchapireFrBaLe98.pdf" class="related-paper" target="_blank">
+                <h4>Boosting the Margin (1998)</h4>
+                <p style="color: #888; font-size: 0.9rem;">The margin theory paper explaining why AdaBoost doesn't overfit.</p>
+            </a>
+            <a href="https://projecteuclid.org/euclid.aos/1013203451" class="related-paper" target="_blank">
+                <h4>GBM - Greedy Function Approximation (2001)</h4>
+                <p style="color: #888; font-size: 0.9rem;">Friedman's statistical view of boosting as gradient descent in function space.</p>
+            </a>
+        </div>
+    </section>
+
+    <section class="section">
+        <h2>🎯 Key Takeaways</h2>
+        <ul style="line-height: 2; padding-left: 2rem;">
+            <li><strong>Weak → Strong:</strong> AdaBoost provably converts weak learners (slightly better than random) into arbitrarily accurate strong learners.</li>
+            <li><strong>Adaptive Focus:</strong> By reweighting examples, each round concentrates on previously misclassified cases.</li>
+            <li><strong>Weighted Democracy:</strong> Better weak learners get more voting power through αₜ = ½ln((1-εₜ)/εₜ).</li>
+            <li><strong>Margin Magic:</strong> AdaBoost aggressively increases prediction confidence (margins), explaining its resistance to overfitting.</li>
+            <li><strong>Dual Theory:</strong> Boosting reduces bias (via sequential correction); Bagging reduces variance (via parallel averaging).</li>
+            <li><strong>Foundation for Modern Methods:</strong> AdaBoost led directly to Gradient Boosting, XGBoost, and LightGBM.</li>
+        </ul>
+    </section>
+
+    <footer style="text-align: center; padding: 3rem 2rem; color: #666; border-top: 1px solid #333; margin-top: 4rem;">
+        <p>Part of the <a href="../index.html" style="color: #8b5cf6;">Neural Networks & Machine Learning</a> educational project</p>
+        <p style="font-size: 0.9rem; margin-top: 1rem;">
+            Paper added: April 17, 2026 • Citation: Freund, Y., & Schapire, R. E. (1997). A decision-theoretic generalization of on-line learning and an application to boosting. Journal of Computer and System Sciences, 55(1), 119-139.
+        </p>
+    </footer>
+
+    <script src="../assets/js/main.js"></script>
+</body>
+</html>

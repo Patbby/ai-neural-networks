@@ -879,6 +879,65 @@
                 </svg>
             </div>
 
+            <!-- Gradient Boosting Paper Card -->
+            <div class="network-card" onclick="location.href='papers/gradient-boosting.html'">
+                <span class="tag">Annals of Statistics 2001</span>
+                <h3>Gradient Boosting</h3>
+                <p>Friedman's seminal framework connecting boosting to gradient descent in function space. The theoretical foundation powering XGBoost, LightGBM, and modern gradient boosting machines.</p>
+                <svg class="preview-svg" viewBox="0 0 300 150">
+                    <defs>
+                        <linearGradient id="gbm-grad" x1="0%" y1="0%" x2="100%" y2="0%">
+                            <stop offset="0%" style="stop-color:#00d2ff"/>
+                            <stop offset="50%" style="stop-color:#3a7bd5"/>
+                            <stop offset="100%" style="stop-color:#00ff88"/>
+                        </linearGradient>
+                    </defs>
+                    <!-- Initial model -->
+                    <rect x="10" y="60" width="40" height="30" rx="3" fill="rgba(0,210,255,0.2)" stroke="#00d2ff" stroke-width="2"/>
+                    <text x="30" y="80" fill="#00d2ff" font-size="8" text-anchor="middle">F₀</text>
+                    
+                    <!-- Plus -->
+                    <text x="60" y="80" fill="#fff" font-size="14" font-weight="bold">+</text>
+                    
+                    <!-- Weak learners -->
+                    <rect x="80" y="45" width="35" height="25" rx="2" fill="rgba(58,123,213,0.3)" stroke="#3a7bd5" stroke-width="1.5"/>
+                    <text x="97" y="62" fill="#3a7bd5" font-size="7" text-anchor="middle">h₁</text>
+                    
+                    <rect x="80" y="80" width="35" height="25" rx="2" fill="rgba(58,123,213,0.3)" stroke="#3a7bd5" stroke-width="1.5"/>
+                    <text x="97" y="97" fill="#3a7bd5" font-size="7" text-anchor="middle">h₂</text>
+                    
+                    <!-- Gradient arrows -->
+                    <path d="M97 35 L97 42" stroke="#00ff88" stroke-width="1.5" marker-end="url(#arrow-gbm)"/>
+                    <path d="M85 72 L85 78" stroke="#00ff88" stroke-width="1.5" marker-end="url(#arrow-gbm)"/>
+                    <defs>
+                        <marker id="arrow-gbm" markerWidth="8" markerHeight="8" refX="7" refY="3" orient="auto">
+                            <polygon points="0 0, 8 3, 0 6" fill="#00ff88"/>
+                        </marker>
+                    </defs>
+                    <text x="65" y="40" fill="#00ff88" font-size="7">−∇L</text>
+                    <text x="65" y="105" fill="#00ff88" font-size="7">−∇L</text>
+                    
+                    <!-- Plus -->
+                    <text x="125" y="80" fill="#fff" font-size="14" font-weight="bold">+</text>
+                    
+                    <!-- More learners -->
+                    <rect x="145" y="55" width="30" height="18" rx="2" fill="rgba(58,123,213,0.2)" stroke="#3a7bd5" stroke-width="1"/>
+                    <rect x="145" y="80" width="30" height="18" rx="2" fill="rgba(58,123,213,0.2)" stroke="#3a7bd5" stroke-width="1"/>
+                    <text x="160" y="100" fill="#3a7bd5" font-size="6" text-anchor="middle">...</text>
+                    
+                    <!-- Arrow to final -->
+                    <path d="M180 75 L200 75" stroke="#00ff88" stroke-width="2"/>
+                    <polygon points="200,75 195,70 195,80" fill="#00ff88"/>
+                    
+                    <!-- Final model -->
+                    <rect x="210" y="55" width="75" height="40" rx="5" fill="rgba(0,255,136,0.15)" stroke="#00ff88" stroke-width="2"/>
+                    <text x="247" y="80" fill="#00ff88" font-size="11" font-weight="bold" text-anchor="middle">Fₘ</text>
+                    
+                    <!-- Formula -->
+                    <text x="150" y="140" fill="#888" font-size="8" text-anchor="middle">F(x) = Σ ν·αₘ·hₘ(x)</text>
+                </svg>
+            </div>
+
             <!-- Random Forest Paper Card -->
             <div class="network-card" onclick="location.href='papers/random-forest.html'">
                 <span class="tag">Machine Learning 2001</span>
@@ -939,6 +998,128 @@
                     <!-- OOB indicator -->
                     <text x="255" y="80" fill="#ff6b6b" font-size="8" text-anchor="middle">OOB</text>
                     <circle cx="255" cy="65" r="8" fill="none" stroke="#ff6b6b" stroke-width="1.5" stroke-dasharray="2,2"/>
+                </svg>
+            </div>
+
+            <!-- Gradient Boosting Paper Card -->
+            <div class="network-card" onclick="location.href='papers/gradient-boosting.html'">
+                <span class="tag">The Annals of Statistics 2001</span>
+                <h3>Gradient Boosting Machine</h3>
+                <p>Jerome Friedman's optimization framework that views boosting as gradient descent in function space. Fits weak learners to pseudo-residuals, enabling any differentiable loss function and spawning XGBoost, LightGBM, and CatBoost.</p>
+                <svg class="preview-svg" viewBox="0 0 300 150">
+                    <defs>
+                        <linearGradient id="gbm-grad" x1="0%" y1="0%" x2="100%" y2="0%">
+                            <stop offset="0%" style="stop-color:#00d2ff"/>
+                            <stop offset="100%" style="stop-color:#00ff88"/>
+                        </linearGradient>
+                    </defs>
+                    <!-- Initial model -->
+                    <rect x="20" y="60" width="40" height="30" rx="4" fill="rgba(0,210,255,0.2)" stroke="#00d2ff" stroke-width="1.5"/>
+                    <text x="40" y="80" fill="#00d2ff" font-size="10" text-anchor="middle">F₀</text>
+                    
+                    <!-- Plus -->
+                    <text x="70" y="78" fill="#fff" font-size="14" font-weight="bold">+</text>
+                    
+                    <!-- Residual arrows -->
+                    <path d="M85 50 L85 58" stroke="#ec4899" stroke-width="1.5" marker-end="url(#arrow-res)"/>
+                    <path d="M85 85 L85 93" stroke="#ec4899" stroke-width="1.5" marker-end="url(#arrow-res)"/>
+                    <defs>
+                        <marker id="arrow-res" markerWidth="8" markerHeight="8" refX="7" refY="3" orient="auto">
+                            <polygon points="0 0, 8 3, 0 6" fill="#ec4899"/>
+                        </marker>
+                    </defs>
+                    <text x="100" y="55" fill="#ec4899" font-size="8">−∇L</text>
+                    <text x="100" y="100" fill="#ec4899" font-size="8">−∇L</text>
+                    
+                    <!-- Weak learners (trees) -->
+                    <rect x="90" y="45" width="25" height="20" rx="2" fill="rgba(0,255,136,0.2)" stroke="#00ff88" stroke-width="1.5"/>
+                    <text x="102" y="59" fill="#00ff88" font-size="8" text-anchor="middle">h₁</text>
+                    
+                    <rect x="90" y="80" width="25" height="20" rx="2" fill="rgba(0,255,136,0.2)" stroke="#00ff88" stroke-width="1.5"/>
+                    <text x="102" y="94" fill="#00ff88" font-size="8" text-anchor="middle">h₂</text>
+                    
+                    <!-- Plus signs -->
+                    <text x="125" y="65" fill="#fff" font-size="10">+</text>
+                    <text x="125" y="100" fill="#fff" font-size="10">+</text>
+                    
+                    <!-- More trees dots -->
+                    <circle cx="140" cy="60" r="2" fill="#00ff88"/>
+                    <circle cx="148" cy="60" r="2" fill="#00ff88"/>
+                    <circle cx="156" cy="60" r="2" fill="#00ff88"/>
+                    <circle cx="140" cy="95" r="2" fill="#00ff88"/>
+                    <circle cx="148" cy="95" r="2" fill="#00ff88"/>
+                    <circle cx="156" cy="95" r="2" fill="#00ff88"/>
+                    
+                    <!-- Arrow to final -->
+                    <path d="M170 75 L190 75" stroke="#3a7bd5" stroke-width="2"/>
+                    <polygon points="190,75 185,70 185,80" fill="#3a7bd5"/>
+                    
+                    <!-- Final ensemble -->
+                    <rect x="200" y="55" width="85" height="40" rx="6" fill="rgba(58,123,213,0.2)" stroke="url(#gbm-grad)" stroke-width="2"/>
+                    <text x="242" y="75" fill="#fff" font-size="11" font-weight="bold" text-anchor="middle">Fₘ(x)</text>
+                    <text x="242" y="90" fill="#888" font-size="8" text-anchor="middle">Final Model</text>
+                    
+                    <!-- Formula -->
+                    <text x="150" y="130" fill="#888" font-size="9" text-anchor="middle">Fₘ = F₀ + Σ ν·αₘ·hₘ(x)</text>
+                </svg>
+            </div>
+
+            <!-- AdaBoost Paper Card -->
+            <div class="network-card" onclick="location.href='papers/adaboost.html'">
+                <span class="tag">ICML 1997</span>
+                <h3>AdaBoost</h3>
+                <p>Freund & Schapire's adaptive boosting algorithm that sequentially trains weak learners on reweighted data, focusing on misclassified examples. The first practical boosting method that sparked the ensemble learning revolution.</p>
+                <svg class="preview-svg" viewBox="0 0 300 150">
+                    <defs>
+                        <linearGradient id="ada-grad" x1="0%" y1="0%" x2="100%" y2="0%">
+                            <stop offset="0%" style="stop-color:#8b5cf6"/>
+                            <stop offset="100%" style="stop-color:#ec4899"/>
+                        </linearGradient>
+                    </defs>
+                    <!-- Data points with different weights -->
+                    <circle cx="40" cy="45" r="6" fill="#8b5cf6" opacity="0.9"/>
+                    <circle cx="65" cy="55" r="4" fill="#8b5cf6" opacity="0.5"/>
+                    <circle cx="55" cy="75" r="8" fill="#ec4899" opacity="1"/>
+                    <circle cx="80" cy="65" r="5" fill="#8b5cf6" opacity="0.6"/>
+                    <text x="60" y="100" fill="#888" font-size="8" text-anchor="middle">Weighted Data</text>
+                    
+                    <!-- Arrow -->
+                    <path d="M100 65 L120 65" stroke="#fff" stroke-width="1.5" marker-end="url(#arrow-ada)"/>
+                    <defs>
+                        <marker id="arrow-ada" markerWidth="8" markerHeight="8" refX="7" refY="3" orient="auto">
+                            <polygon points="0 0, 8 3, 0 6" fill="#fff"/>
+                        </marker>
+                    </defs>
+                    
+                    <!-- Sequential training -->
+                    <rect x="130" y="40" width="50" height="50" rx="4" fill="rgba(139,92,246,0.2)" stroke="#8b5cf6" stroke-width="2"/>
+                    <text x="155" y="55" fill="#8b5cf6" font-size="9" text-anchor="middle">Weak</text>
+                    <text x="155" y="70" fill="#8b5cf6" font-size="9" text-anchor="middle">Learner</text>
+                    <text x="155" y="85" fill="#fff" font-size="8" text-anchor="middle">hₜ(x)</text>
+                    
+                    <!-- Error arrows -->
+                    <path d="M155 95 L155 110" stroke="#ec4899" stroke-width="1.5" marker-end="url(#arrow-ada2)"/>
+                    <defs>
+                        <marker id="arrow-ada2" markerWidth="8" markerHeight="8" refX="7" refY="3" orient="auto">
+                            <polygon points="0 0, 8 3, 0 6" fill="#ec4899"/>
+                        </marker>
+                    </defs>
+                    
+                    <!-- Weight update -->
+                    <rect x="130" y="115" width="50" height="30" rx="4" fill="rgba(236,72,153,0.2)" stroke="#ec4899" stroke-width="1.5"/>
+                    <text x="155" y="130" fill="#ec4899" font-size="8" text-anchor="middle">Update</text>
+                    <text x="155" y="142" fill="#ec4899" font-size="7" text-anchor="middle">Weights</text>
+                    
+                    <!-- Feedback arrow -->
+                    <path d="M130 130 L90 130 L90 50 L95 50" stroke="#8b5cf6" stroke-width="1.5" fill="none" stroke-dasharray="3,3" marker-end="url(#arrow-ada)"/>
+                    
+                    <!-- Final classifier -->
+                    <rect x="210" y="50" width="80" height="50" rx="6" fill="rgba(139,92,246,0.15)" stroke="url(#ada-grad)" stroke-width="2"/>
+                    <text x="250" y="72" fill="#fff" font-size="10" font-weight="bold" text-anchor="middle">H(x) = Σαₜhₜ(x)</text>
+                    <text x="250" y="90" fill="#888" font-size="8" text-anchor="middle">Strong Classifier</text>
+                    
+                    <!-- Formula -->
+                    <text x="150" y="20" fill="#888" font-size="9" text-anchor="middle">Sequential Adaptive Boosting</text>
                 </svg>
             </div>
 

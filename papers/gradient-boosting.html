@@ -1,0 +1,514 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gradient Boosting - Friedman 2001 | Neural Networks</title>
+    <link rel="stylesheet" href="../assets/css/styles.css">
+    <style>
+        .paper-hero {
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
+            min-height: 60vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            padding: 2rem;
+        }
+        
+        .paper-hero h1 {
+            font-size: clamp(2rem, 5vw, 3.5rem);
+            margin-bottom: 1rem;
+            background: linear-gradient(135deg, #00d2ff 0%, #3a7bd5 50%, #00ff88 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        
+        .paper-meta {
+            font-size: 1.2rem;
+            opacity: 0.9;
+            margin-bottom: 2rem;
+        }
+        
+        .paper-links {
+            display: flex;
+            gap: 1rem;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+        
+        .paper-link {
+            padding: 0.75rem 1.5rem;
+            border-radius: 8px;
+            background: rgba(255,255,255,0.1);
+            color: white;
+            text-decoration: none;
+            border: 1px solid rgba(255,255,255,0.2);
+            transition: all 0.3s ease;
+        }
+        
+        .paper-link:hover {
+            background: rgba(255,255,255,0.2);
+            transform: translateY(-2px);
+        }
+        
+        .section {
+            max-width: 1000px;
+            margin: 4rem auto;
+            padding: 0 2rem;
+        }
+        
+        .section h2 {
+            color: #3a7bd5;
+            border-bottom: 2px solid #3a7bd5;
+            padding-bottom: 0.5rem;
+            margin-bottom: 2rem;
+        }
+        
+        .innovation-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+            margin: 2rem 0;
+        }
+        
+        .innovation-card {
+            background: linear-gradient(145deg, #1a1a2e 0%, #16213e 100%);
+            padding: 2rem;
+            border-radius: 12px;
+            border: 1px solid rgba(58, 123, 213, 0.3);
+        }
+        
+        .innovation-card h3 {
+            color: #00d2ff;
+            margin-bottom: 1rem;
+        }
+        
+        .formula-box {
+            background: rgba(0, 0, 0, 0.3);
+            padding: 1.5rem;
+            border-radius: 8px;
+            font-family: 'Courier New', monospace;
+            margin: 1rem 0;
+            border-left: 4px solid #00d2ff;
+            overflow-x: auto;
+        }
+        
+        .code-block {
+            background: #1e1e1e;
+            padding: 1.5rem;
+            border-radius: 8px;
+            overflow-x: auto;
+            font-family: 'Courier New', monospace;
+            font-size: 0.9rem;
+            border: 1px solid #333;
+        }
+        
+        .boosting-viz {
+            background: #0d1117;
+            border-radius: 12px;
+            padding: 2rem;
+            margin: 2rem 0;
+        }
+        
+        .related-papers {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1rem;
+            margin: 2rem 0;
+        }
+        
+        .related-paper {
+            background: linear-gradient(145deg, #1a1a2e 0%, #16213e 100%);
+            padding: 1.5rem;
+            border-radius: 8px;
+            border: 1px solid rgba(58, 123, 213, 0.2);
+            text-decoration: none;
+            color: inherit;
+            transition: transform 0.3s ease;
+        }
+        
+        .related-paper:hover {
+            transform: translateY(-4px);
+            border-color: rgba(58, 123, 213, 0.5);
+        }
+        
+        .impact-stat {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            padding: 1rem;
+            background: rgba(58, 123, 213, 0.1);
+            border-radius: 8px;
+            margin: 0.5rem 0;
+        }
+        
+        .impact-number {
+            font-size: 2rem;
+            font-weight: bold;
+            color: #00d2ff;
+        }
+        
+        .tree-step {
+            background: linear-gradient(145deg, #1e3a5f 0%, #16213e 100%);
+            padding: 1.5rem;
+            border-radius: 8px;
+            margin: 1rem 0;
+            border-left: 4px solid #00ff88;
+        }
+        
+        .tree-step h4 {
+            color: #00ff88;
+            margin-bottom: 0.5rem;
+        }
+        
+        .gradient-step {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            padding: 1rem;
+            background: rgba(0, 210, 255, 0.05);
+            border-radius: 8px;
+            margin: 0.5rem 0;
+        }
+        
+        .step-number {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #3a7bd5, #00d2ff);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            color: white;
+            flex-shrink: 0;
+        }
+    </style>
+</head>
+<body>
+    <nav class="main-nav">
+        <div class="nav-container">
+            <a href="../index.html" class="nav-logo">← Back to Home</a>
+        </div>
+    </nav>
+
+    <section class="paper-hero">
+        <div>
+            <h1>Gradient Boosting Machine</h1>
+            <p class="paper-meta">Greedy Function Approximation: A Gradient Boosting Machine</p>
+            <p class="paper-meta">Jerome H. Friedman · The Annals of Statistics · 2001</p>
+            <div class="paper-links">
+                <a href="https://doi.org/10.1214/aos/1013203451" class="paper-link" target="_blank">📄 Paper (DOI)</a>
+                <a href="https://projecteuclid.org/euclid.aos/1013203451" class="paper-link" target="_blank">🔗 Project Euclid</a>
+                <a href="https://xgboost.readthedocs.io/" class="paper-link" target="_blank">💻 XGBoost</a>
+            </div>
+        </div>
+    </section>
+
+    <section class="section">
+        <h2>🎯 Problem Statement</h2>
+        <p>Before Gradient Boosting, ensemble methods like AdaBoost focused primarily on classification problems. The challenge was to develop a general framework for function approximation that could:</p>
+        <ul style="margin: 1rem 0; padding-left: 2rem;">
+            <li>Handle both regression and classification problems</li>
+            <li>Work with any differentiable loss function</li>
+            <li>Systematically minimize loss through additive models</li>
+            <li>Connect boosting to classical statistical methods (additive models, steepest descent)</li>
+        </ul>
+        <p>Friedman's key insight was to view boosting as an optimization algorithm in function space, revealing its connection to gradient descent and functional gradient descent methods.</p>
+    </section>
+
+    <section class="section">
+        <h2>💡 Key Innovation</h2>
+        <div class="innovation-grid">
+            <div class="innovation-card">
+                <h3>🔄 Gradient Descent in Function Space</h3>
+                <p>The core breakthrough: boosting is equivalent to performing gradient descent in function space. Instead of updating parameters, GBM fits weak learners to pseudo-residuals (negative gradients of the loss function).</p>
+            </div>
+            <div class="innovation-card">
+                <h3>📐 Additive Expansion</h3>
+                <p>The model builds an additive ensemble where each new weak learner corrects errors of the previous ensemble. This greedy, stagewise approach avoids overfitting while systematically reducing loss.</p>
+            </div>
+            <div class="innovation-card">
+                <h3>🎛️ Any Loss Function</h3>
+                <p>GBM works with any differentiable loss function: squared error, absolute error, Huber loss, quantile loss, log-loss for classification, and custom loss functions.</p>
+            </div>
+            <div class="innovation-card">
+                <h3>🌳 Weak Learners as Trees</h3>
+                <p>While theory allows any weak learner, Friedman proposed decision trees as the ideal base learner due to their ability to model complex interactions and non-linearities.</p>
+            </div>
+        </div>
+    </section>
+
+    <section class="section">
+        <h2>📊 The Algorithm</h2>
+        
+        <div class="formula-box">
+            <strong>Objective:</strong> Find F(x) that minimizes expected loss<br><br>
+            F*(x) = argmin_F(x) E<sub>y|x</sub>[L(y, F(x))]<br><br>
+            <strong>Additive Model:</strong> F(x) = Σ<sub>m=1</sub><sup>M</sup> α<sub>m</sub>h<sub>m</sub>(x)<br><br>
+            where h<sub>m</sub> are weak learners and α<sub>m</sub> are step sizes
+        </div>
+
+        <h3 style="color: #00d2ff; margin: 2rem 0 1rem 0;">Stagewise Gradient Boosting</h3>
+        
+        <div class="gradient-step">
+            <div class="step-number">1</div>
+            <div>
+                <strong>Initialize</strong><br>
+                F<sub>0</sub>(x) = argmin<sub>γ</sub> Σ<sub>i</sub> L(y<sub>i</sub>, γ)<br>
+                <span style="opacity: 0.7;">Typically: F<sub>0</sub>(x) = mean(y) for squared error</span>
+            </div>
+        </div>
+        
+        <div class="gradient-step">
+            <div class="step-number">2</div>
+            <div>
+                <strong>For m = 1 to M (iterations):</strong>
+            </div>
+        </div>
+        
+        <div class="gradient-step" style="margin-left: 2rem;">
+            <div class="step-number">2a</div>
+            <div>
+                <strong>Compute Pseudo-Residuals</strong><br>
+                r<sub>im</sub> = -[∂L(y<sub>i</sub>, F(x<sub>i</sub>)) / ∂F(x<sub>i</sub>)]<sub>F=F<sub>m-1</sub></sub><br>
+                <span style="opacity: 0.7;">These are the negative gradients - the "direction" to move</span>
+            </div>
+        </div>
+        
+        <div class="gradient-step" style="margin-left: 2rem;">
+            <div class="step-number">2b</div>
+            <div>
+                <strong>Fit Weak Learner to Residuals</strong><br>
+                h<sub>m</sub>(x) = argmin<sub>h</sub> Σ<sub>i</sub> [r<sub>im</sub> - h(x<sub>i</sub>)]<sup>2</sup><br>
+                <span style="opacity: 0.7;">A regression tree fitted to the pseudo-residuals</span>
+            </div>
+        </div>
+        
+        <div class="gradient-step" style="margin-left: 2rem;">
+            <div class="step-number">2c</div>
+            <div>
+                <strong>Find Optimal Step Size</strong><br>
+                α<sub>m</sub> = argmin<sub>α</sub> Σ<sub>i</sub> L(y<sub>i</sub>, F<sub>m-1</sub>(x<sub>i</sub>) + α·h<sub>m</sub>(x<sub>i</sub>))<br>
+                <span style="opacity: 0.7;">Line search to minimize loss</span>
+            </div>
+        </div>
+        
+        <div class="gradient-step" style="margin-left: 2rem;">
+            <div class="step-number">2d</div>
+            <div>
+                <strong>Update Model</strong><br>
+                F<sub>m</sub>(x) = F<sub>m-1</sub>(x) + ν·α<sub>m</sub>·h<sub>m</sub>(x)<br>
+                <span style="opacity: 0.7;">ν is the learning rate (shrinkage, typically 0.01-0.1)</span>
+            </div>
+        </div>
+
+        <div class="boosting-viz">
+            <h3 style="text-align: center; margin-bottom: 2rem; color: #00d2ff;">Visual: Gradient Boosting Process</h3>
+            <svg viewBox="0 0 800 400" xmlns="http://www.w3.org/2000/svg">
+                <!-- Background -->
+                <rect width="800" height="400" fill="#0d1117"/>
+                
+                <!-- Title -->
+                <text x="400" y="30" text-anchor="middle" fill="#00d2ff" font-size="18" font-weight="bold">Gradient Boosting: Residual Fitting Over Iterations</text>
+                
+                <!-- Data points -->
+                <circle cx="100" cy="100" r="4" fill="#ec4899"/>
+                <circle cx="150" cy="150" r="4" fill="#ec4899"/>
+                <circle cx="200" cy="120" r="4" fill="#ec4899"/>
+                <circle cx="250" cy="180" r="4" fill="#ec4899"/>
+                <circle cx="300" cy="140" r="4" fill="#ec4899"/>
+                <circle cx="350" cy="200" r="4" fill="#ec4899"/>
+                <text x="225" y="240" text-anchor="middle" fill="#888" font-size="12">Original Data</text>
+                
+                <!-- Arrow -->
+                <path d="M 380 150 L 420 150" stroke="#3a7bd5" stroke-width="2" marker-end="url(#arrowhead)"/>
+                <defs>
+                    <marker id="arrowhead" markerWidth="10" markerHeight="10" refX="9" refY="3" orient="auto">
+                        <polygon points="0 0, 10 3, 0 6" fill="#3a7bd5"/>
+                    </marker>
+                </defs>
+                
+                <!-- Iteration 1 -->
+                <rect x="440" y="60" width="150" height="120" rx="8" fill="#1e3a5f" stroke="#00d2ff" stroke-width="2"/>
+                <text x="515" y="85" text-anchor="middle" fill="#00ff88" font-size="14" font-weight="bold">Iteration 1</text>
+                <text x="515" y="110" text-anchor="middle" fill="#fff" font-size="11">Weak Learner 1</text>
+                <text x="515" y="130" text-anchor="middle" fill="#888" font-size="10">Fits residuals</text>
+                <text x="515" y="150" text-anchor="middle" fill="#888" font-size="10">of F₀(x)</text>
+                
+                <!-- Plus sign -->
+                <text x="610" y="130" fill="#fff" font-size="20" font-weight="bold">+</text>
+                
+                <!-- Iteration 2 -->
+                <rect x="630" y="60" width="150" height="120" rx="8" fill="#1e3a5f" stroke="#00d2ff" stroke-width="2"/>
+                <text x="705" y="85" text-anchor="middle" fill="#00ff88" font-size="14" font-weight="bold">Iteration 2</text>
+                <text x="705" y="110" text-anchor="middle" fill="#fff" font-size="11">Weak Learner 2</text>
+                <text x="705" y="130" text-anchor="middle" fill="#888" font-size="10">Fits new</text>
+                <text x="705" y="150" text-anchor="middle" fill="#888" font-size="10">residuals</text>
+                
+                <!-- Final model -->
+                <rect x="440" y="200" width="340" height="80" rx="8" fill="#0f3460" stroke="#00ff88" stroke-width="2"/>
+                <text x="610" y="230" text-anchor="middle" fill="#00ff88" font-size="16" font-weight="bold">Final Ensemble</text>
+                <text x="610" y="255" text-anchor="middle" fill="#fff" font-size="13">F<sub>M</sub>(x) = F₀(x) + Σ ν·α<sub>m</sub>·h<sub>m</sub>(x)</text>
+                
+                <!-- Arrows from iterations to final -->
+                <path d="M 515 180 L 515 200" stroke="#00d2ff" stroke-width="2" marker-end="url(#arrowhead)"/>
+                <path d="M 705 180 L 705 195 L 580 195 L 580 200" stroke="#00d2ff" stroke-width="2" fill="none"/>
+            </svg>
+        </div>
+    </section>
+
+    <section class="section">
+        <h2>📈 Results & Impact</h2>
+        
+        <div class="impact-stat">
+            <div class="impact-number">50,000+</div>
+            <div>
+                <strong>Citations</strong><br>
+                <span style="opacity: 0.7;">One of the most cited papers in machine learning</span>
+            </div>
+        </div>
+        
+        <div class="impact-stat">
+            <div class="impact-number">∞</div>
+            <div>
+                <strong>Applications</strong><br>
+                <span style="opacity: 0.7;">Web search ranking, fraud detection, recommendation systems, finance, healthcare</span>
+            </div>
+        </div>
+        
+        <div class="impact-stat">
+            <div class="impact-number">XGB</div>
+            <div>
+                <strong>Legacy: XGBoost, LightGBM, CatBoost</strong><br>
+                <span style="opacity: 0.7;">Friedman's framework spawned industry-standard libraries dominating Kaggle competitions</span>
+            </div>
+        </div>
+
+        <h3 style="color: #00d2ff; margin: 2rem 0 1rem 0;">Key Advantages</h3>
+        <ul style="padding-left: 2rem; line-height: 2;">
+            <li><strong>Flexibility:</strong> Works with any differentiable loss function</li>
+            <li><strong>Robustness:</strong> Naturally handles mixed data types, missing values</li>
+            <li><strong>Interpretability:</strong> Feature importance via gain and permutation methods</li>
+            <li><strong>Accuracy:</strong> Often outperforms single models and Random Forest</li>
+            <li><strong>Regularization:</strong> Shrinkage, subsampling, and tree constraints prevent overfitting</li>
+        </ul>
+    </section>
+
+    <section class="section">
+        <h2>💻 Code Implementation</h2>
+        
+        <h3 style="color: #00d2ff; margin: 1rem 0;">XGBoost (Industry Standard)</h3>
+        <div class="code-block">
+<pre><code class="language-python">import xgboost as xgb
+from sklearn.datasets import load_breast_cancer
+from sklearn.model_selection import train_test_split
+
+# Load data
+data = load_breast_cancer()
+X_train, X_test, y_train, y_test = train_test_split(
+    data.data, data.target, test_size=0.2, random_state=42
+)
+
+# XGBoost parameters
+params = {
+    'objective': 'binary:logistic',  # For classification
+    'max_depth': 6,                  # Tree depth
+    'learning_rate': 0.1,            # Shrinkage (ν)
+    'n_estimators': 100,             # Number of trees (M)
+    'subsample': 0.8,                # Row sampling
+    'colsample_bytree': 0.8,         # Column sampling
+    'gamma': 0,                      # Min loss reduction
+    'reg_alpha': 0.1,                # L1 regularization
+    'reg_lambda': 1.0,                 # L2 regularization
+}
+
+# Train model
+model = xgb.XGBClassifier(**params)
+model.fit(X_train, y_train)
+
+# Predictions
+predictions = model.predict_proba(X_test)[:, 1]
+
+# Feature importance
+importance = model.feature_importances_
+feature_names = data.feature_names</code></pre>
+        </div>
+
+        <h3 style="color: #00d2ff; margin: 1.5rem 0 1rem 0;">Scikit-learn (GradientBoostingClassifier)</h3>
+        <div class="code-block">
+<pre><code class="language-python">from sklearn.ensemble import GradientBoostingClassifier
+from sklearn.datasets import make_classification
+
+# Create synthetic data
+X, y = make_classification(n_samples=1000, n_features=20, random_state=42)
+
+# GBM with key Friedman parameters
+gbm = GradientBoostingClassifier(
+    n_estimators=100,        # M iterations
+    learning_rate=0.1,       # Shrinkage ν
+    max_depth=3,             # Weak learner complexity
+    min_samples_split=2,     # Node splitting threshold
+    min_samples_leaf=1,      # Leaf size
+    subsample=0.8,           # Stochastic GBM
+    loss='log_loss',         # Logistic loss for classification
+    random_state=42
+)
+
+gbm.fit(X, y)
+
+# Staged predictions (monitor training)
+for i, y_pred in enumerate(gbm.staged_predict_proba(X_test)):
+    score = log_loss(y_test, y_pred)
+    print(f"Iteration {i}: log_loss = {score:.4f}")</code></pre>
+        </div>
+    </section>
+
+    <section class="section">
+        <h2>🔗 Related Work</h2>
+        <div class="related-papers">
+            <a href="./random-forest.html" class="related-paper">
+                <h4>Random Forest</h4>
+                <p>Breiman 2001 - Bagging ensemble with random feature selection</p>
+            </a>
+            <a href="./xgboost.html" class="related-paper">
+                <h4>XGBoost</h4>
+                <p>Chen & Guestrin 2016 - Scalable tree boosting system with regularization</p>
+            </a>
+            <a href="https://arxiv.org/abs/1505.01866" class="related-paper" target="_blank">
+                <h4>DART</h4>
+                <p>Rashmi & Gilad-Bachrach 2015 - Dropouts meet Multiple Additive Regression Trees</p>
+            </a>
+            <a href="https://papers.nips.cc/paper/2017/hash/6449f44a102fde848669bdd9eb6b76fa-Abstract.html" class="related-paper" target="_blank">
+                <h4>LightGBM</h4>
+                <p>Ke et al. 2017 - Gradient-based One-Side Sampling, Exclusive Feature Bundling</p>
+            </a>
+            <a href="https://arxiv.org/abs/1706.08357" class="related-paper" target="_blank">
+                <h4>CatBoost</h4>
+                <p>Prokhorenkova et al. 2017 - Unbiased boosting with categorical features</p>
+            </a>
+            <a href="https://projecteuclid.org/euclid.aos/1016218223" class="related-paper" target="_blank">
+                <h4>Additive Logistic Regression</h4>
+                <p>Friedman, Hastie, Tibshirani 2000 - Statistical view of boosting (prequel)</p>
+            </a>
+        </div>
+    </section>
+
+    <section class="section" style="margin-bottom: 4rem;">
+        <h2>🎓 Why It Matters</h2>
+        <p style="font-size: 1.1rem; line-height: 1.8;">
+            Friedman's Gradient Boosting Machine unified two worlds: the statistical rigor of additive models and the empirical success of boosting algorithms. By revealing that boosting performs gradient descent in function space, he provided a theoretical foundation that enabled decades of innovation—from XGBoost's speed optimizations to LightGBM's leaf-wise growth strategies. Today, gradient boosting remains the go-to method for tabular data, powering production systems at Google, Amazon, and countless startups. The paper's framework for handling arbitrary loss functions also paved the way for custom objectives in deep learning and ranking algorithms.
+        </p>
+        <p style="font-size: 1.1rem; line-height: 1.8; margin-top: 1rem;">
+            The key insight—fitting to pseudo-residuals—is both elegant and powerful. It transforms the complex problem of function optimization into a series of simple regression tasks, making boosting accessible and extensible. This insight continues to influence modern ML, from neural architecture search to reinforcement learning algorithms.
+        </p>
+    </section>
+
+    <footer style="text-align: center; padding: 2rem; background: #0a0a0f; border-top: 1px solid #333;">
+        <p style="color: #888;">Part of the <a href="../index.html" style="color: #3a7bd5;">AI Neural Networks Visualized</a> collection</p>
+        <p style="color: #666; font-size: 0.9rem; margin-top: 0.5rem;">Paper added: April 17, 2026</p>
+    </footer>
+</body>
+</html>
