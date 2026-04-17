@@ -1,0 +1,860 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>R-CNN: Rich Feature Hierarchies - Neural Network Architecture</title>
+    <style>
+        :root {
+            --primary-color: #6C5CE7;
+            --secondary-color: #00D2D3;
+            --background-color: #0a0a0a;
+            --text-color: #f0f0f0;
+            --card-bg: #141414;
+            --border-color: #2a2a2a;
+            --accent-color: #FF6B6B;
+            --success-color: #1DD1A1;
+            --info-color: #54A0FF;
+            --warning-color: #FECA57;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+            background: var(--background-color);
+            color: var(--text-color);
+            line-height: 1.6;
+        }
+
+        .nav {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 1000;
+            background: rgba(10, 10, 10, 0.9);
+            backdrop-filter: blur(10px);
+            padding: 1rem 2rem;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .nav-content {
+            max-width: 1400px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .nav a {
+            color: var(--text-color);
+            text-decoration: none;
+            font-weight: 500;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            transition: color 0.3s;
+        }
+
+        .nav a:hover {
+            color: var(--secondary-color);
+        }
+
+        .main-content {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 6rem 2rem 4rem;
+        }
+
+        .hero {
+            text-align: center;
+            margin-bottom: 4rem;
+            padding: 3rem 0;
+            background: linear-gradient(135deg, rgba(108, 92, 231, 0.1) 0%, rgba(0, 210, 211, 0.1) 100%);
+            border-radius: 20px;
+            border: 1px solid var(--border-color);
+        }
+
+        .hero h1 {
+            font-size: 3.5rem;
+            margin-bottom: 1rem;
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .hero .subtitle {
+            font-size: 1.5rem;
+            color: rgba(240, 240, 240, 0.7);
+            margin-bottom: 1rem;
+        }
+
+        .paper-meta {
+            display: flex;
+            justify-content: center;
+            gap: 2rem;
+            flex-wrap: wrap;
+            margin-top: 2rem;
+        }
+
+        .meta-item {
+            text-align: center;
+        }
+
+        .meta-label {
+            font-size: 0.85rem;
+            color: rgba(240, 240, 240, 0.5);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .meta-value {
+            font-size: 1.1rem;
+            color: var(--secondary-color);
+            font-weight: 600;
+        }
+
+        .content-section {
+            margin-bottom: 4rem;
+        }
+
+        .section-title {
+            font-size: 2rem;
+            margin-bottom: 1.5rem;
+            padding-bottom: 0.5rem;
+            border-bottom: 2px solid var(--primary-color);
+            display: inline-block;
+        }
+
+        .card {
+            background: var(--card-bg);
+            border-radius: 16px;
+            padding: 2rem;
+            margin-bottom: 2rem;
+            border: 1px solid var(--border-color);
+        }
+
+        .architecture-container {
+            background: var(--card-bg);
+            border-radius: 16px;
+            padding: 2rem;
+            margin: 2rem 0;
+            border: 1px solid var(--border-color);
+        }
+
+        .author-list {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 1rem;
+            justify-content: center;
+            margin: 1.5rem 0;
+        }
+
+        .author {
+            background: linear-gradient(135deg, rgba(108, 92, 231, 0.2), rgba(0, 210, 211, 0.2));
+            padding: 0.5rem 1rem;
+            border-radius: 20px;
+            font-size: 0.9rem;
+            border: 1px solid var(--primary-color);
+        }
+
+        .abstract {
+            font-size: 1.1rem;
+            line-height: 1.8;
+            color: rgba(240, 240, 240, 0.9);
+            text-align: justify;
+            padding: 1.5rem;
+            background: rgba(108, 92, 231, 0.05);
+            border-radius: 12px;
+            border-left: 4px solid var(--primary-color);
+        }
+
+        .key-innovations {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 1.5rem;
+            margin: 2rem 0;
+        }
+
+        .innovation-card {
+            background: linear-gradient(135deg, rgba(108, 92, 231, 0.1), rgba(0, 210, 211, 0.05));
+            border-radius: 12px;
+            padding: 1.5rem;
+            border: 1px solid var(--border-color);
+            transition: transform 0.3s, border-color 0.3s;
+        }
+
+        .innovation-card:hover {
+            transform: translateY(-5px);
+            border-color: var(--secondary-color);
+        }
+
+        .innovation-number {
+            width: 40px;
+            height: 40px;
+            background: var(--primary-color);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            margin-bottom: 1rem;
+        }
+
+        .innovation-title {
+            font-size: 1.2rem;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+            color: var(--secondary-color);
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1.5rem;
+            margin: 2rem 0;
+        }
+
+        .stat-card {
+            background: var(--card-bg);
+            border-radius: 12px;
+            padding: 1.5rem;
+            text-align: center;
+            border: 1px solid var(--border-color);
+        }
+
+        .stat-value {
+            font-size: 2.5rem;
+            font-weight: bold;
+            color: var(--secondary-color);
+        }
+
+        .stat-label {
+            font-size: 0.9rem;
+            color: rgba(240, 240, 240, 0.6);
+            margin-top: 0.5rem;
+        }
+
+        .flow-step {
+            display: flex;
+            align-items: flex-start;
+            gap: 1.5rem;
+            padding: 1.5rem;
+            background: rgba(108, 92, 231, 0.05);
+            border-radius: 12px;
+            margin-bottom: 1rem;
+            border-left: 4px solid var(--info-color);
+        }
+
+        .step-number {
+            width: 50px;
+            height: 50px;
+            background: var(--info-color);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            font-size: 1.3rem;
+            flex-shrink: 0;
+        }
+
+        .step-content h3 {
+            color: var(--info-color);
+            margin-bottom: 0.5rem;
+        }
+
+        .technical-details {
+            background: rgba(84, 160, 255, 0.05);
+            border-radius: 12px;
+            padding: 1.5rem;
+            margin: 1.5rem 0;
+        }
+
+        .technical-details h4 {
+            color: var(--info-color);
+            margin-bottom: 1rem;
+        }
+
+        .code-block {
+            background: #0d0d0d;
+            border-radius: 8px;
+            padding: 1rem;
+            font-family: 'Courier New', monospace;
+            font-size: 0.9rem;
+            overflow-x: auto;
+            border: 1px solid var(--border-color);
+            color: #a8a8a8;
+        }
+
+        .highlight {
+            color: var(--secondary-color);
+            font-weight: 600;
+        }
+
+        .impact-section {
+            background: linear-gradient(135deg, rgba(29, 209, 161, 0.1), rgba(84, 160, 255, 0.1));
+            border-radius: 16px;
+            padding: 2rem;
+            border: 1px solid var(--success-color);
+        }
+
+        .impact-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1.5rem;
+            margin-top: 1.5rem;
+        }
+
+        .impact-item {
+            padding: 1rem;
+            background: rgba(29, 209, 161, 0.1);
+            border-radius: 8px;
+            border-left: 3px solid var(--success-color);
+        }
+
+        .paper-link {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            color: white;
+            padding: 0.75rem 1.5rem;
+            border-radius: 8px;
+            text-decoration: none;
+            font-weight: 600;
+            margin-top: 1rem;
+            transition: opacity 0.3s;
+        }
+
+        .paper-link:hover {
+            opacity: 0.9;
+        }
+
+        @media (max-width: 768px) {
+            .hero h1 {
+                font-size: 2rem;
+            }
+            .hero .subtitle {
+                font-size: 1.1rem;
+            }
+            .paper-meta {
+                flex-direction: column;
+                gap: 1rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <nav class="nav">
+        <div class="nav-content">
+            <a href="index.html">← Back to Gallery</a>
+            <a href="https://arxiv.org/abs/1311.2524" target="_blank">View Paper →</a>
+        </div>
+    </nav>
+
+    <main class="main-content">
+        <div class="hero">
+            <h1>🎯 R-CNN</h1>
+            <p class="subtitle">Rich Feature Hierarchies for Accurate Object Detection and Semantic Segmentation</p>
+            <div class="author-list">
+                <span class="author">Ross Girshick</span>
+                <span class="author">Jeff Donahue</span>
+                <span class="author">Trevor Darrell</span>
+                <span class="author">Jitendra Malik</span>
+            </div>
+            <div class="paper-meta">
+                <div class="meta-item">
+                    <div class="meta-label">Conference</div>
+                    <div class="meta-value">CVPR 2014</div>
+                </div>
+                <div class="meta-item">
+                    <div class="meta-label">Institution</div>
+                    <div class="meta-value">UC Berkeley</div>
+                </div>
+                <div class="meta-item">
+                    <div class="meta-label">arXiv</div>
+                    <div class="meta-value">1311.2524</div>
+                </div>
+            </div>
+        </div>
+
+        <section class="content-section">
+            <h2 class="section-title">📄 Abstract</h2>
+            <div class="card">
+                <p class="abstract">
+                    Object detection performance, as measured on the canonical PASCAL VOC dataset, had plateaued in the years prior to this work. The best-performing methods were complex ensemble systems that typically combined multiple low-level image features with high-level context. In this paper, we propose a simple and scalable detection algorithm that improves mean average precision (mAP) by <span class="highlight">more than 30% relative</span> to the previous best result on VOC 2012—achieving a mAP of 53.3%. Our approach combines two key insights: (1) one can apply high-capacity convolutional neural networks (CNNs) to bottom-up region proposals in order to localize and segment objects and (2) when labeled training data is scarce, supervised pre-training for an auxiliary task, followed by domain-specific fine-tuning, yields a significant performance boost. Since we combine <strong>Region proposals</strong> with <strong>CNNs</strong>, we call our method <strong>R-CNN</strong>: Regions with CNN features.
+                </p>
+            </div>
+        </section>
+
+        <section class="content-section">
+            <h2 class="section-title">💡 Key Innovations</h2>
+            <div class="key-innovations">
+                <div class="innovation-card">
+                    <div class="innovation-number">1</div>
+                    <div class="innovation-title">CNN + Region Proposals</div>
+                    <p>The revolutionary combination of selective search region proposals with deep CNN features, replacing traditional hand-crafted features (HOG, SIFT) with learned hierarchical representations.</p>
+                </div>
+                <div class="innovation-card">
+                    <div class="innovation-number">2</div>
+                    <div class="innovation-title">Supervised Pre-training</div>
+                    <p>Demonstrated that pre-training on ImageNet (large-scale classification) followed by fine-tuning on detection tasks dramatically improves performance when labeled detection data is scarce.</p>
+                </div>
+                <div class="innovation-card">
+                    <div class="innovation-number">3</div>
+                    <div class="innovation-title">Transfer Learning Paradigm</div>
+                    <p>Established the "pre-train then fine-tune" paradigm that became standard practice in computer vision. Showed CNN features are transferable across tasks.</p>
+                </div>
+                <div class="innovation-card">
+                    <div class="innovation-number">4</div>
+                    <div class="innovation-title">Rich Feature Hierarchies</div>
+                    <p>Demonstrated that CNNs learn rich, hierarchical visual features where deeper layers capture increasingly complex and semantic information.</p>
+                </div>
+            </div>
+        </section>
+
+        <section class="content-section">
+            <h2 class="section-title">🏗️ Architecture Overview</h2>
+            <div class="architecture-container">
+                <svg viewBox="0 0 1000 500" xmlns="http://www.w3.org/2000/svg">
+                    <!-- Background -->
+                    <defs>
+                        <linearGradient id="grad1" x1="0%" y1="0%" x2="100%" y2="100%">
+                            <stop offset="0%" style="stop-color:#6C5CE7;stop-opacity:0.3" />
+                            <stop offset="100%" style="stop-color:#00D2D3;stop-opacity:0.3" />
+                        </linearGradient>
+                        <linearGradient id="grad2" x1="0%" y1="0%" x2="100%" y2="0%">
+                            <stop offset="0%" style="stop-color:#FF6B6B;stop-opacity:0.4" />
+                            <stop offset="100%" style="stop-color:#FECA57;stop-opacity:0.4" />
+                        </linearGradient>
+                        <linearGradient id="grad3" x1="0%" y1="0%" x2="100%" y2="0%">
+                            <stop offset="0%" style="stop-color:#1DD1A1;stop-opacity:0.4" />
+                            <stop offset="100%" style="stop-color:#54A0FF;stop-opacity:0.4" />
+                        </linearGradient>
+                        <marker id="arrowhead" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto">
+                            <polygon points="0 0, 10 3.5, 0 7" fill="#00D2D3"/>
+                        </marker>
+                    </defs>
+
+                    <!-- Input Image -->
+                    <rect x="20" y="200" width="100" height="100" fill="url(#grad1)" stroke="#6C5CE7" stroke-width="2" rx="8"/>
+                    <text x="70" y="255" text-anchor="middle" fill="#f0f0f0" font-size="12" font-weight="bold">Input</text>
+                    <text x="70" y="275" text-anchor="middle" fill="#a0a0a0" font-size="10">Image</text>
+
+                    <!-- Arrow to Region Proposals -->
+                    <line x1="120" y1="250" x2="160" y2="250" stroke="#00D2D3" stroke-width="2" marker-end="url(#arrowhead)"/>
+
+                    <!-- Region Proposals Box -->
+                    <rect x="160" y="120" width="140" height="260" fill="url(#grad2)" stroke="#FF6B6B" stroke-width="2" rx="8"/>
+                    <text x="230" y="145" text-anchor="middle" fill="#f0f0f0" font-size="14" font-weight="bold">Selective Search</text>
+                    <text x="230" y="165" text-anchor="middle" fill="#f0f0f0" font-size="14" font-weight="bold">Region Proposals</text>
+                    
+                    <!-- Proposal boxes visualization -->
+                    <rect x="175" y="185" width="50" height="40" fill="none" stroke="#FECA57" stroke-width="1.5" rx="4"/>
+                    <rect x="195" y="210" width="80" height="60" fill="none" stroke="#FECA57" stroke-width="1.5" rx="4"/>
+                    <rect x="185" y="280" width="60" height="50" fill="none" stroke="#FECA57" stroke-width="1.5" rx="4"/>
+                    <rect x="210" y="315" width="70" height="45" fill="none" stroke="#FECA57" stroke-width="1.5" rx="4"/>
+                    
+                    <text x="230" y="385" text-anchor="middle" fill="#a0a0a0" font-size="10">~2,000 proposals</text>
+                    <text x="230" y="400" text-anchor="middle" fill="#a0a0a0" font-size="10">(object agnostic)</text>
+                    <text x="230" y="415" text-anchor="middle" fill="#a0a0a0" font-size="10">various scales/aspects</text>
+                    <text x="230" y="430" text-anchor="middle" fill="#a0a0a0" font-size="10">context ±16 pixels</text>
+
+                    <!-- Arrow to Warp/Crop -->
+                    <line x1="300" y1="250" x2="340" y2="250" stroke="#00D2D3" stroke-width="2" marker-end="url(#arrowhead)"/>
+
+                    <!-- Warp/Crop Box -->
+                    <rect x="340" y="160" width="120" height="180" fill="rgba(84, 160, 255, 0.2)" stroke="#54A0FF" stroke-width="2" rx="8"/>
+                    <text x="400" y="185" text-anchor="middle" fill="#f0f0f0" font-size="12" font-weight="bold">Warp/Crop</text>
+                    <text x="400" y="205" text-anchor="middle" fill="#a0a0a0" font-size="10">227×227 pixels</text>
+                    
+                    <!-- Warp visualization -->
+                    <rect x="360" y="230" width="80" height="80" fill="none" stroke="#54A0FF" stroke-width="2" rx="4"/>
+                    <text x="400" y="275" text-anchor="middle" fill="#54A0FF" font-size="20">↔️</text>
+                    <text x="400" y="330" text-anchor="middle" fill="#a0a0a0" font-size="9">Anisotropic</text>
+                    <text x="400" y="345" text-anchor="middle" fill="#a0a0a0" font-size="9">scaling to square</text>
+
+                    <!-- Arrow to CNN -->
+                    <line x1="460" y1="250" x2="500" y2="250" stroke="#00D2D3" stroke-width="2" marker-end="url(#arrowhead)"/>
+
+                    <!-- CNN Feature Extraction -->
+                    <rect x="500" y="100" width="160" height="300" fill="url(#grad3)" stroke="#1DD1A1" stroke-width="2" rx="8"/>
+                    <text x="580" y="130" text-anchor="middle" fill="#f0f0f0" font-size="14" font-weight="bold">CNN Feature</text>
+                    <text x="580" y="150" text-anchor="middle" fill="#f0f0f0" font-size="14" font-weight="bold">Extractor</text>
+                    <text x="580" y="175" text-anchor="middle" fill="#a0a0a0" font-size="10">(AlexNet / VGG)</text>
+
+                    <!-- CNN Layers -->
+                    <rect x="520" y="195" width="120" height="20" fill="rgba(29, 209, 161, 0.5)" rx="4"/>
+                    <text x="580" y="209" text-anchor="middle" fill="#f0f0f0" font-size="9">Conv + ReLU + Pool</text>
+                    
+                    <rect x="525" y="225" width="110" height="20" fill="rgba(29, 209, 161, 0.5)" rx="4"/>
+                    <text x="580" y="239" text-anchor="middle" fill="#f0f0f0" font-size="9">Conv + ReLU + Pool</text>
+                    
+                    <rect x="530" y="255" width="100" height="20" fill="rgba(29, 209, 161, 0.5)" rx="4"/>
+                    <text x="580" y="269" text-anchor="middle" fill="#f0f0f0" font-size="9">Conv + ReLU</text>
+                    
+                    <rect x="535" y="285" width="90" height="20" fill="rgba(29, 209, 161, 0.5)" rx="4"/>
+                    <text x="580" y="299" text-anchor="middle" fill="#f0f0f0" font-size="9">Fully Connected</text>
+                    
+                    <rect x="540" y="315" width="80" height="20" fill="rgba(29, 209, 161, 0.5)" rx="4"/>
+                    <text x="580" y="329" text-anchor="middle" fill="#f0f0f0" font-size="9">FC → 4096-d</text>
+                    
+                    <text x="580" y="365" text-anchor="middle" fill="#1DD1A1" font-size="11" font-weight="bold">Feature Vector</text>
+
+                    <!-- Arrow to SVM -->
+                    <line x1="660" y1="200" x2="700" y2="180" stroke="#00D2D3" stroke-width="2" marker-end="url(#arrowhead)"/>
+                    
+                    <!-- SVM Classifier -->
+                    <rect x="700" y="120" width="120" height="80" fill="rgba(254, 202, 87, 0.2)" stroke="#FECA57" stroke-width="2" rx="8"/>
+                    <text x="760" y="145" text-anchor="middle" fill="#f0f0f0" font-size="12" font-weight="bold">SVM</text>
+                    <text x="760" y="165" text-anchor="middle" fill="#f0f0f0" font-size="12" font-weight="bold">Classifier</text>
+                    <text x="760" y="185" text-anchor="middle" fill="#a0a0a0" font-size="9">One SVM per class</text>
+
+                    <!-- Arrow to Bbox Regressor -->
+                    <line x1="660" y1="300" x2="700" y2="320" stroke="#00D2D3" stroke-width="2" marker-end="url(#arrowhead)"/>
+                    
+                    <!-- Bbox Regressor -->
+                    <rect x="700" y="300" width="120" height="80" fill="rgba(255, 107, 107, 0.2)" stroke="#FF6B6B" stroke-width="2" rx="8"/>
+                    <text x="760" y="325" text-anchor="middle" fill="#f0f0f0" font-size="12" font-weight="bold">BBox</text>
+                    <text x="760" y="345" text-anchor="middle" fill="#f0f0f0" font-size="12" font-weight="bold">Regressor</text>
+                    <text x="760" y="365" text-anchor="middle" fill="#a0a0a0" font-size="9">Linear regression</text>
+
+                    <!-- Arrow to NMS -->
+                    <line x1="820" y1="160" x2="850" y2="160" stroke="#00D2D3" stroke-width="2" marker-end="url(#arrowhead)"/>
+                    <line x1="820" y1="340" x2="850" y2="340" stroke="#00D2D3" stroke-width="2" marker-end="url(#arrowhead)"/>
+                    <line x1="850" y1="160" x2="850" y2="200" stroke="#00D2D3" stroke-width="2"/>
+                    <line x1="850" y1="340" x2="850" y2="300" stroke="#00D2D3" stroke-width="2"/>
+                    
+                    <!-- NMS -->
+                    <rect x="870" y="210" width="110" height="80" fill="rgba(108, 92, 231, 0.3)" stroke="#6C5CE7" stroke-width="2" rx="8"/>
+                    <text x="925" y="235" text-anchor="middle" fill="#f0f0f0" font-size="12" font-weight="bold">NMS</text>
+                    <text x="925" y="255" text-anchor="middle" fill="#f0f0f0" font-size="11">Non-Maximum</text>
+                    <text x="925" y="275" text-anchor="middle" fill="#f0f0f0" font-size="11">Suppression</text>
+
+                    <!-- Legend -->
+                    <rect x="20" y="20" width="960" height="70" fill="rgba(10,10,10,0.8)" stroke="#2a2a2a" stroke-width="1" rx="8"/>
+                    <text x="40" y="45" fill="#f0f0f0" font-size="14" font-weight="bold">R-CNN Architecture Legend:</text>
+                    <rect x="40" y="55" width="15" height="15" fill="url(#grad2)" stroke="#FF6B6B" rx="2"/>
+                    <text x="60" y="67" fill="#a0a0a0" font-size="11">Region Proposals (~2K)</text>
+                    <rect x="200" y="55" width="15" height="15" fill="rgba(84, 160, 255, 0.2)" stroke="#54A0FF" rx="2"/>
+                    <text x="220" y="67" fill="#a0a0a0" font-size="11">Warp to 227×227</text>
+                    <rect x="360" y="55" width="15" height="15" fill="url(#grad3)" stroke="#1DD1A1" rx="2"/>
+                    <text x="380" y="67" fill="#a0a0a0" font-size="11">CNN Features (4096-d)</text>
+                    <rect x="520" y="55" width="15" height="15" fill="rgba(254, 202, 87, 0.2)" stroke="#FECA57" rx="2"/>
+                    <text x="540" y="67" fill="#a0a0a0" font-size="11">SVM Classification</text>
+                    <rect x="660" y="55" width="15" height="15" fill="rgba(255, 107, 107, 0.2)" stroke="#FF6B6B" rx="2"/>
+                    <text x="680" y="67" fill="#a0a0a0" font-size="11">BBox Regression</text>
+                    <rect x="800" y="55" width="15" height="15" fill="rgba(108, 92, 231, 0.3)" stroke="#6C5CE7" rx="2"/>
+                    <text x="820" y="67" fill="#a0a0a0" font-size="11">Final Detections</text>
+                </svg>
+            </div>
+            
+            <div class="card">
+                <h3 style="color: var(--secondary-color); margin-bottom: 1rem;">Three-Stage Pipeline</h3>
+                
+                <div class="flow-step">
+                    <div class="step-number">1</div>
+                    <div class="step-content">
+                        <h3>Region Proposals</h3>
+                        <p>Generate ~2,000 category-independent region proposals using Selective Search. These proposals capture potential object locations at multiple scales and aspect ratios. Each proposal is dilated by p=16 pixels to include context.</p>
+                    </div>
+                </div>
+                
+                <div class="flow-step">
+                    <div class="step-number">2</div>
+                    <div class="step-content">
+                        <h3>Feature Extraction</h3>
+                        <p>Extract a 4096-dimensional feature vector from each region proposal using a CNN (AlexNet or VGG-16). Input regions are warped to a fixed 227×227 pixel size. This is the computationally expensive step—each region goes through the full CNN forward pass.</p>
+                    </div>
+                </div>
+                
+                <div class="flow-step">
+                    <div class="step-number">3</div>
+                    <div class="step-content">
+                        <h3>Classification & Localization</h3>
+                        <p>Classify each region using class-specific linear SVMs. Apply bounding box regression to refine the proposal location. Finally, use non-maximum suppression to eliminate duplicate detections.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section class="content-section">
+            <h2 class="section-title">📊 Performance Results</h2>
+            <div class="card">
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <div class="stat-value">53.3%</div>
+                        <div class="stat-label">mAP on VOC 2012</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-value">+30%</div>
+                        <div class="stat-label">Relative Improvement</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-value">58.5%</div>
+                        <div class="stat-label">mAP on VOC 2007</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-value">31.4%</div>
+                        <div class="stat-label">ILSVRC2013 Detection</div>
+                    </div>
+                </div>
+                
+                <div class="technical-details">
+                    <h4>Key Findings from Ablation Studies</h4>
+                    <ul style="margin-left: 1.5rem; color: rgba(240, 240, 240, 0.8);">
+                        <li><strong>Pre-training matters:</strong> Using a CNN pre-trained on ImageNet boosted mAP by 8.0 percentage points</li>
+                        <li><strong>Fine-tuning is crucial:</strong> Fine-tuning the full network (not just the classifier) improved mAP by 5.2 points</li>
+                        <li><strong>SVM vs Softmax:</strong> Using SVM classifiers instead of softmax improved mAP by 3.3 points (54.2% vs 50.9%)</li>
+                        <li><strong>More proposals help:</strong> Performance improved with more region proposals up to ~2,000</li>
+                        <li><strong>Bounding box regression:</strong> Added ~3-4 percentage points to mAP</li>
+                    </ul>
+                </div>
+            </div>
+        </section>
+
+        <section class="content-section">
+            <h2 class="section-title">⚙️ Technical Implementation</h2>
+            <div class="card">
+                <div class="technical-details">
+                    <h4>Training Process</h4>
+                    <div class="code-block">
+<pre>Step 1: Pre-train CNN on ImageNet (1000-class classification)
+  └─&gt; Use AlexNet or VGG architecture
+  └─&gt; Train on 1.2M images
+
+Step 2: Fine-tune on detection data
+  └─&gt; Replace 1000-way classifier with (N+1)-way (N classes + background)
+  └─&gt; Positive samples: IoU ≥ 0.5 with ground-truth
+  └─&gt; Background: IoU &lt; 0.5
+  └─&gt; Learning rate: 0.001, Batch: 128 (32 positive, 96 negative)
+
+Step 3: Train class-specific SVMs
+  └─&gt; One linear SVM per object class
+  └─&gt; Positive: Ground-truth boxes for that class
+  └─&gt; Negative: IoU &lt; 0.3 with all ground-truth boxes
+  └─&gt; Hard negative mining applied
+
+Step 4: Train bounding box regressors
+  └─&gt; One regressor per class
+  └─&gt; Targets: Parametrized coordinate transforms
+      tx = (Gx - Px) / Pw
+      ty = (Gy - Py) / Ph
+      tw = log(Gw / Pw)
+      th = log(Gh / Ph)</pre>
+                    </div>
+                </div>
+
+                <div class="technical-details" style="margin-top: 1.5rem;">
+                    <h4>Region Warping Methods</h4>
+                    <p style="margin-bottom: 1rem; color: rgba(240, 240, 240, 0.8);">R-CNN tested three methods to convert arbitrary region proposals to the fixed 227×227 CNN input:</p>
+                    <ul style="margin-left: 1.5rem; color: rgba(240, 240, 240, 0.8);">
+                        <li><strong>Tightest square with context:</strong> Enclose proposal in tightest square, isotropically scale, include context</li>
+                        <li><strong>Tightest square without context:</strong> Same but exclude context</li>
+                        <li><strong>Wrap:</strong> Anisotropically scale the region directly to 227×227 (used in final system)</li>
+                    </ul>
+                    <p style="margin-top: 1rem; color: rgba(240, 240, 240, 0.8);">Adding context (padding the proposal by 16 pixels) improved mAP by 3-5 percentage points.</p>
+                </div>
+            </div>
+        </section>
+
+        <section class="content-section">
+            <h2 class="section-title">🔬 Feature Visualization</h2>
+            <div class="architecture-container">
+                <svg viewBox="0 0 900 400" xmlns="http://www.w3.org/2000/svg">
+                    <!-- Feature Hierarchy Visualization -->
+                    <defs>
+                        <linearGradient id="featGrad1" x1="0%" y1="0%" x2="100%" y2="100%">
+                            <stop offset="0%" style="stop-color:#FF6B6B;stop-opacity:0.6" />
+                            <stop offset="100%" style="stop-color:#FECA57;stop-opacity:0.6" />
+                        </linearGradient>
+                        <linearGradient id="featGrad2" x1="0%" y1="0%" x2="100%" y2="100%">
+                            <stop offset="0%" style="stop-color:#1DD1A1;stop-opacity:0.6" />
+                            <stop offset="100%" style="stop-color:#54A0FF;stop-opacity:0.6" />
+                        </linearGradient>
+                        <linearGradient id="featGrad3" x1="0%" y1="0%" x2="100%" y2="100%">
+                            <stop offset="0%" style="stop-color:#6C5CE7;stop-opacity:0.6" />
+                            <stop offset="100%" style="stop-color:#00D2D3;stop-opacity:0.6" />
+                        </linearGradient>
+                    </defs>
+
+                    <text x="450" y="30" text-anchor="middle" fill="#f0f0f0" font-size="16" font-weight="bold">Hierarchical CNN Features Learned by R-CNN</text>
+                    
+                    <!-- Input -->
+                    <rect x="50" y="80" width="100" height="100" fill="url(#featGrad1)" stroke="#FF6B6B" stroke-width="2" rx="8"/>
+                    <text x="100" y="130" text-anchor="middle" fill="#f0f0f0" font-size="12" font-weight="bold">Input</text>
+                    <text x="100" y="150" text-anchor="middle" fill="#a0a0a0" font-size="10">227×227×3</text>
+                    
+                    <!-- Arrow -->
+                    <line x1="150" y1="130" x2="180" y2="130" stroke="#00D2D3" stroke-width="2" marker-end="url(#arrowhead)"/>
+
+                    <!-- Layer 1 -->
+                    <rect x="180" y="70" width="80" height="120" fill="url(#featGrad2)" stroke="#1DD1A1" stroke-width="2" rx="8"/>
+                    <text x="220" y="95" text-anchor="middle" fill="#f0f0f0" font-size="11" font-weight="bold">Conv1</text>
+                    <text x="220" y="115" text-anchor="middle" fill="#a0a0a0" font-size="9">55×55×96</text>
+                    <text x="220" y="135" text-anchor="middle" fill="#f0f0f0" font-size="10">Edges</text>
+                    <text x="220" y="150" text-anchor="middle" fill="#f0f0f0" font-size="10">Colors</text>
+                    <text x="220" y="165" text-anchor="middle" fill="#f0f0f0" font-size="10">Gradients</text>
+
+                    <!-- Arrow -->
+                    <line x1="260" y1="130" x2="290" y2="130" stroke="#00D2D3" stroke-width="2" marker-end="url(#arrowhead)"/>
+
+                    <!-- Layer 2 -->
+                    <rect x="290" y="65" width="80" height="130" fill="url(#featGrad2)" stroke="#1DD1A1" stroke-width="2" rx="8"/>
+                    <text x="330" y="90" text-anchor="middle" fill="#f0f0f0" font-size="11" font-weight="bold">Conv2-3</text>
+                    <text x="330" y="110" text-anchor="middle" fill="#a0a0a0" font-size="9">13×13×384</text>
+                    <text x="330" y="135" text-anchor="middle" fill="#f0f0f0" font-size="10">Textures</text>
+                    <text x="330" y="150" text-anchor="middle" fill="#f0f0f0" font-size="10">Patterns</text>
+                    <text x="330" y="165" text-anchor="middle" fill="#f0f0f0" font-size="10">Shapes</text>
+                    <text x="330" y="180" text-anchor="middle" fill="#f0f0f0" font-size="10">Corners</text>
+
+                    <!-- Arrow -->
+                    <line x1="370" y1="130" x2="400" y2="130" stroke="#00D2D3" stroke-width="2" marker-end="url(#arrowhead)"/>
+
+                    <!-- Layer 3 -->
+                    <rect x="400" y="60" width="80" height="140" fill="url(#featGrad3)" stroke="#6C5CE7" stroke-width="2" rx="8"/>
+                    <text x="440" y="85" text-anchor="middle" fill="#f0f0f0" font-size="11" font-weight="bold">Conv4-5</text>
+                    <text x="440" y="105" text-anchor="middle" fill="#a0a0a0" font-size="9">13×13×256</text>
+                    <text x="440" y="130" text-anchor="middle" fill="#f0f0f0" font-size="10">Object</text>
+                    <text x="440" y="145" text-anchor="middle" fill="#f0f0f0" font-size="10">Parts</text>
+                    <text x="440" y="160" text-anchor="middle" fill="#f0f0f0" font-size="10">Complex</text>
+                    <text x="440" y="175" text-anchor="middle" fill="#f0f0f0" font-size="10">Features</text>
+
+                    <!-- Arrow -->
+                    <line x1="480" y1="130" x2="510" y2="130" stroke="#00D2D3" stroke-width="2" marker-end="url(#arrowhead)"/>
+
+                    <!-- FC6 -->
+                    <rect x="510" y="70" width="80" height="120" fill="rgba(255, 107, 107, 0.3)" stroke="#FF6B6B" stroke-width="2" rx="8"/>
+                    <text x="550" y="95" text-anchor="middle" fill="#f0f0f0" font-size="11" font-weight="bold">FC6</text>
+                    <text x="550" y="115" text-anchor="middle" fill="#a0a0a0" font-size="9">4096-d</text>
+                    <text x="550" y="140" text-anchor="middle" fill="#f0f0f0" font-size="10">Semantic</text>
+                    <text x="550" y="155" text-anchor="middle" fill="#f0f0f0" font-size="10">Features</text>
+                    <text x="550" y="170" text-anchor="middle" fill="#f0f0f0" font-size="10">Abstract</text>
+
+                    <!-- Arrow -->
+                    <line x1="590" y1="130" x2="620" y2="130" stroke="#00D2D3" stroke-width="2" marker-end="url(#arrowhead)"/>
+
+                    <!-- FC7 (Output) -->
+                    <rect x="620" y="80" width="80" height="100" fill="rgba(254, 202, 87, 0.3)" stroke="#FECA57" stroke-width="2" rx="8"/>
+                    <text x="660" y="105" text-anchor="middle" fill="#f0f0f0" font-size="11" font-weight="bold">FC7</text>
+                    <text x="660" y="125" text-anchor="middle" fill="#a0a0a0" font-size="9">4096-d</text>
+                    <text x="660" y="150" text-anchor="middle" fill="#FECA57" font-size="11" font-weight="bold">Rich</text>
+                    <text x="660" y="165" text-anchor="middle" fill="#FECA57" font-size="11" font-weight="bold">Features</text>
+
+                    <!-- Arrow -->
+                    <line x1="700" y1="130" x2="730" y2="130" stroke="#00D2D3" stroke-width="2" marker-end="url(#arrowhead)"/>
+
+                    <!-- Classification -->
+                    <rect x="730" y="70" width="120" height="120" fill="rgba(29, 209, 161, 0.2)" stroke="#1DD1A1" stroke-width="2" rx="8"/>
+                    <text x="790" y="95" text-anchor="middle" fill="#f0f0f0" font-size="11" font-weight="bold">Classification</text>
+                    <text x="790" y="115" text-anchor="middle" fill="#a0a0a0" font-size="9">SVMs</text>
+                    <text x="790" y="140" text-anchor="middle" fill="#f0f0f0" font-size="10">Object</text>
+                    <text x="790" y="155" text-anchor="middle" fill="#f0f0f0" font-size="10">Categories</text>
+                    <text x="790" y="175" text-anchor="middle" fill="#1DD1A1" font-size="12" font-weight="bold">Detection!</text>
+
+                    <!-- Hierarchy Labels -->
+                    <text x="220" y="220" text-anchor="middle" fill="#a0a0a0" font-size="10">Low-Level</text>
+                    <text x="440" y="220" text-anchor="middle" fill="#a0a0a0" font-size="10">Mid-Level</text>
+                    <text x="660" y="220" text-anchor="middle" fill="#a0a0a0" font-size="10">High-Level</text>
+
+                    <text x="220" y="240" text-anchor="middle" fill="#6C5CE7" font-size="11" font-weight="bold">Generic</text>
+                    <text x="660" y="240" text-anchor="middle" fill="#6C5CE7" font-size="11" font-weight="bold">Task-Specific</text>
+
+                    <!-- Progression arrow -->
+                    <line x1="260" y1="235" x2="620" y2="235" stroke="#6C5CE7" stroke-width="2" stroke-dasharray="5,5"/>
+                    <polygon points="625,235 615,230 615,240" fill="#6C5CE7"/>
+                </svg>
+            </div>
+            <p style="text-align: center; color: rgba(240, 240, 240, 0.7); margin-top: 1rem;">
+                R-CNN demonstrated that CNNs learn hierarchical features: early layers detect edges and textures, 
+                while deeper layers capture object parts and semantic concepts—enabling transfer learning across visual tasks.
+            </p>
+        </section>
+
+        <section class="content-section">
+            <h2 class="section-title">🌍 Impact & Legacy</h2>
+            <div class="impact-section">
+                <p style="font-size: 1.1rem; line-height: 1.8;">
+                    R-CNN was a watershed moment in computer vision, demonstrating that deep learning could revolutionize object detection. 
+                    It established the template for modern detection systems and sparked the entire R-CNN family of methods.
+                </p>
+                <div class="impact-grid">
+                    <div class="impact-item">
+                        <h4 style="color: var(--success-color); margin-bottom: 0.5rem;">🏆 Competition Results</h4>
+                        <p>Won the ILSVRC2013 detection competition, outperforming the second-place entry by a large margin using a single model (without ensemble).</p>
+                    </div>
+                    <div class="impact-item">
+                        <h4 style="color: var(--success-color); margin-bottom: 0.5rem;">📈 Detection Revolution</h4>
+                        <p>Triggered the shift from hand-crafted features (HOG, SIFT) to learned CNN features across all computer vision tasks.</p>
+                    </div>
+                    <div class="impact-item">
+                        <h4 style="color: var(--success-color); margin-bottom: 0.5rem;">🔄 Transfer Learning</h4>
+                        <p>Popularized the "pre-train on ImageNet, fine-tune on target task" paradigm that became standard practice.</p>
+                    </div>
+                    <div class="impact-item">
+                        <h4 style="color: var(--success-color); margin-bottom: 0.5rem;">⏱️ Real Progress</h4>
+                        <p>While slow (~47 seconds per image on GPU), it proved the concept and inspired Fast R-CNN, Faster R-CNN, and beyond.</p>
+                    </div>
+                    <div class="impact-item">
+                        <h4 style="color: var(--success-color); margin-bottom: 0.5rem;">📚 Semantic Segmentation</h4>
+                        <p>The same architecture achieved competitive results on semantic segmentation by computing features for each region proposal.</p>
+                    </div>
+                    <div class="impact-item">
+                        <h4 style="color: var(--success-color); margin-bottom: 0.5rem;">🧬 Architecture Evolution</h4>
+                        <p>Led to Fast R-CNN (shared convolutions), Faster R-CNN (learned proposals), Mask R-CNN (instance segmentation).</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section class="content-section">
+            <h2 class="section-title">📚 Paper Information</h2>
+            <div class="card">
+                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 2rem;">
+                    <div>
+                        <h4 style="color: var(--secondary-color); margin-bottom: 1rem;">Citation</h4>
+                        <div class="code-block">
+<pre>@inproceedings{girshick2014rcnn,
+  title={Rich Feature Hierarchies for Accurate 
+         Object Detection and Semantic Segmentation},
+  author={Girshick, Ross and Donahue, Jeff and 
+          Darrell, Trevor and Malik, Jitendra},
+  booktitle={CVPR},
+  year={2014}
+}</pre>
+                        </div>
+                    </div>
+                    <div>
+                        <h4 style="color: var(--secondary-color); margin-bottom: 1rem;">Resources</h4>
+                        <ul style="list-style: none; padding: 0;">
+                            <li style="margin-bottom: 0.5rem;">📄 <a href="https://arxiv.org/abs/1311.2524" target="_blank" style="color: var(--info-color);">arXiv Paper</a></li>
+                            <li style="margin-bottom: 0.5rem;">💻 <a href="https://github.com/rbgirshick/rcnn" target="_blank" style="color: var(--info-color);">Original Code (Caffe)</a></li>
+                            <li style="margin-bottom: 0.5rem;">🎓 <a href="https://www.cs.berkeley.edu/~rbg/rcnn/" target="_blank" style="color: var(--info-color);">Project Page</a></li>
+                            <li>📊 <a href="http://host.robots.ox.ac.uk/pascal/VOC/" target="_blank" style="color: var(--info-color);">PASCAL VOC Dataset</a></li>
+                        </ul>
+                    </div>
+                </div>
+                
+                <div style="margin-top: 2rem; text-align: center;">
+                    <p style="color: rgba(240, 240, 240, 0.6); margin-bottom: 1rem;">
+                        R-CNN was published in 2014 by researchers at UC Berkeley. It received the <strong>CVPR 2014 Longuet-Higgins Prize</strong> 
+                        and has been cited over <strong>25,000 times</strong>, making it one of the most influential papers in computer vision history.
+                    </p>
+                </div>
+            </div>
+        </section>
+
+        <section class="content-section" style="text-align: center; margin-top: 3rem;">
+            <a href="index.html" class="paper-link">← Back to Neural Network Gallery</a>
+            <a href="faster-rcnn.html" class="paper-link" style="margin-left: 1rem;">Next: Faster R-CNN →</a>
+        </section>
+    </main>
+</body>
+</html>

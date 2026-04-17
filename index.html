@@ -303,6 +303,58 @@
                 </svg>
             </div>
 
+            <!-- R-CNN Paper Card -->
+            <div class="network-card" onclick="location.href='papers/rcnn.html'">
+                <span class="tag">CVPR 2014</span>
+                <h3>R-CNN</h3>
+                <p>Rich Feature Hierarchies for Accurate Object Detection - The groundbreaking paper that combined CNNs with region proposals, revolutionizing object detection and establishing the transfer learning paradigm.</p>
+                <svg class="preview-svg" viewBox="0 0 300 150">
+                    <defs>
+                        <linearGradient id="rcnn-grad" x1="0%" y1="0%" x2="100%" y2="0%">
+                            <stop offset="0%" style="stop-color:#FF6B6B"/>
+                            <stop offset="100%" style="stop-color:#FECA57"/>
+                        </linearGradient>
+                    </defs>
+                    <!-- Input Image -->
+                    <rect x="10" y="45" width="50" height="60" fill="none" stroke="#6366f1" stroke-width="2" rx="3"/>
+                    <text x="35" y="75" fill="#fff" font-size="8" text-anchor="middle">Image</text>
+                    <!-- Arrow to Proposals -->
+                    <path d="M65 75 L80 75" stroke="#6366f1" stroke-width="2"/>
+                    <polygon points="80,75 75,70 75,80" fill="#6366f1"/>
+                    <!-- Region Proposals -->
+                    <rect x="85" y="35" width="50" height="80" fill="url(#rcnn-grad)" stroke="#FF6B6B" stroke-width="2" rx="3" opacity="0.6"/>
+                    <rect x="90" y="45" width="20" height="15" fill="none" stroke="#FECA57" stroke-width="1.5" rx="2"/>
+                    <rect x="100" y="60" width="25" height="18" fill="none" stroke="#FECA57" stroke-width="1.5" rx="2"/>
+                    <rect x="95" y="80" width="22" height="15" fill="none" stroke="#FECA57" stroke-width="1.5" rx="2"/>
+                    <text x="110" y="118" fill="#FECA57" font-size="7" text-anchor="middle">~2K Props</text>
+                    <!-- Arrow to CNN -->
+                    <path d="M140 75 L155 75" stroke="#FF6B6B" stroke-width="2"/>
+                    <polygon points="155,75 150,70 150,80" fill="#FF6B6B"/>
+                    <!-- CNN Feature Extractor -->
+                    <rect x="160" y="40" width="50" height="70" fill="rgba(16,185,129,0.3)" stroke="#10b981" stroke-width="2" rx="3"/>
+                    <rect x="165" y="50" width="40" height="12" fill="rgba(16,185,129,0.5)" rx="2"/>
+                    <rect x="165" y="65" width="40" height="12" fill="rgba(16,185,129,0.5)" rx="2"/>
+                    <rect x="165" y="80" width="40" height="12" fill="rgba(16,185,129,0.5)" rx="2"/>
+                    <text x="185" y="118" fill="#10b981" font-size="7" text-anchor="middle">CNN</text>
+                    <!-- Arrow to SVM -->
+                    <path d="M215 60 L230 60" stroke="#10b981" stroke-width="2"/>
+                    <polygon points="230,60 225,55 225,65" fill="#10b981"/>
+                    <!-- SVM Classifier -->
+                    <rect x="235" y="40" width="25" height="35" fill="rgba(254,202,87,0.3)" stroke="#FECA57" stroke-width="2" rx="2"/>
+                    <text x="247" y="62" fill="#fff" font-size="7" text-anchor="middle">SVM</text>
+                    <!-- Arrow to BBox -->
+                    <path d="M215 90 L230 90" stroke="#10b981" stroke-width="2"/>
+                    <polygon points="230,90 225,85 225,95" fill="#10b981"/>
+                    <!-- BBox Regressor -->
+                    <rect x="235" y="80" width="25" height="35" fill="rgba(239,68,68,0.3)" stroke="#ef4444" stroke-width="2" rx="2"/>
+                    <text x="247" y="97" fill="#fff" font-size="6" text-anchor="middle">BBox</text>
+                    <text x="247" y="107" fill="#fff" font-size="6" text-anchor="middle">Reg</text>
+                    <!-- Output -->
+                    <rect x="270" y="55" width="20" height="40" fill="rgba(99,102,241,0.2)" stroke="#6366f1" stroke-width="2" rx="2"/>
+                    <text x="280" y="80" fill="#6366f1" font-size="8" text-anchor="middle">Det</text>
+                </svg>
+            </div>
+
             <!-- ResNet Paper Card -->
             <div class="network-card" onclick="location.href='papers/resnet.html'">
                 <span class="tag">CVPR 2016 Best Paper</span>
