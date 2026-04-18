@@ -2276,15 +2276,68 @@
                 </svg>
             </div>
 
-            <!-- More Papers Coming -->
-            <div class="network-card" style="opacity: 0.7;">
-                <span class="tag">Coming Soon</span>
-                <h3>More Classic Papers</h3>
-                <p>More groundbreaking papers will be added regularly. Stay tuned for detailed explanations with interactive visualizations.</p>
+            <!-- PagedAttention (vLLM) Paper Card -->
+            <div class="network-card" onclick="location.href='papers/pagedattention.html'">
+                <span class="tag">SOSP 2023</span>
+                <h3>PagedAttention (vLLM)</h3>
+                <p>Efficient Memory Management for Large Language Model Serving - Revolutionary OS-inspired virtual memory system for KV cache. Enables 2-4× throughput vs HuggingFace and near-zero GPU memory waste through dynamic block allocation and memory sharing.</p>
                 <svg class="preview-svg" viewBox="0 0 300 150">
-                    <text x="150" y="75" fill="#8888aa" font-size="14" text-anchor="middle" dominant-baseline="middle">
-                        🕐 Auto-updating...
-                    </text>
+                    <defs>
+                        <linearGradient id="paged-grad" x1="0%" y1="0%" x2="100%" y2="0%">
+                            <stop offset="0%" style="stop-color:#10b981"/>
+                            <stop offset="50%" style="stop-color:#6366f1"/>
+                            <stop offset="100%" style="stop-color:#ec4899"/>
+                        </linearGradient>
+                    </defs>
+                    <!-- Logical blocks -->
+                    <rect x="20" y="40" width="35" height="25" rx="3" fill="rgba(16,185,129,0.3)" stroke="#10b981" stroke-width="1.5"/>
+                    <text x="37" y="57" fill="#10b981" font-size="7" text-anchor="middle">L0</text>
+                    <rect x="20" y="70" width="35" height="25" rx="3" fill="rgba(16,185,129,0.3)" stroke="#10b981" stroke-width="1.5"/>
+                    <text x="37" y="87" fill="#10b981" font-size="7" text-anchor="middle">L1</text>
+                    <rect x="20" y="100" width="35" height="25" rx="3" fill="rgba(16,185,129,0.3)" stroke="#10b981" stroke-width="1.5"/>
+                    <text x="37" y="117" fill="#10b981" font-size="7" text-anchor="middle">L2</text>
+                    
+                    <!-- Block table -->
+                    <rect x="65" y="35" width="70" height="95" rx="4" fill="rgba(99,102,241,0.15)" stroke="#6366f1" stroke-width="1.5"/>
+                    <text x="100" y="52" fill="#6366f1" font-size="8" text-anchor="middle">Block Table</text>
+                    <text x="100" y="70" fill="#a5b4fc" font-size="6" text-anchor="middle">L0→P7</text>
+                    <text x="100" y="85" fill="#a5b4fc" font-size="6" text-anchor="middle">L1→P3</text>
+                    <text x="100" y="100" fill="#a5b4fc" font-size="6" text-anchor="middle">L2→P1</text>
+                    
+                    <!-- Arrows -->
+                    <path d="M55 52 L65 60" stroke="#10b981" stroke-width="1" marker-end="url(#paged-arrow)"/>
+                    <path d="M55 82 L65 80" stroke="#10b981" stroke-width="1"/>
+                    <path d="M55 112 L65 100" stroke="#10b981" stroke-width="1"/>
+                    
+                    <!-- Physical blocks (scattered) -->
+                    <rect x="150" y="35" width="30" height="35" rx="3" fill="rgba(236,72,153,0.3)" stroke="#ec4899" stroke-width="1.5"/>
+                    <text x="165" y="52" fill="#ec4899" font-size="7" text-anchor="middle">P1</text>
+                    <text x="165" y="65" fill="#fca5d5" font-size="5" text-anchor="middle">Req B</text>
+                    
+                    <rect x="195" y="40" width="30" height="35" rx="3" fill="rgba(99,102,241,0.3)" stroke="#6366f1" stroke-width="1.5"/>
+                    <text x="210" y="57" fill="#6366f1" font-size="7" text-anchor="middle">P3</text>
+                    <text x="210" y="70" fill="#a5b4fc" font-size="5" text-anchor="middle">Req A</text>
+                    
+                    <rect x="240" y="50" width="30" height="35" rx="3" fill="rgba(16,185,129,0.3)" stroke="#10b981" stroke-width="1.5"/>
+                    <text x="255" y="67" fill="#10b981" font-size="7" text-anchor="middle">P7</text>
+                    <text x="255" y="80" fill="#6ee7b7" font-size="5" text-anchor="middle">Shared</text>
+                    
+                    <!-- Free block -->
+                    <rect x="150" y="85" width="30" height="30" rx="3" fill="rgba(50,50,70,0.3)" stroke="#4b5563" stroke-width="1" stroke-dasharray="3,2"/>
+                    <text x="165" y="102" fill="#6b7280" font-size="6" text-anchor="middle">Free</text>
+                    
+                    <rect x="195" y="90" width="30" height="30" rx="3" fill="rgba(50,50,70,0.3)" stroke="#4b5563" stroke-width="1" stroke-dasharray="3,2"/>
+                    <text x="210" y="107" fill="#6b7280" font-size="6" text-anchor="middle">Free</text>
+                    
+                    <!-- Label -->
+                    <text x="150" y="140" fill="#888" font-size="7" text-anchor="middle">Non-contiguous · Dynamic · Shared</text>
+                    <text x="150" y="150" fill="#10b981" font-size="6" text-anchor="middle">20× memory savings for beam search</text>
+                    
+                    <defs>
+                        <marker id="paged-arrow" markerWidth="6" markerHeight="6" refX="5" refY="3" orient="auto">
+                            <polygon points="0 0, 6 3, 0 6" fill="#10b981"/>
+                        </marker>
+                    </defs>
                 </svg>
             </div>
         </div>

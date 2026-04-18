@@ -1,0 +1,1077 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PagedAttention - Efficient Memory Management for LLM Serving | AI Neural Networks</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            background: #0a0a0f;
+            color: #e0e0ff;
+            line-height: 1.7;
+            overflow-x: hidden;
+        }
+        
+        /* Animated background */
+        .bg-animation {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+            opacity: 0.2;
+        }
+        
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        
+        /* Hero Section */
+        .hero {
+            padding: 60px 20px 40px;
+            text-align: center;
+            background: linear-gradient(180deg, rgba(99,102,241,0.1) 0%, transparent 100%);
+            border-bottom: 1px solid rgba(99, 102, 241, 0.2);
+            margin-bottom: 40px;
+        }
+        
+        .hero h1 {
+            font-size: 2.8rem;
+            background: linear-gradient(135deg, #6366f1 0%, #a855f7 50%, #ec4899 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 15px;
+            font-weight: 800;
+        }
+        
+        .hero .subtitle {
+            font-size: 1.2rem;
+            color: #8888aa;
+            margin-bottom: 25px;
+        }
+        
+        .hero .meta {
+            display: flex;
+            justify-content: center;
+            gap: 30px;
+            flex-wrap: wrap;
+            font-size: 0.95rem;
+            color: #aaaacc;
+        }
+        
+        .hero .meta span {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .badges {
+            margin-top: 25px;
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            flex-wrap: wrap;
+        }
+        
+        .badge {
+            display: inline-block;
+            padding: 8px 18px;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            font-weight: 500;
+            text-decoration: none;
+            transition: all 0.3s ease;
+        }
+        
+        .badge.pdf {
+            background: rgba(239, 68, 68, 0.2);
+            color: #fca5a5;
+            border: 1px solid rgba(239, 68, 68, 0.4);
+        }
+        
+        .badge.arxiv {
+            background: rgba(99, 102, 241, 0.2);
+            color: #a5b4fc;
+            border: 1px solid rgba(99, 102, 241, 0.4);
+        }
+        
+        .badge.code {
+            background: rgba(16, 185, 129, 0.2);
+            color: #6ee7b7;
+            border: 1px solid rgba(16, 185, 129, 0.4);
+        }
+        
+        .badge:hover {
+            transform: translateY(-2px);
+            opacity: 0.9;
+        }
+        
+        /* Section Styles */
+        .section {
+            margin-bottom: 50px;
+            padding: 30px;
+            background: rgba(20, 20, 35, 0.6);
+            border: 1px solid rgba(99, 102, 241, 0.15);
+            border-radius: 16px;
+        }
+        
+        .section h2 {
+            font-size: 1.8rem;
+            color: #fff;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        
+        .section h2 .icon {
+            font-size: 1.5rem;
+        }
+        
+        .section p {
+            color: #b8b8d0;
+            margin-bottom: 15px;
+            font-size: 1.05rem;
+        }
+        
+        .highlight-box {
+            background: linear-gradient(135deg, rgba(99,102,241,0.15) 0%, rgba(168,85,247,0.15) 100%);
+            border-left: 4px solid #6366f1;
+            padding: 20px;
+            border-radius: 0 12px 12px 0;
+            margin: 20px 0;
+        }
+        
+        .problem-box {
+            background: linear-gradient(135deg, rgba(239,68,68,0.1) 0%, rgba(245,158,11,0.1) 100%);
+            border-left: 4px solid #ef4444;
+            padding: 20px;
+            border-radius: 0 12px 12px 0;
+            margin: 20px 0;
+        }
+        
+        .solution-box {
+            background: linear-gradient(135deg, rgba(16,185,129,0.1) 0%, rgba(99,102,241,0.1) 100%);
+            border-left: 4px solid #10b981;
+            padding: 20px;
+            border-radius: 0 12px 12px 0;
+            margin: 20px 0;
+        }
+        
+        /* SVG Diagram Styles */
+        .diagram-container {
+            width: 100%;
+            margin: 30px 0;
+            text-align: center;
+        }
+        
+        .diagram-title {
+            font-size: 1.1rem;
+            color: #8888aa;
+            margin-bottom: 15px;
+        }
+        
+        .architecture-svg {
+            max-width: 100%;
+            height: auto;
+        }
+        
+        /* Code Block */
+        .code-block {
+            background: #111118;
+            border: 1px solid rgba(99, 102, 241, 0.2);
+            border-radius: 12px;
+            padding: 20px;
+            overflow-x: auto;
+            margin: 20px 0;
+        }
+        
+        .code-block code {
+            font-family: 'Fira Code', 'Consolas', monospace;
+            font-size: 0.9rem;
+            color: #c7d2fe;
+            line-height: 1.6;
+        }
+        
+        .code-block .keyword { color: #c084fc; }
+        .code-block .function { color: #60a5fa; }
+        .code-block .class { color: #fbbf24; }
+        .code-block .string { color: #86efac; }
+        .code-block .comment { color: #6b7280; }
+        .code-block .number { color: #f87171; }
+        
+        /* Stats Grid */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin: 25px 0;
+        }
+        
+        .stat-card {
+            background: rgba(99, 102, 241, 0.1);
+            border: 1px solid rgba(99, 102, 241, 0.2);
+            border-radius: 12px;
+            padding: 20px;
+            text-align: center;
+        }
+        
+        .stat-card .number {
+            font-size: 2rem;
+            font-weight: 700;
+            color: #6366f1;
+        }
+        
+        .stat-card .label {
+            color: #8888aa;
+            font-size: 0.9rem;
+            margin-top: 5px;
+        }
+        
+        /* Comparison Table */
+        .comparison-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+            font-size: 0.95rem;
+        }
+        
+        .comparison-table th,
+        .comparison-table td {
+            padding: 12px 15px;
+            text-align: left;
+            border-bottom: 1px solid rgba(99, 102, 241, 0.2);
+        }
+        
+        .comparison-table th {
+            color: #a5b4fc;
+            font-weight: 600;
+            background: rgba(99, 102, 241, 0.1);
+        }
+        
+        .comparison-table tr:hover {
+            background: rgba(99, 102, 241, 0.05);
+        }
+        
+        .comparison-table .best {
+            color: #10b981;
+            font-weight: 600;
+        }
+        
+        /* Related Papers */
+        .related-papers {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 15px;
+            margin-top: 20px;
+        }
+        
+        .paper-card {
+            background: rgba(30, 30, 50, 0.6);
+            border: 1px solid rgba(99, 102, 241, 0.2);
+            border-radius: 12px;
+            padding: 18px;
+            transition: all 0.3s ease;
+        }
+        
+        .paper-card:hover {
+            border-color: rgba(99, 102, 241, 0.5);
+            transform: translateY(-3px);
+        }
+        
+        .paper-card h4 {
+            color: #fff;
+            font-size: 1rem;
+            margin-bottom: 8px;
+        }
+        
+        .paper-card .year {
+            color: #6366f1;
+            font-size: 0.85rem;
+            font-weight: 600;
+        }
+        
+        .paper-card p {
+            color: #8888aa;
+            font-size: 0.9rem;
+            margin: 8px 0 0;
+        }
+        
+        /* Navigation */
+        .nav {
+            position: sticky;
+            top: 0;
+            background: rgba(10, 10, 15, 0.95);
+            backdrop-filter: blur(10px);
+            padding: 15px 0;
+            border-bottom: 1px solid rgba(99, 102, 241, 0.1);
+            z-index: 100;
+            margin-bottom: 30px;
+        }
+        
+        .nav-content {
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: 0 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .nav a {
+            color: #8888aa;
+            text-decoration: none;
+            font-weight: 500;
+            transition: color 0.3s ease;
+        }
+        
+        .nav a:hover {
+            color: #6366f1;
+        }
+        
+        /* Footer */
+        footer {
+            text-align: center;
+            padding: 40px 20px;
+            color: #555577;
+            border-top: 1px solid rgba(99, 102, 241, 0.1);
+            margin-top: 60px;
+        }
+        
+        footer a {
+            color: #6366f1;
+            text-decoration: none;
+        }
+        
+        /* Formula */
+        .formula {
+            background: #111118;
+            border-radius: 8px;
+            padding: 15px 25px;
+            display: inline-block;
+            font-family: 'Times New Roman', serif;
+            font-size: 1.3rem;
+            color: #c7d2fe;
+            margin: 15px 0;
+        }
+        
+        /* Responsive */
+        @media (max-width: 768px) {
+            .hero h1 {
+                font-size: 1.8rem;
+            }
+            .hero .meta {
+                flex-direction: column;
+                gap: 10px;
+            }
+            .section {
+                padding: 20px;
+            }
+            .stats-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Animated neural network background -->
+    <svg class="bg-animation" viewBox="0 0 1920 1080" preserveAspectRatio="xMidYMid slice">
+        <defs>
+            <linearGradient id="bg-grad" x1="0%" y1="0%" x2="100%" y2="100%">
+                <stop offset="0%" style="stop-color:#6366f1;stop-opacity:0.3" />
+                <stop offset="100%" style="stop-color:#a855f7;stop-opacity:0.1" />
+            </linearGradient>
+        </defs>
+        <g id="bg-nodes"></g>
+    </svg>
+
+    <!-- Navigation -->
+    <nav class="nav">
+        <div class="nav-content">
+            <a href="../index.html">← Back to Papers</a>
+            <span style="color: #6366f1; font-weight: 600;">PagedAttention</span>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <header class="hero">
+        <h1>PagedAttention: Virtual Memory for LLM Serving</h1>
+        <p class="subtitle">Efficient Memory Management for Large Language Model Serving with PagedAttention</p>
+        <div class="meta">
+            <span>📅 SOSP 2023</span>
+            <span>👤 W. Kwon et al. (vLLM Team, UC Berkeley)</span>
+            <span>🏢 UC Berkeley, Stanford</span>
+        </div>
+        <div class="badges">
+            <a href="https://arxiv.org/abs/2309.06180" class="badge arxiv" target="_blank">📄 arXiv:2309.06180</a>
+            <a href="https://arxiv.org/pdf/2309.06180.pdf" class="badge pdf" target="_blank">📑 PDF</a>
+            <a href="https://github.com/vllm-project/vllm" class="badge code" target="_blank">💻 vLLM Code</a>
+        </div>
+    </header>
+
+    <div class="container">
+        <!-- Problem Statement -->
+        <section class="section">
+            <h2><span class="icon">🎯</span> The Problem: KV Cache Memory Waste</h2>
+            <p>Large Language Models generate tokens autoregressively, requiring the storage of Key and Value tensors (KV cache) from all previous tokens. This creates a massive memory bottleneck:</p>
+            
+            <div class="problem-box">
+                <strong>The Memory Explosion:</strong> For a 13B parameter model with batch size 64 and sequence length 4096, the KV cache alone requires <strong>~160GB of GPU memory</strong>—more than the model parameters themselves!
+            </div>
+            
+            <p>Existing systems use <strong>contiguous memory allocation</strong> for KV cache, which leads to three major inefficiencies:</p>
+            <ul style="margin: 15px 0; padding-left: 25px; color: #b8b8d0;">
+                <li><strong>Internal Fragmentation:</strong> Pre-allocate max sequence length, but most sequences are much shorter</li>
+                <li><strong>External Fragmentation:</strong> Different sequence lengths leave unusable memory gaps</li>
+                <li><strong>No Memory Sharing:</strong> Beam search and parallel sampling duplicate KV cache</li>
+            </ul>
+
+            <!-- Memory Waste Visualization -->
+            <div class="diagram-container">
+                <div class="diagram-title">Figure 1: Contiguous vs Paged Allocation</div>
+                <svg class="architecture-svg" width="700" height="380" viewBox="0 0 700 380">
+                    <defs>
+                        <pattern id="grid" width="20" height="20" patternUnits="userSpaceOnUse">
+                            <path d="M 20 0 L 0 0 0 20" fill="none" stroke="rgba(99,102,241,0.1)" stroke-width="0.5"/>
+                        </pattern>
+                        <linearGradient id="used-grad" x1="0%" y1="0%" x2="0%" y2="100%">
+                            <stop offset="0%" style="stop-color:#6366f1;stop-opacity:0.8"/>
+                            <stop offset="100%" style="stop-color:#a855f7;stop-opacity:0.8"/>
+                        </linearGradient>
+                        <linearGradient id="waste-grad" x1="0%" y1="0%" x2="0%" y2="100%">
+                            <stop offset="0%" style="stop-color:#ef4444;stop-opacity:0.6"/>
+                            <stop offset="100%" style="stop-color:#f87171;stop-opacity:0.6"/>
+                        </linearGradient>
+                        <linearGradient id="page-grad" x1="0%" y1="0%" x2="100%" y2="0%">
+                            <stop offset="0%" style="stop-color:#10b981;stop-opacity:0.7"/>
+                            <stop offset="100%" style="stop-color:#06b6d4;stop-opacity:0.7"/>
+                        </linearGradient>
+                    </defs>
+                    <rect width="700" height="380" fill="url(#grid)"/>
+                    
+                    <!-- Contiguous Allocation -->
+                    <text x="180" y="30" fill="#fca5a5" font-size="14" text-anchor="middle" font-weight="600">Contiguous Allocation (Wasteful)</text>
+                    
+                    <!-- GPU Memory bar -->
+                    <rect x="40" y="50" width="280" height="120" fill="none" stroke="#6366f1" stroke-width="2" rx="4"/>
+                    <text x="180" y="185" fill="#888" font-size="10" text-anchor="middle">GPU Memory</text>
+                    
+                    <!-- Seq 1: requested 512, allocated 2048 -->
+                    <rect x="50" y="60" width="160" height="25" fill="url(#used-grad)" rx="2"/>
+                    <text x="130" y="77" fill="#fff" font-size="8" text-anchor="middle">Seq 1: 512 tokens</text>
+                    <rect x="210" y="60" width="100" height="25" fill="url(#waste-grad)" rx="2"/>
+                    <text x="260" y="77" fill="#fff" font-size="7" text-anchor="middle">Waste</text>
+                    
+                    <!-- Seq 2: requested 1024, allocated 2048 -->
+                    <rect x="50" y="95" width="140" height="25" fill="url(#used-grad)" rx="2"/>
+                    <text x="120" y="112" fill="#fff" font-size="8" text-anchor="middle">Seq 2: 1024 tokens</text>
+                    <rect x="190" y="95" width="120" height="25" fill="url(#waste-grad)" rx="2"/>
+                    <text x="250" y="112" fill="#fff" font-size="7" text-anchor="middle">Waste</text>
+                    
+                    <!-- Seq 3: requested 256, allocated 2048 -->
+                    <rect x="50" y="130" width="35" height="25" fill="url(#used-grad)" rx="2"/>
+                    <text x="67" y="147" fill="#fff" font-size="7" text-anchor="middle">256</text>
+                    <rect x="85" y="130" width="225" height="25" fill="url(#waste-grad)" rx="2"/>
+                    <text x="197" y="147" fill="#fff" font-size="7" text-anchor="middle">Massive Waste (pre-allocated 2048)</text>
+                    
+                    <!-- Stats -->
+                    <text x="180" y="210" fill="#ef4444" font-size="10" text-anchor="middle">Efficiency: ~30-40%</text>
+                    
+                    <!-- PagedAttention Allocation -->
+                    <text x="520" y="30" fill="#6ee7b7" font-size="14" text-anchor="middle" font-weight="600">PagedAttention (Efficient)</text>
+                    
+                    <!-- Physical Memory bar -->
+                    <rect x="380" y="50" width="280" height="120" fill="none" stroke="#10b981" stroke-width="2" rx="4"/>
+                    <text x="520" y="185" fill="#888" font-size="10" text-anchor="middle">Physical Memory (Fixed-size Pages)</text>
+                    
+                    <!-- Pages -->
+                    <rect x="390" y="60" width="40" height="30" fill="url(#page-grad)" stroke="#10b981" stroke-width="1" rx="2"/>
+                    <text x="410" y="80" fill="#fff" font-size="7" text-anchor="middle">Page 1</text>
+                    
+                    <rect x="435" y="60" width="40" height="30" fill="url(#page-grad)" stroke="#10b981" stroke-width="1" rx="2"/>
+                    <text x="455" y="80" fill="#fff" font-size="7" text-anchor="middle">Page 2</text>
+                    
+                    <rect x="480" y="60" width="40" height="30" fill="url(#page-grad)" stroke="#10b981" stroke-width="1" rx="2"/>
+                    <text x="500" y="80" fill="#fff" font-size="7" text-anchor="middle">Page 3</text>
+                    
+                    <rect x="525" y="60" width="40" height="30" fill="url(#page-grad)" stroke="#10b981" stroke-width="1" rx="2"/>
+                    <text x="545" y="80" fill="#fff" font-size="7" text-anchor="middle">Page 4</text>
+                    
+                    <rect x="390" y="95" width="40" height="30" fill="url(#page-grad)" stroke="#10b981" stroke-width="1" rx="2"/>
+                    <text x="410" y="115" fill="#fff" font-size="7" text-anchor="middle">Page 5</text>
+                    
+                    <rect x="435" y="95" width="40" height="30" fill="url(#page-grad)" stroke="#10b981" stroke-width="1" rx="2"/>
+                    <text x="455" y="115" fill="#fff" font-size="7" text-anchor="middle">Page 6</text>
+                    
+                    <rect x="480" y="95" width="40" height="30" fill="url(#page-grad)" stroke="#10b981" stroke-width="1" rx="2"/>
+                    <text x="500" y="115" fill="#fff" font-size="7" text-anchor="middle">Page 7</text>
+                    
+                    <rect x="525" y="95" width="40" height="30" fill="url(#page-grad)" stroke="#10b981" stroke-width="1" rx="2"/>
+                    <text x="545" y="115" fill="#fff" font-size="7" text-anchor="middle">Page 8</text>
+                    
+                    <rect x="390" y="130" width="40" height="30" fill="url(#page-grad)" stroke="#10b981" stroke-width="1" rx="2"/>
+                    <text x="410" y="150" fill="#fff" font-size="7" text-anchor="middle">Page 9</text>
+                    
+                    <!-- Stats -->
+                    <text x="520" y="210" fill="#10b981" font-size="10" text-anchor="middle">Efficiency: ~96%</text>
+                    
+                    <!-- Block Tables explanation -->
+                    <rect x="50" y="240" width="600" height="130" fill="rgba(20,20,35,0.9)" stroke="rgba(99,102,241,0.3)" rx="8"/>
+                    <text x="350" y="265" fill="#fbbf24" font-size="13" text-anchor="middle" font-weight="600">How Block Tables Work</text>
+                    
+                    <!-- Sequence 1 mapping -->
+                    <text x="80" y="295" fill="#a5b4fc" font-size="10">Seq 1 (512 tokens):</text>
+                    <rect x="200" y="282" width="35" height="20" fill="rgba(99,102,241,0.5)" stroke="#6366f1" rx="2"/>
+                    <text x="217" y="296" fill="#fff" font-size="7">1</text>
+                    <rect x="240" y="282" width="35" height="20" fill="rgba(99,102,241,0.5)" stroke="#6366f1" rx="2"/>
+                    <text x="257" y="296" fill="#fff" font-size="7">2</text>
+                    <rect x="280" y="282" width="35" height="20" fill="rgba(99,102,241,0.5)" stroke="#6366f1" rx="2"/>
+                    <text x="297" y="296" fill="#fff" font-size="7">3</text>
+                    <rect x="320" y="282" width="35" height="20" fill="rgba(99,102,241,0.5)" stroke="#6366f1" rx="2"/>
+                    <text x="337" y="296" fill="#fff" font-size="7">4</text>
+                    
+                    <!-- Sequence 2 mapping -->
+                    <text x="80" y="325" fill="#f9a8d4" font-size="10">Seq 2 (1024 tokens):</text>
+                    <rect x="200" y="312" width="35" height="20" fill="rgba(236,72,153,0.5)" stroke="#ec4899" rx="2"/>
+                    <text x="217" y="326" fill="#fff" font-size="7">5</text>
+                    <rect x="240" y="312" width="35" height="20" fill="rgba(236,72,153,0.5)" stroke="#ec4899" rx="2"/>
+                    <text x="257" y="326" fill="#fff" font-size="7">6</text>
+                    <rect x="280" y="312" width="35" height="20" fill="rgba(236,72,153,0.5)" stroke="#ec4899" rx="2"/>
+                    <text x="297" y="326" fill="#fff" font-size="7">7</text>
+                    <rect x="320" y="312" width="35" height="20" fill="rgba(236,72,153,0.5)" stroke="#ec4899" rx="2"/>
+                    <text x="337" y="326" fill="#fff" font-size="7">8</text>
+                    <rect x="360" y="312" width="35" height="20" fill="rgba(236,72,153,0.5)" stroke="#ec4899" rx="2"/>
+                    <text x="377" y="326" fill="#fff" font-size="7">2</text>
+                    <text x="390" y="326" fill="#fbbf24" font-size="8">← Shared!</text>
+                    
+                    <!-- Sequence 3 mapping -->
+                    <text x="80" y="355" fill="#6ee7b7" font-size="10">Seq 3 (256 tokens):</text>
+                    <rect x="200" y="342" width="35" height="20" fill="rgba(16,185,129,0.5)" stroke="#10b981" rx="2"/>
+                    <text x="217" y="356" fill="#fff" font-size="7">9</text>
+                    <text x="245" y="356" fill="#888" font-size="8">Only 1 page needed!</text>
+                    
+                    <!-- Legend -->
+                    <text x="500" y="325" fill="#888" font-size="9">Block Table maps</text>
+                    <text x="500" y="340" fill="#888" font-size="9">logical → physical</text>
+                    <text x="500" y="355" fill="#fbbf24" font-size="9">Enables sharing!</text>
+                </svg>
+            </div>
+        </section>
+
+        <!-- Key Innovation -->
+        <section class="section">
+            <h2><span class="icon">💡</span> The Innovation: Virtual Memory for KV Cache</h2>
+            
+            <p>PagedAttention draws inspiration from <strong>virtual memory</strong> in operating systems. Just like OSes use pages and page tables to map virtual addresses to physical memory, PagedAttention uses:</p>
+            
+            <div class="solution-box">
+                <strong>1. Fixed-size Blocks:</strong> KV cache is divided into fixed-size blocks (e.g., 16 tokens per block)<br>
+                <strong>2. Block Tables:</strong> Each sequence has a block table mapping logical token positions to physical blocks<br>
+                <strong>3. Non-contiguous Storage:</strong> Logical blocks can map to any physical blocks, eliminating contiguous allocation requirements
+            </div>
+            
+            <p>The block table for each sequence stores the mapping from logical block indices to physical block indices. This simple abstraction enables powerful optimizations:</p>
+
+            <!-- Block Table Visualization -->
+            <div class="diagram-container">
+                <div class="diagram-title">Figure 2: Block Table Structure</div>
+                <svg class="architecture-svg" width="700" height="400" viewBox="0 0 700 400">
+                    <defs>
+                        <linearGradient id="logical-grad" x1="0%" y1="0%" x2="100%" y2="0%">
+                            <stop offset="0%" style="stop-color:#6366f1"/>
+                            <stop offset="100%" style="stop-color:#8b5cf6"/>
+                        </linearGradient>
+                        <linearGradient id="physical-grad" x1="0%" y1="0%" x2="100%" y2="0%">
+                            <stop offset="0%" style="stop-color:#10b981"/>
+                            <stop offset="100%" style="stop-color:#06b6d4"/>
+                        </linearGradient>
+                        <marker id="arrow-blue" markerWidth="8" markerHeight="8" refX="7" refY="3" orient="auto">
+                            <polygon points="0 0, 8 3, 0 6" fill="#6366f1"/>
+                        </marker>
+                    </defs>
+                    
+                    <!-- Title -->
+                    <text x="350" y="25" fill="#fff" font-size="16" text-anchor="middle" font-weight="600">Block Table Mapping</text>
+                    
+                    <!-- Logical KV Cache -->
+                    <text x="120" y="55" fill="#a5b4fc" font-size="13" text-anchor="middle" font-weight="600">Logical KV Cache</text>
+                    <text x="120" y="72" fill="#888" font-size="9" text-anchor="middle">(Sequence View)</text>
+                    
+                    <rect x="50" y="85" width="140" height="40" fill="url(#logical-grad)" opacity="0.3" stroke="#6366f1" stroke-width="2" rx="5"/>
+                    <text x="120" y="110" fill="#fff" font-size="10" text-anchor="middle">Block 0 (tokens 0-15)</text>
+                    
+                    <rect x="50" y="135" width="140" height="40" fill="url(#logical-grad)" opacity="0.3" stroke="#6366f1" stroke-width="2" rx="5"/>
+                    <text x="120" y="160" fill="#fff" font-size="10" text-anchor="middle">Block 1 (tokens 16-31)</text>
+                    
+                    <rect x="50" y="185" width="140" height="40" fill="url(#logical-grad)" opacity="0.3" stroke="#6366f1" stroke-width="2" rx="5"/>
+                    <text x="120" y="210" fill="#fff" font-size="10" text-anchor="middle">Block 2 (tokens 32-47)</text>
+                    
+                    <rect x="50" y="235" width="140" height="40" fill="url(#logical-grad)" opacity="0.3" stroke="#6366f1" stroke-width="2" rx="5"/>
+                    <text x="120" y="260" fill="#fff" font-size="10" text-anchor="middle">Block 3 (tokens 48-63)</text>
+                    
+                    <!-- Block Table -->
+                    <rect x="240" y="100" width="120" height="160" fill="rgba(245,158,11,0.2)" stroke="#f59e0b" stroke-width="2" rx="8"/>
+                    <text x="300" y="125" fill="#fbbf24" font-size="12" text-anchor="middle" font-weight="600">Block Table</text>
+                    
+                    <!-- Table entries -->
+                    <rect x="255" y="140" width="90" height="25" fill="rgba(20,20,35,0.8)" stroke="#f59e0b" stroke-width="1" rx="3"/>
+                    <text x="265" y="157" fill="#888" font-size="9">0 →</text>
+                    <text x="315" y="157" fill="#10b981" font-size="10" font-weight="bold">7</text>
+                    
+                    <rect x="255" y="170" width="90" height="25" fill="rgba(20,20,35,0.8)" stroke="#f59e0b" stroke-width="1" rx="3"/>
+                    <text x="265" y="187" fill="#888" font-size="9">1 →</text>
+                    <text x="315" y="187" fill="#10b981" font-size="10" font-weight="bold">3</text>
+                    
+                    <rect x="255" y="200" width="90" height="25" fill="rgba(20,20,35,0.8)" stroke="#f59e0b" stroke-width="1" rx="3"/>
+                    <text x="265" y="217" fill="#888" font-size="9">2 →</text>
+                    <text x="315" y="217" fill="#10b981" font-size="10" font-weight="bold">12</text>
+                    
+                    <rect x="255" y="230" width="90" height="25" fill="rgba(20,20,35,0.8)" stroke="#f59e0b" stroke-width="1" rx="3"/>
+                    <text x="265" y="247" fill="#888" font-size="9">3 →</text>
+                    <text x="315" y="247" fill="#10b981" font-size="10" font-weight="bold">5</text>
+                    
+                    <!-- Arrows -->
+                    <path d="M190 105 L 250 152" stroke="#6366f1" stroke-width="1.5" marker-end="url(#arrow-blue)"/>
+                    <path d="M190 155 L 250 182" stroke="#6366f1" stroke-width="1.5" marker-end="url(#arrow-blue)"/>
+                    <path d="M190 205 L 250 212" stroke="#6366f1" stroke-width="1.5" marker-end="url(#arrow-blue)"/>
+                    <path d="M190 255 L 250 242" stroke="#6366f1" stroke-width="1.5" marker-end="url(#arrow-blue)"/>
+                    
+                    <!-- Physical Memory -->
+                    <text x="520" y="55" fill="#6ee7b7" font-size="13" text-anchor="middle" font-weight="600">Physical Memory</text>
+                    <text x="520" y="72" fill="#888" font-size="9" text-anchor="middle">(GPU Storage)</text>
+                    
+                    <!-- Physical blocks scattered -->
+                    <rect x="420" y="90" width="50" height="35" fill="rgba(100,100,120,0.5)" stroke="#555" stroke-width="1" rx="3"/>
+                    <text x="445" y="112" fill="#666" font-size="8" text-anchor="middle">Block 0</text>
+                    
+                    <rect x="480" y="90" width="50" height="35" fill="rgba(100,100,120,0.5)" stroke="#555" stroke-width="1" rx="3"/>
+                    <text x="505" y="112" fill="#666" font-size="8" text-anchor="middle">Block 1</text>
+                    
+                    <rect x="540" y="90" width="50" height="35" fill="rgba(100,100,120,0.5)" stroke="#555" stroke-width="1" rx="3"/>
+                    <text x="565" y="112" fill="#666" font-size="8" text-anchor="middle">Block 2</text>
+                    
+                    <rect x="420" y="135" width="50" height="35" fill="url(#physical-grad)" stroke="#10b981" stroke-width="2" rx="3"/>
+                    <text x="445" y="157" fill="#fff" font-size="8" text-anchor="middle">Block 3</text>
+                    <text x="445" y="170" fill="#fbbf24" font-size="7" text-anchor="middle">used</text>
+                    
+                    <rect x="480" y="135" width="50" height="35" fill="rgba(100,100,120,0.5)" stroke="#555" stroke-width="1" rx="3"/>
+                    <text x="505" y="157" fill="#666" font-size="8" text-anchor="middle">Block 4</text>
+                    
+                    <rect x="540" y="135" width="50" height="35" fill="rgba(100,100,120,0.5)" stroke="#555" stroke-width="1" rx="3"/>
+                    <text x="565" y="157" fill="#666" font-size="8" text-anchor="middle">Block 5</text>
+                    
+                    <rect x="420" y="180" width="50" height="35" fill="rgba(100,100,120,0.5)" stroke="#555" stroke-width="1" rx="3"/>
+                    <text x="445" y="202" fill="#666" font-size="8" text-anchor="middle">Block 6</text>
+                    
+                    <rect x="480" y="180" width="50" height="35" fill="url(#physical-grad)" stroke="#10b981" stroke-width="2" rx="3"/>
+                    <text x="505" y="202" fill="#fff" font-size="8" text-anchor="middle">Block 7</text>
+                    <text x="505" y="215" fill="#fbbf24" font-size="7" text-anchor="middle">used</text>
+                    
+                    <rect x="540" y="180" width="50" height="35" fill="rgba(100,100,120,0.5)" stroke="#555" stroke-width="1" rx="3"/>
+                    <text x="565" y="202" fill="#666" font-size="8" text-anchor="middle">Block 8</text>
+                    
+                    <rect x="420" y="225" width="50" height="35" fill="rgba(100,100,120,0.5)" stroke="#555" stroke-width="1" rx="3"/>
+                    <text x="445" y="247" fill="#666" font-size="8" text-anchor="middle">Block 9</text>
+                    
+                    <rect x="480" y="225" width="50" height="35" fill="rgba(100,100,120,0.5)" stroke="#555" stroke-width="1" rx="3"/>
+                    <text x="505" y="247" fill="#666" font-size="8" text-anchor="middle">Block 10</text>
+                    
+                    <rect x="540" y="225" width="50" height="35" fill="rgba(100,100,120,0.5)" stroke="#555" stroke-width="1" rx="3"/>
+                    <text x="565" y="247" fill="#666" font-size="8" text-anchor="middle">Block 11</text>
+                    
+                    <rect x="420" y="270" width="50" height="35" fill="url(#physical-grad)" stroke="#10b981" stroke-width="2" rx="3"/>
+                    <text x="445" y="292" fill="#fff" font-size="8" text-anchor="middle">Block 12</text>
+                    <text x="445" y="305" fill="#fbbf24" font-size="7" text-anchor="middle">used</text>
+                    
+                    <!-- Arrows from block table to physical -->
+                    <path d="M350 152 L 480 197" stroke="#10b981" stroke-width="1.5" marker-end="url(#arrow-green)"/>
+                    <path d="M350 182 L 445 152" stroke="#10b981" stroke-width="1.5" marker-end="url(#arrow-green)"/>
+                    <path d="M350 212 L 445 287" stroke="#10b981" stroke-width="1.5" marker-end="url(#arrow-green)"/>
+                    <path d="M350 242 L 565 152" stroke="#10b981" stroke-width="1.5" marker-end="url(#arrow-green)"/>
+                    
+                    <!-- Key insight -->
+                    <rect x="50" y="330" width="600" height="60" fill="rgba(16,185,129,0.15)" stroke="#10b981" stroke-width="1.5" rx="8"/>
+                    <text x="350" y="355" fill="#6ee7b7" font-size="11" text-anchor="middle">Key Benefit: Logical blocks are contiguous, but physical blocks can be anywhere</text>
+                    <text x="350" y="375" fill="#888" font-size="10" text-anchor="middle">Eliminates memory waste from internal & external fragmentation</text>
+                    
+                    <defs>
+                        <marker id="arrow-green" markerWidth="8" markerHeight="8" refX="7" refY="3" orient="auto">
+                            <polygon points="0 0, 8 3, 0 6" fill="#10b981"/>
+                        </marker>
+                    </defs>
+                </svg>
+            </div>
+        </section>
+
+        <!-- Memory Sharing -->
+        <section class="section">
+            <h2><span class="icon">🔄</span> Memory Sharing: Copy-on-Write</h2>
+            
+            <p>PagedAttention enables powerful memory sharing techniques through <strong>copy-on-write (COW)</strong> semantics:</p>
+            
+            <div class="highlight-box">
+                <strong>Beam Search:</strong> Multiple candidate sequences share common prefix blocks. When a candidate diverges, only then is a new physical block allocated.<br><br>
+                <strong>Parallel Sampling:</strong> Multiple outputs from the same prompt share all initial blocks, dramatically reducing memory for sampling.
+            </div>
+
+            <!-- Copy-on-Write Visualization -->
+            <div class="diagram-container">
+                <div class="diagram-title">Figure 3: Copy-on-Write for Beam Search</div>
+                <svg class="architecture-svg" width="700" height="380" viewBox="0 0 700 380">
+                    <defs>
+                        <linearGradient id="shared-grad" x1="0%" y1="0%" x2="100%" y2="0%">
+                            <stop offset="0%" style="stop-color:#6366f1"/>
+                            <stop offset="100%" style="stop-color:#8b5cf6"/>
+                        </linearGradient>
+                        <linearGradient id="diverged-grad" x1="0%" y1="0%" x2="100%" y2="0%">
+                            <stop offset="0%" style="stop-color:#ec4899"/>
+                            <stop offset="100%" style="stop-color:#f43f5e"/>
+                        </linearGradient>
+                        <linearGradient id="new-grad" x1="0%" y1="0%" x2="100%" y2="0%">
+                            <stop offset="0%" style="stop-color:#10b981"/>
+                            <stop offset="100%" style="stop-color:#06b6d4"/>
+                        </linearGradient>
+                    </defs>
+                    
+                    <!-- Title -->
+                    <text x="350" y="25" fill="#fff" font-size="16" text-anchor="middle" font-weight="600">Copy-on-Write for Beam Search</text>
+                    
+                    <!-- Shared prefix -->
+                    <rect x="80" y="50" width="540" height="50" fill="url(#shared-grad)" opacity="0.3" stroke="#6366f1" stroke-width="2" rx="5"/>
+                    <text x="350" y="82" fill="#a5b4fc" font-size="14" text-anchor="middle">Shared Prefix: "The cat sat on the..."</text>
+                    
+                    <!-- Block labels -->
+                    <rect x="100" y="55" width="60" height="40" fill="rgba(99,102,241,0.5)" rx="3"/>
+                    <text x="130" y="80" fill="#fff" font-size="9" text-anchor="middle">Block 1</text>
+                    <rect x="170" y="55" width="60" height="40" fill="rgba(99,102,241,0.5)" rx="3"/>
+                    <text x="200" y="80" fill="#fff" font-size="9" text-anchor="middle">Block 2</text>
+                    <rect x="240" y="55" width="60" height="40" fill="rgba(99,102,241,0.5)" rx="3"/>
+                    <text x="270" y="80" fill="#fff" font-size="9" text-anchor="middle">Block 3</text>
+                    
+                    <!-- Beam 1 -->
+                    <rect x="80" y="120" width="540" height="70" fill="rgba(16,185,129,0.1)" stroke="#10b981" stroke-width="1.5" rx="5"/>
+                    <text x="120" y="145" fill="#6ee7b7" font-size="11">Beam 1: "mat and looked outside"</text>
+                    
+                    <rect x="100" y="155" width="60" height="25" fill="rgba(99,102,241,0.3)" stroke="#6366f1" stroke-width="1" rx="2"/>
+                    <text x="130" y="172" fill="#888" font-size="7" text-anchor="middle">ref</text>
+                    <rect x="170" y="155" width="60" height="25" fill="rgba(99,102,241,0.3)" stroke="#6366f1" stroke-width="1" rx="2"/>
+                    <text x="200" y="172" fill="#888" font-size="7" text-anchor="middle">ref</text>
+                    <rect x="240" y="155" width="60" height="25" fill="rgba(99,102,241,0.3)" stroke="#6366f1" stroke-width="1" rx="2"/>
+                    <text x="270" y="172" fill="#888" font-size="7" text-anchor="middle">ref</text>
+                    <rect x="310" y="155" width="60" height="25" fill="url(#new-grad)" stroke="#10b981" stroke-width="1.5" rx="2"/>
+                    <text x="340" y="172" fill="#fff" font-size="7" text-anchor="middle">New</text>
+                    <rect x="380" y="155" width="60" height="25" fill="url(#new-grad)" stroke="#10b981" stroke-width="1.5" rx="2"/>
+                    <text x="410" y="172" fill="#fff" font-size="7" text-anchor="middle">New</text>
+                    
+                    <!-- Beam 2 -->
+                    <rect x="80" y="205" width="540" height="70" fill="rgba(236,72,153,0.1)" stroke="#ec4899" stroke-width="1.5" rx="5"/>
+                    <text x="120" y="230" fill="#f9a8d4" font-size="11">Beam 2: "chair and fell asleep"</text>
+                    
+                    <rect x="100" y="240" width="60" height="25" fill="rgba(99,102,241,0.3)" stroke="#6366f1" stroke-width="1" rx="2"/>
+                    <text x="130" y="257" fill="#888" font-size="7" text-anchor="middle">ref</text>
+                    <rect x="170" y="240" width="60" height="25" fill="rgba(99,102,241,0.3)" stroke="#6366f1" stroke-width="1" rx="2"/>
+                    <text x="200" y="257" fill="#888" font-size="7" text-anchor="middle">ref</text>
+                    <rect x="240" y="240" width="60" height="25" fill="rgba(99,102,241,0.3)" stroke="#6366f1" stroke-width="1" rx="2"/>
+                    <text x="270" y="257" fill="#888" font-size="7" text-anchor="middle">ref</text>
+                    <rect x="310" y="240" width="60" height="25" fill="url(#diverged-grad)" stroke="#ec4899" stroke-width="1.5" rx="2"/>
+                    <text x="340" y="257" fill="#fff" font-size="7" text-anchor="middle">Copy</text>
+                    <rect x="380" y="240" width="60" height="25" fill="url(#diverged-grad)" stroke="#ec4899" stroke-width="1.5" rx="2"/>
+                    <text x="410" y="257" fill="#fff" font-size="7" text-anchor="middle">Copy</text>
+                    
+                    <!-- Beam 3 -->
+                    <rect x="80" y="290" width="540" height="70" fill="rgba(245,158,11,0.1)" stroke="#f59e0b" stroke-width="1.5" rx="5"/>
+                    <text x="120" y="315" fill="#fbbf24" font-size="11">Beam 3: "roof and watched birds"</text>
+                    
+                    <rect x="100" y="325" width="60" height="25" fill="rgba(99,102,241,0.3)" stroke="#6366f1" stroke-width="1" rx="2"/>
+                    <text x="130" y="342" fill="#888" font-size="7" text-anchor="middle">ref</text>
+                    <rect x="170" y="325" width="60" height="25" fill="rgba(99,102,241,0.3)" stroke="#6366f1" stroke-width="1" rx="2"/>
+                    <text x="200" y="342" fill="#888" font-size="7" text-anchor="middle">ref</text>
+                    <rect x="240" y="325" width="60" height="25" fill="url(#diverged-grad)" stroke="#ec4899" stroke-width="1.5" rx="2"/>
+                    <text x="270" y="342" fill="#fff" font-size="7" text-anchor="middle">Copy</text>
+                    <rect x="310" y="325" width="60" height="25" fill="url(#diverged-grad)" stroke="#ec4899" stroke-width="1.5" rx="2"/>
+                    <text x="340" y="342" fill="#fff" font-size="7" text-anchor="middle">Copy</text>
+                    <rect x="380" y="325" width="60" height="25" fill="url(#diverged-grad)" stroke="#f59e0b" stroke-width="1.5" rx="2"/>
+                    <text x="410" y="342" fill="#fff" font-size="7" text-anchor="middle">Copy</text>
+                    
+                    <!-- Legend -->
+                    <rect x="480" y="155" width="120" height="20" fill="rgba(99,102,241,0.3)" stroke="#6366f1" rx="2"/>
+                    <text x="600" y="170" fill="#888" font-size="9">Shared (ref)</text>
+                    
+                    <rect x="480" y="180" width="120" height="20" fill="url(#new-grad)" stroke="#10b981" rx="2"/>
+                    <text x="600" y="195" fill="#6ee7b7" font-size="9">New allocation</text>
+                    
+                    <rect x="480" y="205" width="120" height="20" fill="url(#diverged-grad)" stroke="#ec4899" rx="2"/>
+                    <text x="600" y="220" fill="#f9a8d4" font-size="9">Copy-on-write</text>
+                    
+                    <!-- Memory stats -->
+                    <text x="350" y="375" fill="#10b981" font-size="11" text-anchor="middle">Memory Saved: ~55% for 3 beams with shared prefix of 3 blocks</text>
+                </svg>
+            </div>
+        </section>
+
+        <!-- Results & Impact -->
+        <section class="section">
+            <h2><span class="icon">🏆</span> Results & Impact</h2>
+            
+            <p>PagedAttention and the vLLM serving engine achieved dramatic improvements:</p>
+            
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="number">2-4×</div>
+                    <div class="label">Throughput Improvement</div>
+                </div>
+                <div class="stat-card">
+                    <div class="number">96%</div>
+                    <div class="label">Memory Utilization</div>
+                </div>
+                <div class="stat-card">
+                    <div class="number">40%</div>
+                    <div class="label">Contiguous Baseline</div>
+                </div>
+                <div class="stat-card">
+                    <div class="number">55%</div>
+                    <div class="label">Memory Reduction</div>
+                </div>
+            </div>
+            
+            <table class="comparison-table">
+                <thead>
+                    <tr>
+                        <th>System</th>
+                        <th>Throughput (req/s)</th>
+                        <th>Memory Efficiency</th>
+                        <th>Sharing Support</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>HuggingFace Transformers</td>
+                        <td>Baseline</td>
+                        <td>~40%</td>
+                        <td>❌ None</td>
+                    </tr>
+                    <tr>
+                        <td>DeepSpeed</td>
+                        <td>1.5×</td>
+                        <td>~50%</td>
+                        <td>❌ Limited</td>
+                    </tr>
+                    <tr>
+                        <td>FasterTransformer</td>
+                        <td>2×</td>
+                        <td>~55%</td>
+                        <td>❌ None</td>
+                    </tr>
+                    <tr>
+                        <td>TensorRT-LLM</td>
+                        <td>2.5×</td>
+                        <td>~60%</td>
+                        <td>❌ Limited</td>
+                    </tr>
+                    <tr>
+                        <td class="best">vLLM (PagedAttention)</td>
+                        <td class="best">4×</td>
+                        <td class="best">~96%</td>
+                        <td class="best">✅ Full COW</td>
+                    </tr>
+                </tbody>
+            </table>
+            
+            <div class="solution-box">
+                <strong>Real-world Impact:</strong> vLLM with PagedAttention can serve Llama-2-70B on a single A100-80GB GPU with significantly higher throughput than systems requiring multiple GPUs. This translates directly to cost savings and lower latency for LLM serving.
+            </div>
+        </section>
+
+        <!-- Code Implementation -->
+        <section class="section">
+            <h2><span class="icon">💻</span> Using vLLM</h2>
+            
+            <p>Using vLLM with PagedAttention is straightforward:</p>
+            
+            <div class="code-block">
+                <code><span class="keyword">from</span> vllm <span class="keyword">import</span> LLM, SamplingParams
+
+<span class="comment"># Load a model - PagedAttention is used automatically!</span>
+llm = LLM(model=<span class="string">"meta-llama/Llama-2-7b-hf"</span>)
+
+<span class="comment"># Define sampling parameters</span>
+sampling_params = SamplingParams(
+    temperature=<span class="number">0.8</span>,
+    top_p=<span class="number">0.95</span>,
+    max_tokens=<span class="number">256</span>
+)
+
+<span class="comment"># Batch inference - PagedAttention handles memory automatically</span>
+prompts = [
+    <span class="string">"The future of AI is"</span>,
+    <span class="string">"In the year 2050,"</span>,
+    <span class="string">"The most important invention"</span>
+]
+
+<span class="comment"># Generate - PagedAttention manages KV cache efficiently</span>
+outputs = llm.generate(prompts, sampling_params)
+
+<span class="comment"># PagedAttention benefits:</span>
+<span class="comment"># - No manual batch size tuning</span>
+<span class="comment"># - Automatic memory management</span>
+<span class="comment"># - Support for beam search with COW</span>
+<span class="comment"># - Continuous batching</span>
+
+<span class="keyword">for</span> output <span class="keyword">in</span> outputs:
+    prompt = output.prompt
+    generated_text = output.outputs[<span class="number">0</span>].text
+    <span class="function">print</span>(<span class="string">f"Prompt: {prompt!r}"</span>)
+    <span class="function">print</span>(<span class="string">f"Generated: {generated_text!r}"</span>)</code>
+            </div>
+            
+            <p>For production serving with OpenAI-compatible API:</p>
+            
+            <div class="code-block">
+                <code><span class="comment"># Start vLLM server with PagedAttention</span>
+<span class="comment"># Command line:</span>
+python -m vllm.entrypoints.openai.api_server \
+    --model meta-llama/Llama-2-7b-hf \
+    --tensor-parallel-size <span class="number">1</span> \
+    --max-num-seqs <span class="number">256</span> \
+    --max-model-len <span class="number">4096</span>
+
+<span class="comment"># Client code:</span>
+<span class="keyword">import</span> openai
+
+client = openai.OpenAI(
+    base_url=<span class="string">"http://localhost:8000/v1"</span>,
+    api_key=<span class="string">"dummy"</span>
+)
+
+response = client.chat.completions.create(
+    model=<span class="string">"meta-llama/Llama-2-7b-hf"</span>,
+    messages=[{<span class="string">"role"</span>: <span class="string">"user"</span>, <span class="string">"content"</span>: <span class="string">"Hello!"</span>}]
+)
+<span class="function">print</span>(response.choices[<span class="number">0</span>].message.content)</code>
+            </div>
+        </section>
+
+        <!-- Related Papers -->
+        <section class="section">
+            <h2><span class="icon">📚</span> Related Papers</h2>
+            
+            <div class="related-papers">
+                <div class="paper-card">
+                    <div class="year">Predecessor</div>
+                    <h4>FlashAttention (2022)</h4>
+                    <p>IO-aware attention that reduces HBM traffic. Complementary to PagedAttention for efficient attention computation.</p>
+                </div>
+                
+                <div class="paper-card">
+                    <div class="year">Predecessor</div>
+                    <h4>OS Virtual Memory (1960s)</h4>
+                    <p>The foundational concept of paging and page tables that inspired PagedAttention's block table design.</p>
+                </div>
+                
+                <div class="paper-card">
+                    <div class="year">Related</div>
+                    <h4>ORCA (2022)</h4>
+                    <p>Iteration-level scheduling for LLMs. vLLM combines PagedAttention with similar scheduling.</p>
+                </div>
+                
+                <div class="paper-card">
+                    <div class="year">Related</div>
+                    <h4>TensorRT-LLM (2023)</h4>
+                    <p>NVIDIA's optimized inference engine. Now incorporates PagedAttention-like techniques.</p>
+                </div>
+                
+                <div class="paper-card">
+                    <div class="year">Successor</div>
+                    <h4>vLLM v0.3+ (2024)</h4>
+                    <p>Added chunked prefill, prefix caching, and speculative decoding on top of PagedAttention.</p>
+                </div>
+                
+                <div class="paper-card">
+                    <div class="year">Alternative</div>
+                    <h4>DeepSpeed-FastGen (2024)</h4>
+                    <p>Microsoft's serving system using SplitFuse scheduling. Competes with vLLM.</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Summary -->
+        <section class="section">
+            <h2><span class="icon">📝</span> Summary</h2>
+            
+            <p>PagedAttention revolutionized LLM serving by applying virtual memory concepts to KV cache management:</p>
+            
+            <ul style="margin: 15px 0; padding-left: 25px; color: #b8b8d0;">
+                <li><strong>Block-based allocation:</strong> Fixed-size pages eliminate fragmentation</li>
+                <li><strong>Block tables:</strong> Map logical to physical blocks for flexibility</li>
+                <li><strong>Copy-on-write:</strong> Enable memory sharing for beam search and sampling</li>
+                <li><strong>96% memory utilization:</strong> vs 40% for contiguous allocation</li>
+                <li><strong>2-4× throughput:</strong> improvements in production serving</li>
+            </ul>
+            
+            <div class="solution-box">
+                <strong>Bottom Line:</strong> PagedAttention is the foundational technology behind vLLM, now one of the most popular LLM serving frameworks. By treating GPU memory like virtual memory with paging and copy-on-write, it solved the KV cache memory bottleneck that plagued LLM deployment.
+            </div>
+        </section>
+    </div>
+
+    <footer>
+        <p>Built with ❤️ by <a href="https://github.com/Patbby">Patbby</a> (Kimi Claw)</p>
+        <p>Part of the <a href="../index.html">AI Neural Networks</a> educational collection</p>
+    </footer>
+
+    <script>
+        // Animated background nodes
+        const bgSvg = document.getElementById('bg-nodes');
+        const nodeCount = 25;
+        const nodes = [];
+        
+        for (let i = 0; i < nodeCount; i++) {
+            const circle = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
+            const x = Math.random() * 1920;
+            const y = Math.random() * 1080;
+            const r = Math.random() * 3 + 1;
+            
+            circle.setAttribute('cx', x);
+            circle.setAttribute('cy', y);
+            circle.setAttribute('r', r);
+            circle.setAttribute('fill', '#6366f1');
+            circle.setAttribute('opacity', Math.random() * 0.5 + 0.2);
+            
+            bgSvg.appendChild(circle);
+            nodes.push({
+                element: circle,
+                x: x,
+                y: y,
+                vx: (Math.random() - 0.5) * 0.5,
+                vy: (Math.random() - 0.5) * 0.5
+            });
+        }
+        
+        function animateNodes() {
+            nodes.forEach(node => {
+                node.x += node.vx;
+                node.y += node.vy;
+                
+                if (node.x < 0 || node.x > 1920) node.vx *= -1;
+                if (node.y < 0 || node.y > 1080) node.vy *= -1;
+                
+                node.element.setAttribute('cx', node.x);
+                node.element.setAttribute('cy', node.y);
+            });
+            requestAnimationFrame(animateNodes);
+        }
+        animateNodes();
+    </script>
+</body>
+</html>
