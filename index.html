@@ -209,6 +209,86 @@
                 </svg>
             </div>
 
+            <!-- Adam Optimizer Paper Card -->
+            <div class="network-card" onclick="location.href='papers/adam.html'">
+                <span class="tag">ICLR 2015</span>
+                <h3>Adam Optimizer</h3>
+                <p>A Method for Stochastic Optimization - The default optimizer for deep learning. Combines momentum with adaptive learning rates per parameter. Used in virtually every modern neural network.</p>
+                <svg class="preview-svg" viewBox="0 0 300 150">
+                    <defs>
+                        <linearGradient id="adam-grad" x1="0%" y1="0%" x2="100%" y2="0%">
+                            <stop offset="0%" style="stop-color:#10b981"/>
+                            <stop offset="50%" style="stop-color:#6366f1"/>
+                            <stop offset="100%" style="stop-color:#a855f7"/>
+                        </linearGradient>
+                    </defs>
+                    <!-- Gradient input -->
+                    <rect x="20" y="60" width="50" height="30" rx="4" fill="rgba(99,102,241,0.3)" stroke="#6366f1" stroke-width="2"/>
+                    <text x="45" y="80" fill="#fff" font-size="9" text-anchor="middle">∇θ</text>
+                    <!-- Arrows to moments -->
+                    <path d="M75 75 L110 55" stroke="#6366f1" stroke-width="2"/>
+                    <path d="M75 75 L110 95" stroke="#6366f1" stroke-width="2"/>
+                    <!-- First moment box -->
+                    <rect x="115" y="35" width="60" height="40" rx="4" fill="rgba(16,185,129,0.3)" stroke="#10b981" stroke-width="2"/>
+                    <text x="145" y="55" fill="#10b981" font-size="8" text-anchor="middle">m (β₁)</text>
+                    <text x="145" y="70" fill="#a5f3fc" font-size="7" text-anchor="middle">1st moment</text>
+                    <!-- Second moment box -->
+                    <rect x="115" y="75" width="60" height="40" rx="4" fill="rgba(236,72,153,0.3)" stroke="#ec4899" stroke-width="2"/>
+                    <text x="145" y="95" fill="#ec4899" font-size="8" text-anchor="middle">v (β₂)</text>
+                    <text x="145" y="110" fill="#fbcfe8" font-size="7" text-anchor="middle">2nd moment</text>
+                    <!-- Arrows to update -->
+                    <path d="M180 55 L220 75" stroke="#10b981" stroke-width="2"/>
+                    <path d="M180 95 L220 75" stroke="#ec4899" stroke-width="2"/>
+                    <!-- Update box -->
+                    <rect x="225" y="60" width="55" height="30" rx="4" fill="url(#adam-grad)" opacity="0.3" stroke="#a855f7" stroke-width="2"/>
+                    <text x="252" y="80" fill="#fff" font-size="8" text-anchor="middle">θ ← θ - α·m/√v</text>
+                    <!-- Label -->
+                    <text x="150" y="140" fill="#888" font-size="8" text-anchor="middle">Adaptive Momentum Estimation</text>
+                </svg>
+            </div>
+
+            <!-- Batch Normalization Paper Card -->
+            <div class="network-card" onclick="location.href='papers/batchnorm.html'">
+                <span class="tag">ICML 2015</span>
+                <h3>Batch Normalization</h3>
+                <p>Accelerating Deep Network Training by Reducing Internal Covariate Shift. Enables higher learning rates, faster convergence, and training of deeper networks. Standard in all modern CNNs.</p>
+                <svg class="preview-svg" viewBox="0 0 300 150">
+                    <defs>
+                        <linearGradient id="bn-grad" x1="0%" y1="0%" x2="100%" y2="0%">
+                            <stop offset="0%" style="stop-color:#6366f1"/>
+                            <stop offset="50%" style="stop-color:#10b981"/>
+                            <stop offset="100%" style="stop-color:#fbbf24"/>
+                        </linearGradient>
+                    </defs>
+                    <!-- Input distribution -->
+                    <ellipse cx="60" cy="75" rx="25" ry="20" fill="rgba(99,102,241,0.2)" stroke="#6366f1" stroke-width="2"/>
+                    <text x="60" y="72" fill="#a5b4fc" font-size="7" text-anchor="middle">μ, σ²</text>
+                    <text x="60" y="82" fill="#888" font-size="6" text-anchor="middle">batch</text>
+                    <!-- Arrow -->
+                    <path d="M90 75 L120 75" stroke="#6366f1" stroke-width="2" marker-end="url(#arrow-bn)"/>
+                    <!-- Normalize box -->
+                    <rect x="125" y="55" width="50" height="40" rx="4" fill="rgba(16,185,129,0.3)" stroke="#10b981" stroke-width="2"/>
+                    <text x="150" y="72" fill="#10b981" font-size="8" text-anchor="middle">Normalize</text>
+                    <text x="150" y="85" fill="#a5f3fc" font-size="6" text-anchor="middle">x̂ = (x-μ)/σ</text>
+                    <!-- Arrow -->
+                    <path d="M180 75 L210 75" stroke="#10b981" stroke-width="2"/>
+                    <!-- Scale & shift -->
+                    <rect x="215" y="55" width="55" height="40" rx="4" fill="rgba(251,191,36,0.3)" stroke="#fbbf24" stroke-width="2"/>
+                    <text x="242" y="72" fill="#fbbf24" font-size="8" text-anchor="middle">γ·x̂+β</text>
+                    <text x="242" y="85" fill="#fde68a" font-size="6" text-anchor="middle">scale & shift</text>
+                    <!-- Output distribution -->
+                    <ellipse cx="280" cy="75" rx="15" ry="12" fill="rgba(251,191,36,0.2)" stroke="#fbbf24" stroke-width="2"/>
+                    <text x="280" y="110" fill="#888" font-size="7" text-anchor="middle">N(β, γ²)</text>
+                    <!-- Stats labels -->
+                    <text x="150" y="140" fill="#888" font-size="8" text-anchor="middle">μ, σ: batch stats | γ, β: learnable</text>
+                    <defs>
+                        <marker id="arrow-bn" markerWidth="8" markerHeight="8" refX="7" refY="3" orient="auto">
+                            <polygon points="0 0, 8 3, 0 6" fill="#6366f1"/>
+                        </marker>
+                    </defs>
+                </svg>
+            </div>
+
             <!-- Seq2Seq Paper Card -->
             <div class="network-card" onclick="location.href='papers/seq2seq.html'">
                 <span class="tag">NIPS 2014</span>
