@@ -289,6 +289,57 @@
                 </svg>
             </div>
 
+            <!-- Inception v3 Paper Card -->
+            <div class="network-card" onclick="location.href='papers/inception-v3.html'">
+                <span class="tag">CVPR 2016</span>
+                <h3>Inception v3</h3>
+                <p>Rethinking the Inception Architecture - Factorized convolutions, asymmetric filters, label smoothing, and auxiliary classifiers. Achieved 3.58% top-5 error on ImageNet with remarkable efficiency.</p>
+                <svg class="preview-svg" viewBox="0 0 300 150">
+                    <defs>
+                        <linearGradient id="inception-grad" x1="0%" y1="0%" x2="100%" y2="100%">
+                            <stop offset="0%" style="stop-color:#6366f1"/>
+                            <stop offset="50%" style="stop-color:#a855f7"/>
+                            <stop offset="100%" style="stop-color:#ec4899"/>
+                        </linearGradient>
+                    </defs>
+                    <!-- Input -->
+                    <rect x="120" y="20" width="60" height="25" rx="3" fill="rgba(99,102,241,0.3)" stroke="#6366f1" stroke-width="1.5"/>
+                    <text x="150" y="37" fill="#fff" font-size="8" text-anchor="middle">Input</text>
+                    <!-- Arrow down -->
+                    <path d="M150 45 L150 55" stroke="#6366f1" stroke-width="1.5"/>
+                    <!-- Inception module - 4 branches -->
+                    <g transform="translate(150, 80)">
+                        <!-- 1x1 branch -->
+                        <rect x="-50" y="-20" width="25" height="18" rx="2" fill="rgba(16,185,129,0.4)" stroke="#10b981" stroke-width="1.5"/>
+                        <text x="-37" y="-8" fill="#fff" font-size="6" text-anchor="middle">1×1</text>
+                        <!-- 3x3 branch -->
+                        <rect x="-15" y="-30" width="25" height="18" rx="2" fill="rgba(99,102,241,0.4)" stroke="#6366f1" stroke-width="1.5"/>
+                        <rect x="-15" y="-8" width="25" height="18" rx="2" fill="rgba(99,102,241,0.4)" stroke="#6366f1" stroke-width="1.5"/>
+                        <text x="-2" y="-18" fill="#fff" font-size="6" text-anchor="middle">3×3</text>
+                        <text x="-2" y="4" fill="#fff" font-size="6" text-anchor="middle">3×3</text>
+                        <!-- 5x5 factorized -->
+                        <rect x="20" y="-25" width="20" height="15" rx="2" fill="rgba(236,72,153,0.4)" stroke="#ec4899" stroke-width="1.5"/>
+                        <rect x="20" y="-6" width="20" height="15" rx="2" fill="rgba(236,72,153,0.4)" stroke="#ec4899" stroke-width="1.5"/>
+                        <rect x="20" y="13" width="20" height="15" rx="2" fill="rgba(236,72,153,0.4)" stroke="#ec4899" stroke-width="1.5"/>
+                        <text x="30" y="-15" fill="#fff" font-size="5" text-anchor="middle">1×7</text>
+                        <text x="30" y="3" fill="#fff" font-size="5" text-anchor="middle">7×1</text>
+                        <!-- Pool branch -->
+                        <rect x="50" y="-15" width="20" height="30" rx="2" fill="rgba(251,191,36,0.4)" stroke="#fbbf24" stroke-width="1.5"/>
+                        <text x="60" y="5" fill="#fff" font-size="5" text-anchor="middle">Pool</text>
+                    </g>
+                    <!-- Concatenation arrows -->
+                    <path d="M100 80 L130 80" stroke="#10b981" stroke-width="1"/>
+                    <path d="M135 80 L165 80" stroke="#6366f1" stroke-width="1"/>
+                    <path d="M170 80 L200 80" stroke="#ec4899" stroke-width="1"/>
+                    <path d="M205 80 L235 80" stroke="#fbbf24" stroke-width="1"/>
+                    <!-- Output -->
+                    <ellipse cx="150" cy="115" rx="35" ry="12" fill="url(#inception-grad)" opacity="0.3" stroke="#a855f7" stroke-width="2"/>
+                    <text x="150" y="119" fill="#fff" font-size="8" text-anchor="middle">Concatenate</text>
+                    <!-- Factorization label -->
+                    <text x="150" y="140" fill="#888" font-size="7" text-anchor="middle">5×5→2×3×3 | 7×7→1×7+7×1</text>
+                </svg>
+            </div>
+
             <!-- Seq2Seq Paper Card -->
             <div class="network-card" onclick="location.href='papers/seq2seq.html'">
                 <span class="tag">NIPS 2014</span>
