@@ -1151,6 +1151,60 @@
                 </svg>
             </div>
 
+            <!-- WGAN Paper Card -->
+            <div class="network-card" onclick="location.href='papers/wgan.html'">
+                <span class="tag">ICML 2017</span>
+                <h3>Wasserstein GAN</h3>
+                <p>Wasserstein Generative Adversarial Networks - The breakthrough that replaced JS divergence with Earth Mover's Distance, solving vanishing gradients and providing meaningful loss metrics for stable GAN training.</p>
+                <svg class="preview-svg" viewBox="0 0 300 150">
+                    <defs>
+                        <linearGradient id="wgan-grad" x1="0%" y1="0%" x2="100%" y2="0%">
+                            <stop offset="0%" style="stop-color:#6366f1"/>
+                            <stop offset="50%" style="stop-color:#10b981"/>
+                            <stop offset="100%" style="stop-color:#ec4899"/>
+                        </linearGradient>
+                        <linearGradient id="wgan-real" x1="0%" y1="0%" x2="100%" y2="100%">
+                            <stop offset="0%" style="stop-color:#6366f1"/>
+                            <stop offset="100%" style="stop-color:#6366f1;stop-opacity:0.3"/>
+                        </linearGradient>
+                        <linearGradient id="wgan-fake" x1="0%" y1="0%" x2="100%" y2="100%">
+                            <stop offset="0%" style="stop-color:#ec4899"/>
+                            <stop offset="100%" style="stop-color:#ec4899;stop-opacity:0.3"/>
+                        </linearGradient>
+                    </defs>
+                    <!-- Real distribution (Gaussian) -->
+                    <ellipse cx="80" cy="60" rx="35" ry="25" fill="url(#wgan-real)" stroke="#6366f1" stroke-width="2" opacity="0.8"/>
+                    <text x="80" y="100" fill="#6366f1" font-size="8" text-anchor="middle">P_r (Real)</text>
+                    <!-- Generator -->
+                    <rect x="55" y="115" width="50" height="25" rx="5" fill="rgba(168,85,247,0.3)" stroke="#a855f7" stroke-width="1.5"/>
+                    <text x="80" y="131" fill="#fff" font-size="7" text-anchor="middle">G(z)</text>
+                    <!-- Fake distribution (shifted) -->
+                    <ellipse cx="220" cy="60" rx="35" ry="25" fill="url(#wgan-fake)" stroke="#ec4899" stroke-width="2" opacity="0.8"/>
+                    <text x="220" y="100" fill="#ec4899" font-size="8" text-anchor="middle">P_g (Generated)</text>
+                    <!-- Critic (1-Lipschitz) -->
+                    <rect x="130" y="40" width="40" height="35" rx="5" fill="rgba(16,185,129,0.3)" stroke="#10b981" stroke-width="2"/>
+                    <text x="150" y="55" fill="#fff" font-size="7" text-anchor="middle">Critic</text>
+                    <text x="150" y="67" fill="#6ee7b7" font-size="6" text-anchor="middle">f(x)</text>
+                    <!-- Arrows showing Wasserstein distance -->
+                    <path d="M115 50 Q130 40 130 50" stroke="#10b981" stroke-width="1.5" fill="none" marker-end="url(#wgan-arrow)"/>
+                    <path d="M170 50 Q170 40 170 60" stroke="#10b981" stroke-width="1.5" fill="none" marker-end="url(#wgan-arrow)"/>
+                    <!-- Transport cost visualization -->
+                    <path d="M80 35 L150 35" stroke="#f59e0b" stroke-width="1" stroke-dasharray="3,2" opacity="0.6"/>
+                    <text x="115" y="30" fill="#fbbf24" font-size="7" text-anchor="middle">Earth Mover's Distance</text>
+                    <!-- Weight clipping box -->
+                    <rect x="120" y="100" width="60" height="35" rx="5" fill="rgba(20,20,30,0.8)" stroke="#f59e0b" stroke-width="1"/>
+                    <text x="150" y="115" fill="#fbbf24" font-size="7" text-anchor="middle">Clip Weights</text>
+                    <text x="150" y="128" fill="#a0a0c0" font-size="6" text-anchor="middle">w ∈ [-c, c]</text>
+                    <!-- Gradient flow indicator -->
+                    <text x="150" y="145" fill="#10b981" font-size="7" text-anchor="middle">✓ Smooth Gradients Always</text>
+                    <defs>
+                        <marker id="wgan-arrow" markerWidth="8" markerHeight="8" refX="7" refY="3" orient="auto">
+                            <polygon points="0 0, 8 3, 0 6" fill="#10b981"/>
+                        </marker>
+                    </defs>
+                </svg>
+            </div>
+
             <!-- CycleGAN Paper Card -->
             <div class="network-card" onclick="location.href='papers/cyclegan.html'">
                 <span class="tag">ICCV 2017</span>
