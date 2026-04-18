@@ -1121,6 +1121,39 @@
                 </svg>
             </div>
 
+            <!-- Flash Attention Paper Card -->
+            <div class="network-card" onclick="location.href='papers/flash-attention.html'">
+                <span class="tag">NeurIPS 2022</span>
+                <h3>Flash Attention</h3>
+                <p>Fast and Memory-Efficient Exact Attention with IO-Awareness - Tiled attention algorithm that reduces HBM-SRAM transfers by 20x, enabling 64K sequence lengths without approximation and 3x speedup on GPT-2.</p>
+                <svg class="preview-svg" viewBox="0 0 300 150">
+                    <defs>
+                        <linearGradient id="flash-grad" x1="0%" y1="0%" x2="100%" y2="0%">
+                            <stop offset="0%" style="stop-color:#6366f1"/>
+                            <stop offset="100%" style="stop-color:#a855f7"/>
+                        </linearGradient>
+                    </defs>
+                    <!-- HBM Layer -->
+                    <rect x="20" y="30" width="260" height="35" fill="rgba(99,102,241,0.2)" stroke="#6366f1" stroke-width="1.5" rx="5"/>
+                    <text x="150" y="50" fill="#a5b4fc" font-size="8" text-anchor="middle">HBM (High Bandwidth Memory)</text>
+                    <!-- Q K V blocks -->
+                    <rect x="30" y="58" width="60" height="20" fill="url(#flash-grad)" opacity="0.7" rx="3"/>
+                    <text x="60" y="72" fill="#fff" font-size="7" text-anchor="middle">Q</text>
+                    <rect x="100" y="58" width="60" height="20" fill="url(#flash-grad)" opacity="0.7" rx="3"/>
+                    <text x="130" y="72" fill="#fff" font-size="7" text-anchor="middle">K</text>
+                    <rect x="170" y="58" width="60" height="20" fill="url(#flash-grad)" opacity="0.7" rx="3"/>
+                    <text x="200" y="72" fill="#fff" font-size="7" text-anchor="middle">V</text>
+                    <!-- SRAM Layer -->
+                    <rect x="70" y="95" width="160" height="45" fill="rgba(245,158,11,0.2)" stroke="#f59e0b" stroke-width="2" rx="5"/>
+                    <text x="150" y="112" fill="#fbbf24" font-size="8" text-anchor="middle">SRAM (Fast Shared Memory)</text>
+                    <text x="150" y="132" fill="#888" font-size="6" text-anchor="middle">Tiling: O(N²) → O(N) memory</text>
+                    <!-- Arrows down -->
+                    <path d="M60 78 L90 95" stroke="#6366f1" stroke-width="1.5" stroke-dasharray="3,2" opacity="0.6"/>
+                    <path d="M130 78 L120 95" stroke="#6366f1" stroke-width="1.5" stroke-dasharray="3,2" opacity="0.6"/>
+                    <path d="M200 78 L210 95" stroke="#6366f1" stroke-width="1.5" stroke-dasharray="3,2" opacity="0.6"/>
+                </svg>
+            </div>
+
             <!-- GAN Paper Card -->
             <div class="network-card" onclick="location.href='papers/gan.html'">
                 <span class="tag">NeurIPS 2014</span>

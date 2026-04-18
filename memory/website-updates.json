@@ -1,8 +1,8 @@
 {
-  "lastUpdate": "2026-04-18T05:48:00+08:00",
+  "lastUpdate": "2026-04-18T22:30:00+08:00",
   "papersAdded": 1,
-  "totalPapers": 53,
+  "totalPapers": 54,
   "nextPaper": "TBD",
-  "updateCount": 17,
-  "recentAddition": "CycleGAN (Zhu et al., ICCV 2017) - Unpaired Image-to-Image Translation using Cycle-Consistent Adversarial Networks. Introduced cycle consistency loss for learning without paired data. Applications in style transfer, season transfer, medical imaging synthesis, and game graphics. 30,000+ citations."
+  "updateCount": 18,
+  "recentAddition": "FlashAttention (Dao et al., NeurIPS 2022) - Fast and Memory-Efficient Exact Attention with IO-Awareness. IO-aware attention algorithm using tiling to reduce GPU HBM-SRAM memory transfers by 20x. First method to enable exact attention on 64K sequence lengths without approximation. Training speedup: BERT-large 15%, GPT-2 3x, Long Range Arena 2.4x. 7,000+ citations."
 }
