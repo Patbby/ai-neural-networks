@@ -1,6 +1,6 @@
 # AI Neural Networks Visualized
 
-🧠 Interactive visualizations of neural network architectures and 42 foundational ML papers
+🧠 Interactive visualizations of neural network architectures and 79 foundational ML papers
 
 **Live Site**: [https://patbby.github.io/ai-neural-networks](https://patbby.github.io/ai-neural-networks)
 
@@ -8,9 +8,9 @@
 
 ## 📊 Collection Stats
 
-- **Total Papers**: 42 foundational works in deep learning
+- **Total Papers**: 79 foundational works in deep learning
 - **Last Updated**: April 18, 2026
-- **Coverage**: CNNs, Transformers, Generative Models, Reinforcement Learning, NLP, Computer Vision
+- **Coverage**: CNNs, Transformers, Generative Models, Reinforcement Learning, NLP, Computer Vision, Efficient Inference, Neural Architecture
 
 ---
 
@@ -26,7 +26,7 @@
 
 ## 📚 Paper Collection
 
-### 🔥 Attention & Transformers (6 papers)
+### 🔥 Attention & Transformers (9 papers)
 | Paper | Year | Description |
 |-------|------|-------------|
 | **Transformer** | 2017 | Attention Is All You Need |
@@ -37,6 +37,18 @@
 | **GPT-4** | 2023 | GPT-4 Technical Report |
 | **T5** | 2019 | Exploring the Limits of Transfer Learning |
 | **InstructGPT** | 2022 | Training language models to follow instructions |
+| **Flash Attention** | 2022 | Fast and Memory-Efficient Exact Attention with IO-Awareness |
+
+### ⚡ Efficient Inference & Serving (2 papers)
+| Paper | Year | Description |
+|-------|------|-------------|
+| **Flash Attention** | 2022 | IO-aware exact attention with tiling - O(N) memory |
+| **PagedAttention (vLLM)** | 2023 | Virtual memory for LLM KV cache serving |
+
+### 🧮 Neural Architecture Innovations (1 paper)
+| Paper | Year | Description |
+|-------|------|-------------|
+| **KAN** | 2025 | Kolmogorov-Arnold Networks - Learnable activations on edges |
 
 ### 🖼️ Computer Vision - CNNs (8 papers)
 | Paper | Year | Description |
