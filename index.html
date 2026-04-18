@@ -1205,6 +1205,52 @@
                 </svg>
             </div>
 
+            <!-- WGAN-GP Paper Card -->
+            <div class="network-card" onclick="location.href='papers/wgan-gp.html'">
+                <span class="tag">NeurIPS 2017</span>
+                <h3>WGAN-GP</h3>
+                <p>Improved Training of Wasserstein GANs - Replaced problematic weight clipping with gradient penalty for stable GAN training. Enables 101-layer ResNets and language models with minimal hyperparameter tuning.</p>
+                <svg class="preview-svg" viewBox="0 0 300 150">
+                    <defs>
+                        <linearGradient id="wgangp-grad" x1="0%" y1="0%" x2="100%" y2="0%">
+                            <stop offset="0%" style="stop-color:#6366f1"/>
+                            <stop offset="50%" style="stop-color:#ec4899"/>
+                            <stop offset="100%" style="stop-color:#10b981"/>
+                        </linearGradient>
+                        <marker id="wgangp-arrow" markerWidth="8" markerHeight="8" refX="7" refY="3" orient="auto">
+                            <polygon points="0 0, 8 3, 0 6" fill="#6366f1"/>
+                        </marker>
+                    </defs>
+                    <!-- Real Data -->
+                    <ellipse cx="60" cy="55" rx="30" ry="20" fill="rgba(99,102,241,0.3)" stroke="#6366f1" stroke-width="2"/>
+                    <text x="60" y="90" fill="#6366f1" font-size="8" text-anchor="middle">Real x</text>
+                    <!-- Generator -->
+                    <rect x="95" y="40" width="40" height="30" rx="5" fill="rgba(236,72,153,0.3)" stroke="#ec4899" stroke-width="1.5"/>
+                    <text x="115" y="58" fill="#fff" font-size="7" text-anchor="middle">G(z)</text>
+                    <!-- Fake Data -->
+                    <ellipse cx="170" cy="55" rx="30" ry="20" fill="rgba(236,72,153,0.3)" stroke="#ec4899" stroke-width="2"/>
+                    <text x="170" y="90" fill="#ec4899" font-size="8" text-anchor="middle">Fake x̃</text>
+                    <!-- Interpolation -->
+                    <rect x="90" y="95" width="50" height="35" rx="5" fill="rgba(168,85,247,0.2)" stroke="#a855f7" stroke-width="1.5"/>
+                    <text x="115" y="108" fill="#a855f7" font-size="7" text-anchor="middle">x̂ = εx+(1-ε)x̃</text>
+                    <text x="115" y="122" fill="#a0a0c0" font-size="6" text-anchor="middle">Interpolation</text>
+                    <!-- Critic -->
+                    <rect x="220" y="40" width="50" height="45" rx="5" fill="rgba(16,185,129,0.2)" stroke="#10b981" stroke-width="2"/>
+                    <text x="245" y="58" fill="#fff" font-size="8" text-anchor="middle">Critic D</text>
+                    <text x="245" y="75" fill="#6ee7b7" font-size="6" text-anchor="middle">no sigmoid</text>
+                    <!-- Arrows -->
+                    <path d="M95 55 L60 55" stroke="#6366f1" stroke-width="1.5" marker-end="url(#wgangp-arrow)"/>
+                    <path d="M135 55 L140 55" stroke="#ec4899" stroke-width="1.5"/>
+                    <path d="M200 55 L220 55" stroke="#ec4899" stroke-width="1.5" marker-end="url(#wgangp-arrow)"/>
+                    <path d="M115 95 L115 80" stroke="#a855f7" stroke-width="1.5" marker-end="url(#wgangp-arrow)"/>
+                    <path d="M140 110 L220 75" stroke="#10b981" stroke-width="1.5" stroke-dasharray="3,2"/>
+                    <!-- Gradient Penalty Box -->
+                    <rect x="210" y="95" width="70" height="35" rx="5" fill="rgba(16,185,129,0.15)" stroke="#10b981" stroke-width="1.5"/>
+                    <text x="245" y="110" fill="#10b981" font-size="7" text-anchor="middle" font-weight="bold">λ·E[(‖∇D‖-1)²]</text>
+                    <text x="245" y="123" fill="#6ee7b7" font-size="6" text-anchor="middle">Gradient Penalty</text>
+                </svg>
+            </div>
+
             <!-- CycleGAN Paper Card -->
             <div class="network-card" onclick="location.href='papers/cyclegan.html'">
                 <span class="tag">ICCV 2017</span>
