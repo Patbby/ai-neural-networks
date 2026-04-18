@@ -1,0 +1,759 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Neural Turing Machine - AI Neural Networks</title>
+    <style>
+        :root {
+            --bg-primary: #0a0a0f;
+            --bg-secondary: #12121a;
+            --bg-card: #1a1a25;
+            --text-primary: #f0f0f5;
+            --text-secondary: #a0a0b0;
+            --accent-indigo: #6366f1;
+            --accent-purple: #a855f7;
+            --accent-pink: #ec4899;
+            --accent-cyan: #06b6d4;
+            --accent-green: #10b981;
+            --accent-orange: #f59e0b;
+            --border-color: #2a2a3a;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: var(--bg-primary);
+            color: var(--text-primary);
+            line-height: 1.6;
+        }
+        
+        .hero {
+            background: linear-gradient(135deg, var(--bg-secondary) 0%, var(--bg-primary) 100%);
+            padding: 80px 20px;
+            text-align: center;
+            border-bottom: 1px solid var(--border-color);
+        }
+        
+        .hero h1 {
+            font-size: 3rem;
+            margin-bottom: 20px;
+            background: linear-gradient(135deg, var(--accent-indigo), var(--accent-purple), var(--accent-pink));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        
+        .hero .subtitle {
+            font-size: 1.3rem;
+            color: var(--text-secondary);
+            margin-bottom: 15px;
+        }
+        
+        .hero .meta {
+            color: var(--text-secondary);
+            font-size: 1rem;
+        }
+        
+        .badges {
+            margin-top: 30px;
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+        
+        .badge {
+            padding: 10px 20px;
+            border-radius: 25px;
+            text-decoration: none;
+            font-weight: 500;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+        
+        .badge:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 20px rgba(99, 102, 241, 0.3);
+        }
+        
+        .badge-arxiv {
+            background: linear-gradient(135deg, var(--accent-indigo), var(--accent-purple));
+            color: white;
+        }
+        
+        .badge-pdf {
+            background: linear-gradient(135deg, var(--accent-cyan), var(--accent-indigo));
+            color: white;
+        }
+        
+        .badge-code {
+            background: linear-gradient(135deg, var(--accent-green), var(--accent-cyan));
+            color: white;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 40px 20px;
+        }
+        
+        .section {
+            background: var(--bg-card);
+            border-radius: 16px;
+            padding: 40px;
+            margin-bottom: 30px;
+            border: 1px solid var(--border-color);
+        }
+        
+        .section h2 {
+            font-size: 1.8rem;
+            margin-bottom: 20px;
+            color: var(--accent-indigo);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .section h2::before {
+            content: '';
+            display: inline-block;
+            width: 4px;
+            height: 30px;
+            background: linear-gradient(180deg, var(--accent-indigo), var(--accent-purple));
+            border-radius: 2px;
+        }
+        
+        .section p {
+            color: var(--text-secondary);
+            margin-bottom: 15px;
+            font-size: 1.05rem;
+        }
+        
+        .highlight-box {
+            background: linear-gradient(135deg, rgba(99, 102, 241, 0.1), rgba(168, 85, 247, 0.1));
+            border-left: 4px solid var(--accent-indigo);
+            padding: 20px;
+            border-radius: 8px;
+            margin: 20px 0;
+        }
+        
+        .formula {
+            background: var(--bg-secondary);
+            padding: 20px;
+            border-radius: 8px;
+            font-family: 'Courier New', monospace;
+            text-align: center;
+            margin: 20px 0;
+            border: 1px solid var(--border-color);
+            overflow-x: auto;
+        }
+        
+        .arch-diagram {
+            background: var(--bg-secondary);
+            border-radius: 12px;
+            padding: 30px;
+            margin: 30px 0;
+            text-align: center;
+        }
+        
+        .key-points {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+            margin-top: 20px;
+        }
+        
+        .key-point {
+            background: var(--bg-secondary);
+            padding: 25px;
+            border-radius: 12px;
+            border: 1px solid var(--border-color);
+        }
+        
+        .key-point h4 {
+            color: var(--accent-cyan);
+            margin-bottom: 10px;
+            font-size: 1.1rem;
+        }
+        
+        .key-point p {
+            color: var(--text-secondary);
+            font-size: 0.95rem;
+            margin: 0;
+        }
+        
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin-top: 20px;
+        }
+        
+        .stat-card {
+            background: var(--bg-secondary);
+            padding: 25px;
+            border-radius: 12px;
+            text-align: center;
+            border: 1px solid var(--border-color);
+        }
+        
+        .stat-card .number {
+            font-size: 2.5rem;
+            font-weight: bold;
+            background: linear-gradient(135deg, var(--accent-indigo), var(--accent-purple));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        
+        .stat-card .label {
+            color: var(--text-secondary);
+            margin-top: 5px;
+        }
+        
+        .code-block {
+            background: var(--bg-secondary);
+            border-radius: 12px;
+            overflow: hidden;
+            margin: 20px 0;
+            border: 1px solid var(--border-color);
+        }
+        
+        .code-header {
+            background: rgba(99, 102, 241, 0.1);
+            padding: 12px 20px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .code-header .dot {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+        }
+        
+        .code-header .dot-red { background: #ef4444; }
+        .code-header .dot-yellow { background: #eab308; }
+        .code-header .dot-green { background: #22c55e; }
+        
+        .code-header span {
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+        }
+        
+        pre {
+            padding: 20px;
+            overflow-x: auto;
+            font-family: 'Courier New', monospace;
+            font-size: 0.9rem;
+            line-height: 1.5;
+        }
+        
+        code {
+            color: var(--text-primary);
+        }
+        
+        .keyword { color: var(--accent-purple); }
+        .function { color: var(--accent-cyan); }
+        .string { color: var(--accent-green); }
+        .comment { color: var(--text-secondary); }
+        .number { color: var(--accent-orange); }
+        
+        .related-papers {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 15px;
+            margin-top: 20px;
+        }
+        
+        .paper-card {
+            background: var(--bg-secondary);
+            padding: 20px;
+            border-radius: 10px;
+            border: 1px solid var(--border-color);
+            transition: transform 0.2s, border-color 0.2s;
+        }
+        
+        .paper-card:hover {
+            transform: translateY(-3px);
+            border-color: var(--accent-indigo);
+        }
+        
+        .paper-card a {
+            color: var(--text-primary);
+            text-decoration: none;
+            font-weight: 600;
+        }
+        
+        .paper-card .year {
+            color: var(--accent-orange);
+            font-size: 0.85rem;
+            margin-top: 5px;
+        }
+        
+        .nav-links {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 40px;
+            padding-top: 30px;
+            border-top: 1px solid var(--border-color);
+        }
+        
+        .nav-links a {
+            color: var(--accent-indigo);
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            transition: color 0.2s;
+        }
+        
+        .nav-links a:hover {
+            color: var(--accent-purple);
+        }
+        
+        @media (max-width: 768px) {
+            .hero h1 {
+                font-size: 2rem;
+            }
+            
+            .section {
+                padding: 25px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header class="hero">
+        <h1>Neural Turing Machine</h1>
+        <p class="subtitle">Coupling Neural Networks to External Memory Resources</p>
+        <p class="meta">Alex Graves, Greg Wayne, Ivo Danihelka | DeepMind | arXiv:1410.5401 | 2014</p>
+        <div class="badges">
+            <a href="https://arxiv.org/abs/1410.5401" class="badge badge-arxiv" target="_blank">📄 arXiv</a>
+            <a href="https://arxiv.org/pdf/1410.5401.pdf" class="badge badge-pdf" target="_blank">📑 PDF</a>
+            <a href="https://github.com/carpedm20/NTM-tensorflow" class="badge badge-code" target="_blank">💻 Code</a>
+        </div>
+    </header>
+
+    <main class="container">
+        <!-- Problem Statement -->
+        <section class="section">
+            <h2>The Problem</h2>
+            <p>Traditional neural networks are fundamentally limited by their fixed-size internal state. While architectures like LSTM can maintain information over time, they suffer from:</p>
+            <ul style="color: var(--text-secondary); margin-left: 20px; margin-bottom: 20px;">
+                <li><strong>Vanishing gradients</strong> when learning long-term dependencies</li>
+                <li><strong>Fixed memory capacity</strong> determined by network size</li>
+                <li><strong>Inability to perform algorithmic reasoning</strong> requiring external storage</li>
+                <li><strong>Limited compositional generalization</strong> for sequence processing</li>
+            </ul>
+            <div class="highlight-box">
+                <strong>Core Insight:</strong> Computer programs use three fundamental mechanisms: elementary operations, logical flow control, and external memory. Modern machine learning had largely neglected external memory—until NTM.
+            </div>
+        </section>
+
+        <!-- Key Innovation -->
+        <section class="section">
+            <h2>Key Innovation</h2>
+            <p>Neural Turing Machines extend neural networks by coupling them to an <strong>external memory matrix</strong> that can be read from and written to via <strong>attentional processes</strong>. The architecture combines:</p>
+            
+            <div class="key-points">
+                <div class="key-point">
+                    <h4>🔧 Neural Controller</h4>
+                    <p>An LSTM or feedforward network that processes inputs and emits read/write parameters</p>
+                </div>
+                <div class="key-point">
+                    <h4>💾 External Memory Matrix</h4>
+                    <p>A large addressable memory bank (N × W matrix) for storing vectors</p>
+                </div>
+                <div class="key-point">
+                    <h4>👁️ Read/Write Heads</h4>
+                    <p>Multiple attention mechanisms for content-based and location-based addressing</p>
+                </div>
+                <div class="key-point">
+                    <h4>📍 Differentiable Attention</h4>
+                    <p>"Blurry" operations that interact with all memory locations via weighted addressing</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Architecture Diagram -->
+        <section class="section">
+            <h2>Architecture</h2>
+            <div class="arch-diagram">
+                <svg viewBox="0 0 800 500" style="max-width: 100%; height: auto;">
+                    <!-- Background -->
+                    <defs>
+                        <linearGradient id="grad1" x1="0%" y1="0%" x2="100%" y2="100%">
+                            <stop offset="0%" style="stop-color:#6366f1;stop-opacity:0.3" />
+                            <stop offset="100%" style="stop-color:#a855f7;stop-opacity:0.3" />
+                        </linearGradient>
+                        <linearGradient id="grad2" x1="0%" y1="0%" x2="100%" y2="100%">
+                            <stop offset="0%" style="stop-color:#06b6d4;stop-opacity:0.3" />
+                            <stop offset="100%" style="stop-color:#6366f1;stop-opacity:0.3" />
+                        </linearGradient>
+                        <linearGradient id="memGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+                            <stop offset="0%" style="stop-color:#ec4899;stop-opacity:0.2" />
+                            <stop offset="100%" style="stop-color:#a855f7;stop-opacity:0.2" />
+                        </linearGradient>
+                    </defs>
+                    
+                    <!-- Title -->
+                    <text x="400" y="30" text-anchor="middle" fill="#f0f0f5" font-size="20" font-weight="bold">Neural Turing Machine Architecture</text>
+                    
+                    <!-- Controller (LSTM) -->
+                    <rect x="300" y="60" width="200" height="120" rx="15" fill="url(#grad1)" stroke="#6366f1" stroke-width="2"/>
+                    <text x="400" y="100" text-anchor="middle" fill="#f0f0f5" font-size="16" font-weight="bold">Controller</text>
+                    <text x="400" y="125" text-anchor="middle" fill="#a0a0b0" font-size="12">LSTM / Feedforward</text>
+                    <text x="400" y="145" text-anchor="middle" fill="#a0a0b0" font-size="12">Network</text>
+                    
+                    <!-- Input Arrow -->
+                    <path d="M 150 120 L 290 120" stroke="#6366f1" stroke-width="2" fill="none" marker-end="url(#arrowhead)"/>
+                    <text x="120" y="125" fill="#f0f0f5" font-size="12">Input x(t)</text>
+                    
+                    <!-- Output Arrow -->
+                    <path d="M 510 120 L 650 120" stroke="#6366f1" stroke-width="2" fill="none" marker-end="url(#arrowhead)"/>
+                    <text x="660" y="125" fill="#f0f0f5" font-size="12">Output y(t)</text>
+                    
+                    <!-- Memory Matrix -->
+                    <rect x="250" y="280" width="300" height="180" rx="10" fill="url(#memGrad)" stroke="#ec4899" stroke-width="2"/>
+                    <text x="400" y="305" text-anchor="middle" fill="#f0f0f5" font-size="14" font-weight="bold">Memory Matrix M</text>
+                    <text x="400" y="322" text-anchor="middle" fill="#a0a0b0" font-size="11">N locations × W elements each</text>
+                    
+                    <!-- Memory cells -->
+                    <g id="memory-cells">
+                        <!-- Row 1 -->
+                        <rect x="270" y="340" width="40" height="25" fill="#1a1a25" stroke="#6366f1" stroke-width="1"/>
+                        <rect x="315" y="340" width="40" height="25" fill="#1a1a25" stroke="#6366f1" stroke-width="1"/>
+                        <rect x="360" y="340" width="40" height="25" fill="#1a1a25" stroke="#6366f1" stroke-width="1"/>
+                        <rect x="405" y="340" width="40" height="25" fill="#1a1a25" stroke="#6366f1" stroke-width="1"/>
+                        <rect x="450" y="340" width="40" height="25" fill="#1a1a25" stroke="#6366f1" stroke-width="1"/>
+                        <rect x="495" y="340" width="40" height="25" fill="#1a1a25" stroke="#6366f1" stroke-width="1"/>
+                        
+                        <!-- Row 2 -->
+                        <rect x="270" y="370" width="40" height="25" fill="#1a1a25" stroke="#6366f1" stroke-width="1"/>
+                        <rect x="315" y="370" width="40" height="25" fill="#1a1a25" stroke="#6366f1" stroke-width="1"/>
+                        <rect x="360" y="370" width="40" height="25" fill="#1a1a25" stroke="#6366f1" stroke-width="1"/>
+                        <rect x="405" y="370" width="40" height="25" fill="#1a1a25" stroke="#6366f1" stroke-width="1"/>
+                        <rect x="450" y="370" width="40" height="25" fill="#1a1a25" stroke="#6366f1" stroke-width="1"/>
+                        <rect x="495" y="370" width="40" height="25" fill="#1a1a25" stroke="#6366f1" stroke-width="1"/>
+                        
+                        <!-- Row 3 -->
+                        <rect x="270" y="400" width="40" height="25" fill="#1a1a25" stroke="#6366f1" stroke-width="1"/>
+                        <rect x="315" y="400" width="40" height="25" fill="#1a1a25" stroke="#6366f1" stroke-width="1"/>
+                        <rect x="360" y="400" width="40" height="25" fill="#1a1a25" stroke="#6366f1" stroke-width="1"/>
+                        <rect x="405" y="400" width="40" height="25" fill="#1a1a25" stroke="#6366f1" stroke-width="1"/>
+                        <rect x="450" y="400" width="40" height="25" fill="#1a1a25" stroke="#6366f1" stroke-width="1"/>
+                        <rect x="495" y="400" width="40" height="25" fill="#1a1a25" stroke="#6366f1" stroke-width="1"/>
+                    </g>
+                    
+                    <!-- Read Head -->
+                    <rect x="150" y="220" width="120" height="50" rx="8" fill="url(#grad2)" stroke="#06b6d4" stroke-width="2"/>
+                    <text x="210" y="245" text-anchor="middle" fill="#f0f0f5" font-size="13" font-weight="bold">Read Head(s)</text>
+                    <text x="210" y="260" text-anchor="middle" fill="#a0a0b0" font-size="10">Content + Location</text>
+                    
+                    <!-- Write Head -->
+                    <rect x="530" y="220" width="120" height="50" rx="8" fill="url(#grad2)" stroke="#06b6d4" stroke-width="2"/>
+                    <text x="590" y="245" text-anchor="middle" fill="#f0f0f5" font-size="13" font-weight="bold">Write Head(s)</text>
+                    <text x="590" y="260" text-anchor="middle" fill="#a0a0b0" font-size="10">Erase + Add</text>
+                    
+                    <!-- Connection lines -->
+                    <path d="M 320 180 L 320 210 L 270 210 L 210 220" stroke="#06b6d4" stroke-width="1.5" fill="none" stroke-dasharray="5,3"/>
+                    <path d="M 480 180 L 480 210 L 530 210 L 590 220" stroke="#06b6d4" stroke-width="1.5" fill="none" stroke-dasharray="5,3"/>
+                    
+                    <!-- Head to Memory connections -->
+                    <path d="M 210 270 L 210 380 L 265 380" stroke="#ec4899" stroke-width="2" fill="none"/>
+                    <path d="M 590 270 L 590 380 L 535 380" stroke="#ec4899" stroke-width="2" fill="none"/>
+                    
+                    <!-- Labels -->
+                    <text x="180" y="360" fill="#a0a0b0" font-size="10">r(t)</text>
+                    <text x="550" y="360" fill="#a0a0b0" font-size="10">w(t)</text>
+                    
+                    <!-- Addressing mechanism label -->
+                    <rect x="360" y="455" width="80" height="30" rx="5" fill="#1a1a25" stroke="#f59e0b" stroke-width="1"/>
+                    <text x="400" y="473" text-anchor="middle" fill="#f59e0b" font-size="10">Attention</text>
+                    
+                    <!-- Legend -->
+                    <g transform="translate(680, 350)">
+                        <rect x="0" y="0" width="15" height="15" fill="url(#grad1)" stroke="#6366f1" stroke-width="1"/>
+                        <text x="20" y="12" fill="#a0a0b0" font-size="10">Controller</text>
+                        <rect x="0" y="25" width="15" height="15" fill="url(#grad2)" stroke="#06b6d4" stroke-width="1"/>
+                        <text x="20" y="37" fill="#a0a0b0" font-size="10">Read/Write</text>
+                        <rect x="0" y="50" width="15" height="15" fill="url(#memGrad)" stroke="#ec4899" stroke-width="1"/>
+                        <text x="20" y="62" fill="#a0a0b0" font-size="10">Memory</text>
+                    </g>
+                </svg>
+            </div>
+            
+            <h3 style="margin-top: 30px; color: var(--accent-cyan);">Read Operation</h3>
+            <div class="formula">
+                r<sub>t</sub> = Σ<sub>i</sub> w<sub>t</sub>(i) · M<sub>t</sub>(i)
+            </div>
+            <p>Where w<sub>t</sub> is the weighting over memory locations (attention distribution) and M<sub>t</sub>(i) is the content at location i.</p>
+            
+            <h3 style="margin-top: 30px; color: var(--accent-cyan);">Write Operation (Erase + Add)</h3>
+            <div class="formula">
+                M<sub>t</sub>(i) = M<sub>t-1</sub>(i) ⊙ [1 - w<sub>t</sub>(i)e<sub>t</sub>] + w<sub>t</sub>(i)a<sub>t</sub>
+            </div>
+            <p>First, content is erased using erase vector e<sub>t</sub>, then new content a<sub>t</sub> is added. The ⊙ denotes element-wise multiplication.</p>
+        </section>
+
+        <!-- Addressing Mechanisms -->
+        <section class="section">
+            <h2>Addressing Mechanisms</h2>
+            <p>NTM uses two complementary addressing mechanisms:</p>
+            
+            <div class="key-points">
+                <div class="key-point">
+                    <h4>📌 Content-Based Addressing</h4>
+                    <p>Focus on locations based on similarity to a key vector k. Uses cosine similarity:</p>
+                    <div class="formula" style="margin: 10px 0; padding: 10px; font-size: 0.9rem;">
+                        K[u,v] = (u·v) / (||u|| · ||v||)
+                    </div>
+                    <p style="font-size: 0.85rem;">Allows retrieval by content similarity—like associative memory.</p>
+                </div>
+                <div class="key-point">
+                    <h4>🎯 Location-Based Addressing</h4>
+                    <p>Iterative shifting of attention. The controller can:</p>
+                    <ul style="color: var(--text-secondary); margin-left: 15px; font-size: 0.9rem;">
+                        <li>Rotate attention (circular convolution)</li>
+                        <li>Move focus sequentially</li>
+                        <li>Sharpen selection</li>
+                    </ul>
+                    <p style="font-size: 0.85rem; margin-top: 10px;">Enables sequential access patterns—critical for algorithms.</p>
+                </div>
+            </div>
+            
+            <div class="arch-diagram" style="margin-top: 30px;">
+                <svg viewBox="0 0 700 300" style="max-width: 100%; height: auto;">
+                    <text x="350" y="25" text-anchor="middle" fill="#f0f0f5" font-size="16" font-weight="bold">Attention Weighting Process</text>
+                    
+                    <!-- Step 1: Content lookup -->
+                    <rect x="50" y="60" width="150" height="80" rx="8" fill="#1a1a25" stroke="#6366f1" stroke-width="2"/>
+                    <text x="125" y="85" text-anchor="middle" fill="#f0f0f5" font-size="12">Content</text>
+                    <text x="125" y="100" text-anchor="middle" fill="#f0f0f0" font-size="11">Similarity</text>
+                    <text x="125" y="120" text-anchor="middle" fill="#a0a0b0" font-size="9">cosine(k, M[i])</text>
+                    
+                    <!-- Arrow -->
+                    <path d="M 205 100 L 240 100" stroke="#6366f1" stroke-width="2" fill="none"/>
+                    <polygon points="240,100 235,96 235,104" fill="#6366f1"/>
+                    
+                    <!-- Step 2: Interpolation -->
+                    <rect x="250" y="60" width="150" height="80" rx="8" fill="#1a1a25" stroke="#06b6d4" stroke-width="2"/>
+                    <text x="325" y="85" text-anchor="middle" fill="#f0f0f5" font-size="12">Gating</text>
+                    <text x="325" y="100" text-anchor="middle" fill="#f0f0f0" font-size="11">Interpolation</text>
+                    <text x="325" y="120" text-anchor="middle" fill="#a0a0b0" font-size="9">g·wc + (1-g)·w_{t-1}</text>
+                    
+                    <!-- Arrow -->
+                    <path d="M 405 100 L 440 100" stroke="#06b6d4" stroke-width="2" fill="none"/>
+                    <polygon points="440,100 435,96 435,104" fill="#06b6d4"/>
+                    
+                    <!-- Step 3: Shifting -->
+                    <rect x="450" y="60" width="100" height="80" rx="8" fill="#1a1a25" stroke="#ec4899" stroke-width="2"/>
+                    <text x="500" y="85" text-anchor="middle" fill="#f0f0f5" font-size="12">Location</text>
+                    <text x="500" y="100" text-anchor="middle" fill="#f0f0f0" font-size="11">Shifting</text>
+                    <text x="500" y="120" text-anchor="middle" fill="#a0a0b0" font-size="9">s * w̃</text>
+                    
+                    <!-- Arrow -->
+                    <path d="M 555 100 L 590 100" stroke="#ec4899" stroke-width="2" fill="none"/>
+                    <polygon points="590,100 585,96 585,104" fill="#ec4899"/>
+                    
+                    <!-- Step 4: Sharpening -->
+                    <rect x="600" y="60" width="80" height="80" rx="8" fill="#1a1a25" stroke="#f59e0b" stroke-width="2"/>
+                    <text x="640" y="85" text-anchor="middle" fill="#f0f0f5" font-size="12">Sharpen</text>
+                    <text x="640" y="105" text-anchor="middle" fill="#f0f0f0" font-size="11">w(i)^γ</text>
+                    <text x="640" y="122" text-anchor="middle" fill="#a0a0b0" font-size="9">/ Σw(j)^γ</text>
+                    
+                    <!-- Attention visualization -->
+                    <text x="350" y="190" text-anchor="middle" fill="#a0a0b0" font-size="12">Final Attention Distribution Example</text>
+                    
+                    <!-- Memory slots with attention weights -->
+                    <g transform="translate(175, 210)">
+                        <rect x="0" y="0" width="40" height="50" fill="#1a1a25" stroke="#6366f1" stroke-width="1"/>
+                        <rect x="0" y="50" width="40" height="10" fill="#6366f1" opacity="0.3"/>
+                        <text x="20" y="40" text-anchor="middle" fill="#a0a0b0" font-size="9">0.1</text>
+                        
+                        <rect x="45" y="0" width="40" height="50" fill="#1a1a25" stroke="#6366f1" stroke-width="1"/>
+                        <rect x="45" y="35" width="40" height="25" fill="#06b6d4" opacity="0.5"/>
+                        <text x="65" y="25" text-anchor="middle" fill="#f0f0f5" font-size="9" font-weight="bold">0.5</text>
+                        
+                        <rect x="90" y="0" width="40" height="50" fill="#1a1a25" stroke="#6366f1" stroke-width="1"/>
+                        <rect x="90" y="45" width="40" height="15" fill="#6366f1" opacity="0.3"/>
+                        <text x="110" y="35" text-anchor="middle" fill="#a0a0b0" font-size="9">0.2</text>
+                        
+                        <rect x="135" y="0" width="40" height="50" fill="#1a1a25" stroke="#6366f1" stroke-width="1"/>
+                        <rect x="135" y="50" width="40" height="10" fill="#6366f1" opacity="0.2"/>
+                        <text x="155" y="35" text-anchor="middle" fill="#a0a0b0" font-size="9">0.05</text>
+                        
+                        <rect x="180" y="0" width="40" height="50" fill="#1a1a25" stroke="#6366f1" stroke-width="1"/>
+                        <rect x="180" y="40" width="40" height="20" fill="#6366f1" opacity="0.4"/>
+                        <text x="200" y="30" text-anchor="middle" fill="#a0a0b0" font-size="9">0.15</text>
+                        
+                        <rect x="225" y="0" width="40" height="50" fill="#1a1a25" stroke="#6366f1" stroke-width="1"/>
+                        <rect x="225" y="52" width="40" height="8" fill="#6366f1" opacity="0.1"/>
+                        <text x="245" y="35" text-anchor="middle" fill="#a0a0b0" font-size="9">0.0</text>
+                        
+                        <rect x="270" y="0" width="40" height="50" fill="#1a1a25" stroke="#6366f1" stroke-width="1"/>
+                        <rect x="270" y="50" width="40" height="10" fill="#6366f1" opacity="0.2"/>
+                        <text x="290" y="35" text-anchor="middle" fill="#a0a0b0" font-size="9">0.05</text>
+                    </g>
+                </svg>
+            </div>
+        </section>
+
+        <!-- Results -->
+        <section class="section">
+            <h2>Results & Impact</h2>
+            <p>NTM demonstrated remarkable algorithmic learning capabilities:</p>
+            
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="number">Copy</div>
+                    <div class="label">Sequence Copy Task</div>
+                </div>
+                <div class="stat-card">
+                    <div class="number">Repeat</div>
+                    <div class="label">Sequence Repeat Task</div>
+                </div>
+                <div class="stat-card">
+                    <div class="number">Assoc</div>
+                    <div class="label">Associative Recall</div>
+                </div>
+                <div class="stat-card">
+                    <div class="number">Sort</div>
+                    <div class="label">Priority Sort</div>
+                </div>
+            </div>
+            
+            <div class="highlight-box" style="margin-top: 30px;">
+                <strong>Generalization:</strong> NTM learned to perform algorithms and generalized to sequences much longer than seen during training—a capability impossible for standard LSTM.
+            </div>
+            
+            <h3 style="margin-top: 30px; color: var(--accent-cyan);">Key Capabilities Demonstrated</h3>
+            <ul style="color: var(--text-secondary); margin-left: 20px;">
+                <li><strong>Copy Task:</strong> Learned to store and recall arbitrary sequences of symbols</li>
+                <li><strong>Repeat Task:</strong> Generalized to repeat sequences N times (N up to 10+)</li>
+                <li><strong>Associative Recall:</strong> Learned key-value retrieval patterns</li>
+                <li><strong>Priority Sort:</strong> Learned to sort by priority values</li>
+            </ul>
+        </section>
+
+        <!-- Code Implementation -->
+        <section class="section">
+            <h2>PyTorch Implementation</h2>
+            
+            <div class="code-block">
+                <div class="code-header">
+                    <span class="dot dot-red"></span>
+                    <span class="dot dot-yellow"></span>
+                    <span class="dot dot-green"></span>
+                    <span>ntm.py</span>
+                </div>
+                <pre><code><span class="comment"># Neural Turing Machine - Core Components</span>
+<span class="keyword">import</span> torch
+<span class="keyword">import</span> torch.nn <span class="keyword">as</span> nn
+<span class="keyword">import</span> torch.nn.functional <span class="keyword">as</span> F
+
+<span class="keyword">class</span> <span class="function">NTM</span>(nn.Module):
+    <span class="keyword">def</span> <span class="function">__init__</span>(self, input_size, output_size, controller_size, 
+                 memory_size, memory_dim, num_read_heads, num_write_heads):
+        <span class="function">super</span>(NTM, self).__init__()
+        
+        <span class="comment"># Controller: LSTM processes input</span>
+        self.controller = nn.LSTMCell(input_size + num_read_heads * memory_dim, 
+                                       controller_size)
+        
+        <span class="comment"># External Memory: N × W matrix</span>
+        self.memory_size = memory_size
+        self.memory_dim = memory_dim
+        self.num_read_heads = num_read_heads
+        self.num_write_heads = num_write_heads
+        
+        <span class="comment"># Read/Write head parameters</span>
+        self.read_params = nn.Linear(controller_size, num_read_heads * memory_dim)
+        self.write_params = nn.Linear(controller_size, num_write_heads * (memory_dim * 2 + 3))
+        
+        <span class="comment"># Output layer</span>
+        self.output = nn.Linear(controller_size + num_read_heads * memory_dim, output_size)
+    
+    <span class="keyword">def</span> <span class="function">address</span>(self, key, memory, strength, gate, shift, sharpen):
+        <span class="comment"># Content-based addressing</span>
+        key = key.view(-1, 1, self.memory_dim)
+        sim = F.cosine_similarity(key, memory, dim=-1)
+        wc = F.softmax(strength * sim, dim=-1)
+        
+        <span class="comment"># Interpolation with previous weights</span>
+        w = gate * wc + (<span class="number">1</span> - gate) * self.prev_weights
+        
+        <span class="comment"># Location-based shifting (circular convolution)</span>
+        w = self.circular_convolution(w, shift)
+        
+        <span class="comment"># Sharpening</span>
+        w = w ** sharpen
+        w = w / (w.sum(dim=-1, keepdim=<span class="keyword">True</span>) + <span class="number">1e-8</span>)
+        
+        <span class="keyword">return</span> w
+    
+    <span class="keyword">def</span> <span class="function">read</span>(self, weights, memory):
+        <span class="comment"># Weighted sum of memory locations</span>
+        <span class="keyword">return</span> torch.bmm(weights.unsqueeze(<span class="number">1</span>), memory).squeeze(<span class="number">1</span>)
+    
+    <span class="keyword">def</span> <span class="function">write</span>(self, weights, erase, add, memory):
+        <span class="comment"># Erase-then-add operation</span>
+        erase = torch.outer(weights, erase)
+        add = torch.outer(weights, add)
+        memory = memory * (<span class="number">1</span> - erase) + add
+        <span class="keyword">return</span> memory</code></pre>
+            </div>
+        </section>
+
+        <!-- Related Papers -->
+        <section class="section">
+            <h2>Related Work</h2>
+            <div class="related-papers">
+                <div class="paper-card">
+                    <a href="lstm.html">Long Short-Term Memory (LSTM)</a>
+                    <div class="year">Hochreiter & Schmidhuber, 1997</div>
+                    <p style="color: var(--text-secondary); font-size: 0.85rem; margin-top: 8px;">Foundation for the NTM controller architecture</p>
+                </div>
+                <div class="paper-card">
+                    <a href="transformer.html">Attention Is All You Need</a>
+                    <div class="year">Vaswani et al., 2017</div>
+                    <p style="color: var(--text-secondary); font-size: 0.85rem; margin-top: 8px;">Extended attention mechanisms to full architectures</p>
+                </div>
+                <div class="paper-card">
+                    <a href="dnc.html">Differentiable Neural Computer</a>
+                    <div class="year">Graves et al., 2016</div>
+                    <p style="color: var(--text-secondary); font-size: 0.85rem; margin-top: 8px;">Successor to NTM with improved memory addressing</p>
+                </div>
+                <div class="paper-card">
+                    <a href="memory-networks.html">Memory Networks</a>
+                    <div class="year">Weston et al., 2014</div>
+                    <p style="color: var(--text-secondary); font-size: 0.85rem; margin-top: 8px;">Alternative approach to external memory for neural nets</p>
+                </div>
+                <div class="paper-card">
+                    <a href="mann.html">Memory-Augmented Neural Networks</a>
+                    <div class="year">Santoro et al., 2016</div>
+                    <p style="color: var(--text-secondary); font-size: 0.85rem; margin-top: 8px;">Meta-learning with memory-augmented networks</p>
+                </div>
+                <div class="paper-card">
+                    <a href="seq2seq.html">Sequence to Sequence Learning</a>
+                    <div class="year">Sutskever et al., 2014</div>
+                    <p style="color: var(--text-secondary); font-size: 0.85rem; margin-top: 8px;">Encoder-decoder framework for sequence modeling</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Navigation -->
+        <div class="nav-links">
+            <a href="index.html">← Back to All Papers</a>
+            <a href="dnc.html">Next: Differentiable Neural Computer →</a>
+        </div>
+    </main>
+</body>
+</html>
