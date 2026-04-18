@@ -1,0 +1,1400 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ConvNeXt: A ConvNet for the 2020s | Neural Networks & Deep Learning</title>
+    <style>
+        :root {
+            --primary: #6366f1;
+            --primary-dark: #4f46e5;
+            --secondary: #a855f7;
+            --accent: #ec4899;
+            --background: #0a0a0f;
+            --surface: #13131f;
+            --surface-light: #1e1e2e;
+            --text: #f8fafc;
+            --text-muted: #94a3b8;
+            --success: #10b981;
+            --warning: #f59e0b;
+            --error: #ef4444;
+            --gradient: linear-gradient(135deg, #6366f1 0%, #a855f7 50%, #ec4899 100%);
+            --glow: 0 0 40px rgba(99, 102, 241, 0.3);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            background: var(--background);
+            color: var(--text);
+            line-height: 1.6;
+            overflow-x: hidden;
+        }
+
+        /* Animated background */
+        .bg-animation {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+            opacity: 0.3;
+        }
+
+        .bg-animation::before {
+            content: '';
+            position: absolute;
+            width: 200%;
+            height: 200%;
+            top: -50%;
+            left: -50%;
+            background: 
+                radial-gradient(circle at 20% 80%, rgba(99, 102, 241, 0.15) 0%, transparent 50%),
+                radial-gradient(circle at 80% 20%, rgba(168, 85, 247, 0.15) 0%, transparent 50%),
+                radial-gradient(circle at 40% 40%, rgba(236, 72, 153, 0.1) 0%, transparent 40%);
+            animation: bgFloat 20s ease-in-out infinite;
+        }
+
+        @keyframes bgFloat {
+            0%, 100% { transform: translate(0, 0) rotate(0deg); }
+            33% { transform: translate(2%, 2%) rotate(1deg); }
+            66% { transform: translate(-1%, 1%) rotate(-1deg); }
+        }
+
+        /* Navigation */
+        nav {
+            position: fixed;
+            top: 0;
+            width: 100%;
+            background: rgba(10, 10, 15, 0.8);
+            backdrop-filter: blur(20px);
+            border-bottom: 1px solid rgba(99, 102, 241, 0.2);
+            z-index: 1000;
+            padding: 1rem 2rem;
+        }
+
+        .nav-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            font-size: 1.5rem;
+            font-weight: 800;
+            background: var(--gradient);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            text-decoration: none;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 2rem;
+            list-style: none;
+        }
+
+        .nav-links a {
+            color: var(--text-muted);
+            text-decoration: none;
+            font-weight: 500;
+            transition: color 0.3s;
+            position: relative;
+        }
+
+        .nav-links a:hover {
+            color: var(--text);
+        }
+
+        .nav-links a::after {
+            content: '';
+            position: absolute;
+            bottom: -4px;
+            left: 0;
+            width: 0;
+            height: 2px;
+            background: var(--gradient);
+            transition: width 0.3s;
+        }
+
+        .nav-links a:hover::after {
+            width: 100%;
+        }
+
+        /* Hero Section */
+        .hero {
+            padding: 10rem 2rem 4rem;
+            text-align: center;
+            position: relative;
+        }
+
+        .hero-badge {
+            display: inline-block;
+            padding: 0.5rem 1.5rem;
+            background: rgba(99, 102, 241, 0.2);
+            border: 1px solid rgba(99, 102, 241, 0.4);
+            border-radius: 50px;
+            font-size: 0.875rem;
+            font-weight: 600;
+            color: var(--primary);
+            margin-bottom: 1.5rem;
+        }
+
+        .hero h1 {
+            font-size: clamp(2.5rem, 6vw, 4.5rem);
+            font-weight: 800;
+            line-height: 1.1;
+            margin-bottom: 1.5rem;
+            background: linear-gradient(135deg, #f8fafc 0%, #94a3b8 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .hero-subtitle {
+            font-size: 1.25rem;
+            color: var(--text-muted);
+            max-width: 800px;
+            margin: 0 auto 2rem;
+        }
+
+        .hero-meta {
+            display: flex;
+            justify-content: center;
+            flex-wrap: wrap;
+            gap: 2rem;
+            margin-bottom: 2rem;
+            color: var(--text-muted);
+            font-size: 0.95rem;
+        }
+
+        .hero-meta span {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .paper-links {
+            display: flex;
+            justify-content: center;
+            gap: 1rem;
+            flex-wrap: wrap;
+        }
+
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.75rem 1.5rem;
+            border-radius: 8px;
+            font-weight: 600;
+            text-decoration: none;
+            transition: all 0.3s;
+            border: none;
+            cursor: pointer;
+        }
+
+        .btn-primary {
+            background: var(--gradient);
+            color: white;
+            box-shadow: 0 4px 20px rgba(99, 102, 241, 0.4);
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 30px rgba(99, 102, 241, 0.5);
+        }
+
+        .btn-secondary {
+            background: var(--surface-light);
+            color: var(--text);
+            border: 1px solid rgba(99, 102, 241, 0.3);
+        }
+
+        .btn-secondary:hover {
+            background: rgba(99, 102, 241, 0.1);
+            border-color: rgba(99, 102, 241, 0.5);
+        }
+
+        /* Container */
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 2rem;
+        }
+
+        /* Section Styles */
+        section {
+            padding: 4rem 0;
+        }
+
+        .section-header {
+            text-align: center;
+            margin-bottom: 3rem;
+        }
+
+        .section-header h2 {
+            font-size: 2.5rem;
+            font-weight: 700;
+            margin-bottom: 1rem;
+            background: var(--gradient);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .section-header p {
+            color: var(--text-muted);
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        /* Cards */
+        .card {
+            background: var(--surface);
+            border: 1px solid rgba(99, 102, 241, 0.2);
+            border-radius: 16px;
+            padding: 2rem;
+            margin-bottom: 2rem;
+            transition: all 0.3s;
+        }
+
+        .card:hover {
+            border-color: rgba(99, 102, 241, 0.4);
+            box-shadow: var(--glow);
+            transform: translateY(-4px);
+        }
+
+        .card h3 {
+            font-size: 1.5rem;
+            margin-bottom: 1rem;
+            color: var(--text);
+        }
+
+        .card-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+        }
+
+        /* Problem Statement */
+        .problem-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 2rem;
+            align-items: center;
+        }
+
+        .problem-text h3 {
+            font-size: 1.75rem;
+            margin-bottom: 1rem;
+            color: var(--warning);
+        }
+
+        .solution-text h3 {
+            font-size: 1.75rem;
+            margin-bottom: 1rem;
+            color: var(--success);
+        }
+
+        /* Architecture Diagram */
+        .arch-container {
+            background: var(--surface);
+            border-radius: 16px;
+            padding: 2rem;
+            margin: 2rem 0;
+            border: 1px solid rgba(99, 102, 241, 0.2);
+            overflow-x: auto;
+        }
+
+        .arch-title {
+            text-align: center;
+            font-size: 1.25rem;
+            font-weight: 600;
+            margin-bottom: 1.5rem;
+            color: var(--primary);
+        }
+
+        /* Innovation Cards */
+        .innovation-card {
+            background: linear-gradient(135deg, rgba(99, 102, 241, 0.1) 0%, rgba(168, 85, 247, 0.05) 100%);
+            border: 1px solid rgba(99, 102, 241, 0.3);
+            border-radius: 12px;
+            padding: 1.5rem;
+            margin-bottom: 1rem;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .innovation-card::before {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 0;
+            width: 4px;
+            height: 100%;
+            background: var(--gradient);
+        }
+
+        .innovation-card h4 {
+            font-size: 1.125rem;
+            margin-bottom: 0.5rem;
+            color: var(--primary);
+        }
+
+        .accuracy-badge {
+            display: inline-block;
+            padding: 0.25rem 0.75rem;
+            background: rgba(16, 185, 129, 0.2);
+            border: 1px solid rgba(16, 185, 129, 0.4);
+            border-radius: 20px;
+            font-size: 0.875rem;
+            font-weight: 600;
+            color: var(--success);
+            margin-top: 0.5rem;
+        }
+
+        /* Comparison Table */
+        .comparison-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 2rem 0;
+            font-size: 0.95rem;
+        }
+
+        .comparison-table th,
+        .comparison-table td {
+            padding: 1rem;
+            text-align: left;
+            border-bottom: 1px solid rgba(99, 102, 241, 0.2);
+        }
+
+        .comparison-table th {
+            background: rgba(99, 102, 241, 0.1);
+            color: var(--primary);
+            font-weight: 600;
+        }
+
+        .comparison-table tr:hover {
+            background: rgba(99, 102, 241, 0.05);
+        }
+
+        /* Results */
+        .results-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1.5rem;
+            margin: 2rem 0;
+        }
+
+        .result-stat {
+            background: var(--surface);
+            border: 1px solid rgba(99, 102, 241, 0.2);
+            border-radius: 12px;
+            padding: 1.5rem;
+            text-align: center;
+            transition: all 0.3s;
+        }
+
+        .result-stat:hover {
+            transform: translateY(-4px);
+            border-color: rgba(99, 102, 241, 0.4);
+        }
+
+        .result-number {
+            font-size: 2.5rem;
+            font-weight: 800;
+            background: var(--gradient);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .result-label {
+            color: var(--text-muted);
+            font-size: 0.875rem;
+            margin-top: 0.5rem;
+        }
+
+        /* Code Block */
+        .code-block {
+            background: #0d0d12;
+            border: 1px solid rgba(99, 102, 241, 0.2);
+            border-radius: 12px;
+            padding: 1.5rem;
+            overflow-x: auto;
+            font-family: 'Fira Code', 'Consolas', monospace;
+            font-size: 0.9rem;
+            line-height: 1.6;
+            margin: 1.5rem 0;
+        }
+
+        .code-block .keyword { color: #c792ea; }
+        .code-block .class { color: #ffcb6b; }
+        .code-block .function { color: #82aaff; }
+        .code-block .string { color: #c3e88d; }
+        .code-block .comment { color: #676e95; }
+        .code-block .number { color: #f78c6c; }
+
+        /* Related Papers */
+        .paper-list {
+            display: grid;
+            gap: 1rem;
+        }
+
+        .paper-item {
+            background: var(--surface);
+            border: 1px solid rgba(99, 102, 241, 0.2);
+            border-radius: 12px;
+            padding: 1.25rem;
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            transition: all 0.3s;
+            text-decoration: none;
+            color: inherit;
+        }
+
+        .paper-item:hover {
+            border-color: rgba(99, 102, 241, 0.4);
+            transform: translateX(4px);
+        }
+
+        .paper-icon {
+            width: 48px;
+            height: 48px;
+            background: rgba(99, 102, 241, 0.1);
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            flex-shrink: 0;
+        }
+
+        .paper-info h4 {
+            font-size: 1.1rem;
+            margin-bottom: 0.25rem;
+        }
+
+        .paper-info p {
+            color: var(--text-muted);
+            font-size: 0.875rem;
+        }
+
+        /* Footer */
+        footer {
+            background: var(--surface);
+            border-top: 1px solid rgba(99, 102, 241, 0.2);
+            padding: 3rem 2rem;
+            margin-top: 4rem;
+            text-align: center;
+        }
+
+        .footer-links {
+            display: flex;
+            justify-content: center;
+            gap: 2rem;
+            margin-bottom: 1.5rem;
+            flex-wrap: wrap;
+        }
+
+        .footer-links a {
+            color: var(--text-muted);
+            text-decoration: none;
+            transition: color 0.3s;
+        }
+
+        .footer-links a:hover {
+            color: var(--primary);
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .nav-links { display: none; }
+            .problem-grid { grid-template-columns: 1fr; }
+            .hero { padding-top: 8rem; }
+            .hero h1 { font-size: 2.5rem; }
+        }
+
+        /* SVG Animation Styles */
+        .svg-container {
+            max-width: 100%;
+            height: auto;
+        }
+
+        .block-rect {
+            fill: url(#blockGradient);
+            stroke: rgba(99, 102, 241, 0.5);
+            stroke-width: 2;
+        }
+
+        .block-text {
+            fill: white;
+            font-size: 12px;
+            font-weight: 600;
+            text-anchor: middle;
+        }
+
+        .arrow {
+            stroke: rgba(148, 163, 184, 0.5);
+            stroke-width: 2;
+            fill: none;
+            marker-end: url(#arrowhead);
+        }
+
+        .evolution-arrow {
+            stroke: var(--success);
+            stroke-width: 3;
+            fill: none;
+            marker-end: url(#arrowhead-green);
+        }
+    </style>
+</head>
+<body>
+    <div class="bg-animation"></div>
+
+    <nav>
+        <div class="nav-container">
+            <a href="../index.html" class="logo">AI Neural Networks</a>
+            <ul class="nav-links">
+                <li><a href="../index.html">Home</a></li>
+                <li><a href="../cnn.html">CNNs</a></li>
+                <li><a href="../gnn.html">GNNs</a></li>
+                <li><a href="../gat.html">GAT</a></li>
+                <li><a href="../transformer.html">Transformers</a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <header class="hero">
+        <span class="hero-badge">⭐ CVPR 2022 Outstanding Paper</span>
+        <h1>ConvNeXt: A ConvNet for the 2020s</h1>
+        <p class="hero-subtitle">
+            The "Roaring 20s" of visual recognition began with Vision Transformers. But what if pure ConvNets 
+            could match their performance? ConvNeXt modernizes ResNet with Transformer-inspired designs 
+            to create a pure ConvNet that rivals Swin Transformer.
+        </p>
+        <div class="hero-meta">
+            <span>📅 CVPR 2022</span>
+            <span>👥 Liu, Mao, Wu, Feichtenhofer, Darrell, Xie</span>
+            <span>🏢 Facebook AI Research (FAIR)</span>
+            <span>📊 87.8% ImageNet Top-1</span>
+        </div>
+        <div class="paper-links">
+            <a href="https://arxiv.org/abs/2201.03545" class="btn btn-primary" target="_blank">
+                📄 Read Paper
+            </a>
+            <a href="https://github.com/facebookresearch/ConvNeXt" class="btn btn-secondary" target="_blank">
+                💻 GitHub Code
+            </a>
+            <a href="#architecture" class="btn btn-secondary">
+                🔍 Architecture
+            </a>
+        </div>
+    </header>
+
+    <main>
+        <!-- Problem Statement -->
+        <section id="problem">
+            <div class="container">
+                <div class="section-header">
+                    <h2>The Central Question</h2>
+                    <p>Can pure ConvNets compete with Vision Transformers in the 2020s?</p>
+                </div>
+                <div class="problem-grid">
+                    <div class="card problem-text">
+                        <h3>🤔 The Challenge</h3>
+                        <p>By 2020, Vision Transformers (especially hierarchical ones like Swin Transformer) had overtaken ConvNets as the preferred backbone for computer vision. The prevailing belief was that Transformers were inherently superior due to their global self-attention mechanism.</p>
+                        <br>
+                        <p>But was this superiority due to the Transformer architecture itself, or could it be attributed to:</p>
+                        <ul style="margin: 1rem 0; padding-left: 1.5rem; color: var(--text-muted);">
+                            <li>Better training procedures (300 epochs, advanced augmentations)</li>
+                            <li>Macro design choices (stage ratios, patchify stems)</li>
+                            <li>Architecture improvements (inverted bottlenecks, depthwise conv)</li>
+                        </ul>
+                    </div>
+                    <div class="card solution-text">
+                        <h3>💡 The ConvNeXt Solution</h3>
+                        <p>Starting from a standard ResNet-50, the authors systematically "modernized" it step-by-step toward a Transformer-like design, discovering which components actually matter for performance.</p>
+                        <br>
+                        <p><strong>The Result:</strong> A pure ConvNet built entirely from standard ConvNet modules that:</p>
+                        <ul style="margin: 1rem 0; padding-left: 1.5rem; color: var(--text-muted);">
+                            <li>Matches Swin Transformer accuracy (87.8% top-1 on ImageNet)</li>
+                            <li>Outperforms Swin on COCO detection and ADE20K segmentation</li>
+                            <li>Maintains the simplicity and efficiency of standard ConvNets</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Architecture Evolution -->
+        <section id="architecture">
+            <div class="container">
+                <div class="section-header">
+                    <h2>Modernization Journey</h2>
+                    <p>Step-by-step transformation from ResNet to ConvNeXt</p>
+                </div>
+
+                <!-- Evolution SVG -->
+                <div class="arch-container">
+                    <div class="arch-title">🏗️ From ResNet-50 to ConvNeXt: The Evolution Path</div>
+                    <svg viewBox="0 0 900 600" class="svg-container">
+                        <defs>
+                            <linearGradient id="blockGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+                                <stop offset="0%" style="stop-color:#6366f1;stop-opacity:0.8" />
+                                <stop offset="100%" style="stop-color:#a855f7;stop-opacity:0.8" />
+                            </linearGradient>
+                            <linearGradient id="resnetGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+                                <stop offset="0%" style="stop-color:#475569;stop-opacity:0.8" />
+                                <stop offset="100%" style="stop-color:#64748b;stop-opacity:0.8" />
+                            </linearGradient>
+                            <linearGradient id="improveGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+                                <stop offset="0%" style="stop-color:#10b981;stop-opacity:0.8" />
+                                <stop offset="100%" style="stop-color:#34d399;stop-opacity:0.8" />
+                            </linearGradient>
+                            <marker id="arrowhead" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto">
+                                <polygon points="0 0, 10 3.5, 0 7" fill="#94a3b8" />
+                            </marker>
+                            <marker id="arrowhead-green" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto">
+                                <polygon points="0 0, 10 3.5, 0 7" fill="#10b981" />
+                            </marker>
+                        </defs>
+
+                        <!-- Original ResNet -->
+                        <rect x="50" y="30" width="120" height="50" rx="8" fill="url(#resnetGradient)" stroke="#64748b" stroke-width="2"/>
+                        <text x="110" y="60" class="block-text" fill="white">ResNet-50</text>
+                        <text x="110" y="95" text-anchor="middle" fill="#94a3b8" font-size="11">76.1% accuracy</text>
+
+                        <!-- Arrow to training -->
+                        <path d="M170 55 L240 55" class="arrow"/>
+                        <text x="205" y="45" text-anchor="middle" fill="#94a3b8" font-size="10">Training</text>
+
+                        <!-- After training improvements -->
+                        <rect x="250" y="30" width="140" height="50" rx="8" fill="url(#improveGradient)" stroke="#10b981" stroke-width="2"/>
+                        <text x="320" y="55" class="block-text" fill="white">+ Modern Training</text>
+                        <text x="320" y="95" text-anchor="middle" fill="#10b981" font-size="11">78.8% (+2.7%)</text>
+
+                        <!-- Arrow to macro design -->
+                        <path d="M390 55 L460 55" class="arrow"/>
+                        <text x="425" y="45" text-anchor="middle" fill="#94a3b8" font-size="10">Macro</text>
+
+                        <!-- Macro design -->
+                        <rect x="470" y="30" width="140" height="50" rx="8" fill="url(#improveGradient)" stroke="#10b981" stroke-width="2"/>
+                        <text x="540" y="55" class="block-text" fill="white">+ Macro Design</text>
+                        <text x="540" y="95" text-anchor="middle" fill="#10b981" font-size="11">79.5% (+0.7%)</text>
+
+                        <!-- Arrow to ResNeXt -->
+                        <path d="M610 55 L680 55" class="arrow"/>
+                        <text x="645" y="45" text-anchor="middle" fill="#94a3b8" font-size="10">ResNeXt</text>
+
+                        <!-- ResNeXt -->
+                        <rect x="690" y="30" width="130" height="50" rx="8" fill="url(#improveGradient)" stroke="#10b981" stroke-width="2"/>
+                        <text x="755" y="55" class="block-text" fill="white">+ ResNeXt-ify</text>
+                        <text x="755" y="95" text-anchor="middle" fill="#10b981" font-size="11">80.5% (+1.0%)</text>
+
+                        <!-- Down arrow -->
+                        <path d="M755 105 L755 140" class="arrow"/>
+
+                        <!-- Inverted Bottleneck -->
+                        <rect x="690" y="150" width="150" height="50" rx="8" fill="url(#improveGradient)" stroke="#10b981" stroke-width="2"/>
+                        <text x="765" y="175" class="block-text" fill="white">+ Inverted Bottleneck</text>
+                        <text x="765" y="215" text-anchor="middle" fill="#10b981" font-size="11">80.6% (+0.1%)</text>
+
+                        <!-- Left arrow -->
+                        <path d="M690 175 L620 175" class="arrow"/>
+                        <text x="655" y="165" text-anchor="middle" fill="#94a3b8" font-size="10">Kernel</text>
+
+                        <!-- Large Kernel -->
+                        <rect x="470" y="150" width="140" height="50" rx="8" fill="url(#improveGradient)" stroke="#10b981" stroke-width="2"/>
+                        <text x="540" y="175" class="block-text" fill="white">+ 7×7 Kernel</text>
+                        <text x="540" y="215" text-anchor="middle" fill="#10b981" font-size="11">80.6% (same FLOPs)</text>
+
+                        <!-- Left arrow -->
+                        <path d="M470 175 L400 175" class="arrow"/>
+                        <text x="435" y="165" text-anchor="middle" fill="#94a3b8" font-size="10">Micro</text>
+
+                        <!-- Micro Design -->
+                        <rect x="250" y="150" width="140" height="50" rx="8" fill="url(#improveGradient)" stroke="#10b981" stroke-width="2"/>
+                        <text x="320" y="175" class="block-text" fill="white">+ Micro Design</text>
+                        <text x="320" y="215" text-anchor="middle" fill="#10b981" font-size="11">82.0% (+1.4%)</text>
+
+                        <!-- Down to final -->
+                        <path d="M320 230 L320 270" class="evolution-arrow"/>
+                        <text x="350" y="255" fill="#10b981" font-size="12" font-weight="600">🎉 Final Result</text>
+
+                        <!-- Final ConvNeXt -->
+                        <rect x="220" y="280" width="200" height="60" rx="12" fill="url(#blockGradient)" stroke="#6366f1" stroke-width="3"/>
+                        <text x="320" y="310" class="block-text" fill="white" font-size="14" font-weight="700">ConvNeXt</text>
+                        <text x="320" y="345" text-anchor="middle" fill="#a855f7" font-size="12" font-weight="600">82.0% ImageNet Top-1</text>
+
+                        <!-- Comparison with Swin -->
+                        <rect x="480" y="280" width="180" height="60" rx="12" fill="rgba(168, 85, 247, 0.2)" stroke="#a855f7" stroke-width="2" stroke-dasharray="5,5"/>
+                        <text x="570" y="310" text-anchor="middle" fill="#f8fafc" font-size="13" font-weight="600">Swin-T</text>
+                        <text x="570" y="345" text-anchor="middle" fill="#a855f7" font-size="12">81.3% (for comparison)</text>
+
+                        <!-- Win indicator -->
+                        <text x="450" y="315" text-anchor="middle" fill="#10b981" font-size="24">✓</text>
+                        <text x="450" y="355" text-anchor="middle" fill="#10b981" font-size="10">ConvNeXt Wins!</text>
+
+                        <!-- Bottom: Block comparison -->
+                        <text x="450" y="420" text-anchor="middle" fill="#94a3b8" font-size="14" font-weight="600">ResNet Block vs ConvNeXt Block</text>
+
+                        <!-- ResNet Block -->
+                        <rect x="100" y="440" width="80" height="30" rx="4" fill="#475569" stroke="#64748b" stroke-width="1"/>
+                        <text x="140" y="460" text-anchor="middle" fill="white" font-size="10">1×1 conv</text>
+                        <path d="M140 470 L140 485" stroke="#64748b" stroke-width="1"/>
+                        
+                        <rect x="100" y="490" width="80" height="30" rx="4" fill="#475569" stroke="#64748b" stroke-width="1"/>
+                        <text x="140" y="510" text-anchor="middle" fill="white" font-size="10">3×3 conv</text>
+                        <path d="M140 520 L140 535" stroke="#64748b" stroke-width="1"/>
+                        
+                        <rect x="100" y="540" width="80" height="30" rx="4" fill="#475569" stroke="#64748b" stroke-width="1"/>
+                        <text x="140" y="560" text-anchor="middle" fill="white" font-size="10">1×1 conv</text>
+
+                        <text x="140" y="590" text-anchor="middle" fill="#94a3b8" font-size="11">ResNet Bottleneck</text>
+
+                        <!-- Arrow -->
+                        <path d="M230 515 L280 515" class="evolution-arrow"/>
+                        <text x="255" y="505" text-anchor="middle" fill="#10b981" font-size="10">Modernize</text>
+
+                        <!-- ConvNeXt Block -->
+                        <rect x="300" y="440" width="80" height="30" rx="4" fill="url(#improveGradient)" stroke="#10b981" stroke-width="1"/>
+                        <text x="340" y="460" text-anchor="middle" fill="white" font-size="10">7×7 DW conv</text>
+                        <path d="M340 470 L340 485" stroke="#64748b" stroke-width="1"/>
+                        
+                        <rect x="300" y="490" width="80" height="30" rx="4" fill="url(#improveGradient)" stroke="#10b981" stroke-width="1"/>
+                        <text x="340" y="510" text-anchor="middle" fill="white" font-size="10">1×1 conv</text>
+                        <path d="M340 520 L340 535" stroke="#64748b" stroke-width="1"/>
+                        
+                        <rect x="300" y="540" width="80" height="30" rx="4" fill="url(#improveGradient)" stroke="#10b981" stroke-width="1"/>
+                        <text x="340" y="560" text-anchor="middle" fill="white" font-size="10">GELU</text>
+                        <path d="M340 570 L340 585" stroke="#64748b" stroke-width="1"/>
+                        
+                        <rect x="300" y="590" width="80" height="30" rx="4" fill="url(#improveGradient)" stroke="#10b981" stroke-width="1"/>
+                        <text x="340" y="610" text-anchor="middle" fill="white" font-size="10">1×1 conv</text>
+
+                        <text x="340" y="640" text-anchor="middle" fill="#10b981" font-size="11" font-weight="600">ConvNeXt Block</text>
+
+                        <!-- Annotations -->
+                        <text x="550" y="460" fill="#6366f1" font-size="11">Key Changes:</text>
+                        <text x="550" y="485" fill="#94a3b8" font-size="10">• 3×3 → 7×7 depthwise conv</text>
+                        <text x="550" y="505" fill="#94a3b8" font-size="10">• Inverted bottleneck</text>
+                        <text x="550" y="525" fill="#94a3b8" font-size="10">• GELU activation</text>
+                        <text x="550" y="545" fill="#94a3b8" font-size="10">• LayerNorm (not BatchNorm)</text>
+                        <text x="550" y="565" fill="#94a3b8" font-size="10">• Fewer activation layers</text>
+                    </svg>
+                </div>
+
+                <!-- Innovation Steps -->
+                <div class="card">
+                    <h3>🔬 The 6 Key Modernization Steps</h3>
+                    
+                    <div class="innovation-card">
+                        <h4>1. Training Techniques (76.1% → 78.8%)</h4>
+                        <p>Before changing architecture, the authors updated the training procedure to match modern practices: 300 epochs (vs 90), AdamW optimizer, Mixup, Cutmix, RandAugment, Random Erasing, Stochastic Depth, and Label Smoothing. This alone boosted ResNet-50 by 2.7%.</p>
+                    </div>
+
+                    <div class="innovation-card">
+                        <h4>2. Macro Design (78.8% → 79.5%)</h4>
+                        <p>Changed the stage ratio from ResNet's (3,4,6,3) to Swin-T's (3,3,9,3) and replaced the 7×7 stride-2 stem with a 4×4 stride-4 "patchify" layer—similar to how ViT processes images as patches.</p>
+                    </div>
+
+                    <div class="innovation-card">
+                        <h4>3. ResNeXt-ify (79.5% → 80.5%)</h4>
+                        <p>Adopted depthwise convolutions (grouped conv with groups = channels) and increased network width from 64 to 96 channels. This reduces FLOPs while maintaining representational capacity.</p>
+                    </div>
+
+                    <div class="innovation-card">
+                        <h4>4. Inverted Bottleneck (80.5% → 80.6%)</h4>
+                        <p>Flipped the bottleneck structure: instead of (1×1 reduce → 3×3 conv → 1×1 expand), used (1×1 expand → 3×3 DW conv → 1×1 reduce), similar to MobileNetV2 and Transformer MLP blocks.</p>
+                    </div>
+
+                    <div class="innovation-card">
+                        <h4>5. Large Kernel Sizes (maintained 80.6%)</h4>
+                        <p>Increased the depthwise conv kernel from 3×3 to 7×7—matching Swin Transformer's attention window size. The depthwise conv's position was moved up in the block to enable this without increasing FLOPs significantly.</p>
+                    </div>
+
+                    <div class="innovation-card">
+                        <h4>6. Micro Design (80.6% → 82.0%)</h4>
+                        <p>Multiple small changes: ReLU → GELU activation, BatchNorm → LayerNorm, fewer activation/normalization layers (only one GELU and one LayerNorm per block), and separate downsampling layers between stages.</p>
+                        <span class="accuracy-badge">+1.4% improvement</span>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Results -->
+        <section id="results">
+            <div class="container">
+                <div class="section-header">
+                    <h2>Results & Impact</h2>
+                    <p>ConvNeXt matches or exceeds Swin Transformer across tasks</p>
+                </div>
+
+                <div class="results-grid">
+                    <div class="result-stat">
+                        <div class="result-number">87.8%</div>
+                        <div class="result-label">ImageNet-22K Pretrain<br>Top-1 Accuracy</div>
+                    </div>
+                    <div class="result-stat">
+                        <div class="result-number">82.0%</div>
+                        <div class="result-label">ImageNet-1K Only<br>Top-1 Accuracy</div>
+                    </div>
+                    <div class="result-stat">
+                        <div class="result-number">87.8%</div>
+                        <div class="result-label">COCO Object Detection<br>box AP</div>
+                    </div>
+                    <div class="result-stat">
+                        <div class="result-number">46.2%</div>
+                        <div class="result-label">ADE20K Segmentation<br>mIoU</div>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <h3>📊 ImageNet-1K Comparison</h3>
+                    <table class="comparison-table">
+                        <thead>
+                            <tr>
+                                <th>Model</th>
+                                <th>Params</th>
+                                <th>FLOPs</th>
+                                <th>Top-1 Acc</th>
+                                <th>Throughput</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td><strong>Swin-T</strong></td>
+                                <td>28M</td>
+                                <td>4.5G</td>
+                                <td>81.3%</td>
+                                <td>755 img/s</td>
+                            </tr>
+                            <tr style="background: rgba(99, 102, 241, 0.1);">
+                                <td><strong>ConvNeXt-T</strong></td>
+                                <td>29M</td>
+                                <td>4.5G</td>
+                                <td><strong>82.0%</strong></td>
+                                <td><strong>774 img/s</strong></td>
+                            </tr>
+                            <tr>
+                                <td><strong>Swin-S</strong></td>
+                                <td>50M</td>
+                                <td>8.7G</td>
+                                <td>83.2%</td>
+                                <td>437 img/s</td>
+                            </tr>
+                            <tr style="background: rgba(99, 102, 241, 0.1);">
+                                <td><strong>ConvNeXt-S</strong></td>
+                                <td>50M</td>
+                                <td>8.7G</td>
+                                <td><strong>83.1%</strong></td>
+                                <td><strong>446 img/s</strong></td>
+                            </tr>
+                            <tr>
+                                <td><strong>Swin-B</strong></td>
+                                <td>88M</td>
+                                <td>15.4G</td>
+                                <td>83.8%</td>
+                                <td>278 img/s</td>
+                            </tr>
+                            <tr style="background: rgba(99, 102, 241, 0.1);">
+                                <td><strong>ConvNeXt-B</strong></td>
+                                <td>89M</td>
+                                <td>15.4G</td>
+                                <td><strong>83.8%</strong></td>
+                                <td><strong>282 img/s</strong></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                    <p style="margin-top: 1rem; color: var(--text-muted); font-size: 0.9rem;">
+                        ConvNeXt matches or exceeds Swin Transformer accuracy while maintaining similar or better inference throughput. 
+                        Unlike Swin, ConvNeXt requires no specialized modules like shifted window attention or relative position biases.
+                    </p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Architecture Detail -->
+        <section id="block-detail">
+            <div class="container">
+                <div class="section-header">
+                    <h2>ConvNeXt Block Architecture</h2>
+                    <p>The fundamental building block: depthwise convolution + inverted MLP</p>
+                </div>
+
+                <div class="arch-container">
+                    <div class="arch-title">🔧 ConvNeXt Block Structure</div>
+                    <svg viewBox="0 0 800 500" class="svg-container">
+                        <defs>
+                            <linearGradient id="inputGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+                                <stop offset="0%" style="stop-color:#475569;stop-opacity:1" />
+                                <stop offset="100%" style="stop-color:#64748b;stop-opacity:1" />
+                            </linearGradient>
+                            <linearGradient id="dwGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+                                <stop offset="0%" style="stop-color:#6366f1;stop-opacity:0.9" />
+                                <stop offset="100%" style="stop-color:#4f46e5;stop-opacity:0.9" />
+                            </linearGradient>
+                            <linearGradient id="lnGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+                                <stop offset="0%" style="stop-color:#a855f7;stop-opacity:0.8" />
+                                <stop offset="100%" style="stop-color:#9333ea;stop-opacity:0.8" />
+                            </linearGradient>
+                            <linearGradient id="mlpGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+                                <stop offset="0%" style="stop-color:#10b981;stop-opacity:0.8" />
+                                <stop offset="100%" style="stop-color:#059669;stop-opacity:0.8" />
+                            </linearGradient>
+                            <marker id="flowArrow" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto">
+                                <polygon points="0 0, 10 3.5, 0 7" fill="#94a3b8" />
+                            </marker>
+                        </defs>
+
+                        <!-- Input -->
+                        <rect x="50" y="220" width="100" height="60" rx="6" fill="url(#inputGrad)" stroke="#94a3b8" stroke-width="2"/>
+                        <text x="100" y="245" text-anchor="middle" fill="white" font-size="11" font-weight="600">Input</text>
+                        <text x="100" y="265" text-anchor="middle" fill="#cbd5e1" font-size="9">H×W×C</text>
+
+                        <!-- Arrow -->
+                        <path d="M150 250 L180 250" stroke="#94a3b8" stroke-width="2" marker-end="url(#flowArrow)"/>
+
+                        <!-- LayerNorm -->
+                        <rect x="190" y="220" width="100" height="60" rx="6" fill="url(#lnGrad)" stroke="#a855f7" stroke-width="2"/>
+                        <text x="240" y="245" text-anchor="middle" fill="white" font-size="11" font-weight="600">LayerNorm</text>
+                        <text x="240" y="265" text-anchor="middle" fill="#e9d5ff" font-size="9">Normalization</text>
+
+                        <!-- Arrow -->
+                        <path d="M290 250 L320 250" stroke="#94a3b8" stroke-width="2" marker-end="url(#flowArrow)"/>
+
+                        <!-- Depthwise Conv -->
+                        <rect x="330" y="200" width="140" height="100" rx="6" fill="url(#dwGrad)" stroke="#6366f1" stroke-width="3"/>
+                        <text x="400" y="235" text-anchor="middle" fill="white" font-size="12" font-weight="700">Depthwise Conv</text>
+                        <text x="400" y="255" text-anchor="middle" fill="#c7d2fe" font-size="10">7×7 kernel</text>
+                        <text x="400" y="275" text-anchor="middle" fill="#c7d2fe" font-size="10">groups = channels</text>
+
+                        <!-- Arrow -->
+                        <path d="M470 250 L500 250" stroke="#94a3b8" stroke-width="2" marker-end="url(#flowArrow)"/>
+
+                        <!-- Residual path indicator -->
+                        <path d="M400 160 L400 190" stroke="#f59e0b" stroke-width="2" stroke-dasharray="5,3"/>
+                        <text x="400" y="150" text-anchor="middle" fill="#f59e0b" font-size="10">Residual</text>
+                        <text x="400" y="175" text-anchor="middle" fill="#f59e0b" font-size="10">Connection</text>
+
+                        <!-- LayerNorm 2 -->
+                        <rect x="510" y="220" width="100" height="60" rx="6" fill="url(#lnGrad)" stroke="#a855f7" stroke-width="2"/>
+                        <text x="560" y="245" text-anchor="middle" fill="white" font-size="11" font-weight="600">LayerNorm</text>
+                        <text x="560" y="265" text-anchor="middle" fill="#e9d5ff" font-size="9">Normalization</text>
+
+                        <!-- Arrow -->
+                        <path d="M610 250 L640 250" stroke="#94a3b8" stroke-width="2" marker-end="url(#flowArrow)"/>
+
+                        <!-- Inverted MLP -->
+                        <rect x="650" y="180" width="120" height="140" rx="6" fill="url(#mlpGrad)" stroke="#10b981" stroke-width="3"/>
+                        <text x="710" y="210" text-anchor="middle" fill="white" font-size="11" font-weight="700">Inverted MLP</text>
+                        <text x="710" y="235" text-anchor="middle" fill="#d1fae5" font-size="9">1×1 conv (expand)</text>
+                        <text x="710" y="255" text-anchor="middle" fill="#d1fae5" font-size="9">GELU activation</text>
+                        <text x="710" y="275" text-anchor="middle" fill="#d1fae5" font-size="9">1×1 conv (reduce)</text>
+                        <text x="710" y="300" text-anchor="middle" fill="#a7f3d0" font-size="9">Expansion ratio: 4</text>
+
+                        <!-- Output arrow -->
+                        <path d="M770 250 L790 250" stroke="#94a3b8" stroke-width="2" marker-end="url(#flowArrow)"/>
+
+                        <!-- Output + Residual -->
+                        <circle cx="100" cy="330" r="30" fill="url(#inputGrad)" stroke="#f59e0b" stroke-width="2"/>
+                        <text x="100" y="325" text-anchor="middle" fill="white" font-size="11" font-weight="600">+</text>
+                        <text x="100" y="340" text-anchor="middle" fill="#cbd5e1" font-size="9">Residual</text>
+
+                        <!-- Connection lines for residual -->
+                        <path d="M100 280 L100 295" stroke="#f59e0b" stroke-width="2"/>
+                        <path d="M100 250 L150 250 L150 330 L125 330" stroke="#f59e0b" stroke-width="2" fill="none" marker-end="url(#flowArrow)"/>
+
+                        <!-- Output -->
+                        <rect x="50" y="380" width="100" height="60" rx="6" fill="url(#inputGrad)" stroke="#94a3b8" stroke-width="2"/>
+                        <text x="100" y="405" text-anchor="middle" fill="white" font-size="11" font-weight="600">Output</text>
+                        <text x="100" y="425" text-anchor="middle" fill="#cbd5e1" font-size="9">H×W×C</text>
+
+                        <!-- Arrow -->
+                        <path d="M100 360 L100 375" stroke="#94a3b8" stroke-width="2" marker-end="url(#flowArrow)"/>
+
+                        <!-- Mathematical formula -->
+                        <text x="400" y="460" text-anchor="middle" fill="#94a3b8" font-size="12" font-style="italic">
+                            x' = x + MLP(LayerNorm(DWConv(LayerNorm(x))))
+                        </text>
+                    </svg>
+                </div>
+
+                <div class="card-grid">
+                    <div class="card">
+                        <h3>🧮 Mathematical Formulation</h3>
+                        <p>A ConvNeXt block can be expressed as:</p>
+                        <div class="code-block" style="margin-top: 1rem;">
+<span class="comment"># Input: x with shape [B, H, W, C]</span>
+
+<span class="comment"># Step 1: First LayerNorm</span>
+y = LayerNorm(x)                           <span class="comment"># [B, H, W, C]</span>
+
+<span class="comment"># Step 2: Depthwise Convolution (7×7)</span>
+y = DWConv7x7(y)                           <span class="comment"># [B, H, W, C]</span>
+
+<span class="comment"># Step 3: Second LayerNorm</span>
+y = LayerNorm(y)                           <span class="comment"># [B, H, W, C]</span>
+
+<span class="comment"># Step 4: Inverted MLP (expansion ratio = 4)</span>
+y = Linear(y, out_features=4*C)            <span class="comment"># [B, H, W, 4C]</span>
+y = GELU(y)                                <span class="comment"># [B, H, W, 4C]</span>
+y = Linear(y, out_features=C)              <span class="comment"># [B, H, W, C]</span>
+
+<span class="comment"># Step 5: Residual Connection</span>
+output = x + y                             <span class="comment"># [B, H, W, C]</span>
+                        </div>
+                    </div>
+
+                    <div class="card">
+                        <h3>⚡ Key Design Principles</h3>
+                        <ul style="list-style: none; padding: 0;">
+                            <li style="margin-bottom: 1rem; padding-left: 1.5rem; position: relative;">
+                                <span style="position: absolute; left: 0; color: var(--primary);">1.</span>
+                                <strong>Depthwise Separation</strong> — The 7×7 depthwise conv mixes spatial information within each channel separately, then 1×1 convs mix across channels. This is more efficient than standard convolutions.
+                            </li>
+                            <li style="margin-bottom: 1rem; padding-left: 1.5rem; position: relative;">
+                                <span style="position: absolute; left: 0; color: var(--primary);">2.</span>
+                                <strong>Inverted Bottleneck</strong> — Following MobileNetV2 and Transformers, the hidden dimension is 4× wider than input/output, creating an "inverted" bottleneck.
+                            </li>
+                            <li style="margin-bottom: 1rem; padding-left: 1.5rem; position: relative;">
+                                <span style="position: absolute; left: 0; color: var(--primary);">3.</span>
+                                <strong>Minimalist Activation/Norm</strong> — Only one GELU and two LayerNorms per block—fewer than ResNet's ReLU-BN-ReLU-BN pattern.
+                            </li>
+                            <li style="padding-left: 1.5rem; position: relative;">
+                                <span style="position: absolute; left: 0; color: var(--primary);">4.</span>
+                                <strong>Large Receptive Field</strong> — The 7×7 kernel provides a large receptive field similar to Swin's 7×7 attention window, but more efficiently.
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- PyTorch Implementation -->
+        <section id="code">
+            <div class="container">
+                <div class="section-header">
+                    <h2>PyTorch Implementation</h2>
+                    <p>Clean, efficient implementation of ConvNeXt</p>
+                </div>
+
+                <div class="card">
+                    <h3>🐍 ConvNeXt Block in PyTorch</h3>
+                    <div class="code-block">
+<span class="keyword">import</span> torch
+<span class="keyword">import</span> torch.nn <span class="keyword">as</span> nn
+
+<span class="keyword">class</span> <span class="class">ConvNeXtBlock</span>(nn.Module):
+    <span class="string">"""ConvNeXt Block: depthwise conv + inverted MLP with residual"""</span>
+    
+    <span class="keyword">def</span> <span class="function">__init__</span>(self, dim, drop_path=<span class="number">0.</span>):
+        <span class="function">super</span>().__init__()
+        
+        <span class="comment"># Depthwise convolution: 7×7 kernel, groups=dim (depthwise)</span>
+        self.dwconv = nn.Conv2d(dim, dim, kernel_size=<span class="number">7</span>, 
+                                 padding=<span class="number">3</span>, groups=dim)
+        
+        <span class="comment"># Layer norms (channels-last format)</span>
+        self.norm = nn.LayerNorm(dim, eps=<span class="number">1e-6</span>)
+        
+        <span class="comment"># Inverted MLP: expand 4× then project back</span>
+        self.pwconv1 = nn.Linear(dim, <span class="number">4</span> * dim)  <span class="comment"># Pointwise 1×1 conv</span>
+        self.act = nn.GELU()
+        self.pwconv2 = nn.Linear(<span class="number">4</span> * dim, dim)  <span class="comment"># Project back</span>
+        
+        <span class="comment"># Stochastic depth for regularization</span>
+        self.drop_path = DropPath(drop_path) <span class="keyword">if</span> drop_path > <span class="number">0.</span> <span class="keyword">else</span> nn.Identity()
+    
+    <span class="keyword">def</span> <span class="function">forward</span>(self, x):
+        <span class="comment"># Save input for residual</span>
+        input_tensor = x
+        
+        <span class="comment"># Depthwise conv</span>
+        x = self.dwconv(x)
+        
+        <span class="comment"># Channels-last for LayerNorm and MLP</span>
+        x = x.permute(<span class="number">0</span>, <span class="number">2</span>, <span class="number">3</span>, <span class="number">1</span>)  <span class="comment"># [B, C, H, W] → [B, H, W, C]</span>
+        x = self.norm(x)
+        
+        <span class="comment"># Inverted MLP</span>
+        x = self.pwconv1(x)
+        x = self.act(x)
+        x = self.pwconv2(x)
+        
+        <span class="comment"># Back to channels-first</span>
+        x = x.permute(<span class="number">0</span>, <span class="number">3</span>, <span class="number">1</span>, <span class="number">2</span>)  <span class="comment"># [B, H, W, C] → [B, C, H, W]</span>
+        
+        <span class="comment"># Residual with stochastic depth</span>
+        x = input_tensor + self.drop_path(x)
+        
+        <span class="keyword">return</span> x
+                    </div>
+                </div>
+
+                <div class="card">
+                    <h3>🔧 Complete ConvNeXt Model</h3>
+                    <div class="code-block">
+<span class="keyword">class</span> <span class="class">ConvNeXt</span>(nn.Module):
+    <span class="string">"""ConvNeXt model architecture"""</span>
+    
+    <span class="keyword">def</span> <span class="function">__init__</span>(self, in_chans=<span class="number">3</span>, num_classes=<span class="number">1000</span>, 
+                 depths=[<span class="number">3</span>, <span class="number">3</span>, <span class="number">9</span>, <span class="number">3</span>], dims=[<span class="number">96</span>, <span class="number">192</span>, <span class="number">384</span>, <span class="number">768</span>],
+                 drop_path_rate=<span class="number">0.</span>):
+        <span class="function">super</span>().__init__()
+        
+        <span class="comment"># Stem: patchify layer (4×4 conv, stride 4)</span>
+        self.downsample_layers = nn.ModuleList()
+        stem = nn.Sequential(
+            nn.Conv2d(in_chans, dims[<span class="number">0</span>], kernel_size=<span class="number">4</span>, stride=<span class="number">4</span>),
+            nn.LayerNorm(dims[<span class="number">0</span>], eps=<span class="number">1e-6</span>)
+        )
+        self.downsample_layers.append(stem)
+        
+        <span class="comment"># Downsampling between stages</span>
+        <span class="keyword">for</span> i <span class="keyword">in</span> <span class="function">range</span>(<span class="number">3</span>):
+            downsample = nn.Sequential(
+                nn.LayerNorm(dims[i], eps=<span class="number">1e-6</span>),
+                nn.Conv2d(dims[i], dims[i+<span class="number">1</span>], kernel_size=<span class="number">2</span>, stride=<span class="number">2</span>)
+            )
+            self.downsample_layers.append(downsample)
+        
+        <span class="comment"># Stochastic depth decay rule</span>
+        dp_rates = [x.item() <span class="keyword">for</span> x <span class="keyword">in</span> torch.linspace(<span class="number">0</span>, drop_path_rate, <span class="function">sum</span>(depths))]
+        
+        <span class="comment"># Stages with ConvNeXt blocks</span>
+        self.stages = nn.ModuleList()
+        cur = <span class="number">0</span>
+        <span class="keyword">for</span> i <span class="keyword">in</span> <span class="function">range</span>(<span class="number">4</span>):
+            stage = nn.Sequential(
+                *[ConvNeXtBlock(dim=dims[i], drop_path=dp_rates[cur + j])
+                  <span class="keyword">for</span> j <span class="keyword">in</span> <span class="function">range</span>(depths[i])]
+            )
+            self.stages.append(stage)
+            cur += depths[i]
+        
+        <span class="comment"># Classification head</span>
+        self.norm = nn.LayerNorm(dims[-<span class="number">1</span>], eps=<span class="number">1e-6</span>)
+        self.head = nn.Linear(dims[-<span class="number">1</span>], num_classes)
+        
+        <span class="comment"># Initialize weights</span>
+        self.apply(self._init_weights)
+    
+    <span class="keyword">def</span> <span class="function">_init_weights</span>(self, m):
+        <span class="keyword">if</span> isinstance(m, nn.Linear):
+            nn.init.trunc_normal_(m.weight, std=<span class="number">.02</span>)
+            <span class="keyword">if</span> m.bias <span class="keyword">is</span> <span class="keyword">not</span> None:
+                nn.init.constant_(m.bias, <span class="number">0</span>)
+        <span class="keyword">elif</span> isinstance(m, nn.LayerNorm):
+            nn.init.constant_(m.bias, <span class="number">0</span>)
+            nn.init.constant_(m.weight, <span class="number">1.0</span>)
+    
+    <span class="keyword">def</span> <span class="function">forward</span>(self, x):
+        <span class="comment"># Stem + stages</span>
+        <span class="keyword">for</span> i <span class="keyword">in</span> <span class="function">range</span>(<span class="number">4</span>):
+            x = self.downsample_layers[i](x)
+            x = self.stages[i](x)
+        
+        <span class="comment"># Global average pooling + classifier</span>
+        x = self.norm(x.mean([-<span class="number">2</span>, -<span class="number">1</span>]))  <span class="comment"># [B, C, H, W] → [B, C]</span>
+        x = self.head(x)
+        <span class="keyword">return</span> x
+
+<span class="comment"># Model variants</span><span class="keyword">def</span> <span class="function">convnext_tiny</span>(num_classes=<span class="number">1000</span>):
+    <span class="keyword">return</span> ConvNeXt(depths=[<span class="number">3</span>, <span class="number">3</span>, <span class="number">9</span>, <span class="number">3</span>], dims=[<span class="number">96</span>, <span class="number">192</span>, <span class="number">384</span>, <span class="number">768</span>], 
+                   drop_path_rate=<span class="number">0.1</span>)
+
+<span class="keyword">def</span> <span class="function">convnext_small</span>(num_classes=<span class="number">1000</span>):
+    <span class="keyword">return</span> ConvNeXt(depths=[<span class="number">3</span>, <span class="number">3</span>, <span class="number">27</span>, <span class="number">3</span>], dims=[<span class="number">96</span>, <span class="number">192</span>, <span class="number">384</span>, <span class="number">768</span>],
+                   drop_path_rate=<span class="number">0.4</span>)
+
+<span class="keyword">def</span> <span class="function">convnext_base</span>(num_classes=<span class="number">1000</span>):
+    <span class="keyword">return</span> ConvNeXt(depths=[<span class="number">3</span>, <span class="number">3</span>, <span class="number">27</span>, <span class="number">3</span>], dims=[<span class="number">128</span>, <span class="number">256</span>, <span class="number">512</span>, <span class="number">1024</span>],
+                   drop_path_rate=<span class="number">0.5</span>)
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Impact -->
+        <section id="impact">
+            <div class="container">
+                <div class="section-header">
+                    <h2>Impact & Significance</h2>
+                    <p>Why ConvNeXt matters for the future of computer vision</p>
+                </div>
+
+                <div class="card-grid">
+                    <div class="card">
+                        <h3>🎯 Key Contributions</h3>
+                        <ul style="list-style: none; padding: 0;">
+                            <li style="margin-bottom: 1rem; padding-left: 1.5rem; position: relative;">
+                                <span style="position: absolute; left: 0; color: var(--success);">✓</span>
+                                <strong>Democratized ViT Performance</strong> — Showed that pure ConvNets can achieve Transformer-level accuracy without massive datasets like JFT-300M.
+                            </li>
+                            <li style="margin-bottom: 1rem; padding-left: 1.5rem; position: relative;">
+                                <span style="position: absolute; left: 0; color: var(--success);">✓</span>
+                                <strong>Systematic Modernization</strong> — Provided a recipe for upgrading any ConvNet with proven techniques from the Transformer era.
+                            </li>
+                            <li style="margin-bottom: 1rem; padding-left: 1.5rem; position: relative;">
+                                <span style="position: absolute; left: 0; color: var(--success);">✓</span>
+                                <strong>Simpler is Better</strong> — ConvNeXt achieves better results than Swin without complex modules like shifted windows or relative position biases.
+                            </li>
+                            <li style="padding-left: 1.5rem; position: relative;">
+                                <span style="position: absolute; left: 0; color: var(--success);">✓</span>
+                                <strong>Better Efficiency</strong> — ConvNeXt has higher throughput than equivalent Swin models due to the efficiency of optimized convolution implementations.
+                            </li>
+                        </ul>
+                    </div>
+
+                    <div class="card">
+                        <h3>📈 Citations & Adoption</h3>
+                        <p>Since its publication at CVPR 2022, ConvNeXt has been:</p>
+                        <ul style="margin: 1rem 0; padding-left: 1.5rem; color: var(--text-muted);">
+                            <li>Cited <strong>5,500+ times</strong> as of 2025</li>
+                            <li>Widely adopted in production systems</li>
+                            <li>Integrated into major frameworks (PyTorch, Hugging Face)</li>
+                            <li>Extended to video understanding (Video Swin, MViT)</li>
+                            <li>Influenced the design of ConvNeXt V2 with masked autoencoders</li>
+                        </ul>
+                        <p style="margin-top: 1rem; color: var(--text-muted);">
+                            The paper won the <strong>CVPR 2022 Outstanding Paper Award</strong>, recognizing its impact on challenging the Transformer dominance narrative.
+                        </p>
+                    </div>
+                </div>
+
+                <div class="card" style="margin-top: 2rem;">
+                    <h3>🔮 Why ConvNeXt Won't Be Forgotten</h3>
+                    <p style="margin-bottom: 1rem;">
+                        ConvNeXt represents a pivotal moment in computer vision: the realization that <strong>architectural innovations can flow both ways</strong>. Just as Transformers borrowed from ConvNets (hierarchical structures, local attention), ConvNets can borrow from Transformers (training recipes, macro designs, inverted bottlenecks).
+                    </p>
+                    <p style="margin-bottom: 1rem;">
+                        The paper's systematic approach—starting from ResNet and making one change at a time—provides a template for future architecture research. It showed that often, the difference between SOTA methods is not fundamental architectural superiority but a collection of well-tuned implementation details.
+                    </p>
+                    <p>
+                        In an era where model sizes are exploding, ConvNeXt stands as proof that elegant, simple designs can still compete with the most complex systems.
+                    </p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Related Papers -->
+        <section id="related">
+            <div class="container">
+                <div class="section-header">
+                    <h2>Related Papers</h2>
+                    <p>Papers that inspired and extended ConvNeXt</p>
+                </div>
+
+                <div class="paper-list">
+                    <a href="vit.html" class="paper-item">
+                        <div class="paper-icon">🖼️</div>
+                        <div class="paper-info">
+                            <h4>Vision Transformer (ViT)</h4>
+                            <p>Dosovitskiy et al., 2020 — The Transformer architecture that started the "Roaring 20s" of visual recognition</p>
+                        </div>
+                    </a>
+
+                    <a href="swin-transformer.html" class="paper-item">
+                        <div class="paper-icon">🪟</div>
+                        <div class="paper-info">
+                            <h4>Swin Transformer</h4>
+                            <p>Liu et al., 2021 — The hierarchical Transformer that reintroduced ConvNet priors to Transformers</p>
+                        </div>
+                    </a>
+
+                    <a href="resnet.html" class="paper-item">
+                        <div class="paper-icon">🔗</div>
+                        <div class="paper-info">
+                            <h4>ResNet (Deep Residual Learning)</h4>
+                            <p>He et al., 2016 — The foundation that ConvNeXt built upon and modernized</p>
+                        </div>
+                    </a>
+
+                    <a href="efficientnet.html" class="paper-item">
+                        <div class="paper-icon">⚖️</div>
+                        <div class="paper-info">
+                            <h4>EfficientNet</h4>
+                            <p>Tan & Le, 2019 — The compound scaling approach that influenced model design</p>
+                        </div>
+                    </a>
+
+                    <div class="paper-item" style="cursor: default;">
+                        <div class="paper-icon" style="background: rgba(16, 185, 129, 0.2);">🆕</div>
+                        <div class="paper-info">
+                            <h4>ConvNeXt V2: Co-Designing and Scaling ConvNets with Masked Autoencoders</h4>
+                            <p>Woo et al., 2023 — The follow-up that added Global Response Normalization and FCMAE pre-training</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer>
+        <div class="footer-links">
+            <a href="../index.html">Home</a>
+            <a href="../cnn.html">CNNs Explained</a>
+            <a href="../transformer.html">Transformers</a>
+            <a href="https://github.com/Patbby/ai-neural-networks">GitHub</a>
+        </div>
+        <p style="color: var(--text-muted); font-size: 0.875rem;">
+            Part of the AI Neural Networks educational series • Maintained with 🤖 by AI agents
+        </p>
+        <p style="color: var(--text-muted); font-size: 0.75rem; margin-top: 0.5rem;">
+            Paper: "A ConvNet for the 2020s" by Liu et al., CVPR 2022
+        </p>
+    </footer>
+
+    <script>
+        // Smooth scroll for anchor links
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                const target = document.querySelector(this.getAttribute('href'));
+                if (target) {
+                    target.scrollIntoView({
+                        behavior: 'smooth',
+                        block: 'start'
+                    });
+                }
+            });
+        });
+
+        // Intersection Observer for fade-in animations
+        const observerOptions = {
+            threshold: 0.1,
+            rootMargin: '0px 0px -50px 0px'
+        };
+
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.style.opacity = '1';
+                    entry.target.style.transform = 'translateY(0)';
+                }
+            });
+        }, observerOptions);
+
+        // Observe cards
+        document.querySelectorAll('.card, .innovation-card, .result-stat').forEach(el => {
+            el.style.opacity = '0';
+            el.style.transform = 'translateY(20px)';
+            el.style.transition = 'opacity 0.6s ease, transform 0.6s ease';
+            observer.observe(el);
+        });
+    </script>
+</body>
+</html>

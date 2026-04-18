@@ -2044,6 +2044,64 @@
                 </svg>
             </div>
 
+            <!-- ConvNeXt Paper Card -->
+            <div class="network-card" onclick="location.href='papers/convnext.html'">
+                <span class="tag">CVPR 2022 (Outstanding Paper)</span>
+                <h3>ConvNeXt</h3>
+                <p>A ConvNet for the 2020s - The pure ConvNet that rivaled Vision Transformers. Starting from ResNet-50, modernizing step-by-step with Transformer-inspired design choices to achieve 87.8% ImageNet accuracy without self-attention.</p>
+                <svg class="preview-svg" viewBox="0 0 300 150">
+                    <defs>
+                        <linearGradient id="convnext-grad" x1="0%" y1="0%" x2="100%" y2="0%">
+                            <stop offset="0%" style="stop-color:#6366f1"/>
+                            <stop offset="50%" style="stop-color:#a855f7"/>
+                            <stop offset="100%" style="stop-color:#10b981"/>
+                        </linearGradient>
+                        <linearGradient id="convnext-block" x1="0%" y1="0%" x2="0%" y2="100%">
+                            <stop offset="0%" style="stop-color:#6366f1"/>
+                            <stop offset="100%" style="stop-color:#10b981"/>
+                        </linearGradient>
+                    </defs>
+                    <!-- Input patch -->
+                    <rect x="15" y="55" width="40" height="40" rx="4" fill="rgba(99,102,241,0.2)" stroke="#6366f1" stroke-width="1.5"/>
+                    <text x="35" y="72" fill="#a5b4fc" font-size="8" text-anchor="middle">4×4</text>
+                    <text x="35" y="85" fill="#888" font-size="7" text-anchor="middle">patch</text>
+                    <!-- Arrow -->
+                    <path d="M55 75 L70 75" stroke="#6366f1" stroke-width="2"/>
+                    <!-- ConvNeXt stages -->
+                    <rect x="75" y="40" width="35" height="25" rx="3" fill="url(#convnext-block)" opacity="0.3" stroke="#6366f1" stroke-width="2"/>
+                    <text x="92" y="52" fill="#6366f1" font-size="7" text-anchor="middle">S1</text>
+                    <text x="92" y="62" fill="#a5b4fc" font-size="6" text-anchor="middle">C=96</text>
+                    <!-- Arrow -->
+                    <path d="M110 52 L120 52" stroke="#6366f1" stroke-width="1.5"/>
+                    <!-- Stage 2 -->
+                    <rect x="125" y="40" width="35" height="25" rx="3" fill="url(#convnext-block)" opacity="0.4" stroke="#6366f1" stroke-width="2"/>
+                    <text x="142" y="52" fill="#6366f1" font-size="7" text-anchor="middle">S2</text>
+                    <text x="142" y="62" fill="#a5b4fc" font-size="6" text-anchor="middle">C=192</text>
+                    <!-- Arrow -->
+                    <path d="M160 52 L170 52" stroke="#6366f1" stroke-width="1.5"/>
+                    <!-- Stage 3 (9 blocks) -->
+                    <rect x="175" y="35" width="50" height="35" rx="3" fill="url(#convnext-block)" opacity="0.5" stroke="#a855f7" stroke-width="2"/>
+                    <text x="200" y="47" fill="#a855f7" font-size="8" text-anchor="middle">S3</text>
+                    <text x="200" y="58" fill="#d8b4fe" font-size="6" text-anchor="middle">C=384</text>
+                    <text x="200" y="68" fill="#888" font-size="6" text-anchor="middle">9 blocks</text>
+                    <!-- Arrow -->
+                    <path d="M225 52 L235 52" stroke="#a855f7" stroke-width="1.5"/>
+                    <!-- Stage 4 -->
+                    <rect x="240" y="40" width="35" height="25" rx="3" fill="url(#convnext-block)" opacity="0.6" stroke="#10b981" stroke-width="2"/>
+                    <text x="257" y="52" fill="#10b981" font-size="7" text-anchor="middle">S4</text>
+                    <text x="257" y="62" fill="#6ee7b7" font-size="6" text-anchor="middle">C=768</text>
+                    <!-- 7x7 kernel highlight -->
+                    <rect x="85" y="75" width="180" height="35" rx="4" fill="rgba(16,185,129,0.1)" stroke="#10b981" stroke-width="1" stroke-dasharray="3,2"/>
+                    <text x="175" y="85" fill="#10b981" font-size="7" text-anchor="middle">Key: 7×7 Depthwise Conv</text>
+                    <text x="175" y="98" fill="#6ee7b7" font-size="6" text-anchor="middle">+ Inverted Bottleneck + LayerNorm</text>
+                    <text x="175" y="108" fill="#888" font-size="6" text-anchor="middle">ResNet → Swin-inspired pure ConvNet</text>
+                    <!-- Evolution arrow -->
+                    <path d="M35 95 L35 115 L270 115" stroke="#f59e0b" stroke-width="2" fill="none" stroke-dasharray="4,2"/>
+                    <text x="152" y="130" fill="#f59e0b" font-size="9" text-anchor="middle">Modernized ResNet: 76.1% → 82.0% ImageNet Top-1</text>
+                    <text x="152" y="142" fill="#888" font-size="7" text-anchor="middle">Matches Swin-T without self-attention!</text>
+                </svg>
+            </div>
+
             <!-- More Papers Coming -->
             <div class="network-card" style="opacity: 0.7;">
                 <span class="tag">Coming Soon</span>
