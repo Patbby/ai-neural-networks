@@ -1,0 +1,8 @@
+{
+  "lastUpdate": "2026-04-19T06:57:00+08:00",
+  "papersAdded": 1,
+  "totalPapers": 84,
+  "nextPaper": "InstanceNorm",
+  "updateCount": 32,
+  "recentAddition": "Group Normalization (Wu & He, ECCV 2018) - A simple alternative to Batch Normalization that divides channels into groups and normalizes within each group. 10.6% lower error than BN at batch size 2 on ImageNet. Complete HTML page with SVG comparisons of normalization methods, batch size sensitivity graphs, COCO detection results, and PyTorch implementation."
+}
