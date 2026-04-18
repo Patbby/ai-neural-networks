@@ -1,0 +1,1141 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PPO - Proximal Policy Optimization | AI Neural Networks</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-primary: #0a0a0f;
+            --bg-secondary: #12121a;
+            --bg-tertiary: #1a1a25;
+            --text-primary: #f0f0f5;
+            --text-secondary: #a0a0b0;
+            --accent-purple: #a855f7;
+            --accent-indigo: #6366f1;
+            --accent-pink: #ec4899;
+            --accent-cyan: #06b6d4;
+            --accent-green: #10b981;
+            --border-color: #2a2a3a;
+            --code-bg: #0d0d12;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: var(--bg-primary);
+            color: var(--text-primary);
+            line-height: 1.6;
+            overflow-x: hidden;
+        }
+
+        /* Navigation */
+        .nav {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            background: rgba(10, 10, 15, 0.95);
+            backdrop-filter: blur(20px);
+            border-bottom: 1px solid var(--border-color);
+            z-index: 1000;
+            padding: 1rem 2rem;
+        }
+
+        .nav-content {
+            max-width: 1400px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .nav-logo {
+            font-size: 1.5rem;
+            font-weight: 700;
+            background: linear-gradient(135deg, var(--accent-indigo), var(--accent-purple));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            text-decoration: none;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 2rem;
+            list-style: none;
+        }
+
+        .nav-links a {
+            color: var(--text-secondary);
+            text-decoration: none;
+            font-weight: 500;
+            transition: color 0.3s;
+        }
+
+        .nav-links a:hover {
+            color: var(--text-primary);
+        }
+
+        /* Hero Section */
+        .hero {
+            padding: 8rem 2rem 4rem;
+            background: linear-gradient(180deg, var(--bg-primary) 0%, var(--bg-secondary) 100%);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .hero::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: radial-gradient(ellipse at 50% 0%, rgba(168, 85, 247, 0.15) 0%, transparent 50%);
+            pointer-events: none;
+        }
+
+        .hero-content {
+            max-width: 1000px;
+            margin: 0 auto;
+            text-align: center;
+            position: relative;
+            z-index: 1;
+        }
+
+        .paper-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            background: rgba(6, 182, 212, 0.1);
+            border: 1px solid var(--accent-cyan);
+            color: var(--accent-cyan);
+            padding: 0.5rem 1rem;
+            border-radius: 50px;
+            font-size: 0.875rem;
+            font-weight: 600;
+            margin-bottom: 1.5rem;
+        }
+
+        .hero h1 {
+            font-size: 3.5rem;
+            font-weight: 700;
+            line-height: 1.1;
+            margin-bottom: 1rem;
+            background: linear-gradient(135deg, #fff 0%, #a0a0b0 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .hero-subtitle {
+            font-size: 1.25rem;
+            color: var(--text-secondary);
+            margin-bottom: 2rem;
+        }
+
+        .paper-meta {
+            display: flex;
+            justify-content: center;
+            gap: 2rem;
+            flex-wrap: wrap;
+            margin-bottom: 2rem;
+        }
+
+        .meta-item {
+            text-align: center;
+        }
+
+        .meta-label {
+            font-size: 0.75rem;
+            color: var(--text-secondary);
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            margin-bottom: 0.25rem;
+        }
+
+        .meta-value {
+            font-size: 1rem;
+            color: var(--text-primary);
+            font-weight: 600;
+        }
+
+        .paper-links {
+            display: flex;
+            justify-content: center;
+            gap: 1rem;
+            flex-wrap: wrap;
+        }
+
+        .paper-link {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.75rem 1.5rem;
+            background: var(--bg-tertiary);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            color: var(--text-primary);
+            text-decoration: none;
+            font-weight: 500;
+            transition: all 0.3s;
+        }
+
+        .paper-link:hover {
+            background: var(--accent-indigo);
+            border-color: var(--accent-indigo);
+            transform: translateY(-2px);
+        }
+
+        .paper-link.primary {
+            background: linear-gradient(135deg, var(--accent-indigo), var(--accent-purple));
+            border-color: transparent;
+        }
+
+        /* Main Content */
+        .main-content {
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 4rem 2rem;
+        }
+
+        .section {
+            margin-bottom: 4rem;
+        }
+
+        .section-title {
+            font-size: 2rem;
+            font-weight: 600;
+            margin-bottom: 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        .section-icon {
+            width: 40px;
+            height: 40px;
+            background: linear-gradient(135deg, var(--accent-indigo), var(--accent-purple));
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.25rem;
+        }
+
+        .section p {
+            color: var(--text-secondary);
+            font-size: 1.125rem;
+            line-height: 1.8;
+            margin-bottom: 1.5rem;
+        }
+
+        /* Problem Cards */
+        .problem-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 1.5rem;
+            margin: 2rem 0;
+        }
+
+        .problem-card {
+            background: var(--bg-secondary);
+            border: 1px solid var(--border-color);
+            border-radius: 16px;
+            padding: 1.5rem;
+            transition: all 0.3s;
+        }
+
+        .problem-card:hover {
+            border-color: var(--accent-indigo);
+            transform: translateY(-4px);
+        }
+
+        .problem-card h3 {
+            color: var(--accent-cyan);
+            font-size: 1.125rem;
+            margin-bottom: 0.75rem;
+        }
+
+        .problem-card p {
+            font-size: 1rem;
+            margin-bottom: 0;
+        }
+
+        /* Innovation Highlight */
+        .innovation-box {
+            background: linear-gradient(135deg, rgba(168, 85, 247, 0.1), rgba(99, 102, 241, 0.1));
+            border: 1px solid var(--accent-purple);
+            border-radius: 16px;
+            padding: 2rem;
+            margin: 2rem 0;
+        }
+
+        .innovation-box h3 {
+            color: var(--accent-purple);
+            font-size: 1.25rem;
+            margin-bottom: 1rem;
+        }
+
+        .innovation-list {
+            list-style: none;
+        }
+
+        .innovation-list li {
+            padding: 0.75rem 0;
+            padding-left: 2rem;
+            position: relative;
+            color: var(--text-secondary);
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .innovation-list li:last-child {
+            border-bottom: none;
+        }
+
+        .innovation-list li::before {
+            content: '→';
+            position: absolute;
+            left: 0;
+            color: var(--accent-green);
+            font-weight: bold;
+        }
+
+        /* Architecture Diagram */
+        .architecture-section {
+            background: var(--bg-secondary);
+            border-radius: 24px;
+            padding: 3rem;
+            margin: 3rem 0;
+            border: 1px solid var(--border-color);
+        }
+
+        .diagram-container {
+            background: var(--bg-primary);
+            border-radius: 16px;
+            padding: 2rem;
+            margin: 2rem 0;
+        }
+
+        /* SVG Animation Styles */
+        .ppo-flow {
+            width: 100%;
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        .flow-node {
+            fill: var(--bg-tertiary);
+            stroke: var(--accent-indigo);
+            stroke-width: 2;
+        }
+
+        .flow-node.actor {
+            stroke: var(--accent-purple);
+        }
+
+        .flow-node.critic {
+            stroke: var(--accent-cyan);
+        }
+
+        .flow-text {
+            fill: var(--text-primary);
+            font-size: 14px;
+            font-weight: 600;
+            text-anchor: middle;
+        }
+
+        .flow-label {
+            fill: var(--text-secondary);
+            font-size: 12px;
+            text-anchor: middle;
+        }
+
+        .flow-arrow {
+            fill: none;
+            stroke: var(--accent-indigo);
+            stroke-width: 2;
+            marker-end: url(#arrowhead);
+        }
+
+        .clipped-area {
+            fill: rgba(16, 185, 129, 0.2);
+            stroke: var(--accent-green);
+            stroke-width: 2;
+            stroke-dasharray: 5,5;
+        }
+
+        .unclipped-area {
+            fill: rgba(236, 72, 153, 0.2);
+            stroke: var(--accent-pink);
+            stroke-width: 2;
+            stroke-dasharray: 5,5;
+        }
+
+        /* Animated elements */
+        @keyframes flowPulse {
+            0%, 100% { opacity: 0.6; }
+            50% { opacity: 1; }
+        }
+
+        .animate-flow {
+            animation: flowPulse 2s ease-in-out infinite;
+        }
+
+        /* Math Formula */
+        .formula-box {
+            background: var(--code-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            padding: 1.5rem;
+            margin: 1.5rem 0;
+            overflow-x: auto;
+        }
+
+        .formula {
+            font-family: 'Times New Roman', serif;
+            font-size: 1.25rem;
+            color: var(--text-primary);
+            text-align: center;
+        }
+
+        .formula-sub {
+            font-size: 0.875rem;
+            color: var(--text-secondary);
+            text-align: center;
+            margin-top: 0.5rem;
+        }
+
+        /* Code Block */
+        .code-section {
+            background: var(--code-bg);
+            border-radius: 16px;
+            overflow: hidden;
+            margin: 2rem 0;
+        }
+
+        .code-header {
+            background: var(--bg-tertiary);
+            padding: 1rem 1.5rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .code-title {
+            font-weight: 600;
+            color: var(--text-primary);
+        }
+
+        .code-lang {
+            font-size: 0.75rem;
+            color: var(--accent-cyan);
+            background: rgba(6, 182, 212, 0.1);
+            padding: 0.25rem 0.75rem;
+            border-radius: 4px;
+        }
+
+        .code-content {
+            padding: 1.5rem;
+            overflow-x: auto;
+        }
+
+        .code-content pre {
+            margin: 0;
+            font-family: 'JetBrains Mono', 'Fira Code', monospace;
+            font-size: 0.9rem;
+            line-height: 1.6;
+        }
+
+        .code-content code {
+            color: var(--text-primary);
+        }
+
+        .code-keyword { color: #c792ea; }
+        .code-function { color: #82aaff; }
+        .code-string { color: #c3e88d; }
+        .code-comment { color: #676e95; }
+        .code-number { color: #f78c6c; }
+
+        /* Results Grid */
+        .results-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1.5rem;
+            margin: 2rem 0;
+        }
+
+        .result-card {
+            background: var(--bg-secondary);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            padding: 1.5rem;
+            text-align: center;
+        }
+
+        .result-number {
+            font-size: 2.5rem;
+            font-weight: 700;
+            color: var(--accent-green);
+            display: block;
+        }
+
+        .result-label {
+            color: var(--text-secondary);
+            font-size: 0.875rem;
+            margin-top: 0.5rem;
+        }
+
+        /* Related Papers */
+        .related-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 1.5rem;
+            margin: 2rem 0;
+        }
+
+        .related-card {
+            background: var(--bg-secondary);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            padding: 1.5rem;
+            text-decoration: none;
+            color: inherit;
+            transition: all 0.3s;
+        }
+
+        .related-card:hover {
+            border-color: var(--accent-indigo);
+            transform: translateY(-4px);
+        }
+
+        .related-card h4 {
+            color: var(--accent-indigo);
+            margin-bottom: 0.5rem;
+        }
+
+        .related-card p {
+            font-size: 0.875rem;
+            margin-bottom: 0;
+        }
+
+        .related-meta {
+            display: flex;
+            gap: 1rem;
+            margin-top: 1rem;
+            font-size: 0.75rem;
+            color: var(--text-secondary);
+        }
+
+        /* Footer */
+        .footer {
+            border-top: 1px solid var(--border-color);
+            padding: 3rem 2rem;
+            text-align: center;
+            color: var(--text-secondary);
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .hero h1 {
+                font-size: 2rem;
+            }
+
+            .nav-links {
+                display: none;
+            }
+
+            .architecture-section {
+                padding: 1.5rem;
+            }
+
+            .section-title {
+                font-size: 1.5rem;
+            }
+        }
+
+        /* Smooth scroll */
+        html {
+            scroll-behavior: smooth;
+        }
+
+        /* Custom scrollbar */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: var(--bg-primary);
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: var(--border-color);
+            border-radius: 4px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: var(--accent-indigo);
+        }
+    </style>
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="nav">
+        <div class="nav-content">
+            <a href="../index.html" class="nav-logo">🧠 AI Neural Networks</a>
+            <ul class="nav-links">
+                <li><a href="../index.html">Home</a></li>
+                <li><a href="../index.html#architectures">Architectures</a></li>
+                <li><a href="../index.html#papers">Papers</a></li>
+                <li><a href="https://github.com/Patbby/ai-neural-networks" target="_blank">GitHub</a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <section class="hero">
+        <div class="hero-content">
+            <div class="paper-badge">🔬 Reinforcement Learning</div>
+            <h1>Proximal Policy Optimization</h1>
+            <p class="hero-subtitle">A family of policy gradient methods that enables multiple epochs of minibatch updates through a novel surrogate objective with clipped probability ratios</p>
+            
+            <div class="paper-meta">
+                <div class="meta-item">
+                    <div class="meta-label">Authors</div>
+                    <div class="meta-value">John Schulman et al.</div>
+                </div>
+                <div class="meta-item">
+                    <div class="meta-label">Year</div>
+                    <div class="meta-value">2017</div>
+                </div>
+                <div class="meta-item">
+                    <div class="meta-label">Venue</div>
+                    <div class="meta-value">arXiv</div>
+                </div>
+                <div class="meta-item">
+                    <div class="meta-label">Citations</div>
+                    <div class="meta-value">15,000+</div>
+                </div>
+            </div>
+
+            <div class="paper-links">
+                <a href="https://arxiv.org/abs/1707.06347" class="paper-link primary" target="_blank">
+                    <span>📄</span> Paper
+                </a>
+                <a href="https://arxiv.org/pdf/1707.06347.pdf" class="paper-link" target="_blank">
+                    <span>📥</span> PDF
+                </a>
+                <a href="https://github.com/openai/baselines" class="paper-link" target="_blank">
+                    <span>💻</span> Code
+                </a>
+            </div>
+        </div>
+    </section>
+
+    <!-- Main Content -->
+    <main class="main-content">
+        <!-- Problem Statement -->
+        <section class="section">
+            <h2 class="section-title">
+                <span class="section-icon">❓</span>
+                Problem Statement
+            </h2>
+            <p>
+                Before PPO, policy gradient methods faced a fundamental dilemma: how to take large steps to improve sample efficiency without taking excessively large steps that cause performance collapse. Trust Region Policy Optimization (TRPO) addressed this with complex second-order methods, but its implementation was difficult and computationally expensive.
+            </p>
+            
+            <div class="problem-grid">
+                <div class="problem-card">
+                    <h3>🔥 Policy Collapse</h3>
+                    <p>Standard policy gradients perform one update per sample. Multiple gradient steps on the same data can cause the policy to change too much, leading to catastrophic performance drops.</p>
+                </div>
+                <div class="problem-card">
+                    <h3>⚖️ Sample vs Stability</h3>
+                    <p>On-policy methods require collecting new data after each update, making them sample-inefficient. But using the same data multiple times risks destabilizing training.</p>
+                </div>
+                <div class="problem-card">
+                    <h3>🧮 TRPO Complexity</h3>
+                    <p>TRPO's trust region constraint requires computing Fisher information matrices and conjugate gradient methods, making it complex to implement and slow to run.</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Key Innovation -->
+        <section class="section">
+            <h2 class="section-title">
+                <span class="section-icon">💡</span>
+                Key Innovation
+            </h2>
+            <p>
+                PPO introduces a clipped surrogate objective that penalizes large policy updates while enabling multiple epochs of minibatch updates on the same data. The key insight: instead of enforcing hard constraints (like TRPO), use a soft clipping mechanism in the objective function itself.
+            </p>
+
+            <div class="innovation-box">
+                <h3>🎯 The Core Ideas</h3>
+                <ul class="innovation-list">
+                    <li><strong>Probability Ratio:</strong> r<sub>t</sub>(θ) = π<sub>θ</sub>(a<sub>t</sub>|s<sub>t</sub>) / π<sub>θ<sub>old</sub></sub>(a<sub>t</sub>|s<sub>t</sub>) — measures how much the policy has changed</li>
+                    <li><strong>Clipped Objective:</strong> L<sup>CLIP</sup>(θ) = E<sub>t</sub>[min(r<sub>t</sub>(θ)Â<sub>t</sub>, clip(r<sub>t</sub>(θ), 1-ε, 1+ε)Â<sub>t</sub>)] — ignores changes outside [1-ε, 1+ε]</li>
+                    <li><strong>Multiple Epochs:</strong> Can run 4+ epochs on collected data without collapse, dramatically improving sample efficiency</li>
+                    <li><strong>Simple Implementation:</strong> First-order method with only minor changes to vanilla policy gradient</li>
+                </ul>
+            </div>
+        </section>
+
+        <!-- Architecture -->
+        <section class="section">
+            <h2 class="section-title">
+                <span class="section-icon">🏗️</span>
+                PPO Algorithm
+            </h2>
+            <p>
+                PPO alternates between collecting data by running the policy in the environment, and optimizing the surrogate objective using stochastic gradient ascent. The clipped objective acts as a soft trust region, preventing the new policy from deviating too far from the old policy.
+            </p>
+
+            <div class="architecture-section">
+                <h3 style="text-align: center; margin-bottom: 2rem; color: var(--accent-purple);">PPO-Clip Objective Function</h3>
+                
+                <div class="diagram-container">
+                    <svg class="ppo-flow" viewBox="0 0 800 500" xmlns="http://www.w3.org/2000/svg">
+                        <defs>
+                            <marker id="arrowhead" markerWidth="10" markerHeight="10" refX="9" refY="3" orient="auto">
+                                <polygon points="0 0, 10 3, 0 6" fill="#6366f1" />
+                            </marker>
+                            <linearGradient id="grad1" x1="0%" y1="0%" x2="100%" y2="0%">
+                                <stop offset="0%" style="stop-color:#6366f1;stop-opacity:1" />
+                                <stop offset="100%" style="stop-color:#a855f7;stop-opacity:1" />
+                            </linearGradient>
+                        </defs>
+
+                        <!-- Title -->
+                        <text x="400" y="30" class="flow-text" style="font-size: 16px; fill: #a855f7;">PPO-Clip: Surrogate Objective Visualization</text>
+
+                        <!-- X and Y axes -->
+                        <line x1="100" y1="420" x2="700" y2="420" stroke="#2a2a3a" stroke-width="2"/>
+                        <line x1="100" y1="420" x2="100" y2="80" stroke="#2a2a3a" stroke-width="2"/>
+                        
+                        <!-- Axis labels -->
+                        <text x="400" y="450" class="flow-label" fill="#a0a0b0">Probability Ratio r(θ)</text>
+                        <text x="60" y="250" class="flow-label" fill="#a0a0b0" transform="rotate(-90, 60, 250)">Objective L(θ)</text>
+
+                        <!-- Safe region shading (1-ε to 1+ε) -->
+                        <rect x="250" y="80" width="300" height="340" fill="rgba(16, 185, 129, 0.1)" stroke="#10b981" stroke-width="1" stroke-dasharray="5,5"/>
+                        <text x="400" y="100" fill="#10b981" font-size="12" text-anchor="middle">✓ Safe Region [1-ε, 1+ε]</text>
+
+                        <!-- Danger zones -->
+                        <rect x="100" y="80" width="150" height="340" fill="rgba(236, 72, 153, 0.1)" stroke="#ec4899" stroke-width="1" stroke-dasharray="5,5"/>
+                        <rect x="550" y="80" width="150" height="340" fill="rgba(236, 72, 153, 0.1)" stroke="#ec4899" stroke-width="1" stroke-dasharray="5,5"/>
+                        <text x="175" y="100" fill="#ec4899" font-size="12" text-anchor="middle">⚠ Danger</text>
+                        <text x="625" y="100" fill="#ec4899" font-size="12" text-anchor="middle">⚠ Danger</text>
+
+                        <!-- Vertical markers for 1-ε, 1, 1+ε -->
+                        <line x1="250" y1="415" x2="250" y2="425" stroke="#10b981" stroke-width="2"/>
+                        <text x="250" y="440" fill="#10b981" font-size="10" text-anchor="middle">1-ε</text>
+                        
+                        <line x1="400" y1="415" x2="400" y2="425" stroke="#6366f1" stroke-width="2"/>
+                        <text x="400" y="440" fill="#6366f1" font-size="10" text-anchor="middle">1</text>
+                        
+                        <line x1="550" y1="415" x2="550" y2="425" stroke="#10b981" stroke-width="2"/>
+                        <text x="550" y="440" fill="#10b981" font-size="10" text-anchor="middle">1+ε</text>
+
+                        <!-- Unclipped objective curve (r * A) -->
+                        <path d="M 100 400 Q 250 250 400 150 Q 550 250 700 400" 
+                              fill="none" stroke="#6366f1" stroke-width="2" stroke-dasharray="5,5" opacity="0.5"/>
+                        <text x="650" y="380" fill="#6366f1" font-size="11" opacity="0.7">Unclipped: r(θ)·A</text>
+
+                        <!-- Clipped objective curve -->
+                        <path d="M 100 400 L 250 300 L 250 150 Q 400 150 550 150 L 550 300 L 700 400" 
+                              fill="none" stroke="#10b981" stroke-width="3"/>
+                        <text x="400" y="130" fill="#10b981" font-size="12" text-anchor="middle" font-weight="bold">Clipped: min(r·A, clip(r)·A)</text>
+
+                        <!-- Key: advantage > 0 case -->
+                        <text x="200" y="350" fill="#a0a0b0" font-size="11">A > 0: Want larger r</text>
+                        <text x="600" y="350" fill="#a0a0b0" font-size="11">A < 0: Want smaller r</text>
+
+                        <!-- Legend -->
+                        <rect x="520" y="220" width="160" height="80" fill="rgba(10,10,15,0.9)" stroke="#2a2a3a" rx="5"/>
+                        <line x1="535" y1="245" x2="565" y2="245" stroke="#6366f1" stroke-width="2" stroke-dasharray="5,5"/>
+                        <text x="575" y="249" fill="#a0a0b0" font-size="10">Unclipped</text>
+                        <line x1="535" y1="270" x2="565" y2="270" stroke="#10b981" stroke-width="3"/>
+                        <text x="575" y="274" fill="#a0a0b0" font-size="10">Clipped (PPO)</text>
+                    </svg>
+                </div>
+
+                <div class="formula-box">
+                    <div class="formula">
+                        L<sup>CLIP</sup>(θ) = E<sub>t</sub>[ min( r<sub>t</sub>(θ)Â<sub>t</sub> , clip(r<sub>t</sub>(θ), 1-ε, 1+ε) Â<sub>t</sub> ) ]
+                    </div>
+                    <div class="formula-sub">
+                        where r<sub>t</sub>(θ) = π<sub>θ</sub>(a<sub>t</sub>|s<sub>t</sub>) / π<sub>θ<sub>old</sub></sub>(a<sub>t</sub>|s<sub>t</sub>) and Â<sub>t</sub> is the advantage estimate
+                    </div>
+                </div>
+
+                <div class="formula-box">
+                    <div class="formula">
+                        L<sup>KL</sup>(θ) = E<sub>t</sub>[ r<sub>t</sub>(θ)Â<sub>t</sub> - β KL[π<sub>θ<sub>old</sub></sub> ‖ π<sub>θ</sub>] ]
+                    </div>
+                    <div class="formula-sub">
+                        PPO-KL variant: adaptive KL penalty instead of clipping (ε typically 0.1 or 0.2)
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Algorithm Steps -->
+        <section class="section">
+            <h2 class="section-title">
+                <span class="section-icon">📋</span>
+                Algorithm Steps
+            </h2>
+            
+            <div class="architecture-section">
+                <div class="diagram-container">
+                    <svg class="ppo-flow" viewBox="0 0 800 600" xmlns="http://www.w3.org/2000/svg">
+                        <defs>
+                            <marker id="arrowhead2" markerWidth="10" markerHeight="10" refX="9" refY="3" orient="auto">
+                                <polygon points="0 0, 10 3, 0 6" fill="#6366f1" />
+                            </marker>
+                            <linearGradient id="actorGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+                                <stop offset="0%" style="stop-color:#a855f7;stop-opacity:0.3" />
+                                <stop offset="100%" style="stop-color:#6366f1;stop-opacity:0.3" />
+                            </linearGradient>
+                            <linearGradient id="criticGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+                                <stop offset="0%" style="stop-color:#06b6d4;stop-opacity:0.3" />
+                                <stop offset="100%" style="stop-color:#6366f1;stop-opacity:0.3" />
+                            </linearGradient>
+                        </defs>
+
+                        <!-- Title -->
+                        <text x="400" y="30" class="flow-text" style="font-size: 18px;">PPO Algorithm Flow</text>
+
+                        <!-- Step 1: Collect -->
+                        <rect x="50" y="80" width="160" height="80" rx="10" fill="url(#actorGrad)" stroke="#a855f7" stroke-width="2"/>
+                        <text x="130" y="110" class="flow-text">1. Collect</text>
+                        <text x="130" y="130" class="flow-label">Run π<sub>θ<sub>old</sub></sub> in env</text>
+                        <text x="130" y="145" class="flow-label">Get {s<sub>t</sub>, a<sub>t</sub>, r<sub>t</sub>}</text>
+
+                        <line x1="210" y1="120" x2="260" y2="120" class="flow-arrow" marker-end="url(#arrowhead2)"/>
+
+                        <!-- Step 2: Compute Returns -->
+                        <rect x="260" y="80" width="160" height="80" rx="10" fill="var(--bg-tertiary)" stroke="#6366f1" stroke-width="2"/>
+                        <text x="340" y="110" class="flow-text">2. Estimate</text>
+                        <text x="340" y="130" class="flow-label">Compute Â<sub>t</sub> with GAE</text>
+                        <text x="340" y="145" class="flow-label">Compute V(s<sub>t</sub>)</text>
+
+                        <line x1="420" y1="120" x2="470" y2="120" class="flow-arrow" marker-end="url(#arrowhead2)"/>
+
+                        <!-- Step 3: Optimize -->
+                        <rect x="470" y="80" width="280" height="200" rx="10" fill="rgba(16, 185, 129, 0.1)" stroke="#10b981" stroke-width="2"/>
+                        <text x="610" y="110" class="flow-text">3. Optimize (K epochs)</text>
+                        
+                        <!-- Inner loop -->
+                        <rect x="490" y="130" width="240" height="130" rx="5" fill="var(--bg-primary)" stroke="#2a2a3a" stroke-width="1"/>
+                        <text x="610" y="155" class="flow-label">For each minibatch:</text>
+                        
+                        <rect x="510" y="170" width="100" height="35" rx="5" fill="url(#actorGrad)" stroke="#a855f7" stroke-width="1"/>
+                        <text x="560" y="192" class="flow-label" style="font-size: 10px;">Update Policy</text>
+                        
+                        <rect x="630" y="170" width="85" height="35" rx="5" fill="url(#criticGrad)" stroke="#06b6d4" stroke-width="1"/>
+                        <text x="672" y="192" class="flow-label" style="font-size: 10px;">Update Value</text>
+                        
+                        <text x="610" y="225" class="flow-label">Maximize L<sup>CLIP</sup></text>
+
+                        <!-- Arrow back to start -->
+                        <path d="M 610 280 L 610 320 L 130 320 L 130 160" 
+                              fill="none" stroke="#ec4899" stroke-width="2" 
+                              marker-end="url(#arrowhead2)" stroke-dasharray="5,5"/>
+                        <text x="370" y="340" fill="#ec4899" font-size="12" text-anchor="middle">Repeat until convergence ↺</text>
+
+                        <!-- Actor-Critic Architecture Box -->
+                        <text x="400" y="400" class="flow-text" style="font-size: 14px;">Actor-Critic Architecture</text>
+
+                        <!-- Environment -->
+                        <rect x="50" y="450" width="120" height="100" rx="10" fill="rgba(236, 72, 153, 0.1)" stroke="#ec4899" stroke-width="2"/>
+                        <text x="110" y="485" class="flow-text">Environment</text>
+                        <text x="110" y="510" class="flow-label">State s<sub>t</sub></text>
+                        <text x="110" y="530" class="flow-label">Reward r<sub>t</sub></text>
+
+                        <!-- Actor -->
+                        <rect x="340" y="440" width="120" height="120" rx="10" fill="url(#actorGrad)" stroke="#a855f7" stroke-width="2"/>
+                        <text x="400" y="475" class="flow-text">Actor</text>
+                        <text x="400" y="500" class="flow-label">π<sub>θ</sub>(a|s)</text>
+                        <text x="400" y="520" class="flow-label" style="font-size: 10px;">Policy Network</text>
+                        <text x="400" y="540" class="flow-label" style="font-size: 10px;">Outputs action probs</text>
+
+                        <!-- Critic -->
+                        <rect x="630" y="440" width="120" height="120" rx="10" fill="url(#criticGrad)" stroke="#06b6d4" stroke-width="2"/>
+                        <text x="690" y="475" class="flow-text">Critic</text>
+                        <text x="690" y="500" class="flow-label">V<sub>φ</sub>(s)</text>
+                        <text x="690" y="520" class="flow-label" style="font-size: 10px;">Value Network</text>
+                        <text x="690" y="540" class="flow-label" style="font-size: 10px;">Estimates return</text>
+
+                        <!-- Arrows -->
+                        <line x1="170" y1="490" x2="340" y2="490" class="flow-arrow" marker-end="url(#arrowhead2)"/>
+                        <text x="255" y="480" class="flow-label">s<sub>t</sub></text>
+                        
+                        <line x1="170" y1="520" x2="630" y2="500" class="flow-arrow" marker-end="url(#arrowhead2)"/>
+                        <text x="400" y="540" class="flow-label">s<sub>t</sub></text>
+                        
+                        <line x1="460" y1="500" x2="630" y2="500" class="flow-arrow" marker-end="url(#arrowhead2)" stroke="#a855f7"/>
+                        <text x="545" y="490" class="flow-label" fill="#a855f7">a<sub>t</sub></text>
+                        
+                        <path d="M 690 560 L 690 580 L 110 580 L 110 550" 
+                              fill="none" stroke="#06b6d4" stroke-width="2" marker-end="url(#arrowhead2)"/>
+                        <text x="400" y="595" class="flow-label" fill="#06b6d4">Â<sub>t</sub> = r + γV(s') - V(s)</text>
+                    </svg>
+                </div>
+            </div>
+        </section>
+
+        <!-- Code Implementation -->
+        <section class="section">
+            <h2 class="section-title">
+                <span class="section-icon">💻</span>
+                PyTorch Implementation
+            </h2>
+
+            <div class="code-section">
+                <div class="code-header">
+                    <span class="code-title">ppo.py - Core Algorithm</span>
+                    <span class="code-lang">PyTorch</span>
+                </div>
+                <div class="code-content">
+                    <pre><code><span class="code-keyword">import</span> torch
+<span class="code-keyword">import</span> torch.nn <span class="code-keyword">as</span> nn
+<span class="code-keyword">from</span> torch.distributions <span class="code-keyword">import</span> Categorical
+
+<span class="code-keyword">class</span> <span class="code-function">PPO</span>(nn.Module):
+    <span class="code-keyword">def</span> <span class="code-function">__init__</span>(self, state_dim, action_dim, lr=3e-4, gamma=0.99, 
+                 eps_clip=0.2, K_epochs=4):
+        super(PPO, self).__init__()
+        
+        <span class="code-comment"># Actor network: outputs action probabilities</span>
+        self.actor = nn.Sequential(
+            nn.Linear(state_dim, <span class="code-number">64</span>), nn.ReLU(),
+            nn.Linear(<span class="code-number">64</span>, <span class="code-number">64</span>), nn.ReLU(),
+            nn.Linear(<span class="code-number">64</span>, action_dim), nn.Softmax(dim=-1)
+        )
+        
+        <span class="code-comment"># Critic network: estimates state value</span>
+        self.critic = nn.Sequential(
+            nn.Linear(state_dim, <span class="code-number">64</span>), nn.ReLU(),
+            nn.Linear(<span class="code-number">64</span>, <span class="code-number">64</span>), nn.ReLU(),
+            nn.Linear(<span class="code-number">64</span>, <span class="code-number">1</span>)
+        )
+        
+        self.optimizer = torch.optim.Adam(self.parameters(), lr=lr)
+        self.gamma = gamma
+        self.eps_clip = eps_clip
+        self.K_epochs = K_epochs
+    
+    <span class="code-keyword">def</span> <span class="code-function">select_action</span>(self, state):
+        <span class="code-keyword">with</span> torch.no_grad():
+            probs = self.actor(state)
+            dist = Categorical(probs)
+            action = dist.sample()
+            log_prob = dist.log_prob(action)
+        <span class="code-keyword">return</span> action.item(), log_prob.item()
+    
+    <span class="code-keyword">def</span> <span class="code-function">compute_advantages</span>(self, rewards, values, dones):
+        <span class="code-comment"># GAE (Generalized Advantage Estimation)</span>
+        advantages = []
+        gae = <span class="code-number">0</span>
+        
+        <span class="code-keyword">for</span> t <span class="code-keyword">in</span> reversed(range(len(rewards))):
+            <span class="code-keyword">if</span> t == len(rewards) - <span class="code-number">1</span>:
+                next_value = <span class="code-number">0</span>
+            <span class="code-keyword">else</span>:
+                next_value = values[t + <span class="code-number">1</span>]
+            
+            delta = rewards[t] + self.gamma * next_value * (~dones[t]) - values[t]
+            gae = delta + self.gamma * <span class="code-number">0.95</span> * gae * (~dones[t])
+            advantages.insert(<span class="code-number">0</span>, gae)
+        
+        <span class="code-keyword">return</span> torch.tensor(advantages)
+    
+    <span class="code-keyword">def</span> <span class="code-function">update</span>(self, states, actions, old_log_probs, 
+               advantages, returns):
+        <span class="code-comment"># Convert to tensors</span>
+        states = torch.stack(states)
+        actions = torch.tensor(actions)
+        old_log_probs = torch.tensor(old_log_probs)
+        advantages = (advantages - advantages.mean()) / (advantages.std() + <span class="code-number">1e-8</span>)
+        
+        <span class="code-comment"># PPO update for K epochs</span>
+        <span class="code-keyword">for</span> _ <span class="code-keyword">in</span> range(self.K_epochs):
+            <span class="code-comment"># Evaluate current policy</span>
+            probs = self.actor(states)
+            dist = Categorical(probs)
+            log_probs = dist.log_prob(actions)
+            
+            <span class="code-comment"># Compute probability ratio</span>
+            ratios = torch.exp(log_probs - old_log_probs)
+            
+            <span class="code-comment"># Clipped surrogate objective</span>
+            surr1 = ratios * advantages
+            surr2 = torch.clamp(ratios, <span class="code-number">1</span> - self.eps_clip, 
+                               <span class="code-number">1</span> + self.eps_clip) * advantages
+            actor_loss = -torch.min(surr1, surr2).mean()
+            
+            <span class="code-comment"># Value loss</span>
+            values = self.critic(states).squeeze()
+            critic_loss = nn.MSELoss()(values, returns)
+            
+            <span class="code-comment"># Combined loss</span>
+            loss = actor_loss + <span class="code-number">0.5</span> * critic_loss - <span class="code-number">0.01</span> * dist.entropy().mean()
+            
+            <span class="code-comment"># Optimize</span>
+            self.optimizer.zero_grad()
+            loss.backward()
+            nn.utils.clip_grad_norm_(self.parameters(), <span class="code-number">0.5</span>)
+            self.optimizer.step()
+        
+        <span class="code-keyword">return</span> loss.item()</code></pre>
+                </div>
+            </div>
+
+            <div class="code-section">
+                <div class="code-header">
+                    <span class="code-title">Training Loop</span>
+                    <span class="code-lang">PyTorch</span>
+                </div>
+                <div class="code-content">
+                    <pre><code><span class="code-keyword">def</span> <span class="code-function">train_ppo</span>(env, agent, max_episodes=<span class="code-number">1000</span>, 
+              steps_per_update=<span class="code-number">2048</span>, batch_size=<span class="code-number">64</span>):
+    
+    <span class="code-keyword">for</span> episode <span class="code-keyword">in</span> range(max_episodes):
+        states, actions, rewards = [], [], []
+        log_probs, values, dones = [], [], []
+        
+        state = env.reset()
+        episode_reward = <span class="code-number">0</span>
+        
+        <span class="code-comment"># Collect experience</span>
+        <span class="code-keyword">for</span> step <span class="code-keyword">in</span> range(steps_per_update):
+            <span class="code-comment"># Get action and value estimate</span>
+            state_tensor = torch.FloatTensor(state)
+            action, log_prob = agent.select_action(state_tensor)
+            value = agent.critic(state_tensor).item()
+            
+            <span class="code-comment"># Interact with environment</span>
+            next_state, reward, done, _ = env.step(action)
+            
+            <span class="code-comment"># Store transition</span>
+            states.append(state_tensor)
+            actions.append(action)
+            rewards.append(reward)
+            log_probs.append(log_prob)
+            values.append(value)
+            dones.append(done)
+            
+            episode_reward += reward
+            state = next_state
+            
+            <span class="code-keyword">if</span> done:
+                state = env.reset()
+        
+        <span class="code-comment"># Compute returns and advantages</span>
+        advantages = agent.compute_advantages(rewards, values, dones)
+        returns = advantages + torch.tensor(values)
+        
+        <span class="code-comment"># Update policy with collected data</span>
+        loss = agent.update(states, actions, log_probs, 
+                          advantages, returns)
+        
+        <span class="code-keyword">if</span> episode % <span class="code-number">10</span> == <span class="code-number">0</span>:
+            print(<span class="code-string">f"Episode {episode}, Reward: {episode_reward:.2f}"</span>)</code></pre>
+                </div>
+            </div>
+        </section>
+
+        <!-- Results & Impact -->
+        <section class="section">
+            <h2 class="section-title">
+                <span class="section-icon">📊</span>
+                Results & Impact
+            </h2>
+            <p>
+                PPO has become the <strong>de facto standard</strong> for on-policy reinforcement learning. Its combination of simplicity, sample efficiency, and robust performance has made it the algorithm of choice for countless applications.
+            </p>
+
+            <div class="results-grid">
+                <div class="result-card">
+                    <span class="result-number">15K+</span>
+                    <div class="result-label">Citations</div>
+                </div>
+                <div class="result-card">
+                    <span class="result-number">4×</span>
+                    <div class="result-label">Sample Efficiency vs A2C</div>
+                </div>
+                <div class="result-card">
+                    <span class="result-number">#1</span>
+                    <div class="result-label">OpenAI Baselines Choice</div>
+                </div>
+                <div class="result-card">
+                    <span class="result-number">🤖</span>
+                    <div class="result-label">LLM RLHF Standard</div>
+                </div>
+            </div>
+
+            <div class="innovation-box">
+                <h3>🎯 Key Results</h3>
+                <ul class="innovation-list">
+                    <li><strong>Atari Games:</strong> Achieved state-of-the-art performance on 49 Atari games, outperforming A2C and ACER</li>
+                    <li><strong>Mujoco Robotics:</strong> Solved continuous control tasks with fewer samples than TRPO while being simpler to implement</li>
+                    <li><strong>RoboSumo:</strong> Successfully trained agents for multi-agent competitive environments</li>
+                    <li><strong>RLHF Revolution:</strong> Became the standard algorithm for fine-tuning LLMs (ChatGPT, Claude, etc.) through reinforcement learning from human feedback</li>
+                </ul>
+            </div>
+        </section>
+
+        <!-- Related Papers -->
+        <section class="section">
+            <h2 class="section-title">
+                <span class="section-icon">📚</span>
+                Related Papers
+            </h2>
+            <p>
+                PPO builds on and has inspired numerous advances in reinforcement learning and AI alignment.
+            </p>
+
+            <div class="related-grid">
+                <a href="dqn.html" class="related-card">
+                    <h4>DQN (2015)</h4>
+                    <p>Pioneered deep reinforcement learning for discrete action spaces, paving the way for actor-critic methods.</p>
+                    <div class="related-meta">
+                        <span>📖 Predecessor</span>
+                        <span>Mnih et al.</span>
+                    </div>
+                </a>
+                <a href="alphago.html" class="related-card">
+                    <h4>AlphaGo (2016)</h4>
+                    <p>Combined policy gradients with Monte Carlo Tree Search, demonstrating RL's power for complex games.</p>
+                    <div class="related-meta">
+                        <span>📖 Related Work</span>
+                        <span>Silver et al.</span>
+                    </div>
+                </a>
+                <a href="instructgpt.html" class="related-card">
+                    <h4>InstructGPT (2022)</h4>
+                    <p>Used PPO for RLHF to align language models with human preferences — the foundation of modern AI assistants.</p>
+                    <div class="related-meta">
+                        <span>📖 Successor Application</span>
+                        <span>Ouyang et al.</span>
+                    </div>
+                </a>
+            </div>
+        </section>
+    </main>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <p>Part of <a href="../index.html" style="color: var(--accent-indigo);">AI Neural Networks</a> — Interactive visualizations of deep learning architectures</p>
+        <p style="margin-top: 0.5rem; font-size: 0.875rem;">Paper added on April 18, 2026 via automated heartbeat</p>
+    </footer>
+</body>
+</html>
