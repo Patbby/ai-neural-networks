@@ -209,6 +209,40 @@
                 </svg>
             </div>
 
+            <!-- QLoRA Paper Card -->
+            <div class="network-card" onclick="location.href='papers/qlora.html'">
+                <span class="tag">NeurIPS 2023</span>
+                <h3>QLoRA</h3>
+                <p>Efficient Finetuning of Quantized LLMs. Revolutionary technique enabling 65B parameter model finetuning on a single 48GB GPU. Combines 4-bit NormalFloat quantization with Low-Rank Adaptation.</p>
+                <svg class="preview-svg" viewBox="0 0 300 150">
+                    <defs>
+                        <linearGradient id="qlora-grad" x1="0%" y1="0%" x2="100%" y2="0%">
+                            <stop offset="0%" style="stop-color:#6366f1"/>
+                            <stop offset="50%" style="stop-color:#a855f7"/>
+                            <stop offset="100%" style="stop-color:#ec4899"/>
+                        </linearGradient>
+                    </defs>
+                    <!-- 4-bit Quantized Base Model -->
+                    <rect x="30" y="50" width="80" height="60" rx="8" fill="rgba(59,130,246,0.3)" stroke="#3b82f6" stroke-width="2" stroke-dasharray="4,2"/>
+                    <text x="70" y="75" fill="#93c5fd" font-size="8" text-anchor="middle">4-bit</text>
+                    <text x="70" y="88" fill="#93c5fd" font-size="8" text-anchor="middle">Frozen</text>
+                    <text x="70" y="101" fill="#93c5fd" font-size="8" text-anchor="middle">LLM</text>
+                    <!-- Arrow to LoRA -->
+                    <path d="M110 80 L140 80" stroke="#6366f1" stroke-width="2"/>
+                    <!-- LoRA Adapters -->
+                    <rect x="145" y="55" width="40" height="50" rx="5" fill="rgba(16,185,129,0.4)" stroke="#10b981" stroke-width="2"/>
+                    <text x="165" y="72" fill="#6ee7b7" font-size="7" text-anchor="middle">LoRA</text>
+                    <text x="165" y="85" fill="#6ee7b7" font-size="6" text-anchor="middle">A×B</text>
+                    <!-- Arrow to output -->
+                    <path d="M185 80 L220 80" stroke="#10b981" stroke-width="2"/>
+                    <!-- Output -->
+                    <rect x="225" y="60" width="50" height="40" rx="5" fill="rgba(236,72,153,0.3)" stroke="#ec4899" stroke-width="2"/>
+                    <text x="250" y="85" fill="#fbcfe8" font-size="8" text-anchor="middle">Output</text>
+                    <!-- Memory savings label -->
+                    <text x="150" y="130" fill="#10b981" font-size="9" text-anchor="middle">65B params → 48GB GPU (16× reduction)</text>
+                </svg>
+            </div>
+
             <!-- Adam Optimizer Paper Card -->
             <div class="network-card" onclick="location.href='papers/adam.html'">
                 <span class="tag">ICLR 2015</span>
