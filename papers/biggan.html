@@ -1,0 +1,1019 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BigGAN - Large Scale GAN Training | AI Neural Networks</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            background: #0a0a0f;
+            color: #e0e0ff;
+            line-height: 1.8;
+            overflow-x: hidden;
+        }
+        
+        .bg-animation {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+            opacity: 0.2;
+        }
+        
+        header {
+            text-align: center;
+            padding: 60px 20px 40px;
+            background: linear-gradient(180deg, rgba(236,72,153,0.15) 0%, transparent 100%);
+        }
+        
+        .back-link {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            color: #8888aa;
+            text-decoration: none;
+            font-size: 0.9rem;
+            transition: color 0.3s;
+        }
+        
+        .back-link:hover {
+            color: #ec4899;
+        }
+        
+        h1 {
+            font-size: 2.8rem;
+            background: linear-gradient(135deg, #ec4899 0%, #a855f7 50%, #6366f1 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 10px;
+            font-weight: 800;
+        }
+        
+        .paper-meta {
+            color: #8888aa;
+            font-size: 1.1rem;
+            margin-bottom: 15px;
+        }
+        
+        .badge {
+            display: inline-block;
+            background: linear-gradient(135deg, #ec4899, #a855f7);
+            color: #fff;
+            padding: 6px 16px;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            margin: 5px;
+            font-weight: 600;
+        }
+        
+        .badge-outline {
+            display: inline-block;
+            background: transparent;
+            border: 1px solid #ec4899;
+            color: #ec4899;
+            padding: 6px 16px;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            margin: 5px;
+            font-weight: 600;
+            transition: all 0.3s;
+        }
+        
+        .badge-outline:hover {
+            background: rgba(236,72,153,0.2);
+        }
+        
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: 40px 20px;
+        }
+        
+        .section {
+            background: rgba(20, 20, 35, 0.8);
+            border: 1px solid rgba(236, 72, 153, 0.2);
+            border-radius: 16px;
+            padding: 30px;
+            margin-bottom: 30px;
+        }
+        
+        .section h2 {
+            color: #fff;
+            font-size: 1.6rem;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .section p {
+            color: #a0a0c0;
+            margin-bottom: 15px;
+        }
+        
+        .highlight-box {
+            background: linear-gradient(135deg, rgba(236,72,153,0.15), rgba(168,85,247,0.1));
+            border-left: 4px solid #ec4899;
+            padding: 20px;
+            border-radius: 0 12px 12px 0;
+            margin: 20px 0;
+        }
+        
+        .highlight-box p {
+            margin: 0;
+            color: #e0e0ff;
+        }
+        
+        .formula {
+            background: rgba(10, 10, 20, 0.8);
+            padding: 20px;
+            border-radius: 12px;
+            font-family: 'Georgia', serif;
+            text-align: center;
+            color: #10b981;
+            font-size: 1.2rem;
+            margin: 20px 0;
+            border: 1px solid rgba(16, 185, 129, 0.3);
+        }
+        
+        .architecture-diagram {
+            width: 100%;
+            height: 500px;
+            margin: 30px 0;
+        }
+        
+        .comparison-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+        }
+        
+        .comparison-table th,
+        .comparison-table td {
+            padding: 12px 15px;
+            text-align: left;
+            border-bottom: 1px solid rgba(236, 72, 153, 0.2);
+        }
+        
+        .comparison-table th {
+            color: #fff;
+            font-weight: 600;
+            background: rgba(236, 72, 153, 0.1);
+        }
+        
+        .comparison-table td {
+            color: #a0a0c0;
+        }
+        
+        .comparison-table tr:hover {
+            background: rgba(236, 72, 153, 0.05);
+        }
+        
+        .code-block {
+            background: rgba(10, 10, 20, 0.8);
+            padding: 20px;
+            border-radius: 12px;
+            overflow-x: auto;
+            font-family: 'Consolas', 'Monaco', monospace;
+            font-size: 0.9rem;
+            border: 1px solid rgba(236, 72, 153, 0.2);
+            margin: 20px 0;
+        }
+        
+        .code-block .keyword {
+            color: #ec4899;
+        }
+        
+        .code-block .function {
+            color: #6366f1;
+        }
+        
+        .code-block .string {
+            color: #10b981;
+        }
+        
+        .code-block .comment {
+            color: #666;
+        }
+        
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin: 20px 0;
+        }
+        
+        .stat-card {
+            background: linear-gradient(135deg, rgba(236,72,153,0.1), rgba(168,85,247,0.1));
+            padding: 20px;
+            border-radius: 12px;
+            text-align: center;
+            border: 1px solid rgba(236, 72, 153, 0.2);
+        }
+        
+        .stat-value {
+            font-size: 2rem;
+            font-weight: 700;
+            color: #ec4899;
+        }
+        
+        .stat-label {
+            color: #8888aa;
+            font-size: 0.9rem;
+        }
+        
+        .feature-list {
+            list-style: none;
+            padding: 0;
+        }
+        
+        .feature-list li {
+            padding: 10px 0;
+            padding-left: 30px;
+            position: relative;
+            color: #a0a0c0;
+        }
+        
+        .feature-list li::before {
+            content: "▸";
+            position: absolute;
+            left: 0;
+            color: #ec4899;
+            font-weight: bold;
+        }
+        
+        .related-papers {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 15px;
+            margin-top: 20px;
+        }
+        
+        .related-paper-card {
+            background: rgba(30, 30, 50, 0.8);
+            padding: 20px;
+            border-radius: 12px;
+            border: 1px solid rgba(236, 72, 153, 0.1);
+            transition: all 0.3s;
+        }
+        
+        .related-paper-card:hover {
+            border-color: rgba(236, 72, 153, 0.4);
+            transform: translateY(-2px);
+        }
+        
+        .related-paper-card h4 {
+            color: #fff;
+            margin-bottom: 8px;
+        }
+        
+        .related-paper-card p {
+            color: #8888aa;
+            font-size: 0.9rem;
+            margin: 0;
+        }
+        
+        .paper-link {
+            color: #ec4899;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+            transition: all 0.3s;
+        }
+        
+        .paper-link:hover {
+            color: #a855f7;
+            text-decoration: underline;
+        }
+        
+        .architecture-svg {
+            width: 100%;
+            max-width: 900px;
+            margin: 0 auto;
+            display: block;
+        }
+        
+        @media (max-width: 768px) {
+            h1 {
+                font-size: 2rem;
+            }
+            
+            .container {
+                padding: 20px 15px;
+            }
+            
+            .section {
+                padding: 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Animated Background -->
+    <svg class="bg-animation" viewBox="0 0 1000 1000" preserveAspectRatio="none">
+        <defs>
+            <linearGradient id="bgGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+                <stop offset="0%" style="stop-color:#ec4899;stop-opacity:0.1" />
+                <stop offset="50%" style="stop-color:#a855f7;stop-opacity:0.05" />
+                <stop offset="100%" style="stop-color:#6366f1;stop-opacity:0.1" />
+            </linearGradient>
+        </defs>
+        <rect width="100%" height="100%" fill="url(#bgGrad)">
+            <animate attributeName="opacity" values="0.3;0.5;0.3" dur="10s" repeatCount="indefinite" />
+        </rect>
+    </svg>
+
+    <header>
+        <a href="../index.html" class="back-link">← Back to Papers</a>
+        <h1>BigGAN</h1>
+        <p class="paper-meta">Large Scale GAN Training for High Fidelity Natural Image Synthesis</p>
+        <div>
+            <span class="badge">ICLR 2019</span>
+            <span class="badge">Generative Models</span>
+            <span class="badge">Image Synthesis</span>
+        </div>
+        <p style="color: #8888aa; margin-top: 15px;">
+            Andrew Brock, Jeff Donahue, Karen Simonyan<br>
+            <em>DeepMind</em>
+        </p>
+    </header>
+
+    <div class="container">
+        <!-- Quick Links -->
+        <div class="section" style="padding: 20px; text-align: center;">
+            <a href="https://arxiv.org/abs/1809.11096" class="paper-link" target="_blank">📄 arXiv Paper</a>
+            <span style="color: #444; margin: 0 15px;">|</span>
+            <a href="https://github.com/ajbrock/BigGAN-PyTorch" class="paper-link" target="_blank">💻 Official Code</a>
+            <span style="color: #444; margin: 0 15px;">|</span>
+            <span class="badge-outline">Citations: 10,000+</span>
+        </div>
+
+        <!-- Impact Stats -->
+        <div class="section">
+            <h2>📊 Impact</h2>
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-value">166.5</div>
+                    <div class="stat-label">Inception Score (128×128)</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value">7.4</div>
+                    <div class="stat-label">FID Score (128×128)</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value">512²</div>
+                    <div class="stat-label">Max Resolution</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value">2048</div>
+                    <div class="stat-label">Batch Size</div>
+                </div>
+            </div>
+            <div class="highlight-box">
+                <p><strong>Before BigGAN:</strong> IS 52.52, FID 18.65<br>
+                <strong>After BigGAN:</strong> IS 166.5, FID 7.4 — a <strong>3× improvement</strong> in image quality metrics, establishing new state-of-the-art for class-conditional image generation on ImageNet.</p>
+            </div>
+        </div>
+
+        <!-- Problem Statement -->
+        <div class="section">
+            <h2>🎯 Problem Statement</h2>
+            <p>Despite significant progress in generative image modeling, generating high-resolution, diverse samples from complex datasets like ImageNet remained an elusive goal:</p>
+            <ul class="feature-list">
+                <li><strong>Training Instability:</strong> GANs suffered from mode collapse and training divergence at scale</li>
+                <li><strong>Fidelity-Diversity Trade-off:</strong> Improving image quality often reduced sample diversity</li>
+                <li><strong>Scale Limitations:</strong> Previous GANs couldn't leverage large batch training effectively</li>
+                <li><strong>Resolution Constraints:</strong> Most GANs were limited to low-resolution outputs (≤256×256)</li>
+            </ul>
+        </div>
+
+        <!-- Key Innovation -->
+        <div class="section">
+            <h2>💡 Key Innovation</h2>
+            <div class="highlight-box">
+                <p><strong>BigGAN demonstrates that GANs benefit enormously from scaling — increasing batch size by 8× and model parameters by 2-4× yields dramatic quality improvements. The key insight is applying orthogonal regularization to enable the "truncation trick" for explicit control over fidelity-diversity trade-offs.</strong></p>
+            </div>
+            <ul class="feature-list">
+                <li><strong>Large-Scale Training:</strong> First systematic study of GAN training at massive scale (batch sizes up to 2048)</li>
+                <li><strong>Orthogonal Regularization:</strong> Stabilizes training and enables fine control over generation quality</li>
+                <li><strong>Truncation Trick:</strong> Simple sampling technique to trade diversity for fidelity by reducing latent variance</li>
+                <li><strong>Class-Conditional Architecture:</strong> Shared class embeddings with skip connections for better conditioning</li>
+            </ul>
+        </div>
+
+        <!-- Architecture -->
+        <div class="section">
+            <h2>🏗️ Architecture</h2>
+            <p>BigGAN builds upon the SA-GAN (Self-Attention GAN) architecture with several key modifications for scale:</p>
+            
+            <svg class="architecture-svg" viewBox="0 0 900 600">
+                <!-- Background -->
+                <rect width="900" height="600" fill="#0f0f1a"/>
+                
+                <!-- Title -->
+                <text x="450" y="30" text-anchor="middle" fill="#fff" font-size="18" font-weight="bold">BigGAN Generator Architecture</text>
+                
+                <!-- Latent z Input -->
+                <rect x="20" y="80" width="100" height="60" rx="5" fill="#6366f1" opacity="0.3" stroke="#6366f1" stroke-width="2"/>
+                <text x="70" y="110" text-anchor="middle" fill="#6366f1" font-size="12" font-weight="bold">z ∼ N(0,I)</text>
+                <text x="70" y="128" text-anchor="middle" fill="#888" font-size="10">120-dim</text>
+                
+                <!-- Class Embedding -->
+                <rect x="20" y="180" width="100" height="60" rx="5" fill="#ec4899" opacity="0.3" stroke="#ec4899" stroke-width="2"/>
+                <text x="70" y="210" text-anchor="middle" fill="#ec4899" font-size="12" font-weight="bold">Class</text>
+                <text x="70" y="228" text-anchor="middle" fill="#888" font-size="10">Embedding</text>
+                
+                <!-- Shared Embedding -->
+                <rect x="160" y="130" width="120" height="80" rx="5" fill="#a855f7" opacity="0.3" stroke="#a855f7" stroke-width="2"/>
+                <text x="220" y="160" text-anchor="middle" fill="#a855f7" font-size="12" font-weight="bold">Shared</text>
+                <text x="220" y="178" text-anchor="middle" fill="#a855f7" font-size="12" font-weight="bold">Embedding</text>
+                <text x="220" y="196" text-anchor="middle" fill="#888" font-size="10">Linear Projection</text>
+                
+                <!-- Skip-z Connection Label -->
+                <text x="450" y="60" text-anchor="middle" fill="#f59e0b" font-size="11" font-weight="bold">Skip-z Connections (Multi-Scale)</text>
+                
+                <!-- Resolution Blocks -->
+                <!-- 4x4 -->
+                <rect x="320" y="100" width="100" height="100" rx="5" fill="#10b981" opacity="0.2" stroke="#10b981" stroke-width="2"/>
+                <text x="370" y="135" text-anchor="middle" fill="#10b981" font-size="12" font-weight="bold">4×4</text>
+                <text x="370" y="153" text-anchor="middle" fill="#888" font-size="10">ResBlock</text>
+                <text x="370" y="168" text-anchor="middle" fill="#888" font-size="9">+ c, z₁</text>
+                <text x="370" y="183" text-anchor="middle" fill="#888" font-size="9">256 ch</text>
+                
+                <!-- 8x8 -->
+                <rect x="440" y="100" width="100" height="100" rx="5" fill="#10b981" opacity="0.2" stroke="#10b981" stroke-width="2"/>
+                <text x="490" y="135" text-anchor="middle" fill="#10b981" font-size="12" font-weight="bold">8×8</text>
+                <text x="490" y="153" text-anchor="middle" fill="#888" font-size="10">ResBlock</text>
+                <text x="490" y="168" text-anchor="middle" fill="#888" font-size="9">+ c, z₂</text>
+                <text x="490" y="183" text-anchor="middle" fill="#888" font-size="9">256 ch</text>
+                
+                <!-- 16x16 -->
+                <rect x="560" y="100" width="100" height="100" rx="5" fill="#10b981" opacity="0.2" stroke="#10b981" stroke-width="2"/>
+                <text x="610" y="135" text-anchor="middle" fill="#10b981" font-size="12" font-weight="bold">16×16</text>
+                <text x="610" y="153" text-anchor="middle" fill="#888" font-size="10">ResBlock</text>
+                <text x="610" y="168" text-anchor="middle" fill="#888" font-size="9">+ c, z₃</text>
+                <text x="610" y="183" text-anchor="middle" fill="#888" font-size="9">256 ch</text>
+                
+                <!-- Self-Attention -->
+                <rect x="680" y="100" width="100" height="100" rx="5" fill="#ec4899" opacity="0.3" stroke="#ec4899" stroke-width="2"/>
+                <text x="730" y="135" text-anchor="middle" fill="#ec4899" font-size="11" font-weight="bold">Self-</text>
+                <text x="730" y="153" text-anchor="middle" fill="#ec4899" font-size="11" font-weight="bold">Attention</text>
+                <text x="730" y="173" text-anchor="middle" fill="#888" font-size="9">@ 32×32</text>
+                <text x="730" y="188" text-anchor="middle" fill="#888" font-size="9">(Non-local)</text>
+                
+                <!-- More Resolution Blocks -->
+                <!-- 32x32 -->
+                <rect x="320" y="220" width="100" height="100" rx="5" fill="#10b981" opacity="0.2" stroke="#10b981" stroke-width="2"/>
+                <text x="370" y="255" text-anchor="middle" fill="#10b981" font-size="12" font-weight="bold">32×32</text>
+                <text x="370" y="273" text-anchor="middle" fill="#888" font-size="10">ResBlock</text>
+                <text x="370" y="288" text-anchor="middle" fill="#888" font-size="9">128 ch</text>
+                
+                <!-- 64x64 -->
+                <rect x="440" y="220" width="100" height="100" rx="5" fill="#10b981" opacity="0.2" stroke="#10b981" stroke-width="2"/>
+                <text x="490" y="255" text-anchor="middle" fill="#10b981" font-size="12" font-weight="bold">64×64</text>
+                <text x="490" y="273" text-anchor="middle" fill="#888" font-size="10">ResBlock</text>
+                <text x="490" y="288" text-anchor="middle" fill="#888" font-size="9">128 ch</text>
+                
+                <!-- 128x128 -->
+                <rect x="560" y="220" width="100" height="100" rx="5" fill="#10b981" opacity="0.2" stroke="#10b981" stroke-width="2"/>
+                <text x="610" y="255" text-anchor="middle" fill="#10b981" font-size="12" font-weight="bold">128×128</text>
+                <text x="610" y="273" text-anchor="middle" fill="#888" font-size="10">ResBlock</text>
+                <text x="610" y="288" text-anchor="middle" fill="#888" font-size="9">64 ch</text>
+                
+                <!-- 256x256 -->
+                <rect x="680" y="220" width="100" height="100" rx="5" fill="#10b981" opacity="0.2" stroke="#10b981" stroke-width="2"/>
+                <text x="730" y="255" text-anchor="middle" fill="#10b981" font-size="12" font-weight="bold">256×256</text>
+                <text x="730" y="273" text-anchor="middle" fill="#888" font-size="10">ResBlock</text>
+                <text x="730" y="288" text-anchor="middle" fill="#888" font-size="9">32 ch</text>
+                
+                <!-- Output -->
+                <rect x="440" y="360" width="200" height="80" rx="5" fill="#6366f1" opacity="0.3" stroke="#6366f1" stroke-width="2"/>
+                <text x="540" y="395" text-anchor="middle" fill="#6366f1" font-size="14" font-weight="bold">To RGB</text>
+                <text x="540" y="420" text-anchor="middle" fill="#888" font-size="10">3×256×256 Output</text>
+                
+                <!-- Final Output Image -->
+                <rect x="480" y="470" width="120" height="100" rx="5" fill="url(#imageGrad)" opacity="0.5" stroke="#10b981" stroke-width="3"/>
+                <defs>
+                    <linearGradient id="imageGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+                        <stop offset="0%" style="stop-color:#ec4899"/>
+                        <stop offset="50%" style="stop-color:#a855f7"/>
+                        <stop offset="100%" style="stop-color:#6366f1"/>
+                    </linearGradient>
+                </defs>
+                <text x="540" y="520" text-anchor="middle" fill="#fff" font-size="14" font-weight="bold">Generated</text>
+                <text x="540" y="545" text-anchor="middle" fill="#fff" font-size="14" font-weight="bold">Image</text>
+                
+                <!-- Arrows -->
+                <defs>
+                    <marker id="arrowhead" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto">
+                        <polygon points="0 0, 10 3.5, 0 7" fill="#6366f1"/>
+                    </marker>
+                </defs>
+                
+                <!-- z to embedding -->
+                <line x1="120" y1="110" x2="160" y2="150" stroke="#6366f1" stroke-width="2" marker-end="url(#arrowhead)"/>
+                
+                <!-- class to embedding -->
+                <line x1="120" y1="210" x2="160" y2="190" stroke="#ec4899" stroke-width="2" marker-end="url(#arrowhead)"/>
+                
+                <!-- embedding to first block -->
+                <line x1="280" y1="170" x2="320" y2="150" stroke="#a855f7" stroke-width="2" marker-end="url(#arrowhead)"/>
+                
+                <!-- Skip-z connections (curved) -->
+                <path d="M 120 90 Q 200 60, 370 100" fill="none" stroke="#f59e0b" stroke-width="1.5" stroke-dasharray="5,3"/>
+                <path d="M 140 90 Q 250 50, 490 100" fill="none" stroke="#f59e0b" stroke-width="1.5" stroke-dasharray="5,3"/>
+                <path d="M 160 90 Q 300 40, 610 100" fill="none" stroke="#f59e0b" stroke-width="1.5" stroke-dasharray="5,3"/>
+                
+                <!-- Horizontal connections -->
+                <line x1="420" y1="150" x2="440" y2="150" stroke="#6366f1" stroke-width="2" marker-end="url(#arrowhead)"/>
+                <line x1="540" y1="150" x2="560" y2="150" stroke="#6366f1" stroke-width="2" marker-end="url(#arrowhead)"/>
+                <line x1="660" y1="150" x2="680" y2="150" stroke="#6366f1" stroke-width="2" marker-end="url(#arrowhead)"/>
+                
+                <line x1="420" y1="270" x2="440" y2="270" stroke="#6366f1" stroke-width="2" marker-end="url(#arrowhead)"/>
+                <line x1="540" y1="270" x2="560" y2="270" stroke="#6366f1" stroke-width="2" marker-end="url(#arrowhead)"/>
+                <line x1="660" y1="270" x2="680" y2="270" stroke="#6366f1" stroke-width="2" marker-end="url(#arrowhead)"/>
+                
+                <!-- Down connections -->
+                <line x1="370" y1="200" x2="370" y2="220" stroke="#6366f1" stroke-width="2" marker-end="url(#arrowhead)"/>
+                <line x1="730" y1="200" x2="730" y2="220" stroke="#6366f1" stroke-width="2" marker-end="url(#arrowhead)"/>
+                
+                <!-- To output -->
+                <line x1="540" y1="320" x2="540" y2="360" stroke="#6366f1" stroke-width="2" marker-end="url(#arrowhead)"/>
+                <line x1="540" y1="440" x2="540" y2="470" stroke="#6366f1" stroke-width="2" marker-end="url(#arrowhead)"/>
+                
+                <!-- Labels -->
+                <text x="140" y="150" fill="#fff" font-size="10">BatchNorm</text>
+                <text x="140" y="195" fill="#fff" font-size="10">Projection</text>
+            </svg>
+            
+            <div class="highlight-box">
+                <p><strong>Key Architectural Components:</strong></p>
+                <ul class="feature-list">
+                    <li><strong>Shared Class Embedding:</strong> Instead of separate embeddings per layer, uses a shared embedding linearly projected to each layer's gain and bias — reduces memory by 37% and speeds up training</li>
+                    <li><strong>Skip-z (Skip Connections):</strong> Latent vector z is split and concatenated with class embedding at multiple resolutions, allowing direct influence at different hierarchical levels</li>
+                    <li><strong>Self-Attention:</strong> Non-local attention mechanism at 32×32 resolution to capture long-range dependencies</li>
+                    <li><strong>Spectral Normalization:</strong> Applied to discriminator to stabilize training</li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- Truncation Trick Visualization -->
+        <div class="section">
+            <h2>✂️ The Truncation Trick</h2>
+            <p>A novel sampling technique that allows explicit control over the trade-off between sample fidelity and diversity:</p>
+            
+            <svg class="architecture-svg" viewBox="0 0 900 350">
+                <rect width="900" height="350" fill="#0f0f1a"/>
+                
+                <text x="450" y="30" text-anchor="middle" fill="#fff" font-size="16" font-weight="bold">Truncation Trick: Balancing Fidelity vs Diversity</text>
+                
+                <!-- Standard Normal Distribution -->
+                <text x="150" y="60" text-anchor="middle" fill="#ec4899" font-size="12" font-weight="bold">Standard: z ∼ N(0, I)</text>
+                <path d="M 50 200 Q 150 80, 250 200" fill="none" stroke="#ec4899" stroke-width="3"/>
+                <!-- Bell curve fill -->
+                <path d="M 50 200 Q 150 80, 250 200 L 250 220 L 50 220 Z" fill="rgba(236,72,153,0.2)"/>
+                <!-- Tails -->
+                <line x1="50" y1="200" x2="50" y2="220" stroke="#ec4899" stroke-width="2"/>
+                <line x1="250" y1="200" x2="250" y2="220" stroke="#ec4899" stroke-width="2"/>
+                <text x="150" y="240" text-anchor="middle" fill="#888" font-size="10">High diversity</text>
+                <text x="150" y="255" text-anchor="middle" fill="#888" font-size="10">Variable quality</text>
+                
+                <!-- Arrow -->
+                <text x="300" y="200" fill="#fff" font-size="20">→</text>
+                
+                <!-- Truncated Distribution -->
+                <text x="450" y="60" text-anchor="middle" fill="#10b981" font-size="12" font-weight="bold">Truncated: z ∼ truncated-N(0, I)</text>
+                <path d="M 350 200 Q 450 120, 550 200" fill="none" stroke="#10b981" stroke-width="3"/>
+                <path d="M 350 200 Q 450 120, 550 200 L 550 220 L 350 220 Z" fill="rgba(16,185,129,0.2)"/>
+                <!-- Cutoff tails -->
+                <line x1="350" y1="200" x2="350" y2="220" stroke="#f59e0b" stroke-width="3"/>
+                <line x1="550" y1="200" x2="550" y2="220" stroke="#f59e0b" stroke-width="3"/>
+                <text x="340" y="235" fill="#f59e0b" font-size="10">resample</text>
+                <text x="560" y="235" fill="#f59e0b" font-size="10">resample</text>
+                <text x="450" y="240" text-anchor="middle" fill="#888" font-size="10">Lower diversity</text>
+                <text x="450" y="255" text-anchor="middle" fill="#888" font-size="10">Higher fidelity</text>
+                
+                <!-- Arrow -->
+                <text x="600" y="200" fill="#fff" font-size="20">→</text>
+                
+                <!-- Extreme truncation -->
+                <text x="750" y="60" text-anchor="middle" fill="#6366f1" font-size="12" font-weight="bold">High truncation (→ 0)</text>
+                <line x1="650" y1="200" x2="850" y2="200" stroke="#6366f1" stroke-width="3"/>
+                <path d="M 650 200 L 850 200 L 850 220 L 650 220 Z" fill="rgba(99,102,241,0.2)"/>
+                <text x="750" y="240" text-anchor="middle" fill="#888" font-size="10">Near-zero diversity</text>
+                <text x="750" y="255" text-anchor="middle" fill="#888" font-size="10">Maximum fidelity</text>
+                <text x="750" y="275" text-anchor="middle" fill="#888" font-size="10">(mode collapse)</text>
+                
+                <!-- Threshold indicator -->
+                <text x="450" y="310" text-anchor="middle" fill="#fff" font-size="11">Threshold parameter controls the trade-off: lower threshold = more truncation = higher quality</text>
+            </svg>
+            
+            <div class="formula">
+                z̃ = z if |zᵢ| ≤ threshold; else resample from N(0, I)
+            </div>
+            
+            <p>The truncation trick works because the generator learns to place high-quality samples near the mode of the latent distribution. By sampling closer to this mode, we get more "typical" (higher quality) but less diverse outputs.</p>
+        </div>
+
+        <!-- Results -->
+        <div class="section">
+            <h2>📈 Results</h2>
+            <p>BigGAN achieved unprecedented results on ImageNet, setting new state-of-the-art:</p>
+            
+            <table class="comparison-table">
+                <thead>
+                    <tr>
+                        <th>Model</th>
+                        <th>Resolution</th>
+                        <th>Inception Score ↑</th>
+                        <th>FID ↓</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>AC-GAN (2017)</td>
+                        <td>128×128</td>
+                        <td>21.4</td>
+                        <td>—</td>
+                    </tr>
+                    <tr>
+                        <td>SAGAN (2018)</td>
+                        <td>128×128</td>
+                        <td>52.5</td>
+                        <td>18.65</td>
+                    </tr>
+                    <tr style="background: rgba(236,72,153,0.1);">
+                        <td><strong>BigGAN (2018)</strong></td>
+                        <td><strong>128×128</strong></td>
+                        <td><strong>166.5</strong></td>
+                        <td><strong>7.4</strong></td>
+                    </tr>
+                    <tr style="background: rgba(236,72,153,0.1);">
+                        <td><strong>BigGAN (2018)</strong></td>
+                        <td><strong>256×256</strong></td>
+                        <td><strong>198.2</strong></td>
+                        <td><strong>8.1</strong></td>
+                    </tr>
+                    <tr style="background: rgba(236,72,153,0.1);">
+                        <td><strong>BigGAN (2018)</strong></td>
+                        <td><strong>512×512</strong></td>
+                        <td><strong>241.5</strong></td>
+                        <td><strong>9.6</strong></td>
+                    </tr>
+                </tbody>
+            </table>
+            
+            <p>BigGAN was also trained on JFT-300M (292M images, 8.5K classes), demonstrating scalability to larger datasets:</p>
+            <ul class="feature-list">
+                <li>IS: 250.6 (128×128), 312.2 (256×256), 344.1 (512×512)</li>
+                <li>Shows that scaling to larger, more diverse datasets further improves quality</li>
+            </ul>
+        </div>
+
+        <!-- Training Stability Analysis -->
+        <div class="section">
+            <h2>🔬 Training Stability Analysis</h2>
+            <p>BigGAN revealed unique instabilities at large scale and proposed solutions:</p>
+            
+            <svg class="architecture-svg" viewBox="0 0 900 400">
+                <rect width="900" height="400" fill="#0f0f1a"/>
+                
+                <text x="450" y="30" text-anchor="middle" fill="#fff" font-size="16" font-weight="bold">Spectral Analysis: Training Instability</text>
+                
+                <!-- Left: Normal Training -->
+                <text x="200" y="60" text-anchor="middle" fill="#10b981" font-size="13" font-weight="bold">Stable Training</text>
+                
+                <!-- Discriminator -->
+                <rect x="50" y="80" width="120" height="80" rx="5" fill="#ec4899" opacity="0.2" stroke="#ec4899" stroke-width="1"/>
+                <text x="110" y="105" text-anchor="middle" fill="#ec4899" font-size="11">Discriminator</text>
+                <text x="110" y="125" text-anchor="middle" fill="#888" font-size="9">σ(D) bounded</text>
+                <text x="110" y="145" text-anchor="middle" fill="#10b981" font-size="9">✓ Spectral Norm</text>
+                
+                <!-- Arrow -->
+                <line x1="170" y1="120" x2="220" y2="120" stroke="#6366f1" stroke-width="2" marker-end="url(#arrowhead)"/>
+                
+                <!-- Generator -->
+                <rect x="230" y="80" width="120" height="80" rx="5" fill="#6366f1" opacity="0.2" stroke="#6366f1" stroke-width="1"/>
+                <text x="290" y="105" text-anchor="middle" fill="#6366f1" font-size="11">Generator</text>
+                <text x="290" y="125" text-anchor="middle" fill="#888" font-size="9">σ(G) stable</text>
+                <text x="290" y="145" text-anchor="middle" fill="#10b981" font-size="9">✓ Orthogonal Reg</text>
+                
+                <!-- Spectral values -->
+                <text x="110" y="190" text-anchor="middle" fill="#888" font-size="9">Singular values: 0.5-2.0</text>
+                <text x="290" y="190" text-anchor="middle" fill="#888" font-size="9">Well-conditioned</text>
+                
+                <!-- Middle: Arrow -->
+                <text x="450" y="130" fill="#fff" font-size="30">vs</text>
+                
+                <!-- Right: Collapse -->
+                <text x="700" y="60" text-anchor="middle" fill="#ef4444" font-size="13" font-weight="bold">Training Collapse</text>
+                
+                <!-- Discriminator Collapse -->
+                <rect x="550" y="80" width="120" height="80" rx="5" fill="#ef4444" opacity="0.2" stroke="#ef4444" stroke-width="2"/>
+                <text x="610" y="105" text-anchor="middle" fill="#ef4444" font-size="11">D Collapse</text>
+                <text x="610" y="125" text-anchor="middle" fill="#888" font-size="9">σ(D) → ∞</text>
+                <text x="610" y="145" text-anchor="middle" fill="#ef4444" font-size="9">✗ Unbounded</text>
+                
+                <!-- Arrow -->
+                <line x1="670" y1="120" x2="720" y2="120" stroke="#6366f1" stroke-width="2" marker-end="url(#arrowhead)"/>
+                
+                <!-- Generator Explosion -->
+                <rect x="730" y="80" width="120" height="80" rx="5" fill="#ef4444" opacity="0.2" stroke="#ef4444" stroke-width="2"/>
+                <text x="790" y="105" text-anchor="middle" fill="#ef4444" font-size="11">G Explodes</text>
+                <text x="790" y="125" text-anchor="middle" fill="#888" font-size="9">σ(G) → ∞</text>
+                <text x="790" y="145" text-anchor="middle" fill="#ef4444" font-size="9">✗ Spectral explosion</text>
+                
+                <!-- Spectral explosion -->
+                <text x="610" y="190" text-anchor="middle" fill="#ef4444" font-size="9">Singular values explode</text>
+                <text x="790" y="190" text-anchor="middle" fill="#ef4444" font-size="9">First layer dominates</text>
+                
+                <!-- Bottom: Solutions -->
+                <text x="450" y="240" text-anchor="middle" fill="#fff" font-size="14" font-weight="bold">Solutions Applied</text>
+                
+                <rect x="50" y="260" width="250" height="120" rx="5" fill="rgba(16,185,129,0.1)" stroke="#10b981" stroke-width="1"/>
+                <text x="175" y="285" text-anchor="middle" fill="#10b981" font-size="12" font-weight="bold">1. Orthogonal Regularization</text>
+                <text x="175" y="310" text-anchor="middle" fill="#a0a0c0" font-size="10">R = β‖WᵀW − I‖²</text>
+                <text x="175" y="335" text-anchor="middle" fill="#888" font-size="9">Penalizes non-orthogonal weights</text>
+                <text x="175" y="355" text-anchor="middle" fill="#888" font-size="9">Prevents spectral explosion</text>
+                
+                <rect x="325" y="260" width="250" height="120" rx="5" fill="rgba(99,102,241,0.1)" stroke="#6366f1" stroke-width="1"/>
+                <text x="450" y="285" text-anchor="middle" fill="#6366f1" font-size="12" font-weight="bold">2. Spectral Normalization</text>
+                <text x="450" y="310" text-anchor="middle" fill="#a0a0c0" font-size="10">W̃ = W / σ(W)</text>
+                <text x="450" y="335" text-anchor="middle" fill="#888" font-size="9">Applied to Discriminator</text>
+                <text x="450" y="355" text-anchor="middle" fill="#888" font-size="9">Bounds Lipschitz constant</text>
+                
+                <rect x="600" y="260" width="250" height="120" rx="5" fill="rgba(236,72,153,0.1)" stroke="#ec4899" stroke-width="1"/>
+                <text x="725" y="285" text-anchor="middle" fill="#ec4899" font-size="12" font-weight="bold">3. Moving Average G</text>
+                <text x="725" y="310" text-anchor="middle" fill="#a0a0c0" font-size="10">Ḡ = 0.9999·Ḡ + 0.0001·G</text>
+                <text x="725" y="335" text-anchor="middle" fill="#888" font-size="9">EMA of generator weights</text>
+                <text x="725" y="355" text-anchor="middle" fill="#888" font-size="9">Smoother sampling</text>
+            </svg>
+            
+            <div class="highlight-box">
+                <p><strong>Key Findings:</strong></p>
+                <ul class="feature-list">
+                    <li><strong>Spectral Explosion:</strong> Collapse begins with the first generator layer's singular values exploding, followed by the rest of the generator</li>
+                    <li><strong>Discriminator Response:</strong> Spectral explosion in D causes it to output nonsensical predictions with exploding magnitudes</li>
+                    <li><strong>Complete Collapse:</strong> Within hundreds of iterations, the generator outputs become constant gray images</li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- Scaling Analysis -->
+        <div class="section">
+            <h2>📊 Scaling Analysis</h2>
+            <p>BigGAN systematically studied the effects of scaling different dimensions:</p>
+            
+            <svg class="architecture-svg" viewBox="0 0 900 450">
+                <rect width="900" height="450" fill="#0f0f1a"/>
+                
+                <text x="450" y="30" text-anchor="middle" fill="#fff" font-size="16" font-weight="bold">Scaling Effects on Image Quality (IS)</text>
+                
+                <!-- Axes -->
+                <line x1="80" y1="400" x2="820" y2="400" stroke="#444" stroke-width="2"/>
+                <line x1="80" y1="400" x2="80" y2="80" stroke="#444" stroke-width="2"/>
+                
+                <!-- Y-axis labels -->
+                <text x="70" y="405" text-anchor="end" fill="#888" font-size="10">0</text>
+                <text x="70" y="340" text-anchor="end" fill="#888" font-size="10">50</text>
+                <text x="70" y="275" text-anchor="end" fill="#888" font-size="10">100</text>
+                <text x="70" y="210" text-anchor="end" fill="#888" font-size="10">150</text>
+                <text x="70" y="145" text-anchor="end" fill="#888" font-size="10">200</text>
+                <text x="70" y="90" text-anchor="end" fill="#888" font-size="10">250</text>
+                
+                <!-- X-axis labels -->
+                <text x="220" y="420" text-anchor="middle" fill="#888" font-size="10">Baseline</text>
+                <text x="380" y="420" text-anchor="middle" fill="#ec4899" font-size="10">8× Batch</text>
+                <text x="540" y="420" text-anchor="middle" fill="#a855f7" font-size="10">+50% Width</text>
+                <text x="700" y="420" text-anchor="middle" fill="#6366f1" font-size="10">+Deep</text>
+                
+                <!-- Grid lines -->
+                <line x1="80" y1="340" x2="820" y2="340" stroke="#222" stroke-width="1"/>
+                <line x1="80" y1="275" x2="820" y2="275" stroke="#222" stroke-width="1"/>
+                <line x1="80" y1="210" x2="820" y2="210" stroke="#222" stroke-width="1"/>
+                <line x1="80" y1="145" x2="820" y2="145" stroke="#222" stroke-width="1"/>
+                
+                <!-- Bars -->
+                <!-- Baseline: 52.5 -->
+                <rect x="190" y="340" width="60" height="60" fill="#444" opacity="0.5"/>
+                <text x="220" y="325" text-anchor="middle" fill="#888" font-size="11">52.5</text>
+                
+                <!-- 8x Batch: +46% = ~76.7 -->
+                <rect x="350" y="290" width="60" height="110" fill="#ec4899" opacity="0.7"/>
+                <text x="380" y="275" text-anchor="middle" fill="#ec4899" font-size="11">+46%</text>
+                
+                <!-- +50% Width: +21% = ~92.8 -->
+                <rect x="510" y="260" width="60" height="140" fill="#a855f7" opacity="0.7"/>
+                <text x="540" y="245" text-anchor="middle" fill="#a855f7" font-size="11">+21%</text>
+                
+                <!-- +Shared Emb: +37% speed -->
+                <rect x="670" y="180" width="60" height="220" fill="#6366f1" opacity="0.7"/>
+                <text x="700" y="165" text-anchor="middle" fill="#6366f1" font-size="11">166.5</text>
+                <text x="700" y="150" text-anchor="middle" fill="#10b981" font-size="9">Final IS</text>
+                
+                <!-- Legend -->
+                <rect x="550" y="90" width="250" height="100" rx="5" fill="rgba(0,0,0,0.3)" stroke="#444"/>
+                <text x="565" y="110" fill="#fff" font-size="11" font-weight="bold">Scaling Benefits:</text>
+                <rect x="565" y="120" width="15" height="10" fill="#ec4899" opacity="0.7"/>
+                <text x="590" y="130" fill="#a0a0c0" font-size="10">8× batch size: +46% IS</text>
+                <rect x="565" y="140" width="15" height="10" fill="#a855f7" opacity="0.7"/>
+                <text x="590" y="150" fill="#a0a0c0" font-size="10">+50% width: +21% IS</text>
+                <rect x="565" y="160" width="15" height="10" fill="#6366f1" opacity="0.7"/>
+                <text x="590" y="170" fill="#a0a0c0" font-size="10">Shared emb: -37% train time</text>
+            </svg>
+            
+            <table class="comparison-table">
+                <thead>
+                    <tr>
+                        <th>Modification</th>
+                        <th>Effect on IS</th>
+                        <th>Training Impact</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>8× Batch Size (256 → 2048)</td>
+                        <td>+46%</td>
+                        <td>Reaches final performance faster, but more unstable</td>
+                    </tr>
+                    <tr>
+                        <td>+50% Width (Channels)</td>
+                        <td>+21%</td>
+                        <td>~2× parameters, better capacity for dataset complexity</td>
+                    </tr>
+                    <tr>
+                        <td>Shared Class Embedding</td>
+                        <td>—</td>
+                        <td>-37% training time, reduces memory and computation</td>
+                    </tr>
+                    <tr>
+                        <td>Skip-z Connections</td>
+                        <td>+4%</td>
+                        <td>-18% training time, better multi-scale conditioning</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <!-- Code Implementation -->
+        <div class="section">
+            <h2>💻 PyTorch Implementation</h2>
+            <p>Key components for implementing BigGAN-style generator:</p>
+            
+            <div class="code-block">
+<span class="comment"># BigGAN Generator with Skip-z and Shared Embeddings</span>
+<span class="keyword">import</span> torch
+<span class="keyword">import</span> torch.nn <span class="keyword">as</span> nn
+<span class="keyword">import</span> torch.nn.functional <span class="keyword">as</span> F
+
+<span class="keyword">class</span> <span class="function">BigGANGenerator</span>(nn.Module):
+    <span class="keyword">def</span> <span class="function">__init__</span>(self, z_dim=<span class="string">120</span>, shared_dim=<span class="string">128</span>, 
+                 channels=[<span class="string">256</span>, <span class="string">256</span>, <span class="string">256</span>, <span class="string">256</span>, <span class="string">128</span>, <span class="string">64</span>, <span class="string">32</span>],
+                 num_classes=<span class="string">1000</span>):
+        super().__init__()
+        self.z_dim = z_dim
+        
+        <span class="comment"># Shared class embedding (reduces parameters)</span>
+        self.shared_embed = nn.Embedding(num_classes, shared_dim)
+        
+        <span class="comment"># Projection layers for each resolution</span>
+        self.z_proj = nn.ModuleList([
+            nn.Linear(z_dim // len(channels) + shared_dim, ch * 2)
+            <span class="keyword">for</span> ch <span class="keyword">in</span> channels
+        ])
+        
+        <span class="comment"># Generator blocks with upsampling</span>
+        self.blocks = nn.ModuleList([
+            GResBlock(ch, z_dim // len(channels) + shared_dim)
+            <span class="keyword">for</span> ch <span class="keyword">in</span> channels
+        ])
+        
+        self.to_rgb = nn.Conv2d(channels[-1], <span class="string">3</span>, <span class="string">3</span>, padding=<span class="string">1</span>)
+    
+    <span class="keyword">def</span> <span class="function">forward</span>(self, z, class_idx):
+        <span class="comment"># Split z for skip connections at each resolution</span>
+        z_chunks = z.chunk(len(self.blocks), dim=<span class="string">1</span>)
+        
+        <span class="comment"># Shared class embedding</span>
+        c = self.shared_embed(class_idx)
+        
+        <span class="comment"># Start with learned constant</span>
+        x = self.initial_constant.repeat(z.size(<span class="string">0</span>), <span class="string">1</span>, <span class="string">1</span>, <span class="string">1</span>)
+        
+        <span class="comment"># Apply blocks with skip-z</span>
+        <span class="keyword">for</span> i, (block, z_chunk) <span class="keyword">in</span> enumerate(zip(self.blocks, z_chunks)):
+            z_cond = torch.cat([z_chunk, c], dim=<span class="string">1</span>)
+            x = block(x, z_cond)
+        
+        <span class="keyword">return</span> torch.tanh(self.to_rgb(x))
+
+<span class="keyword">class</span> <span class="function">GResBlock</span>(nn.Module):
+    <span class="comment"># Residual block with Conditional BatchNorm</span>
+    <span class="keyword">def</span> <span class="function">__init__</span>(self, in_ch, cond_dim):
+        super().__init__()
+        self.conv1 = nn.Conv2d(in_ch, in_ch, <span class="string">3</span>, padding=<span class="string">1</span>)
+        self.conv2 = nn.Conv2d(in_ch, in_ch, <span class="string">3</span>, padding=<span class="string">1</span>)
+        self.bn1 = ConditionalBatchNorm(in_ch, cond_dim)
+        self.bn2 = ConditionalBatchNorm(in_ch, cond_dim)
+        self.upsample = nn.Upsample(scale_factor=<span class="string">2</span>)
+    
+    <span class="keyword">def</span> <span class="function">forward</span>(self, x, cond):
+        h = self.upsample(x)
+        h = self.conv1(F.relu(self.bn1(h, cond)))
+        h = self.conv2(F.relu(self.bn2(h, cond)))
+        <span class="keyword">return</span> h + self.upsample(x)
+
+<span class="comment"># Orthogonal Regularization for stability</span>
+<span class="keyword">def</span> <span class="function">orthogonal_regularization</span>(model, beta=<span class="string">1e-4</span>):
+    reg = <span class="string">0</span>
+    <span class="keyword">for</span> name, param <span class="keyword">in</span> model.named_parameters():
+        <span class="keyword">if</span> <span class="string">'weight'</span> <span class="keyword">in</span> name <span class="keyword">and</span> len(param.shape) >= <span class="string">2</span>:
+            w = param.view(param.shape[<span class="string">0</span>], -<span class="string">1</span>)
+            reg += beta * torch.norm(w @ w.t() - torch.eye(w.shape[<span class="string">0</span>]).to(w.device))
+    <span class="keyword">return</span> reg
+
+<span class="comment"># Truncation trick for sampling</span>
+<span class="keyword">def</span> <span class="function">truncated_noise_sample</span>(batch_size, z_dim, threshold=<span class="string">2.0</span>):
+    <span class="string">"""Sample from truncated normal distribution."""</span>
+    z = torch.randn(batch_size, z_dim)
+    <span class="keyword">while</span> torch.any(torch.abs(z) > threshold):
+        mask = torch.abs(z) > threshold
+        z[mask] = torch.randn_like(z[mask])
+    <span class="keyword">return</span> z
+            </div>
+            
+            <div class="highlight-box">
+                <p><strong>Key Implementation Details:</strong></p>
+                <ul class="feature-list">
+                    <li><strong>Conditional BatchNorm:</strong> Projects condition vector (z + class) to gain and bias parameters</li>
+                    <li><strong>Spectral Norm:</strong> Applied to all discriminator convolutional layers</li>
+                    <li><strong>EMA Generator:</strong> Maintains exponential moving average of generator weights for sampling</li>
+                    <li><strong>Hinge Loss:</strong> Used for both G and D: D tries to maximize real scores and minimize fake scores</li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- Related Papers -->
+        <div class="section">
+            <h2>🔗 Related Work</h2>
+            <div class="related-papers">
+                <div class="related-paper-card">
+                    <h4>Self-Attention GAN (SA-GAN)</h4>
+                    <p>Han Zhang et al., 2018 — Base architecture with self-attention for long-range dependencies</p>
+                </div>
+                <div class="related-paper-card">
+                    <h4>Progressive GAN (PG-GAN)</h4>
+                    <p>Karras et al., 2017 — Progressive growing for high-resolution generation</p>
+                </div>
+                <div class="related-paper-card">
+                    <h4>StyleGAN</h4>
+                    <p>Karras et al., 2019 — Style-based generator architecture, builds on BigGAN insights</p>
+                </div>
+                <div class="related-paper-card">
+                    <h4>Projection Discriminator</h4>
+                    <p>Miyato & Koyama, 2018 — Conditional discrimination via inner product projection</p>
+                </div>
+                <div class="related-paper-card">
+                    <h4>Improved GAN Training</h4>
+                    <p>Salimans et al., 2016 — Techniques for stabilizing GAN training</p>
+                </div>
+                <div class="related-paper-card">
+                    <h4>BigGAN-deep</h4>
+                    <p>Extended version with deeper architecture and better scaling properties</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Summary -->
+        <div class="section">
+            <h2>📝 Summary</h2>
+            <div class="highlight-box">
+                <p>BigGAN (2018) demonstrated that GANs, like other deep learning models, benefit enormously from scaling. By increasing batch sizes to 2048 and model parameters by 2-4×, BigGAN achieved a <strong>3× improvement</strong> over previous state-of-the-art on ImageNet (IS: 166.5 vs 52.5). Key innovations include:</p>
+                <ul class="feature-list" style="margin-top: 15px;">
+                    <li><strong>Truncation Trick:</strong> Explicit control over fidelity-diversity trade-off by truncating latent distribution</li>
+                    <li><strong>Orthogonal Regularization:</strong> Prevents spectral explosion and enables stable large-scale training</li>
+                    <li><strong>Shared Embeddings:</strong> Reduces parameters by 37% and improves training efficiency</li>
+                    <li><strong>Skip-z:</strong> Multi-scale conditioning through latent vector splitting</li>
+                </ul>
+                <p style="margin-top: 15px;">BigGAN's findings on scaling laws and training instabilities informed subsequent work including StyleGAN and modern diffusion models.</p>
+            </div>
+        </div>
+    </div>
+
+    <footer style="text-align: center; padding: 40px 20px; color: #666; border-top: 1px solid rgba(236,72,153,0.2);">
+        <p>Part of the <a href="../index.html" style="color: #ec4899;">AI Neural Networks</a> educational collection</p>
+        <p style="font-size: 0.9rem; margin-top: 10px;">Last updated: April 2026</p>
+    </footer>
+</body>
+</html>
