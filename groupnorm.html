@@ -1,0 +1,916 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Group Normalization - AI Neural Networks</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            background: #0a0a0f;
+            color: #e0e0ff;
+            line-height: 1.7;
+            overflow-x: hidden;
+        }
+        
+        .bg-animation {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+            opacity: 0.2;
+        }
+        
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        
+        .hero {
+            padding: 60px 20px 40px;
+            text-align: center;
+            background: linear-gradient(180deg, rgba(99,102,241,0.1) 0%, transparent 100%);
+            border-bottom: 1px solid rgba(99, 102, 241, 0.2);
+            margin-bottom: 40px;
+        }
+        
+        .hero h1 {
+            font-size: 2.8rem;
+            background: linear-gradient(135deg, #6366f1 0%, #a855f7 50%, #ec4899 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 15px;
+        }
+        
+        .hero .subtitle {
+            font-size: 1.2rem;
+            color: #a0a0c0;
+            margin-bottom: 10px;
+        }
+        
+        .hero .meta {
+            color: #8080a0;
+            font-size: 0.95rem;
+        }
+        
+        .section {
+            margin-bottom: 50px;
+        }
+        
+        .section h2 {
+            font-size: 1.8rem;
+            color: #6366f1;
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid rgba(99, 102, 241, 0.3);
+        }
+        
+        .section h3 {
+            font-size: 1.3rem;
+            color: #a855f7;
+            margin: 25px 0 15px;
+        }
+        
+        .paper-info {
+            background: rgba(99, 102, 241, 0.05);
+            border: 1px solid rgba(99, 102, 241, 0.2);
+            border-radius: 12px;
+            padding: 25px;
+            margin-bottom: 30px;
+        }
+        
+        .paper-info p {
+            margin-bottom: 12px;
+        }
+        
+        .paper-info .label {
+            color: #8080a0;
+            font-weight: 600;
+        }
+        
+        .paper-info a {
+            color: #6366f1;
+            text-decoration: none;
+        }
+        
+        .paper-info a:hover {
+            text-decoration: underline;
+        }
+        
+        .visualization {
+            background: rgba(20, 20, 30, 0.8);
+            border: 1px solid rgba(99, 102, 241, 0.3);
+            border-radius: 16px;
+            padding: 30px;
+            margin: 25px 0;
+            text-align: center;
+        }
+        
+        .visualization h4 {
+            color: #6366f1;
+            margin-bottom: 20px;
+            font-size: 1.2rem;
+        }
+        
+        .visualization svg {
+            max-width: 100%;
+            height: auto;
+        }
+        
+        .code-block {
+            background: #0d0d15;
+            border: 1px solid rgba(99, 102, 241, 0.3);
+            border-radius: 12px;
+            padding: 20px;
+            overflow-x: auto;
+            font-family: 'SF Mono', 'Fira Code', monospace;
+            font-size: 0.9rem;
+            color: #c0c0e0;
+            margin: 20px 0;
+        }
+        
+        .code-block .keyword {
+            color: #a855f7;
+        }
+        
+        .code-block .function {
+            color: #6366f1;
+        }
+        
+        .code-block .string {
+            color: #10b981;
+        }
+        
+        .code-block .number {
+            color: #f59e0b;
+        }
+        
+        .code-block .comment {
+            color: #606080;
+        }
+        
+        .highlight-box {
+            background: linear-gradient(135deg, rgba(99,102,241,0.1) 0%, rgba(168,85,247,0.1) 100%);
+            border-left: 4px solid #6366f1;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 0 12px 12px 0;
+        }
+        
+        .math {
+            background: rgba(99, 102, 241, 0.05);
+            padding: 15px 20px;
+            border-radius: 8px;
+            font-family: 'Times New Roman', serif;
+            font-style: italic;
+            text-align: center;
+            margin: 15px 0;
+            color: #e0e0ff;
+        }
+        
+        ul, ol {
+            margin: 15px 0 15px 25px;
+        }
+        
+        li {
+            margin-bottom: 10px;
+        }
+        
+        .back-link {
+            display: inline-block;
+            margin-top: 40px;
+            color: #6366f1;
+            text-decoration: none;
+            font-weight: 600;
+        }
+        
+        .back-link:hover {
+            text-decoration: underline;
+        }
+        
+        .comparison-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+        }
+        
+        .comparison-table th {
+            background: rgba(99, 102, 241, 0.2);
+            color: #6366f1;
+            padding: 12px;
+            text-align: left;
+            border-bottom: 2px solid rgba(99, 102, 241, 0.3);
+        }
+        
+        .comparison-table td {
+            padding: 12px;
+            border-bottom: 1px solid rgba(99, 102, 241, 0.1);
+        }
+        
+        .comparison-table tr:hover {
+            background: rgba(99, 102, 241, 0.05);
+        }
+        
+        .tag {
+            display: inline-block;
+            background: rgba(99, 102, 241, 0.2);
+            color: #6366f1;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            margin: 5px 5px 5px 0;
+        }
+        
+        @media (max-width: 768px) {
+            .hero h1 {
+                font-size: 2rem;
+            }
+            
+            .section h2 {
+                font-size: 1.5rem;
+            }
+            
+            .visualization {
+                padding: 20px 15px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <svg class="bg-animation" viewBox="0 0 1000 1000" preserveAspectRatio="none">
+        <defs>
+            <radialGradient id="bgGrad1" cx="50%" cy="50%" r="50%">
+                <stop offset="0%" style="stop-color:#6366f1;stop-opacity:0.3"/>
+                <stop offset="100%" style="stop-color:transparent;stop-opacity:0"/>
+            </radialGradient>
+            <radialGradient id="bgGrad2" cx="20%" cy="80%" r="40%">
+                <stop offset="0%" style="stop-color:#a855f7;stop-opacity:0.2"/>
+                <stop offset="100%" style="stop-color:transparent;stop-opacity:0"/>
+            </radialGradient>
+        </defs>
+        <circle cx="500" cy="300" r="400" fill="url(#bgGrad1)"/>
+        <circle cx="200" cy="800" r="300" fill="url(#bgGrad2)"/>
+    </svg>
+
+    <div class="hero">
+        <h1>Group Normalization</h1>
+        <div class="subtitle">A Simple Alternative to Batch Normalization for Small Batch Training</div>
+        <div class="meta">Yuxin Wu, Kaiming He | ECCV 2018 | Facebook AI Research (FAIR)</div>
+    </div>
+
+    <div class="container">
+        <div class="paper-info">
+            <p><span class="label">Authors:</span> Yuxin Wu, Kaiming He</p>
+            <p><span class="label">Institution:</span> Facebook AI Research (FAIR)</p>
+            <p><span class="label">Year:</span> 2018</p>
+            <p><span class="label">Conference:</span> European Conference on Computer Vision (ECCV)</p>
+            <p><span class="label">Paper:</span> <a href="https://arxiv.org/abs/1803.08494" target="_blank">arXiv:1803.08494</a></p>
+            <p><span class="label">Code:</span> <a href="https://github.com/facebookresearch/Detectron/tree/master/projects/GN" target="_blank">Detectron GN Implementation</a></p>
+            <p><span class="label">Tags:</span> 
+                <span class="tag">Normalization</span>
+                <span class="tag">Computer Vision</span>
+                <span class="tag">ResNet</span>
+                <span class="tag">Small Batch Training</span>
+            </p>
+        </div>
+
+        <div class="section">
+            <h2>📋 Abstract Summary</h2>
+            <p>Batch Normalization (BN) is a milestone technique that enables various networks to train. However, BN's error increases rapidly when batch size becomes smaller due to inaccurate batch statistics estimation. This paper presents <strong>Group Normalization (GN)</strong> as a simple alternative to BN.</p>
+            
+            <p>GN divides the channels into groups and computes within each group the mean and variance for normalization. GN's computation is independent of batch sizes, and its accuracy is stable in a wide range of batch sizes. On ResNet-50 trained on ImageNet, GN has <strong>10.6% lower error</strong> than its BN counterpart when using a batch size of 2.</p>
+        </div>
+
+        <div class="section">
+            <h2>🎯 Key Contributions</h2>
+            <ul>
+                <li><strong>Batch-Independent Normalization:</strong> GN computes statistics within channel groups rather than across batches, eliminating batch size constraints</li>
+                <li><strong>Stable Performance Across Batch Sizes:</strong> GN maintains consistent accuracy whether batch size is 2 or 32</li>
+                <li><strong>Superior Small-Batch Performance:</strong> 10.6% lower error than BN at batch size 2 on ImageNet</li>
+                <li><strong>Easy Implementation:</strong> Can be implemented in just a few lines of code using existing deep learning frameworks</li>
+                <li><strong>Strong Transfer Learning:</strong> Outperforms BN on COCO object detection/segmentation and Kinetics video classification</li>
+            </ul>
+        </div>
+
+        <div class="section">
+            <h2>🔬 The Problem with Batch Normalization</h2>
+            
+            <h3>Batch Size Sensitivity</h3>
+            <p>Batch Normalization normalizes features by the mean and variance computed within a mini-batch. While effective, BN exhibits critical drawbacks:</p>
+            
+            <ul>
+                <li>Requires sufficiently large batch sizes (e.g., 32 per GPU) for accurate statistics</li>
+                <li>Error increases dramatically when batch size is reduced</li>
+                <li>Cannot be used in online learning or distributed models with small per-worker batches</li>
+                <li>Requires different statistics for different time-steps in RNNs</li>
+                <li>Needs to be "frozen" during fine-tuning for detection/segmentation tasks with small batches</li>
+            </ul>
+            
+            <div class="visualization">
+                <h4>BN Error vs Batch Size (ResNet-50 on ImageNet)</h4>
+                <svg width="600" height="350" viewBox="0 0 600 350">
+                    <!-- Background -->
+                    <rect width="600" height="350" fill="#0d0d15" rx="10"/>
+                    
+                    <!-- Grid -->
+                    <g stroke="#1a1a2e" stroke-width="1">
+                        <line x1="80" y1="40" x2="80" y2="280"/>
+                        <line x1="80" y1="280" x2="550" y2="280"/>
+                        <!-- Vertical grid lines -->
+                        <line x1="174" y1="40" x2="174" y2="280"/>
+                        <line x1="268" y1="40" x2="268" y2="280"/>
+                        <line x1="362" y1="40" x2="362" y2="280"/>
+                        <line x1="456" y1="40" x2="456" y2="280"/>
+                        <line x1="550" y1="40" x2="550" y2="280"/>
+                        <!-- Horizontal grid lines -->
+                        <line x1="80" y1="220" x2="550" y2="220"/>
+                        <line x1="80" y1="160" x2="550" y2="160"/>
+                        <line x1="80" y1="100" x2="550" y2="100"/>
+                    </g>
+                    
+                    <!-- Axes -->
+                    <g stroke="#6366f1" stroke-width="2">
+                        <line x1="80" y1="280" x2="550" y2="280"/>
+                        <line x1="80" y1="40" x2="80" y2="280"/>
+                    </g>
+                    
+                    <!-- Axis labels -->
+                    <text x="315" y="325" text-anchor="middle" fill="#a0a0c0" font-size="14">Batch Size (images/GPU)</text>
+                    <text x="30" y="160" text-anchor="middle" fill="#a0a0c0" font-size="14" transform="rotate(-90 30 160)">Validation Error (%)</text>
+                    
+                    <!-- X-axis labels -->
+                    <text x="80" y="300" text-anchor="middle" fill="#8080a0" font-size="12">32</text>
+                    <text x="174" y="300" text-anchor="middle" fill="#8080a0" font-size="12">16</text>
+                    <text x="268" y="300" text-anchor="middle" fill="#8080a0" font-size="12">8</text>
+                    <text x="362" y="300" text-anchor="middle" fill="#8080a0" font-size="12">4</text>
+                    <text x="456" y="300" text-anchor="middle" fill="#8080a0" font-size="12">2</text>
+                    <text x="550" y="300" text-anchor="middle" fill="#8080a0" font-size="12">1</text>
+                    
+                    <!-- Y-axis labels -->
+                    <text x="70" y="285" text-anchor="end" fill="#8080a0" font-size="12">20</text>
+                    <text x="70" y="225" text-anchor="end" fill="#8080a0" font-size="12">25</text>
+                    <text x="70" y="165" text-anchor="end" fill="#8080a0" font-size="12">30</text>
+                    <text x="70" y="105" text-anchor="end" fill="#8080a0" font-size="12">35</text>
+                    <text x="70" y="45" text-anchor="end" fill="#8080a0" font-size="12">40</text>
+                    
+                    <!-- BN Line (steeply increasing) -->
+                    <polyline points="80,235 174,220 268,195 362,155 456,95 550,60" 
+                              fill="none" stroke="#ef4444" stroke-width="3" stroke-linecap="round"/>
+                    
+                    <!-- BN Data Points -->
+                    <circle cx="80" cy="235" r="6" fill="#ef4444"/>
+                    <circle cx="174" cy="220" r="6" fill="#ef4444"/>
+                    <circle cx="268" cy="195" r="6" fill="#ef4444"/>
+                    <circle cx="362" cy="155" r="6" fill="#ef4444"/>
+                    <circle cx="456" cy="95" r="6" fill="#ef4444"/>
+                    <circle cx="550" cy="60" r="6" fill="#ef4444"/>
+                    
+                    <!-- GN Line (stable) -->
+                    <polyline points="80,238 174,238 268,237 362,237 456,235 550,235" 
+                              fill="none" stroke="#10b981" stroke-width="3" stroke-linecap="round"/>
+                    
+                    <!-- GN Data Points -->
+                    <circle cx="80" cy="238" r="6" fill="#10b981"/>
+                    <circle cx="174" cy="238" r="6" fill="#10b981"/>
+                    <circle cx="268" cy="237" r="6" fill="#10b981"/>
+                    <circle cx="362" cy="237" r="6" fill="#10b981"/>
+                    <circle cx="456" cy="235" r="6" fill="#10b981"/>
+                    <circle cx="550" cy="235" r="6" fill="#10b981"/>
+                    
+                    <!-- Legend -->
+                    <rect x="420" y="55" width="120" height="60" fill="#0d0d15" stroke="#6366f1" stroke-width="1" rx="5"/>
+                    <line x1="435" y1="75" x2="465" y2="75" stroke="#ef4444" stroke-width="3"/>
+                    <circle cx="450" cy="75" r="4" fill="#ef4444"/>
+                    <text x="475" y="79" fill="#e0e0ff" font-size="12">Batch Norm</text>
+                    <line x1="435" y1="95" x2="465" y2="95" stroke="#10b981" stroke-width="3"/>
+                    <circle cx="450" cy="95" r="4" fill="#10b981"/>
+                    <text x="475" y="99" fill="#e0e0ff" font-size="12">Group Norm</text>
+                    
+                    <!-- Title -->
+                    <text x="300" y="25" text-anchor="middle" fill="#6366f1" font-size="16" font-weight="bold">BN Error Increases Dramatically with Small Batches</text>
+                </svg>
+            </div>
+            
+            <div class="highlight-box">
+                <strong>Key Insight:</strong> BN's error increases from ~23% to ~34.7% when batch size drops from 32 to 2 (ResNet-50 on ImageNet). GN maintains ~24% error across all batch sizes.
+            </div>
+        </div>
+
+        <div class="section">
+            <h2>🔧 Group Normalization Method</h2>
+            
+            <h3>Core Idea</h3>
+            <p>GN divides channels into groups and normalizes features within each group. The key insight is that many classical features (SIFT, HOG) are inherently group-wise and use group-wise normalization.</p>
+            
+            <div class="visualization">
+                <h4>Comparison of Normalization Methods</h4>
+                <svg width="700" height="400" viewBox="0 0 700 400">
+                    <!-- Background -->
+                    <rect width="700" height="400" fill="#0d0d15" rx="10"/>
+                    
+                    <!-- Title -->
+                    <text x="350" y="30" text-anchor="middle" fill="#6366f1" font-size="18" font-weight="bold">Normalization Methods: Which Dimensions Are Normalized?</text>
+                    
+                    <!-- N dimension label -->
+                    <text x="45" y="60" text-anchor="middle" fill="#a855f7" font-size="14" font-weight="bold">N</text>
+                    <text x="45" y="75" text-anchor="middle" fill="#8080a0" font-size="11">batch</text>
+                    
+                    <!-- C dimension label -->
+                    <text x="85" y="60" text-anchor="middle" fill="#10b981" font-size="14" font-weight="bold">C</text>
+                    <text x="85" y="75" text-anchor="middle" fill="#8080a0" font-size="11">channel</text>
+                    
+                    <!-- H,W dimension label -->
+                    <text x="135" y="60" text-anchor="middle" fill="#f59e0b" font-size="14" font-weight="bold">H,W</text>
+                    <text x="135" y="75" text-anchor="middle" fill="#8080a0" font-size="11">spatial</text>
+                    
+                    <!-- Batch Norm -->
+                    <text x="120" y="115" fill="#e0e0ff" font-size="14" font-weight="bold">Batch Normalization</text>
+                    <text x="120" y="135" fill="#8080a0" font-size="12">Normalizes along N, H, W for each channel</text>
+                    
+                    <!-- 3D cube representation for BN -->
+                    <g transform="translate(80, 155)">
+                        <!-- Cube outline -->
+                        <path d="M0,20 L60,20 L60,80 L0,80 Z" fill="none" stroke="#6366f1" stroke-width="2"/>
+                        <path d="M60,20 L75,5 L75,65 L60,80" fill="none" stroke="#6366f1" stroke-width="2"/>
+                        <path d="M0,20 L15,5 L75,5" fill="none" stroke="#6366f1" stroke-width="2"/>
+                        
+                        <!-- Highlighted normalization region (in blue) -->
+                        <rect x="5" y="25" width="50" height="50" fill="#6366f1" opacity="0.3" stroke="#6366f1" stroke-width="1"/>
+                        <text x="30" y="55" text-anchor="middle" fill="#6366f1" font-size="10">μ,σ</text>
+                    </g>
+                    
+                    <text x="180" y="200" fill="#ef4444" font-size="13">✗ Batch dependent</text>
+                    <text x="180" y="218" fill="#ef4444" font-size="13">✗ Sensitive to small batches</text>
+                    
+                    <!-- Layer Norm -->
+                    <text x="120" y="265" fill="#e0e0ff" font-size="14" font-weight="bold">Layer Normalization</text>
+                    <text x="120" y="285" fill="#8080a0" font-size="12">Normalizes along C, H, W for each sample</text>
+                    
+                    <!-- 3D cube for LN -->
+                    <g transform="translate(80, 300)">
+                        <path d="M0,20 L60,20 L60,50 L0,50 Z" fill="none" stroke="#a855f7" stroke-width="2"/>
+                        <path d="M60,20 L75,5 L75,35 L60,50" fill="none" stroke="#a855f7" stroke-width="2"/>
+                        <path d="M0,20 L15,5 L75,5" fill="none" stroke="#a855f7" stroke-width="2"/>
+                        
+                        <!-- Highlight along C dimension -->
+                        <rect x="5" y="25" width="50" height="20" fill="#a855f7" opacity="0.3" stroke="#a855f7" stroke-width="1"/>
+                        <text x="30" y="38" text-anchor="middle" fill="#a855f7" font-size="9">μ,σ</text>
+                    </g>
+                    
+                    <text x="180" y="345" fill="#10b981" font-size="13">✓ Batch independent</text>
+                    <text x="180" y="363" fill="#ef4444" font-size="13">✗ 1.7% worse than BN on ImageNet</text>
+                    
+                    <!-- Instance Norm -->
+                    <text x="420" y="115" fill="#e0e0ff" font-size="14" font-weight="bold">Instance Normalization</text>
+                    <text x="420" y="135" fill="#8080a0" font-size="12">Normalizes along H, W for each sample×channel</text>
+                    
+                    <!-- 3D cube for IN -->
+                    <g transform="translate(380, 155)">
+                        <path d="M0,20 L60,20 L60,50 L0,50 Z" fill="none" stroke="#f59e0b" stroke-width="2"/>
+                        <path d="M60,20 L75,5 L75,35 L60,50" fill="none" stroke="#f59e0b" stroke-width="2"/>
+                        <path d="M0,20 L15,5 L75,5" fill="none" stroke="#f59e0b" stroke-width="2"/>
+                        
+                        <!-- Individual channel highlighting -->
+                        <rect x="5" y="25" width="12" height="20" fill="#f59e0b" opacity="0.4"/>
+                        <rect x="22" y="25" width="12" height="20" fill="#f59e0b" opacity="0.4"/>
+                        <rect x="39" y="25" width="12" height="20" fill="#f59e0b" opacity="0.4"/>
+                        <text x="30" y="15" text-anchor="middle" fill="#f59e0b" font-size="9">μ,σ per channel</text>
+                    </g>
+                    
+                    <text x="480" y="200" fill="#10b981" font-size="13">✓ Batch independent</text>
+                    <text x="480" y="218" fill="#ef4444" font-size="13">✗ 4.8% worse than BN on ImageNet</text>
+                    
+                    <!-- Group Norm -->
+                    <text x="420" y="265" fill="#e0e0ff" font-size="14" font-weight="bold">Group Normalization ⭐</text>
+                    <text x="420" y="285" fill="#8080a0" font-size="12">Normalizes along H, W and group of channels</text>
+                    
+                    <!-- 3D cube for GN -->
+                    <g transform="translate(380, 300)">
+                        <path d="M0,20 L60,20 L60,50 L0,50 Z" fill="none" stroke="#10b981" stroke-width="2"/>
+                        <path d="M60,20 L75,5 L75,35 L60,50" fill="none" stroke="#10b981" stroke-width="2"/>
+                        <path d="M0,20 L15,5 L75,5" fill="none" stroke="#10b981" stroke-width="2"/>
+                        
+                        <!-- Group highlighting (2 groups shown) -->
+                        <rect x="5" y="25" width="24" height="20" fill="#10b981" opacity="0.4" stroke="#10b981" stroke-width="1"/>
+                        <rect x="31" y="25" width="24" height="20" fill="#6366f1" opacity="0.4" stroke="#6366f1" stroke-width="1"/>
+                        <text x="17" y="38" text-anchor="middle" fill="#10b981" font-size="8">G₁</text>
+                        <text x="43" y="38" text-anchor="middle" fill="#6366f1" font-size="8">G₂</text>
+                        <text x="38" y="15" text-anchor="middle" fill="#10b981" font-size="9">μ,σ per group</text>
+                    </g>
+                    
+                    <text x="480" y="345" fill="#10b981" font-size="13">✓ Batch independent</text>
+                    <text x="480" y="363" fill="#10b981" font-size="13">✓ Only 0.5% worse than BN (batch=32)</text>
+                    <text x="480" y="381" fill="#10b981" font-size="13">✓ 10.6% better than BN (batch=2)</text>
+                </svg>
+            </div>
+            
+            <h3>Mathematical Formulation</h3>
+            <p>Given a feature map tensor with dimensions (N, C, H, W), where:</p>
+            <ul>
+                <li><strong>N</strong> = batch size</li>
+                <li><strong>C</strong> = number of channels</li>
+                <li><strong>H, W</strong> = spatial dimensions</li>
+                <li><strong>G</strong> = number of groups (default: 32)</li>
+            </ul>
+            
+            <div class="math">
+                μᵢ = (1/m) Σₖ∈𝒮ᵢ xₖ, &nbsp;&nbsp;&nbsp; σᵢ = √[(1/m) Σₖ∈𝒮ᵢ (xₖ - μᵢ)² + ε]
+            </div>
+            
+            <p>where the set 𝒮ᵢ for GN is defined as:</p>
+            
+            <div class="math">
+                𝒮ᵢ = {k | k<sub>N</sub> = i<sub>N</sub>, ⌊k<sub>C</sub>/(C/G)⌋ = ⌊i<sub>C</sub>/(C/G)⌋}
+            </div>
+            
+            <p>This means GN computes mean and variance along the (H, W) axes and along a group of C/G channels. The normalized output is then:</p>
+            
+            <div class="math">
+                x̂ᵢ = (1/σᵢ)(xᵢ - μᵢ), &nbsp;&nbsp;&nbsp; yᵢ = γ·x̂ᵢ + β
+            </div>
+            
+            <h3>Extreme Cases</h3>
+            <table class="comparison-table">
+                <tr>
+                    <th>Setting</th>
+                    <th>Equivalent Method</th>
+                    <th>Behavior</th>
+                </tr>
+                <tr>
+                    <td>G = 1 (all channels in one group)</td>
+                    <td>Layer Normalization</td>
+                    <td>Assumes all channels contribute similarly</td>
+                </tr>
+                <tr>
+                    <td>G = C (one channel per group)</td>
+                    <td>Instance Normalization</td>
+                    <td>Each channel normalized independently</td>
+                </tr>
+                <tr>
+                    <td>G = 32 (default)</td>
+                    <td>Group Normalization</td>
+                    <td>Best trade-off for visual recognition</td>
+                </tr>
+            </table>
+        </div>
+
+        <div class="section">
+            <h2>💻 Implementation</h2>
+            
+            <p>GN can be implemented in just a few lines of code using PyTorch or TensorFlow:</p>
+            
+            <div class="code-block">
+<span class="comment"># PyTorch implementation of Group Normalization</span>
+<span class="keyword">import</span> torch
+<span class="keyword">import</span> torch.nn <span class="keyword">as</span> nn
+
+<span class="keyword">class</span> <span class="function">GroupNorm</span>(nn.Module):
+    <span class="keyword">def</span> <span class="function">__init__</span>(self, num_groups=<span class="number">32</span>, num_channels=<span class="number">64</span>, eps=<span class="number">1e-5</span>):
+        super().__init__()
+        self.num_groups = num_groups
+        self.eps = eps
+        self.gamma = nn.Parameter(torch.ones(num_channels))
+        self.beta = nn.Parameter(torch.zeros(num_channels))
+    
+    <span class="keyword">def</span> <span class="function">forward</span>(self, x):
+        <span class="comment"># x: (N, C, H, W)</span>
+        N, C, H, W = x.shape
+        x = x.view(N, self.num_groups, C // self.num_groups, H, W)
+        
+        <span class="comment"># Compute mean and var along (C//G, H, W)</span>
+        mean = x.mean(dim=[<span class="number">2</span>, <span class="number">3</span>, <span class="number">4</span>], keepdim=<span class="keyword">True</span>)
+        var = x.var(dim=[<span class="number">2</span>, <span class="number">3</span>, <span class="number">4</span>], keepdim=<span class="keyword">True</span>, unbiased=<span class="keyword">False</span>)
+        
+        <span class="comment"># Normalize</span>
+        x = (x - mean) / torch.sqrt(var + self.eps)
+        x = x.view(N, C, H, W)
+        
+        <span class="comment"># Apply learned scale and shift</span>
+        <span class="keyword">return</span> x * self.gamma.view(<span class="number">1</span>, C, <span class="number">1</span>, <span class="number">1</span>) + self.beta.view(<span class="number">1</span>, C, <span class="number">1</span>, <span class="number">1</span>)
+
+<span class="comment"># Usage: replace BatchNorm in ResNet</span>
+layer = GroupNorm(num_groups=<span class="number">32</span>, num_channels=<span class="number">256</span>)
+            </div>
+            
+            <div class="highlight-box">
+                <strong>Pre-trained Models:</strong> Facebook AI Research provides ResNet models pre-trained with GN that can be directly used for fine-tuning. These models show improved performance on detection and segmentation tasks.
+            </div>
+        </div>
+
+        <div class="section">
+            <h2>📊 Experimental Results</h2>
+            
+            <h3>ImageNet Classification (ResNet-50)</h3>
+            
+            <table class="comparison-table">
+                <tr>
+                    <th>Method</th>
+                    <th>Batch Size</th>
+                    <th>Validation Error (%)</th>
+                </tr>
+                <tr>
+                    <td>Batch Norm</td>
+                    <td>32</td>
+                    <td>23.6%</td>
+                </tr>
+                <tr>
+                    <td>Group Norm (G=32)</td>
+                    <td>32</td>
+                    <td>24.1% (+0.5%)</td>
+                </tr>
+                <tr>
+                    <td>Layer Norm</td>
+                    <td>32</td>
+                    <td>25.3% (+1.7%)</td>
+                </tr>
+                <tr>
+                    <td>Instance Norm</td>
+                    <td>32</td>
+                    <td>28.4% (+4.8%)</td>
+                </tr>
+                <tr style="background: rgba(239, 68, 68, 0.1);">
+                    <td>Batch Norm</td>
+                    <td>2</td>
+                    <td>34.7% (+11.1%)</td>
+                </tr>
+                <tr style="background: rgba(16, 185, 129, 0.1);">
+                    <td>Group Norm (G=32)</td>
+                    <td>2</td>
+                    <td>24.1% (stable)</td>
+                </tr>
+            </table>
+            
+            <h3>Sensitivity to Batch Size</h3>
+            
+            <div class="visualization">
+                <h4>GN vs BN: Stable Performance Across Batch Sizes</h4>
+                <svg width="650" height="350" viewBox="0 0 650 350">
+                    <!-- Background -->
+                    <rect width="650" height="350" fill="#0d0d15" rx="10"/>
+                    
+                    <!-- Title -->
+                    <text x="325" y="25" text-anchor="middle" fill="#6366f1" font-size="16" font-weight="bold">ResNet-50 Validation Error vs Batch Size</text>
+                    
+                    <!-- Grid and axes -->
+                    <g stroke="#1a1a2e" stroke-width="1">
+                        <line x1="100" y1="50" x2="100" y2="290"/>
+                        <line x1="100" y1="290" x2="600" y2="290"/>
+                    </g>
+                    
+                    <g stroke="#6366f1" stroke-width="2">
+                        <line x1="100" y1="290" x2="600" y2="290"/>
+                        <line x1="100" y1="50" x2="100" y2="290"/>
+                    </g>
+                    
+                    <!-- X labels -->
+                    <text x="200" y="310" text-anchor="middle" fill="#a0a0c0" font-size="13">Small Batches</text>
+                    <text x="400" y="310" text-anchor="middle" fill="#a0a0c0" font-size="13">Medium</text>
+                    <text x="550" y="310" text-anchor="middle" fill="#a0a0c0" font-size="13">Large (32)</text>
+                    
+                    <!-- Batch size markers -->
+                    <text x="130" y="305" text-anchor="middle" fill="#8080a0" font-size="11">2</text>
+                    <text x="200" y="305" text-anchor="middle" fill="#8080a0" font-size="11">4</text>
+                    <text x="270" y="305" text-anchor="middle" fill="#8080a0" font-size="11">8</text>
+                    <text x="340" y="305" text-anchor="middle" fill="#8080a0" font-size="11">16</text>
+                    <text x="410" y="305" text-anchor="middle" fill="#8080a0" font-size="11">32</text>
+                    
+                    <!-- Y labels -->
+                    <text x="90" y="290" text-anchor="end" fill="#8080a0" font-size="11">20</text>
+                    <text x="90" y="230" text-anchor="end" fill="#8080a0" font-size="11">25</text>
+                    <text x="90" y="170" text-anchor="end" fill="#8080a0" font-size="11">30</text>
+                    <text x="90" y="110" text-anchor="end" fill="#8080a0" font-size="11">35</text>
+                    <text x="90" y="50" text-anchor="end" fill="#8080a0" font-size="11">40</text>
+                    
+                    <!-- BN Line (red - steep) -->
+                    <polyline points="130,60 200,150 270,195 340,225 410,235" 
+                              fill="none" stroke="#ef4444" stroke-width="4" stroke-linecap="round"/>
+                    <circle cx="130" cy="60" r="8" fill="#ef4444"/>
+                    <circle cx="200" cy="150" r="6" fill="#ef4444"/>
+                    <circle cx="270" cy="195" r="6" fill="#ef4444"/>
+                    <circle cx="340" cy="225" r="6" fill="#ef4444"/>
+                    <circle cx="410" cy="235" r="6" fill="#ef4444"/>
+                    
+                    <!-- BN values -->
+                    <text x="130" y="45" text-anchor="middle" fill="#ef4444" font-size="12" font-weight="bold">34.7%</text>
+                    <text x="410" y="220" text-anchor="middle" fill="#ef4444" font-size="11">23.6%</text>
+                    
+                    <!-- GN Line (green - flat) -->
+                    <polyline points="130,238 200,239 270,238 340,238 410,238" 
+                              fill="none" stroke="#10b981" stroke-width="4" stroke-linecap="round"/>
+                    <circle cx="130" cy="238" r="8" fill="#10b981"/>
+                    <circle cx="200" cy="239" r="6" fill="#10b981"/>
+                    <circle cx="270" cy="238" r="6" fill="#10b981"/>
+                    <circle cx="340" cy="238" r="6" fill="#10b981"/>
+                    <circle cx="410" cy="238" r="6" fill="#10b981"/>
+                    
+                    <!-- GN values -->
+                    <text x="130" y="260" text-anchor="middle" fill="#10b981" font-size="12" font-weight="bold">24.1%</text>
+                    <text x="410" y="260" text-anchor="middle" fill="#10b981" font-size="11">24.1%</text>
+                    
+                    <!-- Legend -->
+                    <rect x="480" y="70" width="110" height="70" fill="#0d0d15" stroke="#6366f1" stroke-width="1" rx="5"/>
+                    <line x1="495" y1="95" x2="525" y2="95" stroke="#ef4444" stroke-width="3"/>
+                    <circle cx="510" cy="95" r="5" fill="#ef4444"/>
+                    <text x="535" y="99" fill="#e0e0ff" font-size="12">Batch Norm</text>
+                    <line x1="495" y1="120" x2="525" y2="120" stroke="#10b981" stroke-width="3"/>
+                    <circle cx="510" cy="120" r="5" fill="#10b981"/>
+                    <text x="535" y="124" fill="#e0e0ff" font-size="12">Group Norm</text>
+                    
+                    <!-- Callout -->
+                    <rect x="450" y="160" width="140" height="50" fill="rgba(16,185,129,0.1)" stroke="#10b981" stroke-width="1" rx="5"/>
+                    <text x="520" y="180" text-anchor="middle" fill="#10b981" font-size="11" font-weight="bold">10.6% gap at batch=2</text>
+                    <text x="520" y="198" text-anchor="middle" fill="#a0a0c0" font-size="10">GN significantly outperforms</text>
+                </svg>
+            </div>
+            
+            <h3>COCO Object Detection & Segmentation (Mask R-CNN)</h3>
+            
+            <table class="comparison-table">
+                <tr>
+                    <th>Method</th>
+                    <th>Backbone</th>
+                    <th>AP<sup>bbox</sup></th>
+                    <th>AP<sup>mask</sup></th>
+                </tr>
+                <tr>
+                    <td>BN frozen (BN*)</td>
+                    <td>ResNet-50</td>
+                    <td>37.3</td>
+                    <td>33.5</td>
+                </tr>
+                <tr style="background: rgba(16, 185, 129, 0.1);">
+                    <td>Group Norm</td>
+                    <td>ResNet-50</td>
+                    <td><strong>39.5 (+2.2)</strong></td>
+                    <td><strong>35.2 (+1.7)</strong></td>
+                </tr>
+            </table>
+            
+            <div class="highlight-box">
+                <strong>Key Advantage:</strong> During fine-tuning with small batches (batch size 1-2), BN must be frozen (BN*), losing its normalization benefits. GN continues to normalize actively, leading to better feature adaptation and improved detection/segmentation performance.
+            </div>
+            
+            <h3>Video Classification (3D ConvNets on Kinetics)</h3>
+            
+            <table class="comparison-table">
+                <tr>
+                    <th>Method</th>
+                    <th>Top-1 Acc (%)</th>
+                    <th>Top-5 Acc (%)</th>
+                </tr>
+                <tr>
+                    <td>BN frozen (BN*)</td>
+                    <td>71.9</td>
+                    <td>89.8</td>
+                </tr>
+                <tr style="background: rgba(16, 185, 129, 0.1);">
+                    <td>Group Norm</td>
+                    <td><strong>73.0 (+1.1)</strong></td>
+                    <td><strong>90.6 (+0.8)</strong></td>
+                </tr>
+            </table>
+        </div>
+
+        <div class="section">
+            <h2>🔬 Group Division Analysis</h2>
+            
+            <h3>Effect of Number of Groups</h3>
+            
+            <table class="comparison-table">
+                <tr>
+                    <th>Number of Groups (G)</th>
+                    <th>Equivalent To</th>
+                    <th>Validation Error (%)</th>
+                </tr>
+                <tr>
+                    <td>G = 1</td>
+                    <td>Layer Normalization</td>
+                    <td>25.3%</td>
+                </tr>
+                <tr>
+                    <td>G = 2</td>
+                    <td>-</td>
+                    <td>24.8%</td>
+                </tr>
+                <tr>
+                    <td>G = 4</td>
+                    <td>-</td>
+                    <td>24.4%</td>
+                </tr>
+                <tr>
+                    <td>G = 8</td>
+                    <td>-</td>
+                    <td>24.3%</td>
+                </tr>
+                <tr>
+                    <td>G = 16</td>
+                    <td>-</td>
+                    <td>24.2%</td>
+                </tr>
+                <tr style="background: rgba(16, 185, 129, 0.1);">
+                    <td><strong>G = 32 (default)</strong></td>
+                    <td>-</td>
+                    <td><strong>24.1% ✓</strong></td>
+                </tr>
+                <tr>
+                    <td>G = 64</td>
+                    <td>-</td>
+                    <td>24.2%</td>
+                </tr>
+                <tr>
+                    <td>G = C (all channels)</td>
+                    <td>Instance Normalization</td>
+                    <td>28.4%</td>
+                </tr>
+            </table>
+            
+            <div class="highlight-box">
+                <strong>Default Setting:</strong> G=32 works well across various architectures. For layers with fewer than 32 channels, using all channels (G=C) is equivalent to Instance Normalization and performs poorly.
+            </div>
+        </div>
+
+        <div class="section">
+            <h2>💡 Key Insights & Impact</h2>
+            
+            <h3>Why GN Works</h3>
+            <ul>
+                <li><strong>Group-wise Structure:</strong> Deep features have natural group structure (orientations, frequencies, shapes, textures)</li>
+                <li><strong>Classical Precedent:</strong> SIFT, HOG, and neuroscience models all use group-wise normalization</li>
+                <li><strong>Flexible Trade-off:</strong> Between LN (all channels together) and IN (each channel separate)</li>
+                <li><strong>No Batch Dependency:</strong> Statistics computed from single sample, enabling true online learning</li>
+            </ul>
+            
+            <h3>Impact on Deep Learning</h3>
+            <ul>
+                <li>Enabled training with smaller batches, freeing memory for larger models</li>
+                <li>Became standard for object detection and segmentation where high-resolution images limit batch size</li>
+                <li>Widely adopted in video understanding with 3D convolutions</li>
+                <li>Foundation for later normalization techniques (like RMS Norm in Transformers)</li>
+            </ul>
+            
+            <h3>Relation to Other Methods</h3>
+            <table class="comparison-table">
+                <tr>
+                    <th>Method</th>
+                    <th>Normalization Dimensions</th>
+                    <th>Batch Independent?</th>
+                    <th>ImageNet Performance</th>
+                </tr>
+                <tr>
+                    <td>Batch Norm</td>
+                    <td>(N, H, W)</td>
+                    <td>No</td>
+                    <td>Best (large batches)</td>
+                </tr>
+                <tr style="background: rgba(16, 185, 129, 0.1);">
+                    <td><strong>Group Norm</strong></td>
+                    <td>(H, W) + Group of C</td>
+                    <td><strong>Yes</strong></td>
+                    <td><strong>Near-best (all batches)</strong></td>
+                </tr>
+                <tr>
+                    <td>Layer Norm</td>
+                    <td>(C, H, W)</td>
+                    <td>Yes</td>
+                    <td>Good (+1.7% vs BN)</td>
+                </tr>
+                <tr>
+                    <td>Instance Norm</td>
+                    <td>(H, W)</td>
+                    <td>Yes</td>
+                    <td>Poor (+4.8% vs BN)</td>
+                </tr>
+                <tr>
+                    <td>Weight Norm</td>
+                    <td>Filter weights</td>
+                    <td>Yes</td>
+                    <td>Poor (28.2% error)</td>
+                </tr>
+            </table>
+        </div>
+
+        <div class="section">
+            <h2>📚 References</h2>
+            <ol>
+                <li>Wu, Y., & He, K. (2018). Group Normalization. <em>ECCV</em>.</li>
+                <li>Ioffe, S., & Szegedy, C. (2015). Batch Normalization: Accelerating Deep Network Training by Reducing Internal Covariate Shift. <em>ICML</em>.</li>
+                <li>Ba, J. L., Kiros, J. R., & Hinton, G. E. (2016). Layer Normalization. <em>arXiv:1607.06450</em>.</li>
+                <li>Ulyanov, D., Vedaldi, A., & Lempitsky, V. (2016). Instance Normalization: The Missing Ingredient for Fast Stylization. <em>arXiv:1607.08022</em>.</li>
+                <li>He, K., et al. (2016). Deep Residual Learning for Image Recognition. <em>CVPR</em>.</li>
+                <li>He, K., et al. (2017). Mask R-CNN. <em>ICCV</em>.</li>
+            </ol>
+        </div>
+
+        <a href="index.html" class="back-link">← Back to AI Neural Networks Overview</a>
+    </div>
+</body>
+</html>
