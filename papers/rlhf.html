@@ -1,0 +1,802 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>RLHF: Reinforcement Learning from Human Feedback | AI Neural Networks</title>
+    <meta name="description" content="RLHF - Reinforcement Learning from Human Feedback: The methodology that aligned GPT-3 with human intent, enabling ChatGPT and modern AI assistants">
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600;700&family=Inter:wght@400;500;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --neon-indigo: #6366f1;
+            --neon-purple: #a855f7;
+            --neon-blue: #00d4ff;
+            --neon-green: #10b981;
+            --neon-orange: #f59e0b;
+            --neon-red: #ef4444;
+            --neon-cyan: #06b6d4;
+            --neon-pink: #ec4899;
+            --dark-bg: #0a0a0f;
+            --card-bg: rgba(255,255,255,0.03);
+        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Inter', sans-serif;
+            background: var(--dark-bg);
+            color: #e0e0e0;
+            line-height: 1.8;
+            overflow-x: hidden;
+        }
+        .neural-bg {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            pointer-events: none;
+            z-index: 0;
+        }
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: 40px 20px;
+            position: relative;
+            z-index: 1;
+        }
+        .paper-hero {
+            background: linear-gradient(135deg, rgba(99,102,241,0.1), rgba(236,72,153,0.1));
+            border: 1px solid rgba(99,102,241,0.3);
+            border-radius: 20px;
+            padding: 60px 40px;
+            margin-bottom: 50px;
+            position: relative;
+            overflow: hidden;
+        }
+        .paper-hero::before {
+            content: '';
+            position: absolute;
+            top: -50%; left: -50%;
+            width: 200%; height: 200%;
+            background: radial-gradient(circle, rgba(236,72,153,0.1) 0%, transparent 70%);
+            animation: pulse 4s ease-in-out infinite;
+        }
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); opacity: 0.5; }
+            50% { transform: scale(1.1); opacity: 0.8; }
+        }
+        .hero-content { position: relative; z-index: 1; }
+        .paper-year {
+            display: inline-block;
+            background: linear-gradient(135deg, var(--neon-indigo), var(--neon-pink));
+            color: #fff;
+            padding: 8px 20px;
+            border-radius: 20px;
+            font-weight: 700;
+            margin-bottom: 20px;
+            font-family: 'JetBrains Mono', monospace;
+        }
+        .paper-title {
+            font-size: 2.2em;
+            font-weight: 700;
+            margin-bottom: 15px;
+            line-height: 1.3;
+            background: linear-gradient(135deg, #fff, var(--neon-pink));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        .paper-subtitle {
+            font-size: 1.2em;
+            color: #8888aa;
+            font-style: italic;
+            margin-bottom: 30px;
+        }
+        .authors {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 12px;
+            margin-bottom: 30px;
+        }
+        .author-tag {
+            background: rgba(255,255,255,0.05);
+            border: 1px solid rgba(255,255,255,0.1);
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-size: 0.9em;
+            color: #aaaacc;
+        }
+        .paper-links {
+            display: flex;
+            gap: 15px;
+            flex-wrap: wrap;
+        }
+        .paper-link {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            background: rgba(99,102,241,0.15);
+            border: 1px solid var(--neon-indigo);
+            color: var(--neon-indigo);
+            padding: 10px 20px;
+            border-radius: 8px;
+            text-decoration: none;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+        .paper-link:hover {
+            background: var(--neon-indigo);
+            color: #fff;
+            transform: translateY(-2px);
+        }
+        .section {
+            background: var(--card-bg);
+            border: 1px solid rgba(255,255,255,0.05);
+            border-radius: 16px;
+            padding: 40px;
+            margin-bottom: 30px;
+        }
+        .section-title {
+            font-size: 1.6em;
+            font-weight: 700;
+            margin-bottom: 25px;
+            color: #fff;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        .section-title svg { width: 28px; height: 28px; }
+        .problem-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 25px;
+            margin-top: 25px;
+        }
+        .problem-card {
+            background: rgba(255,255,255,0.03);
+            border: 1px solid rgba(239,68,68,0.2);
+            border-radius: 12px;
+            padding: 25px;
+        }
+        .problem-card h3 {
+            color: var(--neon-red);
+            margin-bottom: 12px;
+            font-size: 1.1em;
+        }
+        .innovation-highlight {
+            background: linear-gradient(135deg, rgba(99,102,241,0.1), rgba(236,72,153,0.1));
+            border-left: 4px solid var(--neon-pink);
+            padding: 25px;
+            border-radius: 0 12px 12px 0;
+            margin: 25px 0;
+        }
+        .three-stage {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 20px;
+            margin: 30px 0;
+        }
+        .stage-card {
+            background: rgba(255,255,255,0.03);
+            border: 1px solid rgba(99,102,241,0.2);
+            border-radius: 16px;
+            padding: 30px;
+            position: relative;
+            overflow: hidden;
+            transition: transform 0.3s ease;
+        }
+        .stage-card:hover { transform: translateY(-5px); }
+        .stage-card::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; right: 0;
+            height: 3px;
+            background: linear-gradient(90deg, var(--neon-indigo), var(--neon-pink));
+        }
+        .stage-number {
+            font-size: 3em;
+            font-weight: 700;
+            color: rgba(99,102,241,0.2);
+            position: absolute;
+            top: 10px; right: 20px;
+        }
+        .stage-card h3 {
+            color: var(--neon-indigo);
+            margin-bottom: 15px;
+            font-size: 1.2em;
+        }
+        .arch-svg {
+            width: 100%;
+            max-width: 800px;
+            margin: 30px auto;
+            display: block;
+        }
+        .code-block {
+            background: #0d0d12;
+            border: 1px solid rgba(255,255,255,0.1);
+            border-radius: 12px;
+            padding: 25px;
+            margin: 20px 0;
+            overflow-x: auto;
+        }
+        .code-block pre {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.9em;
+            line-height: 1.7;
+            color: #a0a0b0;
+        }
+        .code-block .keyword { color: var(--neon-purple); }
+        .code-block .function { color: var(--neon-blue); }
+        .code-block .string { color: var(--neon-green); }
+        .code-block .comment { color: #666; }
+        .impact-stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin: 30px 0;
+        }
+        .stat-card {
+            background: rgba(16,185,129,0.1);
+            border: 1px solid rgba(16,185,129,0.3);
+            border-radius: 12px;
+            padding: 25px;
+            text-align: center;
+        }
+        .stat-value {
+            font-size: 2.5em;
+            font-weight: 700;
+            color: var(--neon-green);
+            display: block;
+        }
+        .stat-label {
+            color: #888;
+            font-size: 0.9em;
+            margin-top: 8px;
+        }
+        .related-papers {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+            margin-top: 25px;
+        }
+        .related-card {
+            background: rgba(255,255,255,0.03);
+            border: 1px solid rgba(255,255,255,0.1);
+            border-radius: 12px;
+            padding: 20px;
+            transition: all 0.3s ease;
+        }
+        .related-card:hover {
+            border-color: var(--neon-indigo);
+            transform: translateY(-3px);
+        }
+        .related-card h4 {
+            color: var(--neon-indigo);
+            margin-bottom: 8px;
+        }
+        .related-card .year {
+            display: inline-block;
+            background: rgba(99,102,241,0.2);
+            color: var(--neon-indigo);
+            padding: 2px 10px;
+            border-radius: 10px;
+            font-size: 0.8em;
+            margin-bottom: 10px;
+        }
+        .formula-box {
+            background: rgba(255,255,255,0.03);
+            border: 1px solid rgba(99,102,241,0.2);
+            border-radius: 12px;
+            padding: 20px;
+            margin: 20px 0;
+            text-align: center;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 1.1em;
+        }
+        .flow-diagram {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            align-items: center;
+            gap: 15px;
+            margin: 30px 0;
+            padding: 20px;
+        }
+        .flow-node {
+            background: rgba(99,102,241,0.15);
+            border: 1px solid var(--neon-indigo);
+            border-radius: 12px;
+            padding: 20px 30px;
+            text-align: center;
+            min-width: 150px;
+        }
+        .flow-node.reward { background: rgba(16,185,129,0.15); border-color: var(--neon-green); }
+        .flow-node.human { background: rgba(236,72,153,0.15); border-color: var(--neon-pink); }
+        .flow-arrow {
+            font-size: 1.5em;
+            color: var(--neon-indigo);
+        }
+        .back-link {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            color: #888;
+            text-decoration: none;
+            margin-bottom: 30px;
+            transition: color 0.3s ease;
+        }
+        .back-link:hover { color: var(--neon-indigo); }
+        @media (max-width: 768px) {
+            .paper-title { font-size: 1.6em; }
+            .paper-hero { padding: 40px 25px; }
+            .section { padding: 25px; }
+        }
+    </style>
+</head>
+<body>
+    <svg class="neural-bg" viewBox="0 0 1920 1080" preserveAspectRatio="xMidYMid slice">
+        <defs>
+            <radialGradient id="grad1" cx="50%" cy="50%" r="50%">
+                <stop offset="0%" style="stop-color:rgba(99,102,241,0.03)"/>
+                <stop offset="100%" style="stop-color:transparent"/>
+            </radialGradient>
+        </defs>
+        <circle cx="200" cy="200" r="300" fill="url(#grad1)">
+            <animate attributeName="cx" values="200;300;200" dur="10s" repeatCount="indefinite"/>
+        </circle>
+        <circle cx="1700" cy="800" r="400" fill="url(#grad1)">
+            <animate attributeName="cy" values="800;700;800" dur="12s" repeatCount="indefinite"/>
+        </circle>
+    </svg>
+
+    <div class="container">
+        <a href="../index.html" class="back-link">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M19 12H5M12 19l-7-7 7-7"/>
+            </svg>
+            Back to Papers
+        </a>
+
+        <div class="paper-hero">
+            <div class="hero-content">
+                <span class="paper-year">2022 / NeurIPS</span>
+                <h1 class="paper-title">RLHF: Reinforcement Learning from Human Feedback</h1>
+                <p class="paper-subtitle">Training language models to follow instructions with human feedback (InstructGPT methodology)</p>
+                
+                <div class="authors">
+                    <span class="author-tag">Long Ouyang</span>
+                    <span class="author-tag">Jeffrey Wu</span>
+                    <span class="author-tag">Xu Jiang</span>
+                    <span class="author-tag">Diogo Almeida</span>
+                    <span class="author-tag">Carroll Wainwright</span>
+                    <span class="author-tag">Pamela Mishkin</span>
+                    <span class="author-tag">+ OpenAI Team</span>
+                </div>
+
+                <div class="paper-links">
+                    <a href="https://arxiv.org/abs/2203.02155" class="paper-link" target="_blank">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+                            <polyline points="14 2 14 8 20 8"/>
+                        </svg>
+                        arXiv
+                    </a>
+                    <a href="https://openai.com/research/instruction-following" class="paper-link" target="_blank">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <circle cx="12" cy="12" r="10"/>
+                            <line x1="2" y1="12" x2="22" y2="12"/>
+                            <path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/>
+                        </svg>
+                        Project Page
+                    </a>
+                    <a href="https://github.com/openai/following-instructions-human-feedback" class="paper-link" target="_blank">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22"/>
+                        </svg>
+                        Code
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <div class="section">
+            <h2 class="section-title">
+                <svg viewBox="0 0 24 24" fill="none" stroke="var(--neon-red)" stroke-width="2">
+                    <circle cx="12" cy="12" r="10"/>
+                    <line x1="12" y1="8" x2="12" y2="12"/>
+                    <line x1="12" y1="16" x2="12.01" y2="16"/>
+                </svg>
+                The Problem
+            </h2>
+            <p>Large language models like GPT-3 demonstrated remarkable capabilities in text generation, but they had a critical flaw: <strong>misalignment with human intent</strong>. These models were trained to predict the next token on internet text, not to follow instructions or be helpful assistants.</p>
+            
+            <div class="problem-grid">
+                <div class="problem-card">
+                    <h3>Instruction Ignoring</h3>
+                    <p>GPT-3 often failed to follow user instructions, generating outputs that didn't address the actual request or misunderstood the task format.</p>
+                </div>
+                <div class="problem-card">
+                    <h3>Toxic & Biased Outputs</h3>
+                    <p>Training on unfiltered internet text led to models that could generate toxic, biased, or harmful content when prompted.</p>
+                </div>
+                <div class="problem-card">
+                    <h3>Hallucinations</h3>
+                    <p>Models would confidently generate plausible-sounding but factually incorrect information, making them unreliable.</p>
+                </div>
+                <div class="problem-card">
+                    <h3>Truthfulness Issues</h3>
+                    <p>Without explicit training on truthfulness, models prioritized fluency over accuracy, leading to fabricated information.</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="section">
+            <h2 class="section-title">
+                <svg viewBox="0 0 24 24" fill="none" stroke="var(--neon-pink)" stroke-width="2">
+                    <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/>
+                </svg>
+                Key Innovation
+            </h2>
+            <div class="innovation-highlight">
+                <strong>Three-stage RLHF Pipeline:</strong> A methodology that combines supervised fine-tuning with reinforcement learning guided by a reward model trained on human preferences, enabling language models to learn what humans actually want rather than just predicting text.
+            </div>
+            <p>The revolutionary insight was that <strong>comparing outputs is easier than writing perfect ones</strong>. By having humans rank multiple model outputs rather than writing ideal responses, RLHF scaled alignment to 175B parameter models. A 1.3B parameter aligned model could outperform a 175B unaligned model on instruction-following tasks.</p>
+        </div>
+
+        <div class="section">
+            <h2 class="section-title">
+                <svg viewBox="0 0 24 24" fill="none" stroke="var(--neon-indigo)" stroke-width="2">
+                    <rect x="4" y="4" width="16" height="16" rx="2" ry="2"/>
+                    <rect x="9" y="9" width="6" height="6"/>
+                    <line x1="9" y1="1" x2="9" y2="4"/>
+                    <line x1="15" y1="1" x2="15" y2="4"/>
+                    <line x1="9" y1="20" x2="9" y2="23"/>
+                    <line x1="15" y1="20" x2="15" y2="23"/>
+                    <line x1="20" y1="9" x2="23" y2="9"/>
+                    <line x1="20" y1="14" x2="23" y2="14"/>
+                    <line x1="1" y1="9" x2="4" y2="9"/>
+                    <line x1="1" y1="14" x2="4" y2="14"/>
+                </svg>
+                The Three-Stage Architecture
+            </h2>
+
+            <svg class="arch-svg" viewBox="0 0 900 400" xmlns="http://www.w3.org/2000/svg">
+                <defs>
+                    <linearGradient id="stageGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+                        <stop offset="0%" style="stop-color:#6366f1"/>
+                        <stop offset="100%" style="stop-color:#ec4899"/>
+                    </linearGradient>
+                    <marker id="arrowhead" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto">
+                        <polygon points="0 0, 10 3.5, 0 7" fill="#6366f1"/>
+                    </marker>
+                </defs>
+                
+                <!-- Stage 1: SFT -->
+                <rect x="50" y="100" width="220" height="200" rx="12" fill="rgba(99,102,241,0.1)" stroke="#6366f1" stroke-width="2"/>
+                <text x="160" y="140" text-anchor="middle" fill="#6366f1" font-size="16" font-weight="bold">Stage 1: SFT</text>
+                <text x="160" y="165" text-anchor="middle" fill="#aaa" font-size="12">Supervised Fine-Tuning</text>
+                
+                <!-- SFT Content -->
+                <rect x="80" y="185" width="160" height="35" rx="6" fill="rgba(255,255,255,0.05)" stroke="#6366f1" stroke-width="1"/>
+                <text x="160" y="207" text-anchor="middle" fill="#fff" font-size="11">Pretrained LM</text>
+                <text x="160" y="232" text-anchor="middle" fill="#888" font-size="10">↓ 13K demonstrations</text>
+                <text x="160" y="250" text-anchor="middle" fill="#fff" font-size="11">SFT Model</text>
+                
+                <!-- Arrow 1 -->
+                <line x1="280" y1="200" x2="330" y2="200" stroke="#6366f1" stroke-width="2" marker-end="url(#arrowhead)"/>
+                
+                <!-- Stage 2: RM -->
+                <rect x="340" y="100" width="220" height="200" rx="12" fill="rgba(16,185,129,0.1)" stroke="#10b981" stroke-width="2"/>
+                <text x="450" y="140" text-anchor="middle" fill="#10b981" font-size="16" font-weight="bold">Stage 2: RM</text>
+                <text x="450" y="165" text-anchor="middle" fill="#aaa" font-size="12">Reward Model Training</text>
+                
+                <!-- RM Content -->
+                <rect x="370" y="185" width="160" height="35" rx="6" fill="rgba(255,255,255,0.05)" stroke="#10b981" stroke-width="1"/>
+                <text x="450" y="207" text-anchor="middle" fill="#fff" font-size="11">Generate 4-9 outputs</text>
+                <text x="450" y="232" text-anchor="middle" fill="#888" font-size="10">↓ Human rankings (33K)</text>
+                <text x="450" y="250" text-anchor="middle" fill="#fff" font-size="11">Reward Model</text>
+                
+                <!-- Arrow 2 -->
+                <line x1="570" y1="200" x2="620" y2="200" stroke="#6366f1" stroke-width="2" marker-end="url(#arrowhead)"/>
+                
+                <!-- Stage 3: PPO -->
+                <rect x="630" y="100" width="220" height="200" rx="12" fill="rgba(236,72,153,0.1)" stroke="#ec4899" stroke-width="2"/>
+                <text x="740" y="140" text-anchor="middle" fill="#ec4899" font-size="16" font-weight="bold">Stage 3: RL</text>
+                <text x="740" y="165" text-anchor="middle" fill="#aaa" font-size="12">PPO Optimization</text>
+                
+                <!-- PPO Content -->
+                <rect x="660" y="185" width="160" height="35" rx="6" fill="rgba(255,255,255,0.05)" stroke="#ec4899" stroke-width="1"/>
+                <text x="740" y="207" text-anchor="middle" fill="#fff" font-size="11">SFT Model</text>
+                <text x="740" y="232" text-anchor="middle" fill="#888" font-size="10">↓ RL + PPO (100K)</text>
+                <text x="740" y="250" text-anchor="middle" fill="#fff" font-size="11">Aligned Model ✓</text>
+                
+                <!-- Human Feedback Loop -->
+                <path d="M 450 300 Q 450 350 740 350 Q 740 310 740 310" stroke="#ec4899" stroke-width="2" fill="none" stroke-dasharray="5,5"/>
+                <text x="595" y="365" text-anchor="middle" fill="#ec4899" font-size="11">Human Feedback Loop</text>
+                
+                <!-- Labels -->
+                <text x="160" y="330" text-anchor="middle" fill="#888" font-size="10">"Show them how"</text>
+                <text x="450" y="330" text-anchor="middle" fill="#888" font-size="10">"Teach preferences"</text>
+                <text x="740" y="330" text-anchor="middle" fill="#888" font-size="10">"Practice & refine"</text>
+            </svg>
+
+            <div class="three-stage">
+                <div class="stage-card">
+                    <div class="stage-number">1</div>
+                    <h3>Supervised Fine-Tuning (SFT)</h3>
+                    <p>Start with a pretrained language model (GPT-3) and fine-tune it on ~13,000 high-quality human demonstrations. Labelers write ideal responses to prompts, teaching the model basic instruction-following behavior.</p>
+                    <p style="margin-top: 15px; color: var(--neon-indigo);"><strong>Goal:</strong> Initialize the model with a strong starting policy</p>
+                </div>
+                <div class="stage-card">
+                    <div class="stage-number">2</div>
+                    <h3>Reward Model Training</h3>
+                    <p>Take the SFT model, generate 4-9 outputs for ~33,000 prompts, and have humans rank them. Train a reward model to predict human preferences using the Bradley-Terry model and cross-entropy loss.</p>
+                    <p style="margin-top: 15px; color: var(--neon-green);"><strong>Goal:</strong> Create an automated preference judge</p>
+                </div>
+                <div class="stage-card">
+                    <div class="stage-number">3</div>
+                    <h3>Reinforcement Learning (PPO)</h3>
+                    <p>Optimize the SFT model against the reward model using Proximal Policy Optimization (PPO) with KL-divergence penalty. Mix in pretraining gradients (PPO-ptx) to prevent forgetting general capabilities.</p>
+                    <p style="margin-top: 15px; color: var(--neon-pink);"><strong>Goal:</strong> Maximize human preference scores</p>
+                </div>
+            </div>
+
+            <h3 style="margin-top: 40px; margin-bottom: 20px; color: #fff;">RLHF Pipeline Flow</h3>
+            <div class="flow-diagram">
+                <div class="flow-node human">
+                    <strong>Human Labelers</strong>
+                    <div style="font-size: 0.85em; margin-top: 5px;">Write demos, rank outputs</div>
+                </div>
+                <span class="flow-arrow">→</span>
+                <div class="flow-node">
+                    <strong>SFT Training</strong>
+                    <div style="font-size: 0.85em; margin-top: 5px;">13K demonstrations</div>
+                </div>
+                <span class="flow-arrow">→</span>
+                <div class="flow-node reward">
+                    <strong>Reward Model</strong>
+                    <div style="font-size: 0.85em; margin-top: 5px;">Predicts preferences</div>
+                </div>
+                <span class="flow-arrow">→</span>
+                <div class="flow-node">
+                    <strong>PPO Loop</strong>
+                    <div style="font-size: 0.85em; margin-top: 5px;">256K episodes</div>
+                </div>
+                <span class="flow-arrow">→</span>
+                <div class="flow-node reward">
+                    <strong>Aligned LM</strong>
+                    <div style="font-size: 0.85em; margin-top: 5px;">Follows instructions</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="section">
+            <h2 class="section-title">
+                <svg viewBox="0 0 24 24" fill="none" stroke="var(--neon-purple)" stroke-width="2">
+                    <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/>
+                    <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/>
+                </svg>
+                Mathematical Formulation
+            </h2>
+            
+            <h3 style="color: var(--neon-indigo); margin-bottom: 15px;">Reward Model Objective (Bradley-Terry)</h3>
+            <div class="formula-box">
+                L<sub>RM</sub> = -E<sub>(x,y<sub>w</sub>,y<sub>l</sub>)~D</sub>[log σ(r<sub>θ</sub>(x, y<sub>w</sub>) - r<sub>θ</sub>(x, y<sub>l</sub>))]
+            </div>
+            <p>Where y<sub>w</sub> is the preferred (winning) response and y<sub>l</sub> is the less preferred (losing) response. The reward model learns to assign higher scores to outputs humans prefer.</p>
+
+            <h3 style="color: var(--neon-pink); margin: 30px 0 15px;">PPO-ptx Objective</h3>
+            <div class="formula-box">
+                L<sub>PPO-ptx</sub> = E<sub>(x,y)~π<sub>θ</sub></sub>[min(r<sub>t</sub>Â<sub>t</sub>, clip(r<sub>t</sub>, 1-ε, 1+ε)Â<sub>t</sub>)] - βKL(π<sub>θ</sub> || π<sub>ref</sub>) + γE<sub>x~D<sub>pretrain</sub></sub>[log π<sub>θ</sub>(x)]
+            </div>
+            <p>The objective has three components: (1) Clipped PPO surrogate loss for stability, (2) KL penalty to prevent reward hacking, (3) Pretraining mix to maintain general capabilities.</p>
+        </div>
+
+        <div class="section">
+            <h2 class="section-title">
+                <svg viewBox="0 0 24 24" fill="none" stroke="var(--neon-blue)" stroke-width="2">
+                    <polyline points="16 18 22 12 16 6"/>
+                    <polyline points="8 6 2 12 8 18"/>
+                </svg>
+                Implementation: PyTorch RLHF
+            </h2>
+            
+            <div class="code-block">
+                <pre><span class="comment"># RLHF Three-Stage Training Pipeline (Simplified)</span>
+<span class="keyword">import</span> torch
+<span class="keyword">import</span> torch.nn <span class="keyword">as</span> nn
+<span class="keyword">from</span> transformers <span class="keyword">import</span> GPT2LMHeadModel, GPT2Tokenizer
+
+<span class="comment"># ========== Stage 1: Supervised Fine-Tuning ==========</span>
+<span class="keyword">def</span> <span class="function">sft_training</span>(pretrained_model, sft_dataset, epochs=<span class="string">16</span>):
+    <span class="string">"""
+    Fine-tune pretrained model on human demonstrations.
+    sft_dataset: List of (prompt, response) pairs (~13K examples)
+    """</span>
+    model = pretrained_model
+    optimizer = torch.optim.AdamW(model.parameters(), lr=<span class="string">5e-6</span>)
+    
+    <span class="keyword">for</span> epoch <span class="keyword">in</span> range(epochs):
+        <span class="keyword">for</span> prompt, response <span class="keyword">in</span> sft_dataset:
+            <span class="comment"># Concatenate prompt + response</span>
+            inputs = tokenizer(prompt + response, return_tensors=<span class="string">"pt"</span>)
+            labels = inputs.input_ids.clone()
+            labels[:, :len(prompt)] = -<span class="string">100</span>  <span class="comment"># Mask prompt tokens</span>
+            
+            outputs = model(**inputs, labels=labels)
+            loss = outputs.loss
+            loss.backward()
+            optimizer.step()
+            optimizer.zero_grad()
+    
+    <span class="keyword">return</span> model  <span class="comment"># SFT model</span>
+
+<span class="comment"># ========== Stage 2: Reward Model Training ==========</span>
+<span class="keyword">class</span> <span class="function">RewardModel</span>(nn.Module):
+    <span class="keyword">def</span> <span class="function">__init__</span>(self, sft_model):
+        super().__init__()
+        self.transformer = sft_model.transformer
+        <span class="comment"># Replace LM head with reward head (outputs scalar)</span>
+        self.reward_head = nn.Linear(sft_model.config.n_embd, <span class="string">1</span>, bias=<span class="string">False</span>)
+    
+    <span class="keyword">def</span> <span class="function">forward</span>(self, input_ids, attention_mask):
+        hidden = self.transformer(input_ids, attention_mask=attention_mask).last_hidden_state
+        <span class="comment"># Use last token representation</span>
+        rewards = self.reward_head(hidden[:, -<span class="string">1</span>, :])
+        <span class="keyword">return</span> rewards.squeeze(-<span class="string">1</span>)
+
+<span class="keyword">def</span> <span class="function">reward_model_loss</span>(reward_model, x, y_winner, y_loser):
+    <span class="string">"""
+    Bradley-Terry pairwise preference loss.
+    x: prompt, y_winner: preferred response, y_loser: less preferred response
+    """</span>
+    <span class="comment"># Get reward for both outputs</span>
+    r_w = reward_model(x + y_winner)
+    r_l = reward_model(x + y_loser)
+    
+    <span class="comment"># Bradley-Terry model: maximize P(y_w > y_l) = sigmoid(r_w - r_l)</span>
+    loss = -torch.log(torch.sigmoid(r_w - r_l)).mean()
+    <span class="keyword">return</span> loss
+
+<span class="comment"># ========== Stage 3: PPO Training ==========</span>
+<span class="keyword">def</span> <span class="function">ppo_step</span>(policy, reference_policy, reward_model, prompts, beta=<span class="string">0.02</span>, epsilon=<span class="string">0.2</span>):
+    <span class="string">"""
+    Single PPO update with KL penalty.
+    """</span>
+    <span class="comment"># Generate responses</span>
+    responses, log_probs = policy.generate(prompts)
+    
+    <span class="comment"># Compute rewards from reward model</span>
+    rewards = reward_model(prompts, responses)
+    
+    <span class="comment"># KL penalty: prevent policy from drifting too far</span>
+    ref_log_probs = reference_policy.get_logprobs(prompts, responses)
+    kl_penalty = beta * (log_probs - ref_log_probs)
+    
+    <span class="comment"># Total reward</span>
+    total_rewards = rewards - kl_penalty
+    
+    <span class="comment"># PPO clipped surrogate objective</span>
+    ratio = torch.exp(log_probs - old_log_probs)
+    clipped_ratio = torch.clamp(ratio, <span class="string">1</span>-epsilon, <span class="string">1</span>+epsilon)
+    
+    advantages = compute_gae(total_rewards, values)
+    policy_loss = -torch.min(ratio * advantages, clipped_ratio * advantages).mean()
+    
+    <span class="keyword">return</span> policy_loss</pre>
+            </div>
+        </div>
+
+        <div class="section">
+            <h2 class="section-title">
+                <svg viewBox="0 0 24 24" fill="none" stroke="var(--neon-green)" stroke-width="2">
+                    <polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/>
+                    <polyline points="17 6 23 6 23 12"/>
+                </svg>
+                Results & Impact
+            </h2>
+            
+            <div class="impact-stats">
+                <div class="stat-card">
+                    <span class="stat-value">1.3B</span>
+                    <span class="stat-label">InstructGPT beats 175B GPT-3</span>
+                </div>
+                <div class="stat-card">
+                    <span class="stat-value">85%</span>
+                    <span class="stat-label">Preferred over GPT-3</span>
+                </div>
+                <div class="stat-card">
+                    <span class="stat-value">100M+</span>
+                    <span class="stat-label">ChatGPT users in 2 months</span>
+                </div>
+                <div class="stat-card">
+                    <span class="stat-value">∞</span>
+                    <span class="stat-label">Industry Standard</span>
+                </div>
+            </div>
+
+            <h3 style="color: var(--neon-green); margin: 30px 0 15px;">Key Improvements</h3>
+            <ul style="margin-left: 20px; color: #ccc;">
+                <li style="margin-bottom: 10px;"><strong>Truthfulness:</strong> InstructGPT models were more truthful and less likely to hallucinate</li>
+                <li style="margin-bottom: 10px;"><strong>Toxicity Reduction:</strong> 25% reduction in toxic outputs while maintaining capability</li>
+                <li style="margin-bottom: 10px;"><strong>Instruction Following:</strong> Dramatically improved ability to follow complex instructions</li>
+                <li style="margin-bottom: 10px;"><strong>User Preference:</strong> 85% of users preferred InstructGPT outputs over GPT-3</li>
+            </ul>
+
+            <h3 style="color: var(--neon-indigo); margin: 30px 0 15px;">Industry Transformation</h3>
+            <p>RLHF has become the <strong>standard practice</strong> for training all major language models:</p>
+            <ul style="margin-left: 20px; color: #ccc;">
+                <li style="margin-bottom: 8px;"><strong>GPT-4, Claude, Gemini:</strong> All use RLHF or variants</li>
+                <li style="margin-bottom: 8px;"><strong>Llama 2/3, Mistral:</strong> Open models adopt RLHF</li>
+                <li style="margin-bottom: 8px;"><strong>ChatGPT:</strong> Direct descendant of InstructGPT</li>
+                <li style="margin-bottom: 8px;"><strong>DPO (2024):</strong> Simpler alternative to RLHF gaining popularity</li>
+            </ul>
+        </div>
+
+        <div class="section">
+            <h2 class="section-title">
+                <svg viewBox="0 0 24 24" fill="none" stroke="var(--neon-orange)" stroke-width="2">
+                    <circle cx="12" cy="12" r="10"/>
+                    <line x1="2" y1="12" x2="22" y2="12"/>
+                    <path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/>
+                </svg>
+                Related Work & Lineage
+            </h2>
+            
+            <div class="related-papers">
+                <div class="related-card">
+                    <span class="year">2017</span>
+                    <h4>Deep RL from Human Preferences</h4>
+                    <p style="font-size: 0.9em; color: #888;">Christiano et al. - Original RLHF methodology for general RL agents</p>
+                </div>
+                <div class="related-card">
+                    <span class="year">2017</span>
+                    <h4>Proximal Policy Optimization</h4>
+                    <p style="font-size: 0.9em; color: #888;">Schulman et al. - PPO algorithm used in RLHF stage 3</p>
+                </div>
+                <div class="related-card">
+                    <span class="year">2020</span>
+                    <h4>Learning to Summarize from Human Feedback</h4>
+                    <p style="font-size: 0.9em; color: #888;">Stiennon et al. - First application of RLHF to NLP</p>
+                </div>
+                <div class="related-card">
+                    <span class="year">2022</span>
+                    <h4>InstructGPT / RLHF</h4>
+                    <p style="font-size: 0.9em; color: #888;">Ouyang et al. - Scaled RLHF to 175B models (this paper)</p>
+                </div>
+                <div class="related-card">
+                    <span class="year">2023</span>
+                    <h4>RLAIF</h4>
+                    <p style="font-size: 0.9em; color: #888;">Bai et al. - Constitutional AI: AI feedback instead of human</p>
+                </div>
+                <div class="related-card">
+                    <span class="year">2024</span>
+                    <h4>Direct Preference Optimization (DPO)</h4>
+                    <p style="font-size: 0.9em; color: #888;">Rafailov et al. - Simpler alternative to RLHF</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="section">
+            <h2 class="section-title">
+                <svg viewBox="0 0 24 24" fill="none" stroke="var(--neon-cyan)" stroke-width="2">
+                    <path d="M12 2L2 7l10 5 10-5-10-5z"/>
+                    <path d="M2 17l10 5 10-5"/>
+                    <path d="M2 12l10 5 10-5"/>
+                </svg>
+                Key Takeaways
+            </h2>
+            <div style="background: rgba(6,182,212,0.1); border-left: 4px solid var(--neon-cyan); padding: 25px; border-radius: 0 12px 12px 0;">
+                <ol style="margin-left: 20px; color: #ccc;">
+                    <li style="margin-bottom: 12px;"><strong>Alignment beats scale:</strong> A 1.3B aligned model can outperform a 175B unaligned model on instruction-following tasks.</li>
+                    <li style="margin-bottom: 12px;"><strong>Comparisons scale better:</strong> Having humans rank outputs is more efficient than asking them to write perfect responses.</li>
+                    <li style="margin-bottom: 12px;"><strong>KL penalty is critical:</strong> Without it, the model learns to "hack" the reward model rather than genuinely improve.</li>
+                    <li style="margin-bottom: 12px;"><strong>Pretraining mix prevents forgetting:</strong> PPO-ptx maintains general capabilities while learning alignment.</li>
+                    <li style="margin-bottom: 12px;"><strong>RLHF is now standard:</strong> Every major LLM (GPT-4, Claude, Llama, etc.) uses RLHF or a variant.</li>
+                </ol>
+            </div>
+        </div>
+
+        <footer style="text-align: center; padding: 40px; color: #666; border-top: 1px solid rgba(255,255,255,0.05); margin-top: 40px;">
+            <p>Part of the <a href="../index.html" style="color: var(--neon-indigo); text-decoration: none;">AI Neural Networks</a> paper collection</p>
+            <p style="font-size: 0.85em; margin-top: 10px;">Last updated: April 19, 2026</p>
+        </footer>
+    </div>
+</body>
+</html>
