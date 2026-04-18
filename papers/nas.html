@@ -1,0 +1,761 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NAS - Neural Architecture Search with Reinforcement Learning | AI Neural Networks</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            background: #0a0a0f;
+            color: #e0e0ff;
+            line-height: 1.7;
+            overflow-x: hidden;
+        }
+        
+        /* Animated background */
+        .bg-animation {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+            opacity: 0.2;
+        }
+        
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        
+        /* Hero Section */
+        .hero {
+            padding: 60px 20px 40px;
+            text-align: center;
+            background: linear-gradient(180deg, rgba(99,102,241,0.1) 0%, transparent 100%);
+            border-bottom: 1px solid rgba(99, 102, 241, 0.2);
+            margin-bottom: 40px;
+        }
+        
+        .hero h1 {
+            font-size: 2.8rem;
+            background: linear-gradient(135deg, #6366f1 0%, #a855f7 50%, #ec4899 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 15px;
+            font-weight: 800;
+        }
+        
+        .hero .subtitle {
+            font-size: 1.2rem;
+            color: #8888aa;
+            margin-bottom: 25px;
+        }
+        
+        .hero .meta {
+            display: flex;
+            justify-content: center;
+            gap: 30px;
+            flex-wrap: wrap;
+            font-size: 0.95rem;
+            color: #aaaacc;
+        }
+        
+        .hero .meta span {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .badges {
+            margin-top: 25px;
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            flex-wrap: wrap;
+        }
+        
+        .badge {
+            display: inline-block;
+            padding: 8px 18px;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            font-weight: 500;
+            text-decoration: none;
+            transition: all 0.3s ease;
+        }
+        
+        .badge.pdf {
+            background: rgba(239, 68, 68, 0.2);
+            color: #fca5a5;
+            border: 1px solid rgba(239, 68, 68, 0.4);
+        }
+        
+        .badge.pdf:hover {
+            background: rgba(239, 68, 68, 0.3);
+            transform: translateY(-2px);
+        }
+        
+        .badge.code {
+            background: rgba(34, 197, 94, 0.2);
+            color: #86efac;
+            border: 1px solid rgba(34, 197, 94, 0.4);
+        }
+        
+        .badge.code:hover {
+            background: rgba(34, 197, 94, 0.3);
+            transform: translateY(-2px);
+        }
+        
+        .badge.venue {
+            background: rgba(99, 102, 241, 0.2);
+            color: #a5b4fc;
+            border: 1px solid rgba(99, 102, 241, 0.4);
+        }
+        
+        /* Paper Summary */
+        .summary {
+            background: linear-gradient(135deg, rgba(99, 102, 241, 0.1) 0%, rgba(168, 85, 247, 0.1) 100%);
+            border: 1px solid rgba(99, 102, 241, 0.3);
+            border-radius: 16px;
+            padding: 30px;
+            margin-bottom: 40px;
+        }
+        
+        .summary h2 {
+            font-size: 1.5rem;
+            margin-bottom: 20px;
+            color: #c7d2fe;
+        }
+        
+        .summary p {
+            color: #b8b8d0;
+            font-size: 1.05rem;
+        }
+        
+        /* Architecture Diagram */
+        .architecture-section {
+            margin-bottom: 50px;
+        }
+        
+        .section-title {
+            font-size: 2rem;
+            margin-bottom: 30px;
+            color: #c7d2fe;
+            text-align: center;
+        }
+        
+        .architecture-container {
+            background: rgba(20, 20, 30, 0.6);
+            border: 1px solid rgba(99, 102, 241, 0.3);
+            border-radius: 16px;
+            padding: 30px;
+            margin-bottom: 30px;
+        }
+        
+        .svg-container {
+            width: 100%;
+            overflow-x: auto;
+            margin-bottom: 20px;
+        }
+        
+        .svg-container svg {
+            max-width: 100%;
+            height: auto;
+            display: block;
+            margin: 0 auto;
+        }
+        
+        /* Info Cards */
+        .info-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 20px;
+            margin-bottom: 40px;
+        }
+        
+        .info-card {
+            background: rgba(20, 20, 30, 0.6);
+            border: 1px solid rgba(99, 102, 241, 0.2);
+            border-radius: 12px;
+            padding: 25px;
+            transition: all 0.3s ease;
+        }
+        
+        .info-card:hover {
+            border-color: rgba(99, 102, 241, 0.5);
+            transform: translateY(-3px);
+            box-shadow: 0 10px 30px rgba(99, 102, 241, 0.1);
+        }
+        
+        .info-card h3 {
+            font-size: 1.2rem;
+            margin-bottom: 15px;
+            color: #a5b4fc;
+        }
+        
+        .info-card ul {
+            list-style: none;
+            padding-left: 0;
+        }
+        
+        .info-card li {
+            padding: 8px 0;
+            padding-left: 20px;
+            position: relative;
+            color: #b8b8d0;
+        }
+        
+        .info-card li::before {
+            content: "▸";
+            position: absolute;
+            left: 0;
+            color: #6366f1;
+        }
+        
+        /* Results Section */
+        .results-section {
+            margin-bottom: 50px;
+        }
+        
+        .results-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+            background: rgba(20, 20, 30, 0.6);
+            border-radius: 12px;
+            overflow: hidden;
+        }
+        
+        .results-table th,
+        .results-table td {
+            padding: 15px 20px;
+            text-align: left;
+            border-bottom: 1px solid rgba(99, 102, 241, 0.2);
+        }
+        
+        .results-table th {
+            background: rgba(99, 102, 241, 0.2);
+            color: #c7d2fe;
+            font-weight: 600;
+        }
+        
+        .results-table tr:hover {
+            background: rgba(99, 102, 241, 0.1);
+        }
+        
+        .highlight {
+            color: #86efac;
+            font-weight: 600;
+        }
+        
+        /* Key Innovations */
+        .innovations {
+            margin-bottom: 50px;
+        }
+        
+        .innovation-card {
+            background: linear-gradient(135deg, rgba(99, 102, 241, 0.1) 0%, rgba(168, 85, 247, 0.1) 100%);
+            border: 1px solid rgba(99, 102, 241, 0.2);
+            border-radius: 12px;
+            padding: 25px;
+            margin-bottom: 20px;
+            transition: all 0.3s ease;
+        }
+        
+        .innovation-card:hover {
+            border-color: rgba(99, 102, 241, 0.4);
+            transform: translateX(5px);
+        }
+        
+        .innovation-card h3 {
+            font-size: 1.3rem;
+            margin-bottom: 12px;
+            color: #a5b4fc;
+        }
+        
+        .innovation-card p {
+            color: #b8b8d0;
+            line-height: 1.8;
+        }
+        
+        /* Math formula box */
+        .formula-box {
+            background: rgba(20, 20, 30, 0.8);
+            border: 1px solid rgba(99, 102, 241, 0.3);
+            border-radius: 12px;
+            padding: 25px;
+            margin: 20px 0;
+            text-align: center;
+            font-family: 'Courier New', monospace;
+        }
+        
+        .formula {
+            font-size: 1.2rem;
+            color: #c7d2fe;
+            margin-bottom: 10px;
+        }
+        
+        .formula-desc {
+            color: #8888aa;
+            font-size: 0.9rem;
+        }
+        
+        /* Footer */
+        footer {
+            text-align: center;
+            padding: 40px 20px;
+            border-top: 1px solid rgba(99, 102, 241, 0.2);
+            color: #6666aa;
+            margin-top: 60px;
+        }
+        
+        /* Responsive */
+        @media (max-width: 768px) {
+            .hero h1 {
+                font-size: 2rem;
+            }
+            
+            .hero .meta {
+                flex-direction: column;
+                gap: 10px;
+            }
+            
+            .section-title {
+                font-size: 1.5rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <svg class="bg-animation" viewBox="0 0 100 100" preserveAspectRatio="none">
+        <defs>
+            <linearGradient id="grad1" x1="0%" y1="0%" x2="100%" y2="100%">
+                <stop offset="0%" style="stop-color:#6366f1;stop-opacity:0.3" />
+                <stop offset="100%" style="stop-color:#a855f7;stop-opacity:0.1" />
+            </linearGradient>
+        </defs>
+        <circle cx="20" cy="20" r="40" fill="url(#grad1)">
+            <animate attributeName="cy" values="20;80;20" dur="20s" repeatCount="indefinite"/>
+        </circle>
+        <circle cx="80" cy="80" r="50" fill="url(#grad1)">
+            <animate attributeName="cx" values="80;20;80" dur="25s" repeatCount="indefinite"/>
+        </circle>
+    </svg>
+
+    <header class="hero">
+        <h1>NAS</h1>
+        <p class="subtitle">Neural Architecture Search with Reinforcement Learning</p>
+        <div class="meta">
+            <span>👤 Barret Zoph & Quoc V. Le</span>
+            <span>🏢 Google Brain</span>
+            <span>📅 2017</span>
+            <span>📊 ICLR</span>
+        </div>
+        <div class="badges">
+            <a href="https://arxiv.org/abs/1611.01578" class="badge pdf" target="_blank">📄 Paper PDF</a>
+            <span class="badge venue">🏆 ICLR 2017</span>
+        </div>
+    </header>
+
+    <div class="container">
+        <!-- Summary -->
+        <section class="summary">
+            <h2>🎯 Paper Summary</h2>
+            <p>
+                Neural Architecture Search (NAS) revolutionized how we design neural networks by introducing 
+                the first automated architecture discovery system using reinforcement learning. The paper proposes 
+                using a <strong>controller RNN</strong> to generate architectural descriptions of neural networks, 
+                treating architecture search as a sequence generation problem. The controller is trained with 
+                <strong>REINFORCE policy gradient</strong> to maximize the expected validation accuracy of generated 
+                architectures. On CIFAR-10, NAS discovered architectures achieving <strong>3.65% test error</strong> 
+                (0.09% better than human-designed), and on Penn Treebank, it designed recurrent cells outperforming 
+                LSTMs with <strong>62.4 perplexity</strong> (3.6 better than prior state-of-the-art). This work 
+                launched the entire AutoML/NAS field, leading to follow-ups like NASNet, ENAS, and EfficientNet.
+            </p>
+        </section>
+
+        <!-- Architecture Overview -->
+        <section class="architecture-section">
+            <h2 class="section-title">🏗️ Architecture Overview</h2>
+            
+            <div class="architecture-container">
+                <h3 style="text-align: center; margin-bottom: 20px; color: #a5b4fc;">NAS System Architecture</h3>
+                <div class="svg-container">
+                    <svg width="900" height="500" viewBox="0 0 900 500">
+                        <!-- Background -->
+                        <defs>
+                            <linearGradient id="boxGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+                                <stop offset="0%" style="stop-color:#6366f1;stop-opacity:0.2" />
+                                <stop offset="100%" style="stop-color:#6366f1;stop-opacity:0.05" />
+                            </linearGradient>
+                            <linearGradient id="rnnGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+                                <stop offset="0%" style="stop-color:#a855f7;stop-opacity:0.3" />
+                                <stop offset="100%" style="stop-color:#6366f1;stop-opacity:0.2" />
+                            </linearGradient>
+                            <marker id="arrowhead" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto">
+                                <polygon points="0 0, 10 3.5, 0 7" fill="#6366f1" />
+                            </marker>
+                            <marker id="arrowheadReward" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto">
+                                <polygon points="0 0, 10 3.5, 0 7" fill="#22c55e" />
+                            </marker>
+                        </defs>
+
+                        <!-- Controller RNN Box -->
+                        <rect x="50" y="50" width="200" height="400" rx="15" fill="url(#boxGrad)" stroke="#a855f7" stroke-width="2"/>
+                        <text x="150" y="80" text-anchor="middle" fill="#c7d2fe" font-size="16" font-weight="bold">Controller RNN</text>
+                        
+                        <!-- LSTM Cells -->
+                        <rect x="80" y="110" width="140" height="50" rx="8" fill="url(#rnnGrad)" stroke="#ec4899" stroke-width="2"/>
+                        <text x="150" y="140" text-anchor="middle" fill="#e0e0ff" font-size="14">LSTM Layer 1</text>
+                        
+                        <rect x="80" y="180" width="140" height="50" rx="8" fill="url(#rnnGrad)" stroke="#ec4899" stroke-width="2"/>
+                        <text x="150" y="210" text-anchor="middle" fill="#e0e0ff" font-size="14">LSTM Layer 2</text>
+                        
+                        <!-- Softmax outputs -->
+                        <rect x="80" y="260" width="140" height="40" rx="8" fill="rgba(99,102,241,0.3)" stroke="#6366f1" stroke-width="2"/>
+                        <text x="150" y="285" text-anchor="middle" fill="#e0e0ff" font-size="12">Softmax (Filter H)</text>
+                        
+                        <rect x="80" y="310" width="140" height="40" rx="8" fill="rgba(99,102,241,0.3)" stroke="#6366f1" stroke-width="2"/>
+                        <text x="150" y="335" text-anchor="middle" fill="#e0e0ff" font-size="12">Softmax (Filter W)</text>
+                        
+                        <rect x="80" y="360" width="140" height="40" rx="8" fill="rgba(99,102,241,0.3)" stroke="#6366f1" stroke-width="2"/>
+                        <text x="150" y="385" text-anchor="middle" fill="#e0e0ff" font-size="12">Softmax (#Filters)</text>
+
+                        <!-- Architecture String -->
+                        <rect x="320" y="200" width="180" height="120" rx="10" fill="rgba(34,197,94,0.1)" stroke="#22c55e" stroke-width="2"/>
+                        <text x="410" y="230" text-anchor="middle" fill="#86efac" font-size="14" font-weight="bold">Architecture String</text>
+                        <text x="410" y="255" text-anchor="middle" fill="#b8b8d0" font-size="11">["FH:5", "FW:3",</text>
+                        <text x="410" y="275" text-anchor="middle" fill="#b8b8d0" font-size="11">"Stride:1",</text>
+                        <text x="410" y="295" text-anchor="middle" fill="#b8b8d0" font-size="11">"#Filters:64"]</text>
+
+                        <!-- Child Network -->
+                        <rect x="580" y="50" width="250" height="400" rx="15" fill="url(#boxGrad)" stroke="#22c55e" stroke-width="2"/>
+                        <text x="705" y="80" text-anchor="middle" fill="#86efac" font-size="16" font-weight="bold">Child Network</text>
+                        <text x="705" y="100" text-anchor="middle" fill="#8888aa" font-size="12">(Generated CNN/RNN)</text>
+                        
+                        <!-- CNN Layers Visualization -->
+                        <rect x="610" y="130" width="200" height="35" rx="5" fill="rgba(99,102,241,0.3)" stroke="#6366f1" stroke-width="1"/>
+                        <text x="710" y="152" text-anchor="middle" fill="#e0e0ff" font-size="12">Conv Layer 1 (5×3×64)</text>
+                        
+                        <rect x="620" y="175" width="180" height="35" rx="5" fill="rgba(99,102,241,0.25)" stroke="#6366f1" stroke-width="1"/>
+                        <text x="710" y="197" text-anchor="middle" fill="#e0e0ff" font-size="12">Conv Layer 2 (3×3×128)</text>
+                        
+                        <rect x="630" y="220" width="160" height="35" rx="5" fill="rgba(99,102,241,0.2)" stroke="#6366f1" stroke-width="1"/>
+                        <text x="710" y="242" text-anchor="middle" fill="#e0e0ff" font-size="12">Conv Layer 3 (3×3×256)</text>
+                        
+                        <!-- Skip Connection -->
+                        <path d="M 610 147 Q 590 200 630 237" fill="none" stroke="#ec4899" stroke-width="2" stroke-dasharray="5,3"/>
+                        <text x="595" y="195" fill="#ec4899" font-size="10">Skip</text>
+                        
+                        <rect x="640" y="270" width="140" height="35" rx="5" fill="rgba(168,85,247,0.3)" stroke="#a855f7" stroke-width="1"/>
+                        <text x="710" y="292" text-anchor="middle" fill="#e0e0ff" font-size="12">Global Average Pool</text>
+                        
+                        <rect x="650" y="320" width="120" height="40" rx="5" fill="rgba(239,68,68,0.2)" stroke="#ef4444" stroke-width="1"/>
+                        <text x="710" y="345" text-anchor="middle" fill="#fca5a5" font-size="14" font-weight="bold">Softmax</text>
+                        
+                        <text x="710" y="380" text-anchor="middle" fill="#8888aa" font-size="11">(10 classes for CIFAR-10)</text>
+
+                        <!-- Training Box -->
+                        <rect x="580" y="470" width="250" height="60" rx="10" fill="rgba(34,197,94,0.1)" stroke="#22c55e" stroke-width="2"/>
+                        <text x="705" y="495" text-anchor="middle" fill="#86efac" font-size="13" font-weight="bold">Train on CIFAR-10 / PTB</text>
+                        <text x="705" y="515" text-anchor="middle" fill="#b8b8d0" font-size="11">→ Validation Accuracy R</text>
+
+                        <!-- Arrows -->
+                        <!-- Controller to Architecture -->
+                        <line x1="250" y1="280" x2="320" y2="260" stroke="#6366f1" stroke-width="2" marker-end="url(#arrowhead)"/>
+                        
+                        <!-- Architecture to Child -->
+                        <line x1="500" y1="260" x2="580" y2="250" stroke="#6366f1" stroke-width="2" marker-end="url(#arrowhead)"/>
+                        
+                        <!-- Child to Training -->
+                        <line x1="705" y1="450" x2="705" y2="470" stroke="#22c55e" stroke-width="2"/>
+                        
+                        <!-- Reward Arrow (Feedback) -->
+                        <path d="M 580 500 Q 400 520 250 350" fill="none" stroke="#22c55e" stroke-width="3" marker-end="url(#arrowheadReward)"/>
+                        <text x="380" y="510" fill="#22c55e" font-size="12" font-weight="bold">Reward R</text>
+                        
+                        <!-- Legend -->
+                        <rect x="320" y="400" width="180" height="80" rx="8" fill="rgba(20,20,30,0.8)" stroke="#6366f1" stroke-width="1"/>
+                        <text x="330" y="420" fill="#c7d2fe" font-size="12" font-weight="bold">Legend:</text>
+                        <line x1="335" y1="435" x2="355" y2="435" stroke="#6366f1" stroke-width="2"/>
+                        <text x="360" y="440" fill="#8888aa" font-size="11">Architecture flow</text>
+                        <line x1="335" y1="455" x2="355" y2="455" stroke="#22c55e" stroke-width="2"/>
+                        <text x="360" y="460" fill="#8888aa" font-size="11">Reward signal</text>
+                        <line x1="335" y1="475" x2="355" y2="475" stroke="#ec4899" stroke-width="2" stroke-dasharray="3,2"/>
+                        <text x="360" y="480" fill="#8888aa" font-size="11">Skip connection</text>
+                    </svg>
+                </div>
+                <p style="text-align: center; color: #8888aa; font-size: 0.9rem;">
+                    The controller RNN generates architecture strings that define child networks. The child is trained 
+                    and its validation accuracy becomes the reward signal for updating the controller via REINFORCE.
+                </p>
+            </div>
+
+            <!-- REINFORCE Training Loop -->
+            <div class="architecture-container">
+                <h3 style="text-align: center; margin-bottom: 20px; color: #a5b4fc;">REINFORCE Policy Gradient Training</h3>
+                <div class="svg-container">
+                    <svg width="900" height="350" viewBox="0 0 900 350">
+                        <defs>
+                            <marker id="arrowhead2" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto">
+                                <polygon points="0 0, 10 3.5, 0 7" fill="#6366f1" />
+                            </marker>
+                        </defs>
+
+                        <!-- Step 1: Sample Architecture -->
+                        <rect x="50" y="50" width="160" height="200" rx="10" fill="rgba(99,102,241,0.1)" stroke="#6366f1" stroke-width="2"/>
+                        <text x="130" y="80" text-anchor="middle" fill="#c7d2fe" font-size="14" font-weight="bold">Step 1</text>
+                        <text x="130" y="110" text-anchor="middle" fill="#a5b4fc" font-size="13">Controller RNN</text>
+                        <text x="130" y="135" text-anchor="middle" fill="#a5b4fc" font-size="13">samples</text>
+                        <text x="130" y="160" text-anchor="middle" fill="#a5b4fc" font-size="13">architecture</text>
+                        <text x="130" y="185" text-anchor="middle" fill="#a5b4fc" font-size="13">string A with</text>
+                        <text x="130" y="210" text-anchor="middle" fill="#a5b4fc" font-size="13">probability p</text>
+
+                        <!-- Step 2: Train Child -->
+                        <rect x="280" y="50" width="160" height="200" rx="10" fill="rgba(168,85,247,0.1)" stroke="#a855f7" stroke-width="2"/>
+                        <text x="360" y="80" text-anchor="middle" fill="#c7d2fe" font-size="14" font-weight="bold">Step 2</text>
+                        <text x="360" y="110" text-anchor="middle" fill="#d8b4fe" font-size="13">Build child</text>
+                        <text x="360" y="135" text-anchor="middle" fill="#d8b4fe" font-size="13">network from</text>
+                        <text x="360" y="160" text-anchor="middle" fill="#d8b4fe" font-size="13">architecture</text>
+                        <text x="360" y="185" text-anchor="middle" fill="#d8b4fe" font-size="13">and train on</text>
+                        <text x="360" y="210" text-anchor="middle" fill="#d8b4fe" font-size="13">dataset</text>
+
+                        <!-- Step 3: Get Reward -->
+                        <rect x="510" y="50" width="160" height="200" rx="10" fill="rgba(34,197,94,0.1)" stroke="#22c55e" stroke-width="2"/>
+                        <text x="590" y="80" text-anchor="middle" fill="#c7d2fe" font-size="14" font-weight="bold">Step 3</text>
+                        <text x="590" y="110" text-anchor="middle" fill="#86efac" font-size="13">Evaluate on</text>
+                        <text x="590" y="135" text-anchor="middle" fill="#86efac" font-size="13">validation set</text>
+                        <text x="590" y="165" text-anchor="middle" fill="#86efac" font-size="13">to get R</text>
+                        <text x="590" y="200" text-anchor="middle" fill="#fca5a5" font-size="16" font-weight="bold">R = Accuracy</text>
+                        <text x="590" y="225" text-anchor="middle" fill="#b8b8d0" font-size="11">(or Perplexity⁻¹)</text>
+
+                        <!-- Step 4: Update Controller -->
+                        <rect x="740" y="50" width="140" height="200" rx="10" fill="rgba(239,68,68,0.1)" stroke="#ef4444" stroke-width="2"/>
+                        <text x="810" y="80" text-anchor="middle" fill="#c7d2fe" font-size="14" font-weight="bold">Step 4</text>
+                        <text x="810" y="110" text-anchor="middle" fill="#fca5a5" font-size="13">Update</text>
+                        <text x="810" y="135" text-anchor="middle" fill="#fca5a5" font-size="13">controller</text>
+                        <text x="810" y="160" text-anchor="middle" fill="#fca5a5" font-size="13">parameters</text>
+                        <text x="810" y="195" text-anchor="middle" fill="#fca5a5" font-size="11">∇θ ≈ Σ(R - b)∇log p</text>
+
+                        <!-- Arrows between steps -->
+                        <line x1="210" y1="150" x2="280" y2="150" stroke="#6366f1" stroke-width="2" marker-end="url(#arrowhead2)"/>
+                        <line x1="440" y1="150" x2="510" y2="150" stroke="#6366f1" stroke-width="2" marker-end="url(#arrowhead2)"/>
+                        <line x1="670" y1="150" x2="740" y2="150" stroke="#6366f1" stroke-width="2" marker-end="url(#arrowhead2)"/>
+
+                        <!-- Feedback arrow -->
+                        <path d="M 810 250 L 810 290 L 130 290 L 130 250" fill="none" stroke="#22c55e" stroke-width="2" stroke-dasharray="5,3" marker-end="url(#arrowhead2)"/>
+                        <text x="470" y="310" text-anchor="middle" fill="#22c55e" font-size="12">Repeat for m parallel workers (800 GPUs total)</text>
+
+                        <!-- Baseline box -->
+                        <rect x="700" y="280" width="180" height="55" rx="8" fill="rgba(20,20,30,0.8)" stroke="#f59e0b" stroke-width="1"/>
+                        <text x="790" y="305" text-anchor="middle" fill="#fcd34d" font-size="12">Exponential moving</text>
+                        <text x="790" y="325" text-anchor="middle" fill="#fcd34d" font-size="12">average baseline b</text>
+                    </svg>
+                </div>
+            </div>
+        </section>
+
+        <!-- Key Innovations -->
+        <section class="innovations">
+            <h2 class="section-title">💡 Key Innovations</h2>
+            
+            <div class="innovation-card">
+                <h3>🎮 RNN as Architecture Generator</h3>
+                <p>
+                    The core insight: neural network architectures can be represented as <strong>variable-length strings</strong>. 
+                    A controller RNN (2-layer LSTM with 35 hidden units) generates these strings token by token. 
+                    Each token represents a hyperparameter: filter height, filter width, number of filters, stride, etc. 
+                    The autoregressive nature allows generating architectures of arbitrary depth and complexity.
+                </p>
+            </div>
+            
+            <div class="innovation-card">
+                <h3>📊 REINFORCE for Architecture Optimization</h3>
+                <p>
+                    Since architecture generation involves discrete decisions (non-differentiable), standard backpropagation 
+                    doesn't apply. NAS uses the REINFORCE policy gradient algorithm to optimize the controller:
+                </p>
+                <div class="formula-box">
+                    <div class="formula">∇<sub>θ</sub>J(θ) = E<sub>P(a;θ)</sub>[(R - b) ∇<sub>θ</sub> log P(a;θ)]</div>
+                    <div class="formula-desc">θ = controller parameters | R = validation accuracy | b = baseline (exponential moving average)</div>
+                </div>
+            </div>
+            
+            <div class="innovation-card">
+                <h3>🔗 Skip Connections via Anchor Points</h3>
+                <p>
+                    To enable modern architectural patterns like ResNet's skip connections, NAS introduces <strong>anchor points</strong>. 
+                    At each layer, the controller decides which previous layers to connect to using set attention. This allows 
+                    building complex multi-branch architectures with residual connections and concatenations.
+                </p>
+            </div>
+            
+            <div class="innovation-card">
+                <h3>🧠 RNN Cell Search</h3>
+                <p>
+                    Beyond CNNs, NAS searches for novel RNN cell structures using a tree-based search space. 
+                    The controller combines inputs and previous hidden states using binary trees with learnable 
+                    combination functions (addition, element-wise multiplication) and activation functions.
+                    This discovered the <strong>NASCell</strong> which outperformed LSTM on Penn Treebank.
+                </p>
+            </div>
+        </section>
+
+        <!-- Info Grid -->
+        <section class="info-grid">
+            <div class="info-card">
+                <h3>🔧 Search Space (CNN)</h3>
+                <ul>
+                    <li>Filter height: {1, 3, 5, 7}</li>
+                    <li>Filter width: {1, 3, 5, 7}</li>
+                    <li>Number of filters: {24, 36, 48, 64}</li>
+                    <li>Stride: {1, 2, 3}</li>
+                    <li>Skip connections via anchor points</li>
+                    <li>Batch normalization + ReLU</li>
+                </ul>
+            </div>
+            
+            <div class="info-card">
+                <h3>🔄 Training Details</h3>
+                <ul>
+                    <li>Controller: 2-layer LSTM, 35 hidden units</li>
+                    <li>Optimizer: Adam (lr=0.0006)</li>
+                    <li>Child training: 50 epochs (CIFAR-10)</li>
+                    <li>Reward: max validation acc³ (last 5 epochs)</li>
+                    <li>800 GPUs, 3-4 weeks training</li>
+                    <li>12,800 architectures evaluated</li>
+                </ul>
+            </div>
+            
+            <div class="info-card">
+                <h3>📈 Key Results (CIFAR-10)</h3>
+                <ul>
+                    <li>NAS test error: <strong>3.65%</strong></li>
+                    <li>Previous SOTA: 3.74%</li>
+                    <li>Improvement: 0.09% (1.05× faster)</li>
+                    <li>15-layer discovered architecture</li>
+                    <li>Skip connections essential</li>
+                    <li>Transferable to ImageNet</li>
+                </ul>
+            </div>
+            
+            <div class="info-card">
+                <h3>📝 Key Results (PTB)</h3>
+                <ul>
+                    <li>NASCell perplexity: <strong>62.4</strong></li>
+                    <li>LSTM baseline: 66.0</li>
+                    <li>Improvement: 3.6 perplexity</li>
+                    <li>Character PTB: 1.214 perplexity</li>
+                    <li>New state-of-the-art</li>
+                    <li>NASCell published in TensorFlow</li>
+                </ul>
+            </div>
+        </section>
+
+        <!-- Results Section -->
+        <section class="results-section">
+            <h2 class="section-title">📊 Experimental Results</h2>
+            
+            <table class="results-table">
+                <thead>
+                    <tr>
+                        <th>Model</th>
+                        <th>CIFAR-10 Test Error</th>
+                        <th>Penn Treebank Perplexity</th>
+                        <th>Type</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>FractalNet</td>
+                        <td>4.60%</td>
+                        <td>-</td>
+                        <td>Human-designed</td>
+                    </tr>
+                    <tr>
+                        <td>ResNet (110 layers)</td>
+                        <td>6.61%</td>
+                        <td>-</td>
+                        <td>Human-designed</td>
+                    </tr>
+                    <tr>
+                        <td>Highway Network</td>
+                        <td>7.60%</td>
+                        <td>-</td>
+                        <td>Human-designed</td>
+                    </tr>
+                    <tr>
+                        <td>LSTM (regularized)</td>
+                        <td>-</td>
+                        <td>66.0</td>
+                        <td>Human-designed</td>
+                    </tr>
+                    <tr>
+                        <td>Zoneout + Variational</td>
+                        <td>-</td>
+                        <td>64.0</td>
+                        <td>Human-designed</td>
+                    </tr>
+                    <tr>
+                        <td class="highlight">NAS (this paper)</td>
+                        <td class="highlight">3.65%</td>
+                        <td class="highlight">62.4</td>
+                        <td class="highlight">Auto-discovered</td>
+                    </tr>
+                </tbody>
+            </table>
+        </section>
+
+        <!-- Impact Section -->
+        <section class="innovations">
+            <h2 class="section-title">🌍 Impact & Legacy</h2>
+            
+            <div class="innovation-card">
+                <h3>🚀 Launched the NAS Field</h3>
+                <p>
+                    This paper sparked a revolution in automated machine learning. Follow-up works include:
+                    <strong>NASNet</strong> (transferable architectures), <strong>ENAS</strong> (parameter sharing for 1000× speedup), 
+                    <strong>DARTS</strong> (differentiable NAS), <strong>EfficientNet</strong> (compound scaling), 
+                    and countless industry applications at Google, Microsoft, and Meta.
+                </p>
+            </div>
+            
+            <div class="innovation-card">
+                <h3>⚡ Computational Cost Debate</h3>
+                <p>
+                    The original NAS required <strong>22,400 GPU-days</strong> (800 GPUs for 28 days), sparking 
+                    research into efficient NAS methods. Modern approaches like weight sharing, supernets, 
+                    and zero-cost proxies reduce this to hours on a single GPU while maintaining or improving results.
+                </p>
+            </div>
+            
+            <div class="innovation-card">
+                <h3>🎯 Key Insight: Meta-Learning</h3>
+                <p>
+                    NAS demonstrated that we can learn to learn — using a neural network to design other 
+                    neural networks. This meta-learning paradigm influenced architecture search, 
+                    hyperparameter optimization, and even learned optimizers. The idea of "learning the learning process" 
+                    has become central to modern AutoML.
+                </p>
+            </div>
+        </section>
+    </div>
+
+    <footer>
+        <p>Part of the AI Neural Networks Collection | Created for educational purposes</p>
+        <p style="margin-top: 10px; font-size: 0.9rem;">
+            <a href="../index.html" style="color: #6366f1; text-decoration: none;">← Back to Paper Collection</a>
+        </p>
+    </footer>
+</body>
+</html>
