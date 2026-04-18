@@ -2340,6 +2340,63 @@
                     </defs>
                 </svg>
             </div>
+
+            <!-- KAN Paper Card -->
+            <div class="network-card" onclick="location.href='papers/kan.html'">
+                <span class="tag">arXiv 2024</span>
+                <h3>Kolmogorov-Arnold Networks</h3>
+                <p>A Revolutionary Alternative to MLPs - Learnable activation functions on edges instead of fixed activations on nodes. Based on the 1957 Kolmogorov-Arnold representation theorem. 10-100× more parameter efficient with faster scaling laws.</p>
+                <svg class="preview-svg" viewBox="0 0 300 150">
+                    <defs>
+                        <linearGradient id="kan-grad" x1="0%" y1="0%" x2="100%" y2="0%">
+                            <stop offset="0%" style="stop-color:#6366f1"/>
+                            <stop offset="50%" style="stop-color:#a855f7"/>
+                            <stop offset="100%" style="stop-color:#ec4899"/>
+                        </linearGradient>
+                    </defs>
+                    <!-- Input nodes (summation) -->
+                    <circle cx="35" cy="50" r="15" fill="#1e293b" stroke="#6366f1" stroke-width="2"/>
+                    <text x="35" y="55" fill="#fff" font-size="12" text-anchor="middle">+</text>
+                    <circle cx="35" cy="100" r="15" fill="#1e293b" stroke="#6366f1" stroke-width="2"/>
+                    <text x="35" y="105" fill="#fff" font-size="12" text-anchor="middle">+</text>
+                    
+                    <!-- Hidden layer (summation nodes) -->
+                    <circle cx="130" cy="35" r="15" fill="#1e293b" stroke="#10b981" stroke-width="2"/>
+                    <text x="130" y="40" fill="#10b981" font-size="14" text-anchor="middle">Σ</text>
+                    <circle cx="130" cy="75" r="15" fill="#1e293b" stroke="#10b981" stroke-width="2"/>
+                    <text x="130" y="80" fill="#10b981" font-size="14" text-anchor="middle">Σ</text>
+                    <circle cx="130" cy="115" r="15" fill="#1e293b" stroke="#10b981" stroke-width="2"/>
+                    <text x="130" y="120" fill="#10b981" font-size="14" text-anchor="middle">Σ</text>
+                    
+                    <!-- Output node -->
+                    <circle cx="225" cy="75" r="15" fill="#1e293b" stroke="#6366f1" stroke-width="2"/>
+                    <text x="225" y="80" fill="#fff" font-size="12" text-anchor="middle">+</text>
+                    
+                    <!-- Edge functions (wavy lines) -->
+                    <path d="M50 50 Q80 40 115 35" stroke="url(#kan-grad)" stroke-width="3" fill="none" stroke-linecap="round"/>
+                    <path d="M50 50 Q80 60 115 75" stroke="url(#kan-grad)" stroke-width="3" fill="none" stroke-linecap="round"/>
+                    <path d="M50 100 Q80 90 115 75" stroke="url(#kan-grad)" stroke-width="3" fill="none" stroke-linecap="round"/>
+                    <path d="M50 100 Q80 110 115 115" stroke="url(#kan-grad)" stroke-width="3" fill="none" stroke-linecap="round"/>
+                    
+                    <!-- To output -->
+                    <path d="M145 35 Q170 55 210 70" stroke="url(#kan-grad)" stroke-width="3" fill="none" stroke-linecap="round"/>
+                    <path d="M145 75 Q170 75 210 75" stroke="url(#kan-grad)" stroke-width="3" fill="none" stroke-linecap="round"/>
+                    <path d="M145 115 Q170 95 210 80" stroke="url(#kan-grad)" stroke-width="3" fill="none" stroke-linecap="round"/>
+                    
+                    <!-- Function labels -->
+                    <text x="85" y="35" fill="#f59e0b" font-size="8">φ₁₁</text>
+                    <text x="85" y="85" fill="#f59e0b" font-size="8">φ₁₂</text>
+                    <text x="170" y="50" fill="#f59e0b" font-size="8">Φ₁</text>
+                    
+                    <!-- Labels -->
+                    <text x="35" y="135" fill="#8888aa" font-size="8" text-anchor="middle">Input</text>
+                    <text x="130" y="140" fill="#8888aa" font-size="8" text-anchor="middle">Hidden (Sum)</text>
+                    <text x="225" y="135" fill="#8888aa" font-size="8" text-anchor="middle">Output</text>
+                    
+                    <!-- B-spline indicator -->
+                    <text x="150" y="20" fill="#ec4899" font-size="8" text-anchor="middle">Learnable Edge Functions (B-splines)</text>
+                </svg>
+            </div>
         </div>
     </div>
 

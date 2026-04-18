@@ -1,6 +1,6 @@
 # AI Neural Networks Visualized
 
-🧠 Interactive visualizations of neural network architectures and 79 foundational ML papers
+🧠 Interactive visualizations of neural network architectures and 80 foundational ML papers
 
 **Live Site**: [https://patbby.github.io/ai-neural-networks](https://patbby.github.io/ai-neural-networks)
 
@@ -8,7 +8,7 @@
 
 ## 📊 Collection Stats
 
-- **Total Papers**: 79 foundational works in deep learning
+- **Total Papers**: 80 foundational works in deep learning
 - **Last Updated**: April 18, 2026
 - **Coverage**: CNNs, Transformers, Generative Models, Reinforcement Learning, NLP, Computer Vision, Efficient Inference, Neural Architecture
 
@@ -48,7 +48,7 @@
 ### 🧮 Neural Architecture Innovations (1 paper)
 | Paper | Year | Description |
 |-------|------|-------------|
-| **KAN** | 2025 | Kolmogorov-Arnold Networks - Learnable activations on edges |
+| **KAN** | 2024 | Kolmogorov-Arnold Networks - Learnable activations on edges |
 
 ### 🖼️ Computer Vision - CNNs (8 papers)
 | Paper | Year | Description |
