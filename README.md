@@ -8,11 +8,19 @@
 
 ## 📊 Collection Stats
 
-- **Total Papers**: 80 foundational works in deep learning
-- **Last Updated**: April 18, 2026
+- **Total Papers**: 89 foundational works in deep learning
+- **Last Updated**: April 19, 2026
 - **Coverage**: CNNs, Transformers, Generative Models, Reinforcement Learning, NLP, Computer Vision, Efficient Inference, Neural Architecture
 
 ---
+
+## 🧠 Foundational Works (Pre-Deep Learning Era)
+
+| Paper | Year | Description |
+|-------|------|-------------|
+| **Hopfield Network** | 1982 | Neural networks with emergent collective computational abilities - associative memory via energy landscapes |
+| **Backpropagation** | 1986 | The foundational learning algorithm for neural networks (Nature) |
+| **LSTM** | 1997 | Long Short-Term Memory - solving vanishing gradients in RNNs |
 
 ## 🎯 Architecture Visualizations
 
