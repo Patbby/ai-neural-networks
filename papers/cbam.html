@@ -1,0 +1,816 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CBAM: Convolutional Block Attention Module | Neural Networks Explorer</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+    <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <script>
+        window.MathJax = {
+            tex: {
+                inlineMath: [['$', '$'], ['\\(', '\\)']],
+                displayMath: [['$$', '$$'], ['\\[', '\\]']]
+            }
+        };
+    </script>
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background: #0a0a0f;
+            color: #e2e8f0;
+        }
+        .mono {
+            font-family: 'JetBrains Mono', monospace;
+        }
+        .gradient-text {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        .card {
+            background: rgba(30, 30, 45, 0.6);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        .attention-glow {
+            animation: pulse 2s ease-in-out infinite;
+        }
+        @keyframes pulse {
+            0%, 100% { opacity: 0.6; }
+            50% { opacity: 1; }
+        }
+        .flow-arrow {
+            animation: flow 1.5s ease-in-out infinite;
+        }
+        @keyframes flow {
+            0%, 100% { transform: translateX(0); opacity: 0.5; }
+            50% { transform: translateX(10px); opacity: 1; }
+        }
+        .feature-map {
+            transition: all 0.3s ease;
+        }
+        .feature-map:hover {
+            transform: scale(1.05);
+            filter: brightness(1.2);
+        }
+        .se-block {
+            background: linear-gradient(135deg, rgba(102, 126, 234, 0.2), rgba(118, 75, 162, 0.2));
+            border: 2px solid rgba(102, 126, 234, 0.5);
+        }
+    </style>
+</head>
+<body class="min-h-screen">
+    <!-- Navigation -->
+    <nav class="fixed top-0 w-full bg-black/50 backdrop-blur-md border-b border-white/10 z-50">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex items-center justify-between h-16">
+                <div class="flex items-center space-x-4">
+                    <a href="../index.html" class="text-xl font-bold gradient-text">← Back to Explorer</a>
+                </div>
+                <div class="text-sm text-gray-400">ECCV 2018</div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <section class="pt-24 pb-12 px-4 sm:px-6 lg:px-8">
+        <div class="max-w-7xl mx-auto">
+            <div class="text-center">
+                <div class="inline-block px-4 py-1 rounded-full bg-purple-500/20 text-purple-300 text-sm mb-6">
+                    Attention Mechanism
+                </div>
+                <h1 class="text-4xl md:text-6xl font-bold mb-6">
+                    <span class="gradient-text">CBAM</span>
+                </h1>
+                <h2 class="text-2xl md:text-3xl font-light text-gray-300 mb-4">
+                    Convolutional Block Attention Module
+                </h2>
+                <p class="text-lg text-gray-400 max-w-3xl mx-auto mb-6">
+                    A simple yet effective attention module that sequentially infers attention maps along channel and spatial dimensions for adaptive feature refinement
+                </p>
+                <div class="flex flex-wrap justify-center gap-4 text-sm">
+                    <span class="px-3 py-1 bg-blue-500/20 rounded-full text-blue-300">ECCV 2018</span>
+                    <span class="px-3 py-1 bg-green-500/20 rounded-full text-green-300">~15,000 Citations</span>
+                    <span class="px-3 py-1 bg-orange-500/20 rounded-full text-orange-300">ImageNet Winner Enhancement</span>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Paper Metadata -->
+    <section class="py-8 px-4 sm:px-6 lg:px-8">
+        <div class="max-w-7xl mx-auto">
+            <div class="card rounded-2xl p-6 md:p-8">
+                <div class="grid md:grid-cols-2 gap-8">
+                    <div>
+                        <h3 class="text-lg font-semibold mb-4 text-purple-400">Authors</h3>
+                        <p class="text-gray-300 mb-4">
+                            Sanghyun Woo<sup>1</sup>, Jongchan Park<sup>1,2</sup>, 
+                            Joon-Young Lee<sup>3</sup>, In So Kweon<sup>1</sup>
+                        </p>
+                        <p class="text-sm text-gray-500 mb-4">
+                            <sup>1</sup>KAIST, <sup>2</sup>Lunit Inc., <sup>3</sup>Adobe Research
+                        </p>
+                        <div class="space-y-2">
+                            <a href="https://arxiv.org/abs/1807.06521" target="_blank" 
+                               class="inline-block px-4 py-2 bg-blue-600 hover:bg-blue-700 rounded-lg text-white text-sm transition-colors">
+                                📄 arXiv:1807.06521
+                            </a>
+                            <a href="https://github.com/Jongchan/attention-module" target="_blank"
+                               class="inline-block px-4 py-2 bg-gray-700 hover:bg-gray-600 rounded-lg text-white text-sm transition-colors">
+                                💻 Official Code
+                            </a>
+                        </div>
+                    </div>
+                    <div>
+                        <h3 class="text-lg font-semibold mb-4 text-purple-400">Key Contributions</h3>
+                        <ul class="space-y-2 text-gray-300">
+                            <li class="flex items-start">
+                                <span class="text-purple-400 mr-2">•</span>
+                                Sequential channel and spatial attention mechanism
+                            </li>
+                            <li class="flex items-start">
+                                <span class="text-purple-400 mr-2">•</span>
+                                Lightweight module with negligible overhead
+                            </li>
+                            <li class="flex items-start">
+                                <span class="text-purple-400 mr-2">•</span>
+                                Plug-and-play module for any CNN architecture
+                            </li>
+                            <li class="flex items-start">
+                                <span class="text-purple-400 mr-2">•</span>
+                                Demonstrated improvements on ImageNet, COCO, and VOC
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- CBAM Architecture Visualization -->
+    <section class="py-12 px-4 sm:px-6 lg:px-8">
+        <div class="max-w-7xl mx-auto">
+            <h2 class="text-3xl font-bold mb-8 text-center">CBAM Architecture</h2>
+            
+            <!-- Main Architecture Diagram -->
+            <div class="card rounded-2xl p-8 mb-8">
+                <svg viewBox="0 0 1000 600" class="w-full h-auto">
+                    <!-- Definitions -->
+                    <defs>
+                        <linearGradient id="featureGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+                            <stop offset="0%" style="stop-color:#4f46e5;stop-opacity:0.8" />
+                            <stop offset="100%" style="stop-color:#7c3aed;stop-opacity:0.8" />
+                        </linearGradient>
+                        <linearGradient id="attentionGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+                            <stop offset="0%" style="stop-color:#f59e0b;stop-opacity:0.9" />
+                            <stop offset="100%" style="stop-color:#ef4444;stop-opacity:0.9" />
+                        </linearGradient>
+                        <filter id="glow">
+                            <feGaussianBlur stdDeviation="3" result="coloredBlur"/>
+                            <feMerge>
+                                <feMergeNode in="coloredBlur"/>
+                                <feMergeNode in="SourceGraphic"/>
+                            </feMerge>
+                        </filter>
+                    </defs>
+
+                    <!-- Title -->
+                    <text x="500" y="30" text-anchor="middle" class="text-xl" fill="#e2e8f0" font-weight="bold">CBAM: Convolutional Block Attention Module</text>
+
+                    <!-- Input Feature Map -->
+                    <g transform="translate(50, 100)">
+                        <rect x="0" y="0" width="120" height="80" fill="url(#featureGrad)" rx="8" stroke="#6366f1" stroke-width="2"/>
+                        <text x="60" y="30" text-anchor="middle" fill="white" font-size="12" font-weight="bold">Input Feature</text>
+                        <text x="60" y="50" text-anchor="middle" fill="white" font-size="10">F ∈ ℝ^{C×H×W}</text>
+                        <text x="60" y="70" text-anchor="middle" fill="#a5b4fc" font-size="9">C channels</text>
+                    </g>
+
+                    <!-- Arrow to Channel Attention -->
+                    <g transform="translate(170, 130)">
+                        <path d="M0,10 L40,10 L35,5 M40,10 L35,15" stroke="#64748b" stroke-width="2" fill="none"/>
+                        <text x="20" y="0" text-anchor="middle" fill="#94a3b8" font-size="9">1×1×C</text>
+                    </g>
+
+                    <!-- Channel Attention Module -->
+                    <g transform="translate(230, 70)">
+                        <rect x="0" y="0" width="200" height="140" fill="rgba(245, 158, 11, 0.1)" rx="12" stroke="#f59e0b" stroke-width="2"/>
+                        <text x="100" y="25" text-anchor="middle" fill="#fbbf24" font-size="14" font-weight="bold">Channel Attention Module</text>
+                        
+                        <!-- Avg Pool -->
+                        <rect x="15" y="45" width="70" height="40" fill="rgba(99, 102, 241, 0.3)" rx="6"/>
+                        <text x="50" y="62" text-anchor="middle" fill="white" font-size="10">AvgPool</text>
+                        <text x="50" y="76" text-anchor="middle" fill="#a5b4fc" font-size="8">H×W</text>
+                        
+                        <!-- Max Pool -->
+                        <rect x="115" y="45" width="70" height="40" fill="rgba(99, 102, 241, 0.3)" rx="6"/>
+                        <text x="150" y="62" text-anchor="middle" fill="white" font-size="10">MaxPool</text>
+                        <text x="150" y="76" text-anchor="middle" fill="#a5b4fc" font-size="8">H×W</text>
+                        
+                        <!-- Shared MLP -->
+                        <rect x="50" y="95" width="100" height="30" fill="rgba(16, 185, 129, 0.3)" rx="6"/>
+                        <text x="100" y="115" text-anchor="middle" fill="white" font-size="10">Shared MLP</text>
+                    </g>
+
+                    <!-- Channel Attention Output -->
+                    <g transform="translate(445, 130)">
+                        <path d="M0,10 L40,10 L35,5 M40,10 L35,15" stroke="#64748b" stroke-width="2" fill="none"/>
+                    </g>
+
+                    <!-- Channel Attention Output Vector -->
+                    <g transform="translate(500, 100)">
+                        <rect x="0" y="0" width="80" height="80" fill="url(#attentionGrad)" rx="8" stroke="#ef4444" stroke-width="2" filter="url(#glow)"/>
+                        <text x="40" y="30" text-anchor="middle" fill="white" font-size="11" font-weight="bold">M_c</text>
+                        <text x="40" y="50" text-anchor="middle" fill="white" font-size="10">Channel</text>
+                        <text x="40" y="65" text-anchor="middle" fill="#fca5a5" font-size="9">ℝ^{C×1×1}</text>
+                    </g>
+
+                    <!-- Multiplication -->
+                    <g transform="translate(600, 130)">
+                        <circle cx="20" cy="10" r="18" fill="rgba(236, 72, 153, 0.3)" stroke="#ec4899" stroke-width="2"/>
+                        <text x="20" y="15" text-anchor="middle" fill="white" font-size="16" font-weight="bold">×</text>
+                    </g>
+
+                    <!-- Refined Feature -->
+                    <g transform="translate(650, 100)">
+                        <rect x="0" y="0" width="100" height="80" fill="url(#featureGrad)" rx="8" stroke="#6366f1" stroke-width="2"/>
+                        <text x="50" y="30" text-anchor="middle" fill="white" font-size="11" font-weight="bold">F'</text>
+                        <text x="50" y="50" text-anchor="middle" fill="white" font-size="10">Channel</text>
+                        <text x="50" y="65" text-anchor="middle" fill="#a5b4fc" font-size="9">Refined</text>
+                    </g>
+
+                    <!-- Arrow to Spatial Attention -->
+                    <g transform="translate(700, 190)">
+                        <path d="M0,0 L0,30 L-5,25 M0,30 L5,25" stroke="#64748b" stroke-width="2" fill="none"/>
+                    </g>
+
+                    <!-- Spatial Attention Module -->
+                    <g transform="translate(580, 230)">
+                        <rect x="0" y="0" width="240" height="120" fill="rgba(239, 68, 68, 0.1)" rx="12" stroke="#ef4444" stroke-width="2"/>
+                        <text x="120" y="25" text-anchor="middle" fill="#f87171" font-size="14" font-weight="bold">Spatial Attention Module</text>
+                        
+                        <!-- Channel Avg Pool -->
+                        <rect x="20" y="45" width="80" height="40" fill="rgba(99, 102, 241, 0.3)" rx="6"/>
+                        <text x="60" y="62" text-anchor="middle" fill="white" font-size="10">AvgPool</text>
+                        <text x="60" y="76" text-anchor="middle" fill="#a5b4fc" font-size="8">Channel</text>
+                        
+                        <!-- Channel Max Pool -->
+                        <rect x="140" y="45" width="80" height="40" fill="rgba(99, 102, 241, 0.3)" rx="6"/>
+                        <text x="180" y="62" text-anchor="middle" fill="white" font-size="10">MaxPool</text>
+                        <text x="180" y="76" text-anchor="middle" fill="#a5b4fc" font-size="8">Channel</text>
+                        
+                        <!-- Conv -->
+                        <rect x="80" y="90" width="80" height="20" fill="rgba(16, 185, 129, 0.3)" rx="4"/>
+                        <text x="120" y="104" text-anchor="middle" fill="white" font-size="9">Conv 7×7</text>
+                    </g>
+
+                    <!-- Arrow to Spatial Output -->
+                    <g transform="translate(520, 280)">
+                        <path d="M0,10 L-40,10 L-35,5 M-40,10 L-35,15" stroke="#64748b" stroke-width="2" fill="none"/>
+                    </g>
+
+                    <!-- Spatial Attention Output -->
+                    <g transform="translate(400, 250)">
+                        <rect x="0" y="0" width="80" height="80" fill="url(#attentionGrad)" rx="8" stroke="#f59e0b" stroke-width="2" filter="url(#glow)"/>
+                        <text x="40" y="30" text-anchor="middle" fill="white" font-size="11" font-weight="bold">M_s</text>
+                        <text x="40" y="50" text-anchor="middle" fill="white" font-size="10">Spatial</text>
+                        <text x="40" y="65" text-anchor="middle" fill="#fca5a5" font-size="9">ℝ^{1×H×W}</text>
+                    </g>
+
+                    <!-- Final Multiplication -->
+                    <g transform="translate(320, 280)">
+                        <circle cx="20" cy="10" r="18" fill="rgba(236, 72, 153, 0.3)" stroke="#ec4899" stroke-width="2"/>
+                        <text x="20" y="15" text-anchor="middle" fill="white" font-size="16" font-weight="bold">×</text>
+                    </g>
+
+                    <!-- Final Output -->
+                    <g transform="translate(150, 250)">
+                        <rect x="0" y="0" width="120" height="80" fill="url(#featureGrad)" rx="8" stroke="#10b981" stroke-width="3" filter="url(#glow)"/>
+                        <text x="60" y="30" text-anchor="middle" fill="white" font-size="12" font-weight="bold">F''</text>
+                        <text x="60" y="50" text-anchor="middle" fill="white" font-size="11">Refined Feature</text>
+                        <text x="60" y="68" text-anchor="middle" fill="#6ee7b7" font-size="10">Output</text>
+                    </g>
+
+                    <!-- Legend -->
+                    <g transform="translate(50, 400)">
+                        <text x="0" y="0" fill="#94a3b8" font-size="12" font-weight="bold">Legend:</text>
+                        <rect x="0" y="15" width="20" height="15" fill="url(#featureGrad)" rx="3"/>
+                        <text x="30" y="27" fill="#cbd5e1" font-size="10">Feature Map</text>
+                        <rect x="120" y="15" width="20" height="15" fill="url(#attentionGrad)" rx="3"/>
+                        <text x="150" y="27" fill="#cbd5e1" font-size="10">Attention Map</text>
+                        <circle cx="230" cy="22" r="8" fill="rgba(236, 72, 153, 0.3)" stroke="#ec4899"/>
+                        <text x="245" y="27" fill="#cbd5e1" font-size="10">Element-wise Multiplication</text>
+                    </g>
+
+                    <!-- Flow Labels -->
+                    <text x="350" y="180" text-anchor="middle" fill="#fbbf24" font-size="11">Channel: "What" is meaningful</text>
+                    <text x="700" y="380" text-anchor="middle" fill="#f87171" font-size="11">Spatial: "Where" is meaningful</text>
+                </svg>
+            </div>
+        </div>
+    </section>
+
+    <!-- Channel Attention Detail -->
+    <section class="py-8 px-4 sm:px-6 lg:px-8">
+        <div class="max-w-7xl mx-auto">
+            <div class="card rounded-2xl p-8">
+                <h3 class="text-2xl font-bold mb-6 text-yellow-400">Channel Attention Module</h3>
+                <div class="grid md:grid-cols-2 gap-8">
+                    <div>
+                        <p class="text-gray-300 mb-4">
+                            Channel attention focuses on <strong class="text-yellow-400">"what"</strong> is meaningful given an input image. 
+                            To compute channel attention efficiently, CBAM squeezes the spatial dimension of the input feature map.
+                        </p>
+                        <div class="bg-gray-900 rounded-lg p-4 mb-4">
+                            <h4 class="text-sm font-semibold text-gray-400 mb-2">Computation Steps:</h4>
+                            <ol class="text-sm text-gray-300 space-y-2">
+                                <li><span class="text-yellow-400">1.</span> Apply global average pooling and max pooling</li>
+                                <li><span class="text-yellow-400">2.</span> Forward through shared MLP (2 FC layers)</li>
+                                <li><span class="text-yellow-400">3.</span> Element-wise sum and sigmoid activation</li>
+                            </ol>
+                        </div>
+                    </div>
+                    <div class="bg-gray-900 rounded-lg p-4">
+                        <h4 class="text-sm font-semibold text-gray-400 mb-3">Mathematical Formulation:</h4>
+                        <div class="text-sm text-gray-300 space-y-3">
+                            <div class="p-3 bg-gray-800 rounded">
+                                <p class="mb-2">$$M_c(F) = \sigma(\text{MLP}(\text{AvgPool}(F)) + \text{MLP}(\text{MaxPool}(F)))$$</p>
+                            </div>
+                            <p>Where:</p>
+                            <ul class="text-xs text-gray-400 space-y-1 ml-4">
+                                <li>• $\sigma$ = sigmoid activation</li>
+                                <li>• MLP has one hidden layer with reduction ratio $r$</li>
+                                <li>• Output dimension: $C \times 1 \times 1$</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Spatial Attention Detail -->
+    <section class="py-8 px-4 sm:px-6 lg:px-8">
+        <div class="max-w-7xl mx-auto">
+            <div class="card rounded-2xl p-8">
+                <h3 class="text-2xl font-bold mb-6 text-red-400">Spatial Attention Module</h3>
+                <div class="grid md:grid-cols-2 gap-8">
+                    <div>
+                        <p class="text-gray-300 mb-4">
+                            Spatial attention focuses on <strong class="text-red-400">"where"</strong> is meaningful. 
+                            This is complementary to channel attention by focusing on spatial locations rather than channels.
+                        </p>
+                        <div class="bg-gray-900 rounded-lg p-4 mb-4">
+                            <h4 class="text-sm font-semibold text-gray-400 mb-2">Computation Steps:</h4>
+                            <ol class="text-sm text-gray-300 space-y-2">
+                                <li><span class="text-red-400">1.</span> Apply channel-wise average and max pooling</li>
+                                <li><span class="text-red-400">2.</span> Concatenate along channel dimension</li>
+                                <li><span class="text-red-400">3.</span> Apply 7×7 convolution + sigmoid</li>
+                            </ol>
+                        </div>
+                    </div>
+                    <div class="bg-gray-900 rounded-lg p-4">
+                        <h4 class="text-sm font-semibold text-gray-400 mb-3">Mathematical Formulation:</h4>
+                        <div class="text-sm text-gray-300 space-y-3">
+                            <div class="p-3 bg-gray-800 rounded">
+                                <p class="mb-2">$$M_s(F') = \sigma(f^{7\times7}([\text{AvgPool}(F'); \text{MaxPool}(F')]))$$</p>
+                            </div>
+                            <p>Where:</p>
+                            <ul class="text-xs text-gray-400 space-y-1 ml-4">
+                                <li>• $f^{7\times7}$ = 7×7 convolution operation</li>
+                                <li>• Concatenation along channel axis</li>
+                                <li>• Output dimension: $1 \times H \times W$</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Integration with ResNet -->
+    <section class="py-12 px-4 sm:px-6 lg:px-8">
+        <div class="max-w-7xl mx-auto">
+            <h2 class="text-3xl font-bold mb-8 text-center">CBAM + ResNet Integration</h2>
+            
+            <div class="card rounded-2xl p-8">
+                <svg viewBox="0 0 900 500" class="w-full h-auto">
+                    <!-- Title -->
+                    <text x="450" y="30" text-anchor="middle" class="text-xl" fill="#e2e8f0" font-weight="bold">SE-ResNet Block with CBAM</text>
+
+                    <!-- Input -->
+                    <g transform="translate(50, 150)">
+                        <rect x="0" y="0" width="80" height="100" fill="url(#featureGrad)" rx="8" stroke="#6366f1" stroke-width="2"/>
+                        <text x="40" y="40" text-anchor="middle" fill="white" font-size="11" font-weight="bold">Input</text>
+                        <text x="40" y="60" text-anchor="middle" fill="#a5b4fc" font-size="9">X</text>
+                    </g>
+
+                    <!-- Conv1 -->
+                    <g transform="translate(150, 170)">
+                        <rect x="0" y="0" width="70" height="60" fill="rgba(99, 102, 241, 0.4)" rx="6" stroke="#6366f1"/>
+                        <text x="35" y="25" text-anchor="middle" fill="white" font-size="10">Conv</text>
+                        <text x="35" y="42" text-anchor="middle" fill="#a5b4fc" font-size="9">1×1</text>
+                    </g>
+
+                    <!-- BN1 -->
+                    <g transform="translate(240, 170)">
+                        <rect x="0" y="0" width="50" height="60" fill="rgba(16, 185, 129, 0.3)" rx="6" stroke="#10b981"/>
+                        <text x="25" y="30" text-anchor="middle" fill="white" font-size="10">BN</text>
+                    </g>
+
+                    <!-- ReLU -->
+                    <g transform="translate(310, 170)">
+                        <rect x="0" y="0" width="50" height="60" fill="rgba(245, 158, 11, 0.3)" rx="6" stroke="#f59e0b"/>
+                        <text x="25" y="30" text-anchor="middle" fill="white" font-size="10">ReLU</text>
+                    </g>
+
+                    <!-- Conv2 -->
+                    <g transform="translate(380, 170)">
+                        <rect x="0" y="0" width="70" height="60" fill="rgba(99, 102, 241, 0.4)" rx="6" stroke="#6366f1"/>
+                        <text x="35" y="25" text-anchor="middle" fill="white" font-size="10">Conv</text>
+                        <text x="35" y="42" text-anchor="middle" fill="#a5b4fc" font-size="9">3×3</text>
+                    </g>
+
+                    <!-- BN2 -->
+                    <g transform="translate(470, 170)">
+                        <rect x="0" y="0" width="50" height="60" fill="rgba(16, 185, 129, 0.3)" rx="6" stroke="#10b981"/>
+                        <text x="25" y="30" text-anchor="middle" fill="white" font-size="10">BN</text>
+                    </g>
+
+                    <!-- CBAM Module Box -->
+                    <g transform="translate(540, 140)">
+                        <rect x="0" y="0" width="100" height="120" fill="rgba(239, 68, 68, 0.15)" rx="8" stroke="#ef4444" stroke-width="2" stroke-dasharray="5,3"/>
+                        <text x="50" y="30" text-anchor="middle" fill="#f87171" font-size="12" font-weight="bold">CBAM</text>
+                        
+                        <!-- Channel sub-box -->
+                        <rect x="10" y="45" width="80" height="28" fill="rgba(245, 158, 11, 0.3)" rx="4"/>
+                        <text x="50" y="63" text-anchor="middle" fill="#fbbf24" font-size="9">Channel Attn</text>
+                        
+                        <!-- Spatial sub-box -->
+                        <rect x="10" y="78" width="80" height="28" fill="rgba(239, 68, 68, 0.3)" rx="4"/>
+                        <text x="50" y="96" text-anchor="middle" fill="#f87171" font-size="9">Spatial Attn</text>
+                    </g>
+
+                    <!-- Conv3 -->
+                    <g transform="translate(660, 170)">
+                        <rect x="0" y="0" width="70" height="60" fill="rgba(99, 102, 241, 0.4)" rx="6" stroke="#6366f1"/>
+                        <text x="35" y="25" text-anchor="middle" fill="white" font-size="10">Conv</text>
+                        <text x="35" y="42" text-anchor="middle" fill="#a5b4fc" font-size="9">1×1</text>
+                    </g>
+
+                    <!-- BN3 -->
+                    <g transform="translate(750, 170)">
+                        <rect x="0" y="0" width="50" height="60" fill="rgba(16, 185, 129, 0.3)" rx="6" stroke="#10b981"/>
+                        <text x="25" y="30" text-anchor="middle" fill="white" font-size="10">BN</text>
+                    </g>
+
+                    <!-- Add -->
+                    <g transform="translate(820, 180)">
+                        <circle cx="20" cy="20" r="15" fill="rgba(236, 72, 153, 0.3)" stroke="#ec4899" stroke-width="2"/>
+                        <text x="20" y="25" text-anchor="middle" fill="white" font-size="14">+</text>
+                    </g>
+
+                    <!-- Output -->
+                    <g transform="translate(870, 150)">
+                        <rect x="0" y="0" width="80" height="100" fill="url(#featureGrad)" rx="8" stroke="#10b981" stroke-width="2"/>
+                        <text x="40" y="40" text-anchor="middle" fill="white" font-size="11" font-weight="bold">Output</text>
+                        <text x="40" y="60" text-anchor="middle" fill="#6ee7b7" font-size="9">F(X)+X</text>
+                    </g>
+
+                    <!-- Skip Connection -->
+                    <g transform="translate(90, 150)">
+                        <path d="M0,0 L0,-40 L730,-40 L730,20" stroke="#64748b" stroke-width="2" fill="none" stroke-dasharray="5,3"/>
+                        <path d="M725,15 L730,20 L735,15" stroke="#64748b" stroke-width="2" fill="none"/>
+                    </g>
+
+                    <!-- Dimension Labels -->
+                    <text x="185" y="255" text-anchor="middle" fill="#94a3b8" font-size="9">C/r</text>
+                    <text x="415" y="255" text-anchor="middle" fill="#94a3b8" font-size="9">C/r</text>
+                    <text x="695" y="255" text-anchor="middle" fill="#94a3b8" font-size="9">C</text>
+
+                    <!-- Arrow labels -->
+                    <text x="125" y="185" text-anchor="middle" fill="#64748b" font-size="9">→</text>
+                    <text x="225" y="185" text-anchor="middle" fill="#64748b" font-size="9">→</text>
+                    <text x="295" y="185" text-anchor="middle" fill="#64748b" font-size="9">→</text>
+                    <text x="355" y="185" text-anchor="middle" fill="#64748b" font-size="9">→</text>
+                    <text x="450" y="185" text-anchor="middle" fill="#64748b" font-size="9">→</text>
+                    <text x="530" y="185" text-anchor="middle" fill="#64748b" font-size="9">→</text>
+                    <text x="635" y="185" text-anchor="middle" fill="#64748b" font-size="9">→</text>
+                    <text x="715" y="185" text-anchor="middle" fill="#64748b" font-size="9">→</text>
+                    <text x="785" y="185" text-anchor="middle" fill="#64748b" font-size="9">→</text>
+                </svg>
+
+                <div class="mt-6 grid md:grid-cols-2 gap-6">
+                    <div class="bg-gray-900 rounded-lg p-4">
+                        <h4 class="text-yellow-400 font-semibold mb-2">Insertion Points</h4>
+                        <p class="text-sm text-gray-300">
+                            CBAM can be integrated at different positions in a residual block:
+                        </p>
+                        <ul class="text-sm text-gray-400 mt-2 space-y-1">
+                            <li>• After each convolution (most common)</li>
+                            <li>• After the full bottleneck (before skip)</li>
+                            <li>• Before the final output</li>
+                        </ul>
+                    </div>
+                    <div class="bg-gray-900 rounded-lg p-4">
+                        <h4 class="text-red-400 font-semibold mb-2">Computational Overhead</h4>
+                        <p class="text-sm text-gray-300">
+                            Despite the added complexity, CBAM adds minimal overhead:
+                        </p>
+                        <ul class="text-sm text-gray-400 mt-2 space-y-1">
+                            <li>• Parameters: ~2C²/r (shared MLP)</li>
+                            <li>• FLOPs: Negligible compared to conv layers</li>
+                            <li>• Typically r=16 for good efficiency</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Key Results -->
+    <section class="py-12 px-4 sm:px-6 lg:px-8">
+        <div class="max-w-7xl mx-auto">
+            <h2 class="text-3xl font-bold mb-8 text-center">Experimental Results</h2>
+            
+            <div class="grid md:grid-cols-3 gap-6">
+                <!-- ImageNet Results -->
+                <div class="card rounded-2xl p-6">
+                    <h3 class="text-xl font-bold mb-4 text-blue-400">ImageNet-1K</h3>
+                    <div class="space-y-3">
+                        <div class="flex justify-between items-center p-3 bg-gray-800 rounded">
+                            <span class="text-gray-300">ResNet-50</span>
+                            <span class="text-gray-500">23.85% / 7.13%</span>
+                        </div>
+                        <div class="flex justify-between items-center p-3 bg-gray-800 rounded border border-blue-500/30">
+                            <span class="text-blue-300">+ CBAM</span>
+                            <span class="text-blue-400 font-bold">22.96% / 6.49%</span>
+                        </div>
+                        <div class="flex justify-between items-center p-3 bg-gray-800 rounded">
+                            <span class="text-gray-300">ResNet-101</span>
+                            <span class="text-gray-500">22.44% / 6.21%</span>
+                        </div>
+                        <div class="flex justify-between items-center p-3 bg-gray-800 rounded border border-blue-500/30">
+                            <span class="text-blue-300">+ CBAM</span>
+                            <span class="text-blue-400 font-bold">21.51% / 5.69%</span>
+                        </div>
+                    </div>
+                    <p class="text-xs text-gray-500 mt-4">Top-1 / Top-5 Error rates</p>
+                </div>
+
+                <!-- MS COCO Results -->
+                <div class="card rounded-2xl p-6">
+                    <h3 class="text-xl font-bold mb-4 text-green-400">MS COCO Detection</h3>
+                    <div class="space-y-3">
+                        <div class="flex justify-between items-center p-3 bg-gray-800 rounded">
+                            <span class="text-gray-300">Faster R-CNN</span>
+                            <span class="text-gray-500">36.2 mAP</span>
+                        </div>
+                        <div class="flex justify-between items-center p-3 bg-gray-800 rounded border border-green-500/30">
+                            <span class="text-green-300">+ SE-Net</span>
+                            <span class="text-green-400 font-bold">37.7 mAP</span>
+                        </div>
+                        <div class="flex justify-between items-center p-3 bg-gray-800 rounded border border-green-500/50">
+                            <span class="text-green-300">+ CBAM</span>
+                            <span class="text-green-400 font-bold">38.0 mAP</span>
+                        </div>
+                        <div class="flex justify-between items-center p-3 bg-gray-800 rounded">
+                            <span class="text-gray-300">Mask R-CNN</span>
+                            <span class="text-gray-500">37.9 mAP</span>
+                        </div>
+                        <div class="flex justify-between items-center p-3 bg-gray-800 rounded border border-green-500/50">
+                            <span class="text-green-300">+ CBAM</span>
+                            <span class="text-green-400 font-bold">39.3 mAP</span>
+                        </div>
+                    </div>
+                    <p class="text-xs text-gray-500 mt-4">Using ResNet-50 backbone</p>
+                </div>
+
+                <!-- VOC Results -->
+                <div class="card rounded-2xl p-6">
+                    <h3 class="text-xl font-bold mb-4 text-purple-400">VOC 2007 Detection</h3>
+                    <div class="space-y-3">
+                        <div class="flex justify-between items-center p-3 bg-gray-800 rounded">
+                            <span class="text-gray-300">R-FCN</span>
+                            <span class="text-gray-500">77.5 mAP</span>
+                        </div>
+                        <div class="flex justify-between items-center p-3 bg-gray-800 rounded border border-purple-500/50">
+                            <span class="text-purple-300">+ CBAM</span>
+                            <span class="text-purple-400 font-bold">79.3 mAP</span>
+                        </div>
+                        <div class="flex justify-between items-center p-3 bg-gray-800 rounded">
+                            <span class="text-gray-300">Faster R-CNN</span>
+                            <span class="text-gray-500">75.7 mAP</span>
+                        </div>
+                        <div class="flex justify-between items-center p-3 bg-gray-800 rounded border border-purple-500/50">
+                            <span class="text-purple-300">+ CBAM</span>
+                            <span class="text-purple-400 font-bold">77.3 mAP</span>
+                        </div>
+                    </div>
+                    <p class="text-xs text-gray-500 mt-4">Mean Average Precision</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- PyTorch Implementation -->
+    <section class="py-12 px-4 sm:px-6 lg:px-8">
+        <div class="max-w-7xl mx-auto">
+            <h2 class="text-3xl font-bold mb-8 text-center">PyTorch Implementation</h2>
+            
+            <div class="card rounded-2xl p-6">
+                <pre class="mono text-sm overflow-x-auto"><code class="language-python">import torch
+import torch.nn as nn
+
+class ChannelAttention(nn.Module):
+    """Channel Attention Module"""
+    def __init__(self, in_channels, reduction_ratio=16):
+        super(ChannelAttention, self).__init__()
+        self.avg_pool = nn.AdaptiveAvgPool2d(1)
+        self.max_pool = nn.AdaptiveMaxPool2d(1)
+        
+        # Shared MLP
+        self.mlp = nn.Sequential(
+            nn.Conv2d(in_channels, in_channels // reduction_ratio, 1, bias=False),
+            nn.ReLU(),
+            nn.Conv2d(in_channels // reduction_ratio, in_channels, 1, bias=False)
+        )
+        self.sigmoid = nn.Sigmoid()
+    
+    def forward(self, x):
+        # Generate attention weights
+        avg_out = self.mlp(self.avg_pool(x))
+        max_out = self.mlp(self.max_pool(x))
+        
+        # Combine and apply sigmoid
+        channel_att = self.sigmoid(avg_out + max_out)
+        return channel_att
+
+
+class SpatialAttention(nn.Module):
+    """Spatial Attention Module"""
+    def __init__(self, kernel_size=7):
+        super(SpatialAttention, self).__init__()
+        self.conv = nn.Conv2d(2, 1, kernel_size, padding=kernel_size//2, bias=False)
+        self.sigmoid = nn.Sigmoid()
+    
+    def forward(self, x):
+        # Channel-wise pooling
+        avg_out = torch.mean(x, dim=1, keepdim=True)
+        max_out, _ = torch.max(x, dim=1, keepdim=True)
+        
+        # Concatenate and convolve
+        spatial_input = torch.cat([avg_out, max_out], dim=1)
+        spatial_att = self.sigmoid(self.conv(spatial_input))
+        return spatial_att
+
+
+class CBAM(nn.Module):
+    """Convolutional Block Attention Module"""
+    def __init__(self, in_channels, reduction_ratio=16, spatial_kernel=7):
+        super(CBAM, self).__init__()
+        self.channel_attention = ChannelAttention(in_channels, reduction_ratio)
+        self.spatial_attention = SpatialAttention(spatial_kernel)
+    
+    def forward(self, x):
+        # Apply channel attention
+        x = x * self.channel_attention(x)
+        
+        # Apply spatial attention
+        x = x * self.spatial_attention(x)
+        return x
+</code></pre>
+            </div>
+        </div>
+    </section>
+
+    <!-- Key Insights -->
+    <section class="py-12 px-4 sm:px-6 lg:px-8">
+        <div class="max-w-7xl mx-auto">
+            <h2 class="text-3xl font-bold mb-8 text-center">Key Insights & Impact</h2>
+            
+            <div class="grid md:grid-cols-2 gap-6">
+                <div class="card rounded-2xl p-6">
+                    <h3 class="text-xl font-bold mb-4 text-yellow-400">Why It Works</h3>
+                    <ul class="space-y-3 text-gray-300">
+                        <li class="flex items-start">
+                            <span class="text-yellow-400 mr-2">✓</span>
+                            <span><strong>Dual attention:</strong> Both channel (what) and spatial (where) dimensions are considered</span>
+                        </li>
+                        <li class="flex items-start">
+                            <span class="text-yellow-400 mr-2">✓</span>
+                            <span><strong>Sequential processing:</strong> Channel-first, then spatial provides better feature refinement</span>
+                        </li>
+                        <li class="flex items-start">
+                            <span class="text-yellow-400 mr-2">✓</span>
+                            <span><strong>Multi-pooling:</strong> Avg and Max pooling provide complementary information</span>
+                        </li>
+                        <li class="flex items-start">
+                            <span class="text-yellow-400 mr-2">✓</span>
+                            <span><strong>Lightweight:</strong> Minimal parameters and computation overhead</span>
+                        </li>
+                    </ul>
+                </div>
+
+                <div class="card rounded-2xl p-6">
+                    <h3 class="text-xl font-bold mb-4 text-red-400">Research Impact</h3>
+                    <ul class="space-y-3 text-gray-300">
+                        <li class="flex items-start">
+                            <span class="text-red-400 mr-2">★</span>
+                            <span>Pioneered dual-branch attention mechanisms</span>
+                        </li>
+                        <li class="flex items-start">
+                            <span class="text-red-400 mr-2">★</span>
+                            <span>Influenced subsequent attention modules (ECA-Net, etc.)</span>
+                        </li>
+                        <li class="flex items-start">
+                            <span class="text-red-400 mr-2">★</span>
+                            <span>Demonstrated plug-and-play attention for any CNN</span>
+                        </li>
+                        <li class="flex items-start">
+                            <span class="text-red-400 mr-2">★</span>
+                            <span>Validated across classification, detection, and segmentation</span>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="mt-8 card rounded-2xl p-6">
+                <h3 class="text-xl font-bold mb-4 text-blue-400">Evolution of CBAM</h3>
+                <div class="relative">
+                    <div class="absolute left-4 top-0 bottom-0 w-0.5 bg-gradient-to-b from-yellow-400 via-red-400 to-purple-400"></div>
+                    
+                    <div class="space-y-6 ml-12">
+                        <div class="relative">
+                            <div class="absolute -left-10 w-4 h-4 rounded-full bg-yellow-400"></div>
+                            <h4 class="font-semibold text-yellow-400">2017 - SENet</h4>
+                            <p class="text-gray-400 text-sm">Channel-only attention using global average pooling</p>
+                        </div>
+                        <div class="relative">
+                            <div class="absolute -left-10 w-4 h-4 rounded-full bg-red-400"></div>
+                            <h4 class="font-semibold text-red-400">2018 - CBAM</h4>
+                            <p class="text-gray-400 text-sm">Sequential channel + spatial attention with multi-pooling</p>
+                        </div>
+                        <div class="relative">
+                            <div class="absolute -left-10 w-4 h-4 rounded-full bg-purple-400"></div>
+                            <h4 class="font-semibold text-purple-400">2020 - ECANet</h4>
+                            <p class="text-gray-400 text-sm">Efficient channel attention via 1D convolution</p>
+                        </div>
+                        <div class="relative">
+                            <div class="absolute -left-10 w-4 h-4 rounded-full bg-blue-400"></div>
+                            <h4 class="font-semibold text-blue-400">2021+ - Self-Attention Era</h4>
+                            <p class="text-gray-400 text-sm">Transformers dominate with multi-head self-attention</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- References -->
+    <section class="py-12 px-4 sm:px-6 lg:px-8 border-t border-white/10">
+        <div class="max-w-7xl mx-auto">
+            <h2 class="text-2xl font-bold mb-6">References</h2>
+            <div class="card rounded-2xl p-6">
+                <ol class="space-y-3 text-gray-300">
+                    <li>
+                        <span class="text-gray-500">[1]</span> 
+                        Woo, S., Park, J., Lee, J. Y., & Kweon, I. S. (2018). 
+                        <em>CBAM: Convolutional Block Attention Module</em>. 
+                        ECCV 2018. 
+                        <a href="https://arxiv.org/abs/1807.06521" class="text-blue-400 hover:underline">arXiv:1807.06521</a>
+                    </li>
+                    <li>
+                        <span class="text-gray-500">[2]</span> 
+                        Hu, J., Shen, L., & Sun, G. (2018). 
+                        <em>Squeeze-and-Excitation Networks</em>. 
+                        CVPR 2018.
+                    </li>
+                    <li>
+                        <span class="text-gray-500">[3]</span> 
+                        He, K., Zhang, X., Ren, S., & Sun, J. (2016). 
+                        <em>Deep Residual Learning for Image Recognition</em>. 
+                        CVPR 2016.
+                    </li>
+                </ol>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="py-8 px-4 border-t border-white/10">
+        <div class="max-w-7xl mx-auto text-center">
+            <p class="text-gray-500 text-sm">
+                Part of the Neural Networks Explorer • Built for educational purposes
+            </p>
+            <p class="text-gray-600 text-xs mt-2">
+                Paper: CBAM: Convolutional Block Attention Module (ECCV 2018)
+            </p>
+        </div>
+    </footer>
+</body>
+</html>
