@@ -1019,6 +1019,82 @@
                 </svg>
             </div>
 
+            <!-- RMSNorm Paper Card -->
+            <div class="network-card" onclick="location.href='papers/rmsnorm.html'">
+                <span class="tag">NeurIPS 2019</span>
+                <h3>RMSNorm</h3>
+                <p>Root Mean Square Layer Normalization - A simplified normalization that removes mean-centering from LayerNorm, offering 7-64% speedup while maintaining comparable performance. Widely adopted in LLaMA, Mistral, and modern LLMs.</p>
+                <svg class="preview-svg" viewBox="0 0 300 150">
+                    <defs>
+                        <linearGradient id="rmsnorm-grad" x1="0%" y1="0%" x2="100%" y2="0%">
+                            <stop offset="0%" style="stop-color:#6366f1"/>
+                            <stop offset="50%" style="stop-color:#a855f7"/>
+                            <stop offset="100%" style="stop-color:#10b981"/>
+                        </linearGradient>
+                        <marker id="rms-arrow" markerWidth="8" markerHeight="6" refX="7" refY="3" orient="auto">
+                            <polygon points="0 0, 8 3, 0 6" fill="#6366f1"/>
+                        </marker>
+                    </defs>
+                    
+                    <!-- Title -->
+                    <text x="150" y="20" fill="#8888aa" font-size="10" text-anchor="middle">RMSNorm: y = γ ⊙ x / RMS(x)</text>
+                    
+                    <!-- Input vector -->
+                    <g transform="translate(20, 45)">
+                        <text x="25" y="-8" fill="#888" font-size="8" text-anchor="middle">Input x</text>
+                        <rect x="0" y="0" width="15" height="25" fill="url(#rmsnorm-grad)" rx="2" opacity="0.9"/>
+                        <rect x="18" y="0" width="15" height="25" fill="url(#rmsnorm-grad)" rx="2" opacity="0.7"/>
+                        <rect x="36" y="0" width="15" height="25" fill="url(#rmsnorm-grad)" rx="2" opacity="0.8"/>
+                        <text x="60" y="15" fill="#6366f1" font-size="8">...</text>
+                    </g>
+                    
+                    <!-- Arrow -->
+                    <path d="M 85 57 L 110 57" stroke="#6366f1" stroke-width="1.5" marker-end="url(#rms-arrow)"/>
+                    
+                    <!-- Square & Mean -->
+                    <g transform="translate(115, 35)">
+                        <rect x="0" y="0" width="50" height="45" fill="rgba(236,72,153,0.2)" stroke="#ec4899" stroke-width="1.5" rx="4"/>
+                        <text x="25" y="18" fill="#fff" font-size="10" text-anchor="middle">x²</text>
+                        <line x1="8" y1="25" x2="42" y2="25" stroke="#ec4899" stroke-width="1"/>
+                        <text x="25" y="38" fill="#ec4899" font-size="8" text-anchor="middle">mean</text>
+                    </g>
+                    
+                    <!-- Arrow -->
+                    <path d="M 170 57 L 190 57" stroke="#f59e0b" stroke-width="1.5" marker-end="url(#rms-arrow)"/>
+                    
+                    <!-- Sqrt -->
+                    <g transform="translate(195, 40)">
+                        <rect x="0" y="0" width="35" height="35" fill="rgba(245,158,11,0.2)" stroke="#f59e0b" stroke-width="1.5" rx="4"/>
+                        <text x="17" y="24" fill="#fff" font-size="14" text-anchor="middle">√</text>
+                    </g>
+                    
+                    <!-- Division -->
+                    <g transform="translate(235, 45)">
+                        <circle cx="12" cy="12" r="12" fill="rgba(16,185,129,0.2)" stroke="#10b981" stroke-width="1.5"/>
+                        <text x="12" y="16" fill="#fff" font-size="12" text-anchor="middle">÷</text>
+                    </g>
+                    
+                    <!-- Scale by gamma -->
+                    <g transform="translate(260, 35)">
+                        <rect x="0" y="0" width="30" height="45" fill="rgba(168,85,247,0.2)" stroke="#a855f7" stroke-width="1.5" rx="4"/>
+                        <text x="15" y="20" fill="#fff" font-size="10" text-anchor="middle">×</text>
+                        <text x="15" y="35" fill="#a855f7" font-size="10" text-anchor="middle">γ</text>
+                    </g>
+                    
+                    <!-- Output -->
+                    <g transform="translate(255, 95)">
+                        <text x="15" y="0" fill="#888" font-size="8" text-anchor="middle">Output</text>
+                        <rect x="0" y="5" width="12" height="20" fill="#10b981" rx="2" opacity="0.9"/>
+                        <rect x="15" y="5" width="12" height="20" fill="#10b981" rx="2" opacity="0.7"/>
+                        <rect x="30" y="5" width="12" height="20" fill="#10b981" rx="2" opacity="0.8"/>
+                    </g>
+                    
+                    <!-- Legend -->
+                    <text x="80" y="130" fill="#666" font-size="7">Speedup: 7-64% vs LayerNorm</text>
+                    <text x="220" y="130" fill="#10b981" font-size="7">LLaMA, Mistral, Gemma</text>
+                </svg>
+            </div>
+
             <!-- Dropout Paper Card -->
             <div class="network-card" onclick="location.href='papers/dropout.html'">
                 <span class="tag">JMLR 2014</span>
