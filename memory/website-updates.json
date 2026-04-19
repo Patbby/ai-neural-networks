@@ -1,8 +1,8 @@
 {
-  "lastUpdate": "2026-04-18T22:30:00+08:00",
+  "lastUpdate": "2026-04-19T20:57:00+08:00",
   "papersAdded": 1,
-  "totalPapers": 54,
+  "totalPapers": 90,
   "nextPaper": "TBD",
-  "updateCount": 18,
-  "recentAddition": "FlashAttention (Dao et al., NeurIPS 2022) - Fast and Memory-Efficient Exact Attention with IO-Awareness. IO-aware attention algorithm using tiling to reduce GPU HBM-SRAM memory transfers by 20x. First method to enable exact attention on 64K sequence lengths without approximation. Training speedup: BERT-large 15%, GPT-2 3x, Long Range Arena 2.4x. 7,000+ citations."
+  "updateCount": 39,
+  "recentAddition": "Neural Turing Machine (Graves, Wayne & Danihelka, 2014) - Neural architecture augmented with external memory. The foundational paper introducing differentiable memory access via read/write heads and content/location-based addressing. Enabled neural networks to learn algorithms like copying, sorting, and associative recall. arXiv:1410.5401."
 }
