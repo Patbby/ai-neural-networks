@@ -3402,6 +3402,69 @@
                     <path d="M185 90 L210 75" stroke="#a855f7" stroke-width="1"/>
                 </svg>
             </div>
+            
+            <!-- Neural ODE Paper Card -->
+            <div class="network-card" onclick="location.href='papers/neural-ode.html'">
+                <span class="tag">NeurIPS 2018 (Best Paper)</span>
+                <h3>Neural ODE</h3>
+                <p>Neural Ordinary Differential Equations - Continuous-depth neural networks with constant memory cost. Replaces discrete layers with ODE solvers, enabling adaptive computation and continuous normalizing flows for generative modeling.</p>
+                <svg class="preview-svg" viewBox="0 0 300 150">
+                    <defs>
+                        <linearGradient id="nodeode-grad" x1="0%" y1="0%" x2="100%" y2="100%">
+                            <stop offset="0%" style="stop-color:#6366f1"/>
+                            <stop offset="50%" style="stop-color:#a855f7"/>
+                            <stop offset="100%" style="stop-color:#10b981"/>
+                        </linearGradient>
+                        <marker id="nodeode-arrow" markerWidth="8" markerHeight="8" refX="7" refY="3.5" orient="auto">
+                            <polygon points="0 0, 8 3.5, 0 7" fill="#6366f1"/>
+                        </marker>
+                    </defs>
+                    
+                    <!-- Title -->
+                    <text x="150" y="18" fill="#fff" font-size="9" text-anchor="middle" font-weight="bold">Continuous-Depth Neural Network</text>
+                    
+                    <!-- Input -->
+                    <rect x="20" y="45" width="45" height="35" rx="5" fill="rgba(99,102,241,0.3)" stroke="#6366f1" stroke-width="2"/>
+                    <text x="42" y="62" fill="#fff" font-size="8" text-anchor="middle">h(t₀)</text>
+                    <text x="42" y="74" fill="#a5b4fc" font-size="6" text-anchor="middle">Input</text>
+                    
+                    <!-- Arrow to ODE Block -->
+                    <path d="M65 62 L85 62" stroke="#6366f1" stroke-width="2" marker-end="url(#nodeode-arrow)"/>
+                    
+                    <!-- ODE Block (continuous) -->
+                    <rect x="90" y="35" width="120" height="55" rx="8" fill="rgba(99,102,241,0.1)" stroke="#6366f1" stroke-width="2" stroke-dasharray="4,2"/>
+                    
+                    <!-- Integration symbol -->
+                    <text x="105" y="65" fill="#10b981" font-size="20" font-weight="bold">∫</text>
+                    
+                    <!-- Neural Network inside -->
+                    <rect x="120" y="45" width="60" height="35" rx="5" fill="url(#nodeode-grad)" opacity="0.3" stroke="#a855f7" stroke-width="1.5"/>
+                    <text x="150" y="58" fill="#fff" font-size="7" text-anchor="middle">dh/dt =</text>
+                    <text x="150" y="68" fill="#fff" font-size="7" text-anchor="middle">f(h,t,θ)</text>
+                    <text x="150" y="78" fill="#d8b4fe" font-size="5" text-anchor="middle">Neural Net</text>
+                    
+                    <!-- ODE Solver label -->
+                    <text x="150" y="35" fill="#10b981" font-size="7" text-anchor="middle" font-weight="bold">ODE Solver</text>
+                    
+                    <!-- Arrow to Output -->
+                    <path d="M210 62 L230 62" stroke="#6366f1" stroke-width="2" marker-end="url(#nodeode-arrow)"/>
+                    
+                    <!-- Output -->
+                    <rect x="235" y="45" width="45" height="35" rx="5" fill="rgba(16,185,129,0.3)" stroke="#10b981" stroke-width="2"/>
+                    <text x="257" y="62" fill="#fff" font-size="8" text-anchor="middle">h(t₁)</text>
+                    <text x="257" y="74" fill="#6ee7b7" font-size="6" text-anchor="middle">Output</text>
+                    
+                    <!-- Adjoint method label -->
+                    <text x="150" y="105" fill="#10b981" font-size="7" text-anchor="middle">✓ Adjoint Method: O(1) Memory Cost</text>
+                    
+                    <!-- Applications -->
+                    <text x="150" y="120" fill="#a5b4fc" font-size="6" text-anchor="middle">CNF • Latent ODE • Physics-Informed Learning</text>
+                    
+                    <!-- Trophy icon for best paper -->
+                    <text x="270" y="28" fill="#fbbf24" font-size="12">🏆</text>
+                    <text x="270" y="38" fill="#fbbf24" font-size="5" text-anchor="middle">Best</text>
+                </svg>
+            </div>
         </div>
     </div>
 
