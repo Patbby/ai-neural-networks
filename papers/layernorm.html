@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Layer Normalization - AI Neural Networks</title>
+    <title>Layer Normalization - Stabilizing Deep Network Training | AI Neural Networks</title>
     <style>
         * {
             margin: 0;
@@ -150,620 +150,813 @@
             margin: 20px 0;
         }
         
-        .formula {
-            background: rgba(30, 30, 50, 0.8);
-            padding: 20px;
+        .formula-box {
+            background: rgba(10, 10, 15, 0.8);
+            border: 1px solid rgba(99, 102, 241, 0.3);
             border-radius: 12px;
+            padding: 25px;
+            margin: 20px 0;
             font-family: 'Courier New', monospace;
             text-align: center;
-            font-size: 1.1rem;
+        }
+        
+        .formula-box .formula {
+            font-size: 1.3rem;
             color: #a5b4fc;
-            margin: 20px 0;
-            border: 1px solid rgba(99, 102, 241, 0.3);
+            margin: 10px 0;
         }
         
-        .formula .sub {
-            font-size: 0.85rem;
+        .formula-box .label {
+            font-size: 0.9rem;
             color: #8888aa;
+            margin-top: 15px;
         }
         
-        .svg-container {
+        .architecture-svg {
             width: 100%;
-            display: flex;
-            justify-content: center;
+            height: auto;
             margin: 30px 0;
-            padding: 20px;
-            background: rgba(15, 15, 30, 0.8);
-            border-radius: 12px;
         }
         
-        .comparison-grid {
+        .insight-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-            gap: 25px;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 20px;
             margin: 25px 0;
         }
         
-        .comparison-card {
+        .insight-card {
             background: rgba(30, 30, 50, 0.6);
             border: 1px solid rgba(99, 102, 241, 0.2);
             border-radius: 12px;
-            padding: 25px;
+            padding: 20px;
         }
         
-        .comparison-card h4 {
+        .insight-card h4 {
             color: #6366f1;
-            margin-bottom: 15px;
-            font-size: 1.2rem;
+            margin-bottom: 10px;
+            font-size: 1.1rem;
         }
         
-        .comparison-card ul {
-            list-style: none;
-        }
-        
-        .comparison-card li {
-            padding: 8px 0;
-            color: #b8b8d0;
-            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
-        }
-        
-        .comparison-card li:last-child {
-            border-bottom: none;
-        }
-        
-        .comparison-card li::before {
-            content: "→";
-            color: #6366f1;
-            margin-right: 10px;
+        .insight-card p {
+            color: #a0a0bb;
+            font-size: 0.95rem;
+            margin: 0;
         }
         
         .code-block {
-            background: #0d1117;
-            border: 1px solid #30363d;
+            background: #111118;
+            border: 1px solid rgba(99, 102, 241, 0.2);
             border-radius: 12px;
-            padding: 20px;
-            overflow-x: auto;
+            overflow: hidden;
             margin: 20px 0;
         }
         
-        .code-block pre {
-            margin: 0;
-            font-family: 'JetBrains Mono', 'Fira Code', 'Courier New', monospace;
+        .code-header {
+            background: rgba(99, 102, 241, 0.1);
+            padding: 10px 20px;
+            font-size: 0.85rem;
+            color: #8888aa;
+            border-bottom: 1px solid rgba(99, 102, 241, 0.2);
+        }
+        
+        .code-content {
+            padding: 20px;
+            overflow-x: auto;
+            font-family: 'Courier New', monospace;
             font-size: 0.9rem;
             line-height: 1.6;
         }
         
-        .code-block code {
-            color: #e6edf3;
+        .code-content .keyword { color: #c678dd; }
+        .code-content .function { color: #61afef; }
+        .code-content .string { color: #98c379; }
+        .code-content .comment { color: #5c6370; font-style: italic; }
+        .code-content .number { color: #d19a66; }
+        
+        .impact-list {
+            list-style: none;
+            padding: 0;
         }
         
-        .keyword { color: #ff7b72; }
-        .function { color: #d2a8ff; }
-        .string { color: #a5d6ff; }
-        .number { color: #79c0ff; }
-        .comment { color: #8b949e; }
-        
-        .impact-stats {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            gap: 20px;
-            margin: 25px 0;
+        .impact-list li {
+            padding: 12px 0;
+            border-bottom: 1px solid rgba(99, 102, 241, 0.1);
+            display: flex;
+            align-items: flex-start;
+            gap: 12px;
         }
         
-        .stat-card {
-            background: linear-gradient(135deg, rgba(99,102,241,0.2) 0%, rgba(168,85,247,0.2) 100%);
-            border: 1px solid rgba(99, 102, 241, 0.3);
-            border-radius: 12px;
-            padding: 20px;
-            text-align: center;
+        .impact-list li:last-child {
+            border-bottom: none;
         }
         
-        .stat-card .number {
-            font-size: 2.5rem;
-            font-weight: 800;
-            background: linear-gradient(135deg, #6366f1 0%, #a855f7 100%);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
+        .impact-list .check {
+            color: #10b981;
+            font-size: 1.2rem;
+            flex-shrink: 0;
         }
         
-        .stat-card .label {
-            color: #8888aa;
-            font-size: 0.9rem;
-            margin-top: 5px;
+        .nav-footer {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 40px 20px;
+            border-top: 1px solid rgba(99, 102, 241, 0.2);
+            margin-top: 60px;
         }
         
-        .related-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-            gap: 20px;
-            margin-top: 20px;
-        }
-        
-        .related-card {
-            background: rgba(30, 30, 50, 0.5);
-            border: 1px solid rgba(99, 102, 241, 0.2);
-            border-radius: 12px;
-            padding: 20px;
+        .nav-footer a {
+            color: #6366f1;
             text-decoration: none;
-            color: inherit;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-weight: 500;
             transition: all 0.3s ease;
         }
         
-        .related-card:hover {
-            transform: translateY(-3px);
-            border-color: rgba(99, 102, 241, 0.5);
-            background: rgba(40, 40, 65, 0.6);
-        }
-        
-        .related-card h4 {
-            color: #6366f1;
-            margin-bottom: 8px;
-        }
-        
-        .related-card p {
-            font-size: 0.9rem;
-            color: #8888aa;
-            margin: 0;
-        }
-        
-        footer {
-            text-align: center;
-            padding: 40px 20px;
-            border-top: 1px solid rgba(99, 102, 241, 0.2);
-            color: #666688;
-            font-size: 0.9rem;
-        }
-        
-        footer a {
-            color: #8888aa;
-            text-decoration: none;
-        }
-        
-        footer a:hover {
+        .nav-footer a:hover {
             color: #a855f7;
+            gap: 12px;
         }
+        
+        .comparison-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+        }
+        
+        .comparison-table th,
+        .comparison-table td {
+            padding: 12px 15px;
+            text-align: left;
+            border-bottom: 1px solid rgba(99, 102, 241, 0.2);
+        }
+        
+        .comparison-table th {
+            color: #6366f1;
+            font-weight: 600;
+            background: rgba(99, 102, 241, 0.1);
+        }
+        
+        .comparison-table td {
+            color: #b8b8d0;
+        }
+        
+        .comparison-table .yes { color: #10b981; }
+        .comparison-table .no { color: #ef4444; }
+        .comparison-table .partial { color: #f59e0b; }
         
         @media (max-width: 768px) {
             .hero h1 {
                 font-size: 2rem;
             }
-            .comparison-grid {
-                grid-template-columns: 1fr;
+            .section {
+                padding: 20px;
             }
         }
     </style>
 </head>
 <body>
-    <!-- Background Animation -->
-    <svg class="bg-animation" viewBox="0 0 100 100" preserveAspectRatio="none">
+    <!-- Animated background -->
+    <svg class="bg-animation" viewBox="0 0 1920 1080" preserveAspectRatio="xMidYMid slice">
         <defs>
-            <radialGradient id="grad1" cx="50%" cy="50%" r="50%">
-                <stop offset="0%" style="stop-color:#6366f1;stop-opacity:0.3" />
-                <stop offset="100%" style="stop-color:#0a0a0f;stop-opacity:0" />
-            </radialGradient>
+            <linearGradient id="bg-grad" x1="0%" y1="0%" x2="100%" y2="100%">
+                <stop offset="0%" style="stop-color:#6366f1;stop-opacity:0.2" />
+                <stop offset="100%" style="stop-color:#a855f7;stop-opacity:0.05" />
+            </linearGradient>
         </defs>
-        <circle cx="20" cy="30" r="40" fill="url(#grad1)">
-            <animate attributeName="cy" values="30;35;30" dur="10s" repeatCount="indefinite"/>
-        </circle>
-        <circle cx="80" cy="70" r="50" fill="url(#grad1)">
-            <animate attributeName="cx" values="80;75;80" dur="15s" repeatCount="indefinite"/>
-        </circle>
+        <g opacity="0.3">
+            <!-- Neural network nodes -->
+            <circle cx="200" cy="200" r="3" fill="#6366f1">
+                <animate attributeName="opacity" values="0.3;1;0.3" dur="3s" repeatCount="indefinite"/>
+            </circle>
+            <circle cx="400" cy="300" r="3" fill="#a855f7">
+                <animate attributeName="opacity" values="0.3;1;0.3" dur="4s" repeatCount="indefinite"/>
+            </circle>
+            <circle cx="600" cy="150" r="3" fill="#6366f1">
+                <animate attributeName="opacity" values="0.3;1;0.3" dur="3.5s" repeatCount="indefinite"/>
+            </circle>
+            <circle cx="800" cy="400" r="3" fill="#ec4899">
+                <animate attributeName="opacity" values="0.3;1;0.3" dur="2.5s" repeatCount="indefinite"/>
+            </circle>
+            <circle cx="1000" cy="250" r="3" fill="#6366f1">
+                <animate attributeName="opacity" values="0.3;1;0.3" dur="3.2s" repeatCount="indefinite"/>
+            </circle>
+            <circle cx="1200" cy="350" r="3" fill="#a855f7">
+                <animate attributeName="opacity" values="0.3;1;0.3" dur="4.2s" repeatCount="indefinite"/>
+            </circle>
+            <circle cx="1400" cy="200" r="3" fill="#6366f1">
+                <animate attributeName="opacity" values="0.3;1;0.3" dur="3.8s" repeatCount="indefinite"/>
+            </circle>
+            <circle cx="1600" cy="300" r="3" fill="#ec4899">
+                <animate attributeName="opacity" values="0.3;1;0.3" dur="2.8s" repeatCount="indefinite"/>
+            </circle>
+            <!-- Connections -->
+            <line x1="200" y1="200" x2="400" y2="300" stroke="#6366f1" stroke-width="0.5" opacity="0.2"/>
+            <line x1="400" y1="300" x2="600" y2="150" stroke="#6366f1" stroke-width="0.5" opacity="0.2"/>
+            <line x1="600" y1="150" x2="800" y2="400" stroke="#6366f1" stroke-width="0.5" opacity="0.2"/>
+            <line x1="800" y1="400" x2="1000" y2="250" stroke="#6366f1" stroke-width="0.5" opacity="0.2"/>
+            <line x1="1000" y1="250" x2="1200" y2="350" stroke="#6366f1" stroke-width="0.5" opacity="0.2"/>
+            <line x1="1200" y1="350" x2="1400" y2="200" stroke="#6366f1" stroke-width="0.5" opacity="0.2"/>
+            <line x1="1400" y1="200" x2="1600" y2="300" stroke="#6366f1" stroke-width="0.5" opacity="0.2"/>
+        </g>
     </svg>
 
-    <!-- Hero Section -->
-    <section class="hero">
-        <h1>Layer Normalization</h1>
-        <p class="subtitle">Normalizing activations across features for stable deep learning</p>
+    <div class="hero">
+        <h1>📊 Layer Normalization</h1>
+        <p class="subtitle">A simple normalization method to improve training speed and stability for deep neural networks, especially in RNNs and sequence models</p>
         <div class="meta">
-            <span>👤 Jimmy Lei Ba, Jamie Ryan Kiros, Geoffrey E. Hinton</span>
             <span>📅 2016</span>
-            <span>📄 arXiv:1607.06450</span>
+            <span>👤 Jimmy Lei Ba, Jamie Ryan Kiros, Geoffrey E. Hinton</span>
+            <span>🏛️ University of Toronto & Google</span>
         </div>
         <div class="badges">
-            <a href="https://arxiv.org/pdf/1607.06450.pdf" class="badge pdf">📄 PDF</a>
-            <a href="https://arxiv.org/abs/1607.06450" class="badge arxiv">📚 arXiv</a>
-            <a href="#code" class="badge code">💻 Code</a>
+            <a href="https://arxiv.org/abs/1607.06450" class="badge arxiv" target="_blank">📄 arXiv:1607.06450</a>
+            <a href="https://arxiv.org/pdf/1607.06450.pdf" class="badge pdf" target="_blank">📑 PDF</a>
+            <a href="https://pytorch.org/docs/stable/generated/torch.nn.LayerNorm.html" class="badge code" target="_blank">💻 PyTorch</a>
         </div>
-    </section>
+    </div>
 
     <div class="container">
         <!-- Problem Statement -->
-        <section class="section">
+        <div class="section">
             <h2><span class="icon">🎯</span> Problem Statement</h2>
-            <p>Training deep neural networks is computationally expensive. <strong>Batch Normalization</strong> (Ioffe & Szegedy, 2015) significantly reduced training time by normalizing neuron activations using mini-batch statistics, but it has critical limitations:</p>
+            <p>Deep neural networks trained with Stochastic Gradient Descent (SGD) can take days to train. <strong>Batch Normalization</strong> was introduced to reduce training time by normalizing activations using mini-batch statistics, but it has critical limitations:</p>
             
-            <div class="highlight-box">
-                <p><strong>Key Challenges with Batch Normalization:</strong></p>
-                <ul style="margin-left: 20px; margin-top: 10px; color: #b8b8d0;">
-                    <li>Performance depends heavily on mini-batch size — small batches give noisy estimates</li>
-                    <li>Difficult to apply to <strong>recurrent neural networks</strong> where sequences have different lengths</li>
-                    <li>Training and inference behave differently (uses running averages at test time)</li>
-                    <li>Challenging for online learning and tasks with small batch constraints</li>
-                </ul>
+            <div class="insight-grid">
+                <div class="insight-card">
+                    <h4>❌ Mini-batch Dependency</h4>
+                    <p>BatchNorm's effectiveness depends on mini-batch size. Small batches lead to noisy statistics and poor performance.</p>
+                </div>
+                <div class="insight-card">
+                    <h4>❌ RNN Incompatibility</h4>
+                    <p>Sequences have varying lengths, making it unclear how to apply BatchNorm across different time steps.</p>
+                </div>
+                <div class="insight-card">
+                    <h4>❌ Train/Test Discrepancy</h4>
+                    <p>BatchNorm uses running averages at test time, creating different computations than during training.</p>
+                </div>
+                <div class="insight-card">
+                    <h4>❌ Online Learning Issues</h4>
+                    <p>Cannot be applied to online learning with batch size 1 or distributed models with small mini-batches.</p>
+                </div>
             </div>
             
-            <p>Layer Normalization was designed to address these fundamental limitations while providing the same benefits of normalized activations.</p>
-        </section>
+            <div class="highlight-box">
+                <strong>Core Question:</strong> How can we normalize activations without depending on mini-batch statistics, making it suitable for RNNs, online learning, and all batch sizes?
+            </div>
+        </div>
 
         <!-- Key Innovation -->
-        <section class="section">
+        <div class="section">
             <h2><span class="icon">💡</span> Key Innovation</h2>
-            <p>Instead of normalizing across the batch dimension (like BatchNorm), <strong>Layer Normalization</strong> computes the mean and variance across <em>all features within a single layer</em> for each individual training case.</p>
+            <p><strong>Layer Normalization</strong> transposes the normalization approach: instead of normalizing across the batch dimension (for each feature across samples), it normalizes <strong>across the feature dimension</strong> (across all neurons in a layer for each sample).</p>
             
-            <div class="formula">
-                <p>μ<sub class="sub">H</sub> = (1/H) Σ<sub class="sub">i=1</sub><sup>H</sup> a<sub class="sub">i</sub></p>
-                <p>σ<sub class="sub">H</sub>² = (1/H) Σ<sub class="sub">i=1</sub><sup>H</sup> (a<sub class="sub">i</sub> - μ<sub class="sub">H</sub>)²</p>
-                <p>h<sub class="sub">i</sub> = f( g/σ<sub class="sub">H</sub> · (a<sub class="sub">i</sub> - μ<sub class="sub">H</sub>) + b )</p>
-                <p style="font-size: 0.85rem; margin-top: 15px; color: #8888aa;">
-                    Where H = number of hidden units, g = learnable gain, b = learnable bias
-                </p>
+            <div class="formula-box">
+                <div class="formula">
+                    LN(x) = γ ⊙ (x − μ) / √(σ² + ε) + β
+                </div>
+                <div class="label">Where μ and σ are computed over all hidden units in a layer for a single training case</div>
             </div>
+            
+            <p>The key insight is that changes in one layer's output cause highly correlated changes in the next layer's summed inputs, especially with ReLU units. By fixing the mean and variance of summed inputs within each layer, LayerNorm reduces covariate shift.</p>
+        </div>
+
+        <!-- Architecture Visualization -->
+        <div class="section">
+            <h2><span class="icon">🏗️</span> Architecture & Method</h2>
+            
+            <svg class="architecture-svg" viewBox="0 0 900 500" style="max-height: 500px;">
+                <defs>
+                    <linearGradient id="neuron-grad" x1="0%" y1="0%" x2="0%" y2="100%">
+                        <stop offset="0%" style="stop-color:#6366f1"/>
+                        <stop offset="100%" style="stop-color:#a855f7"/>
+                    </linearGradient>
+                    <linearGradient id="norm-grad" x1="0%" y1="0%" x2="100%" y2="0%">
+                        <stop offset="0%" style="stop-color:#10b981"/>
+                        <stop offset="100%" style="stop-color:#34d399"/>
+                    </linearGradient>
+                    <marker id="arrow-head" markerWidth="10" markerHeight="10" refX="9" refY="3" orient="auto">
+                        <polygon points="0 0, 10 3, 0 6" fill="#6366f1"/>
+                    </marker>
+                </defs>
+                
+                <!-- Title -->
+                <text x="450" y="30" fill="#fff" font-size="18" font-weight="bold" text-anchor="middle">Layer Normalization vs Batch Normalization</text>
+                
+                <!-- Batch Normalization Section -->
+                <rect x="50" y="60" width="380" height="200" rx="10" fill="rgba(239,68,68,0.1)" stroke="rgba(239,68,68,0.3)" stroke-width="2"/>
+                <text x="240" y="85" fill="#fca5a5" font-size="14" font-weight="bold" text-anchor="middle">Batch Normalization (Batch dim)</text>
+                
+                <!-- BatchNorm: Input matrix -->
+                <g transform="translate(80, 100)">
+                    <rect x="0" y="0" width="40" height="120" fill="rgba(99,102,241,0.2)" stroke="#6366f1" stroke-width="1"/>
+                    <text x="20" y="65" fill="#6366f1" font-size="10" text-anchor="middle" transform="rotate(-90 20 65)">Feature 1</text>
+                    <rect x="45" y="0" width="40" height="120" fill="rgba(99,102,241,0.2)" stroke="#6366f1" stroke-width="1"/>
+                    <text x="65" y="65" fill="#6366f1" font-size="10" text-anchor="middle" transform="rotate(-90 65 65)">Feature 2</text>
+                    <rect x="90" y="0" width="40" height="120" fill="rgba(99,102,241,0.2)" stroke="#6366f1" stroke-width="1"/>
+                    <text x="110" y="65" fill="#6366f1" font-size="10" text-anchor="middle" transform="rotate(-90 110 65)">Feature 3</text>
+                    <rect x="135" y="0" width="40" height="120" fill="rgba(99,102,241,0.2)" stroke="#6366f1" stroke-width="1"/>
+                    <text x="155" y="65" fill="#6366f1" font-size="10" text-anchor="middle" transform="rotate(-90 155 65)">Feature 4</text>
+                    
+                    <!-- Batch dimension arrows -->
+                    <path d="M -10 30 L -10 90" stroke="#10b981" stroke-width="3" marker-end="url(#arrow-head)" marker-start="url(#arrow-head)"/>
+                    <text x="-25" y="65" fill="#10b981" font-size="10" text-anchor="middle">Batch</text>
+                    
+                    <!-- Normalization arrow -->
+                    <path d="M 200 60 L 260 60" stroke="#6366f1" stroke-width="2" marker-end="url(#arrow-head)"/>
+                    <rect x="270" y="30" width="80" height="60" rx="5" fill="rgba(16,185,129,0.2)" stroke="#10b981" stroke-width="2"/>
+                    <text x="310" y="55" fill="#10b981" font-size="10" text-anchor="middle">μ, σ per</text>
+                    <text x="310" y="70" fill="#10b981" font-size="10" text-anchor="middle">feature</text>
+                    
+                    <!-- Output -->
+                    <path d="M 360 60 L 390 60" stroke="#6366f1" stroke-width="2" marker-end="url(#arrow-head)"/>
+                    <rect x="395" y="30" width="20" height="120" fill="rgba(168,85,247,0.3)" stroke="#a855f7" stroke-width="1"/>
+                </g>
+                
+                <!-- Layer Normalization Section -->
+                <rect x="470" y="60" width="380" height="200" rx="10" fill="rgba(16,185,129,0.1)" stroke="rgba(16,185,129,0.3)" stroke-width="2"/>
+                <text x="660" y="85" fill="#6ee7b7" font-size="14" font-weight="bold" text-anchor="middle">Layer Normalization (Feature dim)</text>
+                
+                <!-- LayerNorm: Input for single sample -->
+                <g transform="translate(500, 100)">
+                    <rect x="0" y="0" width="120" height="40" fill="rgba(99,102,241,0.2)" stroke="#6366f1" stroke-width="1"/>
+                    <rect x="0" y="45" width="120" height="40" fill="rgba(99,102,241,0.2)" stroke="#6366f1" stroke-width="1"/>
+                    <rect x="0" y="90" width="120" height="40" fill="rgba(99,102,241,0.2)" stroke="#6366f1" stroke-width="1"/>
+                    
+                    <!-- Feature dimension arrow -->
+                    <path d="M 60 -15 L 60 15" stroke="#10b981" stroke-width="3" marker-end="url(#arrow-head)" marker-start="url(#arrow-head)"/>
+                    <text x="60" y="-25" fill="#10b981" font-size="10" text-anchor="middle">Features (Layer)</text>
+                    
+                    <!-- Normalization arrow -->
+                    <path d="M 140 60 L 200 60" stroke="#6366f1" stroke-width="2" marker-end="url(#arrow-head)"/>
+                    <rect x="210" y="30" width="80" height="60" rx="5" fill="rgba(16,185,129,0.2)" stroke="#10b981" stroke-width="2"/>
+                    <text x="250" y="55" fill="#10b981" font-size="10" text-anchor="middle">μ, σ per</text>
+                    <text x="250" y="70" fill="#10b981" font-size="10" text-anchor="middle">sample</text>
+                    
+                    <!-- Output -->
+                    <path d="M 300 60 L 330 60" stroke="#6366f1" stroke-width="2" marker-end="url(#arrow-head)"/>
+                    <rect x="335" y="30" width="20" height="120" fill="rgba(168,85,247,0.3)" stroke="#a855f7" stroke-width="1"/>
+                </g>
+                
+                <!-- LayerNorm Formula Section -->
+                <rect x="50" y="280" width="800" height="200" rx="10" fill="rgba(20,20,35,0.8)" stroke="rgba(99,102,241,0.3)" stroke-width="2"/>
+                <text x="450" y="310" fill="#fff" font-size="16" font-weight="bold" text-anchor="middle">Layer Normalization Computation</text>
+                
+                <!-- Formula visualization -->
+                <g transform="translate(100, 340)">
+                    <!-- Input vector -->
+                    <text x="0" y="15" fill="#8888aa" font-size="12">Input: x = [x₁, x₂, ..., x_H]</text>
+                    
+                    <!-- Step 1: Compute mean -->
+                    <rect x="0" y="35" width="200" height="35" rx="5" fill="rgba(99,102,241,0.1)" stroke="#6366f1" stroke-width="1"/>
+                    <text x="100" y="52" fill="#a5b4fc" font-size="11" text-anchor="middle">Step 1: Compute Mean</text>
+                    <text x="100" y="65" fill="#fff" font-size="10" text-anchor="middle">μ = (1/H) Σᵢ xᵢ</text>
+                    
+                    <!-- Step 2: Compute variance -->
+                    <rect x="0" y="80" width="200" height="35" rx="5" fill="rgba(99,102,241,0.1)" stroke="#6366f1" stroke-width="1"/>
+                    <text x="100" y="97" fill="#a5b4fc" font-size="11" text-anchor="middle">Step 2: Compute Variance</text>
+                    <text x="100" y="110" fill="#fff" font-size="10" text-anchor="middle">σ² = (1/H) Σᵢ (xᵢ − μ)²</text>
+                    
+                    <!-- Arrow -->
+                    <path d="M 220 70 L 280 70" stroke="#6366f1" stroke-width="2" marker-end="url(#arrow-head)"/>
+                    
+                    <!-- Step 3: Normalize -->
+                    <rect x="300" y="35" width="220" height="80" rx="5" fill="rgba(16,185,129,0.1)" stroke="#10b981" stroke-width="1"/>
+                    <text x="410" y="52" fill="#6ee7b7" font-size="11" text-anchor="middle">Step 3: Normalize & Scale</text>
+                    <text x="410" y="75" fill="#fff" font-size="10" text-anchor="middle">x̂ᵢ = (xᵢ − μ) / √(σ² + ε)</text>
+                    <text x="410" y="95" fill="#fff" font-size="10" text-anchor="middle">yᵢ = γᵢ · x̂ᵢ + βᵢ</text>
+                    
+                    <!-- Output -->
+                    <path d="M 530 70 L 590 70" stroke="#6366f1" stroke-width="2" marker-end="url(#arrow-head)"/>
+                    <text x="650" y="52" fill="#8888aa" font-size="12" text-anchor="middle">Output: y = [y₁, y₂, ..., y_H]</text>
+                    <text x="650" y="75" fill="#a855f7" font-size="11" text-anchor="middle">Normalized with</text>
+                    <text x="650" y="92" fill="#a855f7" font-size="11" text-anchor="middle">learnable γ, β</text>
+                </g>
+                
+                <!-- Invariance properties -->
+                <g transform="translate(100, 430)">
+                    <text x="350" y="15" fill="#fff" font-size="12" font-weight="bold">Key Property: Invariant to re-scaling of single training cases</text>
+                    <text x="350" y="35" fill="#8888aa" font-size="11" text-anchor="middle">Unlike BatchNorm, LayerNorm performs the same computation at training and test times</text>
+                </g>
+            </svg>
             
             <div class="highlight-box">
-                <p><strong>🌟 Core Insight:</strong> By computing statistics across features (not samples), LayerNorm has the same training and inference behavior, works with any batch size (including batch size 1), and applies naturally to RNNs by normalizing at each time step independently.</p>
+                <strong>The Critical Difference:</strong> BatchNorm computes μ and σ across the batch (for each feature separately), while LayerNorm computes μ and σ across all features/neurons in a layer (for each sample separately). This makes LayerNorm independent of batch size.
             </div>
-        </section>
+        </div>
 
-        <!-- Architecture Comparison -->
-        <section class="section">
-            <h2><span class="icon">⚖️</span> BatchNorm vs LayerNorm</h2>
+        <!-- Invariance Properties -->
+        <div class="section">
+            <h2><span class="icon">⚖️</span> Invariance Properties</h2>
+            <p>Layer Normalization has unique invariance properties compared to Batch Normalization and Weight Normalization:</p>
             
-            <!-- SVG Visualization -->
-            <div class="svg-container">
-                <svg width="850" height="420" viewBox="0 0 850 420">
-                    <defs>
-                        <linearGradient id="grad1" x1="0%" y1="0%" x2="100%" y2="100%">
-                            <stop offset="0%" style="stop-color:#6366f1;stop-opacity:0.3"/>
-                            <stop offset="100%" style="stop-color:#a855f7;stop-opacity:0.3"/>
-                        </linearGradient>
-                        <linearGradient id="grad2" x1="0%" y1="0%" x2="100%" y2="100%">
-                            <stop offset="0%" style="stop-color:#10b981;stop-opacity:0.3"/>
-                            <stop offset="100%" style="stop-color:#06b6d4;stop-opacity:0.3"/>
-                        </linearGradient>
-                        <marker id="arrowhead" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto">
-                            <polygon points="0 0, 10 3.5, 0 7" fill="#6366f1"/>
-                        </marker>
-                    </defs>
-                    
-                    <!-- Title -->
-                    <text x="200" y="30" font-size="16" fill="#fff" font-weight="bold" text-anchor="middle">Batch Normalization</text>
-                    <text x="650" y="30" font-size="16" fill="#fff" font-weight="bold" text-anchor="middle">Layer Normalization</text>
-                    
-                    <!-- BatchNorm: Input Matrix -->
-                    <text x="100" y="60" font-size="12" fill="#8888aa">Input: (Batch × Features)</text>
-                    <g transform="translate(50, 75)">
-                        <!-- Grid for BatchNorm -->
-                        <rect x="0" y="0" width="40" height="40" fill="rgba(239,68,68,0.3)" stroke="#ef4444" stroke-width="2"/>
-                        <rect x="40" y="0" width="40" height="40" fill="rgba(239,68,68,0.2)" stroke="#ef4444" stroke-width="1"/>
-                        <rect x="80" y="0" width="40" height="40" fill="rgba(239,68,68,0.3)" stroke="#ef4444" stroke-width="2"/>
-                        <rect x="0" y="40" width="40" height="40" fill="rgba(239,68,68,0.2)" stroke="#ef4444" stroke-width="1"/>
-                        <rect x="40" y="40" width="40" height="40" fill="rgba(239,68,68,0.3)" stroke="#ef4444" stroke-width="2"/>
-                        <rect x="80" y="40" width="40" height="40" fill="rgba(239,68,68,0.2)" stroke="#ef4444" stroke-width="1"/>
-                        <rect x="0" y="80" width="40" height="40" fill="rgba(239,68,68,0.3)" stroke="#ef4444" stroke-width="2"/>
-                        <rect x="40" y="80" width="40" height="40" fill="rgba(239,68,68,0.2)" stroke="#ef4444" stroke-width="1"/>
-                        <rect x="80" y="80" width="40" height="40" fill="rgba(239,68,68,0.3)" stroke="#ef4444" stroke-width="2"/>
-                        
-                        <!-- Column highlights -->
-                        <rect x="0" y="-5" width="40" height="135" fill="none" stroke="#ef4444" stroke-width="3" stroke-dasharray="5,3">
-                            <animate attributeName="opacity" values="1;0.5;1" dur="2s" repeatCount="indefinite"/>
-                        </rect>
-                        <text x="20" y="-15" font-size="10" fill="#ef4444" text-anchor="middle">μ, σ²</text>
-                    </g>
-                    
-                    <!-- Arrow for BatchNorm -->
-                    <line x1="200" y1="170" x2="200" y2="200" stroke="#6366f1" stroke-width="2" marker-end="url(#arrowhead)"/>
-                    
-                    <!-- Normalization formula BatchNorm -->
-                    <text x="200" y="195" font-size="11" fill="#8888aa" text-anchor="middle">Normalize across batch</text>
-                    
-                    <!-- LayerNorm: Input Matrix -->
-                    <text x="600" y="60" font-size="12" fill="#8888aa">Input: (Batch × Features)</text>
-                    <g transform="translate(550, 75)">
-                        <!-- Grid for LayerNorm -->
-                        <rect x="0" y="0" width="40" height="40" fill="rgba(16,185,129,0.2)" stroke="#10b981" stroke-width="1"/>
-                        <rect x="40" y="0" width="40" height="40" fill="rgba(16,185,129,0.2)" stroke="#10b981" stroke-width="1"/>
-                        <rect x="80" y="0" width="40" height="40" fill="rgba(16,185,129,0.2)" stroke="#10b981" stroke-width="1"/>
-                        <rect x="0" y="40" width="40" height="40" fill="rgba(6,182,212,0.3)" stroke="#06b6d4" stroke-width="2"/>
-                        <rect x="40" y="40" width="40" height="40" fill="rgba(6,182,212,0.3)" stroke="#06b6d4" stroke-width="2"/>
-                        <rect x="80" y="40" width="40" height="40" fill="rgba(6,182,212,0.3)" stroke="#06b6d4" stroke-width="2"/>
-                        <rect x="0" y="80" width="40" height="40" fill="rgba(16,185,129,0.2)" stroke="#10b981" stroke-width="1"/>
-                        <rect x="40" y="80" width="40" height="40" fill="rgba(16,185,129,0.2)" stroke="#10b981" stroke-width="1"/>
-                        <rect x="80" y="80" width="40" height="40" fill="rgba(16,185,129,0.2)" stroke="#10b981" stroke-width="1"/>
-                        
-                        <!-- Row highlights -->
-                        <rect x="-5" y="40" width="130" height="40" fill="none" stroke="#06b6d4" stroke-width="3" stroke-dasharray="5,3">
-                            <animate attributeName="opacity" values="1;0.5;1" dur="2s" repeatCount="indefinite"/>
-                        </rect>
-                        <text x="140" y="65" font-size="10" fill="#06b6d4">μ, σ²</text>
-                    </g>
-                    
-                    <!-- Arrow for LayerNorm -->
-                    <line x1="650" y1="170" x2="650" y2="200" stroke="#6366f1" stroke-width="2" marker-end="url(#arrowhead)"/>
-                    
-                    <!-- Normalization formula LayerNorm -->
-                    <text x="650" y="195" font-size="11" fill="#8888aa" text-anchor="middle">Normalize across features</text>
-                    
-                    <!-- Output comparison -->
-                    <text x="200" y="230" font-size="12" fill="#8888aa" text-anchor="middle">Output</text>
-                    <g transform="translate(150, 245)">
-                        <rect x="0" y="0" width="100" height="80" fill="url(#grad1)" rx="5"/>
-                        <text x="50" y="45" font-size="11" fill="#fff" text-anchor="middle">Same normalized</text>
-                        <text x="50" y="60" font-size="11" fill="#fff" text-anchor="middle">distribution</text>
-                    </g>
-                    
-                    <text x="650" y="230" font-size="12" fill="#8888aa" text-anchor="middle">Output</text>
-                    <g transform="translate(600, 245)">
-                        <rect x="0" y="0" width="100" height="80" fill="url(#grad2)" rx="5"/>
-                        <text x="50" y="45" font-size="11" fill="#fff" text-anchor="middle">Same normalized</text>
-                        <text x="50" y="60" font-size="11" fill="#fff" text-anchor="middle">distribution</text>
-                    </g>
-                    
-                    <!-- Key differences box -->
-                    <g transform="translate(50, 350)">
-                        <rect x="0" y="0" width="350" height="60" fill="rgba(239,68,68,0.1)" stroke="#ef4444" stroke-width="1" rx="8"/>
-                        <text x="175" y="20" font-size="11" fill="#ef4444" text-anchor="middle" font-weight="bold">BatchNorm: N × H → compute μ,σ for each feature</text>
-                        <text x="175" y="40" font-size="10" fill="#8888aa" text-anchor="middle">Depends on batch size, different train/test behavior</text>
-                    </g>
-                    
-                    <g transform="translate(450, 350)">
-                        <rect x="0" y="0" width="350" height="60" fill="rgba(16,185,129,0.1)" stroke="#10b981" stroke-width="1" rx="8"/>
-                        <text x="175" y="20" font-size="11" fill="#10b981" text-anchor="middle" font-weight="bold">LayerNorm: 1 × H → compute μ,σ for each sample</text>
-                        <text x="175" y="40" font-size="10" fill="#8888aa" text-anchor="middle">Batch independent, same train/test behavior</text>
-                    </g>
-                </svg>
-            </div>
+            <table class="comparison-table">
+                <thead>
+                    <tr>
+                        <th>Transformation</th>
+                        <th>BatchNorm</th>
+                        <th>WeightNorm</th>
+                        <th>LayerNorm</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Weight matrix re-scaling</td>
+                        <td class="yes">✓ Invariant</td>
+                        <td class="yes">✓ Invariant</td>
+                        <td class="yes">✓ Invariant</td>
+                    </tr>
+                    <tr>
+                        <td>Weight matrix re-centering</td>
+                        <td class="no">✗ No</td>
+                        <td class="no">✗ No</td>
+                        <td class="yes">✓ Invariant</td>
+                    </tr>
+                    <tr>
+                        <td>Weight vector re-scaling</td>
+                        <td class="yes">✓ Invariant</td>
+                        <td class="yes">✓ Invariant</td>
+                        <td class="no">✗ No</td>
+                    </tr>
+                    <tr>
+                        <td>Dataset re-scaling</td>
+                        <td class="yes">✓ Invariant</td>
+                        <td class="no">✗ No</td>
+                        <td class="yes">✓ Invariant</td>
+                    </tr>
+                    <tr>
+                        <td>Dataset re-centering</td>
+                        <td class="yes">✓ Invariant</td>
+                        <td class="no">✗ No</td>
+                        <td class="no">✗ No</td>
+                    </tr>
+                    <tr>
+                        <td>Single training case re-scaling</td>
+                        <td class="no">✗ No</td>
+                        <td class="no">✗ No</td>
+                        <td class="yes">✓ Invariant</td>
+                    </tr>
+                </tbody>
+            </table>
             
-            <div class="comparison-grid">
-                <div class="comparison-card">
-                    <h4>🔄 Batch Normalization</h4>
-                    <ul>
-                        <li>Normalizes: <strong>N</strong> samples (batch)</li>
-                        <li>Dimensions: (N, H) → μ, σ per feature</li>
-                        <li>Requires: Running mean/var at test time</li>
-                        <li>Best for: CNNs, large batches</li>
-                        <li>Limitation: Poor with small batches</li>
-                    </ul>
-                </div>
-                <div class="comparison-card">
-                    <h4>📐 Layer Normalization</h4>
-                    <ul>
-                        <li>Normalizes: <strong>H</strong> features (layer)</li>
-                        <li>Dimensions: (1, H) → μ, σ per sample</li>
-                        <li>Requires: No running statistics</li>
-                        <li>Best for: RNNs, Transformers, any batch</li>
-                        <li>Advantage: Consistent train/test</li>
-                    </ul>
-                </div>
-            </div>
-        </section>
+            <p>This unique invariance to single training case re-scaling makes LayerNorm particularly effective for RNNs where each time step is processed independently.</p>
+        </div>
 
         <!-- RNN Application -->
-        <section class="section">
-            <h2><span class="icon">🔄</span> Application to RNNs</h2>
-            <p>Layer Normalization is particularly effective for recurrent neural networks. In an RNN, the same layer is applied at each time step, making batch normalization difficult since different time steps may have different sequence lengths.</p>
+        <div class="section">
+            <h2><span class="icon">🔄</span> LayerNorm in RNNs</h2>
+            <p>Layer Normalization is especially effective for Recurrent Neural Networks (RNNs) where the same weights are used at every time step but sequences have varying lengths.</p>
             
-            <div class="svg-container">
-                <svg width="800" height="350" viewBox="0 0 800 350">
-                    <defs>
-                        <marker id="arrowhead2" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto">
-                            <polygon points="0 0, 10 3.5, 0 7" fill="#6366f1"/>
-                        </marker>
-                    </defs>
+            <svg class="architecture-svg" viewBox="0 0 900 350" style="max-height: 350px;">
+                <defs>
+                    <linearGradient id="rnn-grad" x1="0%" y1="0%" x2="100%" y2="0%">
+                        <stop offset="0%" style="stop-color:#6366f1"/>
+                        <stop offset="100%" style="stop-color:#a855f7"/>
+                    </linearGradient>
+                    <marker id="rnn-arrow" markerWidth="10" markerHeight="10" refX="9" refY="3" orient="auto">
+                        <polygon points="0 0, 10 3, 0 6" fill="#6366f1"/>
+                    </marker>
+                </defs>
+                
+                <!-- Title -->
+                <text x="450" y="30" fill="#fff" font-size="16" font-weight="bold" text-anchor="middle">Layer Normalized RNN</text>
+                
+                <!-- Input sequence -->
+                <g transform="translate(50, 80)">
+                    <rect x="0" y="0" width="70" height="50" rx="5" fill="rgba(99,102,241,0.2)" stroke="#6366f1" stroke-width="2"/>
+                    <text x="35" y="30" fill="#fff" font-size="12" text-anchor="middle">x₁</text>
+                    <text x="35" y="70" fill="#8888aa" font-size="10" text-anchor="middle">t=1</text>
                     
-                    <!-- Title -->
-                    <text x="400" y="25" font-size="16" fill="#fff" font-weight="bold" text-anchor="middle">Layer Normalization in RNN/LSTM Cell</text>
+                    <rect x="110" y="0" width="70" height="50" rx="5" fill="rgba(99,102,241,0.2)" stroke="#6366f1" stroke-width="2"/>
+                    <text x="145" y="30" fill="#fff" font-size="12" text-anchor="middle">x₂</text>
+                    <text x="145" y="70" fill="#8888aa" font-size="10" text-anchor="middle">t=2</text>
                     
-                    <!-- Input -->
-                    <rect x="50" y="120" width="80" height="50" fill="rgba(99,102,241,0.2)" stroke="#6366f1" stroke-width="2" rx="5"/>
-                    <text x="90" y="150" font-size="12" fill="#fff" text-anchor="middle">x<sub>t</sub></text>
-                    <text x="90" y="185" font-size="10" fill="#8888aa" text-anchor="middle">Input</text>
+                    <rect x="220" y="0" width="70" height="50" rx="5" fill="rgba(99,102,241,0.2)" stroke="#6366f1" stroke-width="2"/>
+                    <text x="255" y="30" fill="#fff" font-size="12" text-anchor="middle">x₃</text>
+                    <text x="255" y="70" fill="#8888aa" font-size="10" text-anchor="middle">t=3</text>
                     
-                    <!-- Hidden state from previous -->
-                    <rect x="50" y="200" width="80" height="50" fill="rgba(168,85,247,0.2)" stroke="#a855f7" stroke-width="2" rx="5"/>
-                    <text x="90" y="230" font-size="12" fill="#fff" text-anchor="middle">h<sub>t-1</sub></text>
-                    <text x="90" y="265" font-size="10" fill="#8888aa" text-anchor="middle">Previous Hidden</text>
+                    <rect x="330" y="0" width="70" height="50" rx="5" fill="rgba(99,102,241,0.2)" stroke="#6366f1" stroke-width="2"/>
+                    <text x="365" y="30" fill="#fff" font-size="12" text-anchor="middle">...</text>
                     
-                    <!-- Arrows to first linear -->
-                    <line x1="130" y1="145" x2="180" y2="145" stroke="#6366f1" stroke-width="2" marker-end="url(#arrowhead2)"/>
-                    <line x1="130" y1="225" x2="180" y2="185" stroke="#a855f7" stroke-width="2" marker-end="url(#arrowhead2)"/>
+                    <rect x="440" y="0" width="70" height="50" rx="5" fill="rgba(99,102,241,0.2)" stroke="#6366f1" stroke-width="2"/>
+                    <text x="475" y="30" fill="#fff" font-size="12" text-anchor="middle">x_T</text>
+                    <text x="475" y="70" fill="#8888aa" font-size="10" text-anchor="middle">t=T</text>
+                </g>
+                
+                <!-- RNN Cells with LayerNorm -->
+                <g transform="translate(50, 180)">
+                    <!-- Cell 1 -->
+                    <rect x="0" y="0" width="70" height="80" rx="8" fill="rgba(16,185,129,0.2)" stroke="#10b981" stroke-width="2"/>
+                    <text x="35" y="25" fill="#6ee7b7" font-size="10" text-anchor="middle">LayerNorm</text>
+                    <text x="35" y="45" fill="#fff" font-size="12" text-anchor="middle">RNN</text>
+                    <text x="35" y="62" fill="#a5b4fc" font-size="9" text-anchor="middle">μ₁, σ₁</text>
                     
-                    <!-- Linear projection -->
-                    <rect x="190" y="110" width="100" height="70" fill="rgba(16,185,129,0.2)" stroke="#10b981" stroke-width="2" rx="5"/>
-                    <text x="240" y="150" font-size="12" fill="#fff" text-anchor="middle">Linear</text>
+                    <!-- Arrow to next -->
+                    <path d="M 80 40 L 100 40" stroke="#6366f1" stroke-width="2" marker-end="url(#rnn-arrow)"/>
                     
-                    <!-- Arrow to LayerNorm -->
-                    <line x1="290" y1="145" x2="340" y2="145" stroke="#6366f1" stroke-width="2" marker-end="url(#arrowhead2)"/>
+                    <!-- Cell 2 -->
+                    <rect x="110" y="0" width="70" height="80" rx="8" fill="rgba(16,185,129,0.2)" stroke="#10b981" stroke-width="2"/>
+                    <text x="145" y="25" fill="#6ee7b7" font-size="10" text-anchor="middle">LayerNorm</text>
+                    <text x="145" y="45" fill="#fff" font-size="12" text-anchor="middle">RNN</text>
+                    <text x="145" y="62" fill="#a5b4fc" font-size="9" text-anchor="middle">μ₂, σ₂</text>
                     
-                    <!-- Layer Normalization Box -->
-                    <rect x="350" y="100" width="120" height="90" fill="rgba(236,72,153,0.2)" stroke="#ec4899" stroke-width="3" rx="8"/>
-                    <text x="410" y="135" font-size="13" fill="#fff" text-anchor="middle" font-weight="bold">LayerNorm</text>
-                    <text x="410" y="155" font-size="10" fill="#ec4899" text-anchor="middle">μ, σ² across features</text>
-                    <text x="410" y="175" font-size="10" fill="#8888aa" text-anchor="middle">γ·(x-μ)/σ + β</text>
+                    <!-- Arrow to next -->
+                    <path d="M 190 40 L 210 40" stroke="#6366f1" stroke-width="2" marker-end="url(#rnn-arrow)"/>
                     
-                    <!-- Arrows to gates -->
-                    <line x1="470" y1="145" x2="520" y2="100" stroke="#6366f1" stroke-width="2" marker-end="url(#arrowhead2)"/>
-                    <line x1="470" y1="145" x2="520" y2="145" stroke="#6366f1" stroke-width="2" marker-end="url(#arrowhead2)"/>
-                    <line x1="470" y1="145" x2="520" y2="190" stroke="#6366f1" stroke-width="2" marker-end="url(#arrowhead2)"/>
+                    <!-- Cell 3 -->
+                    <rect x="220" y="0" width="70" height="80" rx="8" fill="rgba(16,185,129,0.2)" stroke="#10b981" stroke-width="2"/>
+                    <text x="255" y="25" fill="#6ee7b7" font-size="10" text-anchor="middle">LayerNorm</text>
+                    <text x="255" y="45" fill="#fff" font-size="12" text-anchor="middle">RNN</text>
+                    <text x="255" y="62" fill="#a5b4fc" font-size="9" text-anchor="middle">μ₃, σ₃</text>
                     
-                    <!-- Gates -->
-                    <rect x="525" y="75" width="70" height="40" fill="rgba(245,158,11,0.2)" stroke="#f59e0b" stroke-width="2" rx="5"/>
-                    <text x="560" y="100" font-size="11" fill="#fff" text-anchor="middle">Forget</text>
+                    <!-- Dots -->
+                    <text x="330" y="50" fill="#6366f1" font-size="20" text-anchor="middle">...</text>
                     
-                    <rect x="525" y="125" width="70" height="40" fill="rgba(59,130,246,0.2)" stroke="#3b82f6" stroke-width="2" rx="5"/>
-                    <text x="560" y="150" font-size="11" fill="#fff" text-anchor="middle">Input</text>
+                    <!-- Arrow to next -->
+                    <path d="M 360 40 L 430 40" stroke="#6366f1" stroke-width="2" marker-end="url(#rnn-arrow)"/>
                     
-                    <rect x="525" y="175" width="70" height="40" fill="rgba(139,92,246,0.2)" stroke="#8b5cf6" stroke-width="2" rx="5"/>
-                    <text x="560" y="200" font-size="11" fill="#fff" text-anchor="middle">Output</text>
+                    <!-- Cell T -->
+                    <rect x="440" y="0" width="70" height="80" rx="8" fill="rgba(16,185,129,0.2)" stroke="#10b981" stroke-width="2"/>
+                    <text x="475" y="25" fill="#6ee7b7" font-size="10" text-anchor="middle">LayerNorm</text>
+                    <text x="475" y="45" fill="#fff" font-size="12" text-anchor="middle">RNN</text>
+                    <text x="475" y="62" fill="#a5b4fc" font-size="9" text-anchor="middle">μ_T, σ_T</text>
+                </g>
+                
+                <!-- Outputs -->
+                <g transform="translate(50, 290)">
+                    <rect x="0" y="0" width="70" height="40" rx="5" fill="rgba(168,85,247,0.2)" stroke="#a855f7" stroke-width="2"/>
+                    <text x="35" y="25" fill="#fff" font-size="12" text-anchor="middle">h₁</text>
                     
-                    <!-- Cell state -->
-                    <ellipse cx="680" cy="100" rx="60" ry="30" fill="rgba(16,185,129,0.2)" stroke="#10b981" stroke-width="2"/>
-                    <text x="680" y="105" font-size="11" fill="#fff" text-anchor="middle">Cell State c<sub>t</sub></text>
+                    <rect x="110" y="0" width="70" height="40" rx="5" fill="rgba(168,85,247,0.2)" stroke="#a855f7" stroke-width="2"/>
+                    <text x="145" y="25" fill="#fff" font-size="12" text-anchor="middle">h₂</text>
                     
-                    <!-- Output hidden -->
-                    <rect x="620" y="180" width="120" height="50" fill="rgba(239,68,68,0.2)" stroke="#ef4444" stroke-width="2" rx="5"/>
-                    <text x="680" y="210" font-size="12" fill="#fff" text-anchor="middle">h<sub>t</sub> = output × tanh(c<sub>t</sub>)</text>
+                    <rect x="220" y="0" width="70" height="40" rx="5" fill="rgba(168,85,247,0.2)" stroke="#a855f7" stroke-width="2"/>
+                    <text x="255" y="25" fill="#fff" font-size="12" text-anchor="middle">h₃</text>
                     
-                    <!-- Feedback arrow -->
-                    <path d="M 740 205 Q 780 205 780 280 Q 780 320 90 320 Q 20 320 20 250" fill="none" stroke="#6366f1" stroke-width="2" stroke-dasharray="5,3" marker-end="url(#arrowhead2)"/>
-                    <text x="400" y="340" font-size="10" fill="#8888aa" text-anchor="middle">Recurrent connection to next time step</text>
+                    <text x="365" y="25" fill="#6366f1" font-size="16" text-anchor="middle">...</text>
                     
-                    <!-- Key advantage -->
-                    <rect x="250" y="250" width="300" height="50" fill="rgba(236,72,153,0.1)" stroke="#ec4899" stroke-width="1" rx="8"/>
-                    <text x="400" y="275" font-size="11" fill="#ec4899" text-anchor="middle" font-weight="bold">✓ Normalizes at each timestep independently</text>
-                    <text x="400" y="290" font-size="10" fill="#8888aa" text-anchor="middle">No dependency on batch or sequence length</text>
-                </svg>
+                    <rect x="440" y="0" width="70" height="40" rx="5" fill="rgba(168,85,247,0.2)" stroke="#a855f7" stroke-width="2"/>
+                    <text x="475" y="25" fill="#fff" font-size="12" text-anchor="middle">h_T</text>
+                </g>
+                
+                <!-- Vertical connections (inputs to cells) -->
+                <g>
+                    <line x1="85" y1="140" x2="85" y2="175" stroke="#6366f1" stroke-width="1" stroke-dasharray="3,2"/>
+                    <line x1="195" y1="140" x2="195" y2="175" stroke="#6366f1" stroke-width="1" stroke-dasharray="3,2"/>
+                    <line x1="305" y1="140" x2="305" y2="175" stroke="#6366f1" stroke-width="1" stroke-dasharray="3,2"/>
+                    <line x1="525" y1="140" x2="525" y2="175" stroke="#6366f1" stroke-width="1" stroke-dasharray="3,2"/>
+                    
+                    <!-- Vertical connections (cells to outputs) -->
+                    <line x1="85" y1="265" x2="85" y2="285" stroke="#a855f7" stroke-width="1" stroke-dasharray="3,2"/>
+                    <line x1="195" y1="265" x2="195" y2="285" stroke="#a855f7" stroke-width="1" stroke-dasharray="3,2"/>
+                    <line x1="305" y1="265" x2="305" y2="285" stroke="#a855f7" stroke-width="1" stroke-dasharray="3,2"/>
+                    <line x1="525" y1="265" x2="525" y2="285" stroke="#a855f7" stroke-width="1" stroke-dasharray="3,2"/>
+                </g>
+                
+                <!-- Key insight -->
+                <rect x="550" y="150" width="300" height="140" rx="10" fill="rgba(16,185,129,0.1)" stroke="#10b981" stroke-width="1"/>
+                <text x="700" y="180" fill="#6ee7b7" font-size="14" font-weight="bold" text-anchor="middle">RNN Benefits</text>
+                <text x="560" y="205" fill="#b8b8d0" font-size="11">✓ Statistics computed per time step</text>
+                <text x="560" y="225" fill="#b8b8d0" font-size="11">✓ Same weights at all time steps</text>
+                <text x="560" y="245" fill="#b8b8d0" font-size="11">✓ Stable hidden state dynamics</text>
+                <text x="560" y="265" fill="#b8b8d0" font-size="11">✓ No batch size constraints</text>
+                <text x="560" y="285" fill="#b8b8d0" font-size="11">✓ Works with variable lengths</text>
+            </svg>
+            
+            <div class="formula-box">
+                <div class="formula">
+                    h_t = f[ g/σ_t ⊙ (a_t − μ_t) + b ]
+                </div>
+                <div class="label">Layer Normalized RNN: μ_t and σ_t computed from all hidden units at time step t</div>
             </div>
-            
-            <p>Layer normalization stabilizes the hidden state dynamics in RNNs by normalizing the inputs to the recurrent connections. This is especially important for training deep RNNs and LSTMs on long sequences.</p>
-        </section>
+        </div>
 
         <!-- Results & Impact -->
-        <section class="section">
-            <h2><span class="icon">📊</span> Results & Impact</h2>
+        <div class="section">
+            <h2><span class="icon">📈</span> Results & Impact</h2>
             
-            <div class="impact-stats">
-                <div class="stat-card">
-                    <div class="number">10,000+</div>
-                    <div class="label">Citations</div>
-                </div>
-                <div class="stat-card">
-                    <div class="number">2016</div>
-                    <div class="label">Published</div>
-                </div>
-                <div class="stat-card">
-                    <div class="number">100%</div>
-                    <div class="label">Transformer Usage</div>
-                </div>
-            </div>
+            <ul class="impact-list">
+                <li>
+                    <span class="check">✓</span>
+                    <span><strong>Image-Sentence Ranking:</strong> 60% faster convergence with improved Recall@K metrics on MSCOCO. LayerNorm achieves best validation model in 60% of baseline training time.</span>
+                </li>
+                <li>
+                    <span class="check">✓</span>
+                    <span><strong>Question Answering:</strong> On CNN corpus with attentive reader model, LayerNorm trains faster and converges to better validation results than both baseline and recurrent BatchNorm variants.</span>
+                </li>
+                <li>
+                    <span class="check">✓</span>
+                    <span><strong>Skip-Thought Vectors:</strong> Substantial training speedup on BookCorpus dataset. After 1M iterations, LayerNorm achieves better performance on semantic relatedness (SICK), sentiment analysis (MR, CR), and opinion polarity (MPQA) tasks.</span>
+                </li>
+                <li>
+                    <span class="check">✓</span>
+                    <span><strong>Generative Modeling (DRAW):</strong> Layer normalized DRAW converges almost 2× faster than baseline on binarized MNIST, achieving comparable final variational log-likelihood (82.09 vs 82.36 nats).</span>
+                </li>
+                <li>
+                    <span class="check">✓</span>
+                    <span><strong>Handwriting Generation:</strong> On IAM-OnDB with sequences averaging 700 time steps and mini-batch size of 8, LayerNorm shows much faster convergence while maintaining comparable log-likelihood.</span>
+                </li>
+                <li>
+                    <span class="check">✓</span>
+                    <span><strong>Permutation Invariant MNIST:</strong> LayerNorm is robust to batch sizes and exhibits faster training convergence compared to BatchNorm, especially with small batch sizes (batch size 4).</span>
+                </li>
+            </ul>
             
             <div class="highlight-box">
-                <p><strong>Key Experimental Results:</strong></p>
-                <ul style="margin-left: 20px; margin-top: 10px; color: #b8b8d0;">
-                    <li><strong>Attention-based Models:</strong> LayerNorm converges 2x faster than BatchNorm on attention models for sequence-to-sequence learning</li>
-                    <li><strong>RNNs:</strong> Substantial reduction in training time compared to previously published techniques (Skip Connections, Zoneout, etc.)</li>
-                    <li><strong>Image Classification:</strong> Competitive with BatchNorm on CNNs while being batch-size independent</li>
-                    <li><strong>Generalization:</strong> Better test-time behavior due to identical train/test computation</li>
-                </ul>
+                <strong>Key Finding:</strong> Layer Normalization is particularly effective for RNNs with long sequences and small mini-batches, where it stabilizes hidden state dynamics and prevents exploding/vanishing gradients through its invariance to re-scaling.
             </div>
-            
-            <p><strong>Impact on Deep Learning:</strong> Layer Normalization has become the <em>de facto</em> standard normalization technique for:</p>
-            <ul style="margin-left: 20px; color: #b8b8d0;">
-                <li>Transformers (Attention Is All You Need, BERT, GPT series)</li>
-                <li>RNNs and LSTMs for sequence modeling</li>
-                <li>Online learning and reinforcement learning</li>
-                <li>Meta-learning and few-shot learning scenarios</li>
-                <li>Neural architecture with dynamic architectures</li>
-            </ul>
-        </section>
+        </div>
 
         <!-- Code Implementation -->
-        <section class="section" id="code">
+        <div class="section">
             <h2><span class="icon">💻</span> Code Implementation</h2>
             
-            <h3 style="color: #8888aa; margin-bottom: 15px;">PyTorch Implementation</h3>
             <div class="code-block">
-                <pre><code><span class="keyword">import</span> torch
+                <div class="code-header">PyTorch - Layer Normalization</div>
+                <div class="code-content">
+<span class="comment"># Built-in LayerNorm (simplest)</span>
 <span class="keyword">import</span> torch.nn <span class="keyword">as</span> nn
 
-<span class="comment"># Built-in LayerNorm (PyTorch 1.0+)</span>
-layer_norm = nn.LayerNorm(normalized_shape=<span class="number">512</span>)  <span class="comment"># Normalize over last dimension</span>
+<span class="comment"># LayerNorm with learnable affine parameters</span>
+layer_norm = nn.LayerNorm(normalized_shape=<span class="number">768</span>, elementwise_affine=<span class="keyword">True</span>)
 
-<span class="comment"># Input: (batch_size, seq_len, features)</span>
-x = torch.randn(<span class="number">32</span>, <span class="number">100</span>, <span class="number">512</span>)
-output = layer_norm(x)
-
-<span class="comment"># Multi-dimensional LayerNorm</span>
-layer_norm_2d = nn.LayerNorm([<span class="number">64</span>, <span class="number">64</span>])  <span class="comment"># For 4D inputs like CNN features</span></code></pre>
+<span class="comment"># Input: (batch_size, seq_len, features) or (batch_size, features)</span>
+input_tensor = torch.randn(<span class="number">32</span>, <span class="number">512</span>, <span class="number">768</span>)  <span class="comment"># (batch, seq, hidden)</span>
+output = layer_norm(input_tensor)
+<span class="comment"># Output: same shape as input, normalized across last dimension</span>
+                </div>
             </div>
             
-            <h3 style="color: #8888aa; margin: 25px 0 15px;">From Scratch (Educational)</h3>
             <div class="code-block">
-                <pre><code><span class="keyword">class</span> <span class="function">LayerNorm</span>(nn.Module):
-    <span class="keyword">def</span> <span class="function">__init__</span>(self, features, eps=<span class="number">1e-6</span>):
+                <div class="code-header">PyTorch - Manual LayerNorm Implementation</div>
+                <div class="code-content">
+<span class="keyword">class</span> <span class="function">LayerNorm</span>(nn.Module):
+    <span class="keyword">def</span> <span class="function">__init__</span>(self, hidden_size, eps=<span class="number">1e-5</span>):
         super(LayerNorm, self).__init__()
-        self.gamma = nn.Parameter(torch.ones(features))
-        self.beta = nn.Parameter(torch.zeros(features))
+        self.hidden_size = hidden_size
         self.eps = eps
+        <span class="comment"># Learnable gain (gamma) and bias (beta)</span>
+        self.gain = nn.Parameter(torch.ones(hidden_size))
+        self.bias = nn.Parameter(torch.zeros(hidden_size))
     
     <span class="keyword">def</span> <span class="function">forward</span>(self, x):
-        <span class="comment"># x shape: (batch, ..., features)</span>
-        <span class="comment"># Compute mean and var over last dimension</span>
+        <span class="comment"># x: (batch_size, ..., hidden_size)</span>
+        
+        <span class="comment"># Step 1: Compute mean across last dimension</span>
         mean = x.mean(dim=<span class="number">-1</span>, keepdim=<span class="keyword">True</span>)
+        
+        <span class="comment"># Step 2: Compute variance across last dimension</span>
         var = x.var(dim=<span class="number">-1</span>, keepdim=<span class="keyword">True</span>, unbiased=<span class="keyword">False</span>)
         
-        <span class="comment"># Normalize</span>
-        x_normalized = (x - mean) / torch.sqrt(var + self.eps)
+        <span class="comment"># Step 3: Normalize</span>
+        x_norm = (x - mean) / torch.sqrt(var + self.eps)
         
-        <span class="comment"># Scale and shift</span>
-        <span class="keyword">return</span> self.gamma * x_normalized + self.beta
+        <span class="comment"># Step 4: Apply learnable gain and bias</span>
+        output = self.gain * x_norm + self.bias
+        
+        <span class="keyword">return</span> output
 
-<span class="comment"># Usage in a Transformer block</span>
+<span class="comment"># Usage in Transformer block</span>
 <span class="keyword">class</span> <span class="function">TransformerBlock</span>(nn.Module):
-    <span class="keyword">def</span> <span class="function">__init__</span>(self, d_model, num_heads):
+    <span class="keyword">def</span> <span class="function">__init__</span>(self, hidden_size, num_heads):
         super().__init__()
-        self.attention = nn.MultiheadAttention(d_model, num_heads)
-        self.norm1 = nn.LayerNorm(d_model)
-        self.norm2 = nn.LayerNorm(d_model)
+        self.attention = nn.MultiheadAttention(hidden_size, num_heads)
+        self.norm1 = LayerNorm(hidden_size)
+        self.norm2 = LayerNorm(hidden_size)
         self.ffn = nn.Sequential(
-            nn.Linear(d_model, d_model * <span class="number">4</span>),
+            nn.Linear(hidden_size, <span class="number">4</span> * hidden_size),
             nn.GELU(),
-            nn.Linear(d_model * <span class="number">4</span>, d_model)
+            nn.Linear(<span class="number">4</span> * hidden_size, hidden_size)
         )
     
     <span class="keyword">def</span> <span class="function">forward</span>(self, x):
-        <span class="comment"># Pre-norm: LayerNorm before attention</span>
-        x = x + self.attention(self.norm1(x), self.norm1(x), self.norm1(x))[<span class="number">0</span>]
+        <span class="comment"># Pre-norm architecture (common in modern Transformers)</span>
+        x = x + self.attention(self.norm1(x), self.norm1(x), self.norm1(x))[0]
         x = x + self.ffn(self.norm2(x))
-        <span class="keyword">return</span> x</code></pre>
+        <span class="keyword">return</span> x
+                </div>
             </div>
             
-            <div class="highlight-box">
-                <p><strong>⚡ Key Hyperparameters:</strong></p>
-                <ul style="margin-left: 20px; margin-top: 10px; color: #b8b8d0;">
-                    <li><code>normalized_shape</code>: The shape of the input to normalize over (typically the feature dimension)</li>
-                    <li><code>eps</code>: Small constant for numerical stability (default 1e-5)</li>
-                    <li><code>elementwise_affine</code>: Whether to learn γ (gain) and β (bias) parameters (default True)</li>
-                </ul>
+            <div class="code-block">
+                <div class="code-header">PyTorch - LayerNorm in LSTM</div>
+                <div class="code-content">
+<span class="comment"># Layer Normalized LSTM (as described in paper)</span>
+<span class="keyword">class</span> <span class="function">LayerNormLSTMCell</span>(nn.Module):
+    <span class="keyword">def</span> <span class="function">__init__</span>(self, input_size, hidden_size):
+        super().__init__()
+        self.hidden_size = hidden_size
+        
+        <span class="comment"># Weight matrices</span>
+        self.weight_ih = nn.Parameter(torch.randn(<span class="number">4</span> * hidden_size, input_size))
+        self.weight_hh = nn.Parameter(torch.randn(<span class="number">4</span> * hidden_size, hidden_size))
+        self.bias = nn.Parameter(torch.randn(<span class="number">4</span> * hidden_size))
+        
+        <span class="comment"># LayerNorm layers for gates and cell state</span>
+        self.ln_ih = nn.LayerNorm(<span class="number">4</span> * hidden_size)
+        self.ln_hh = nn.LayerNorm(<span class="number">4</span> * hidden_size)
+        self.ln_c = nn.LayerNorm(hidden_size)
+    
+    <span class="keyword">def</span> <span class="function">forward</span>(self, x, hidden):
+        h_prev, c_prev = hidden
+        
+        <span class="comment"># Apply LayerNorm to linear transformations</span>
+        gates = self.ln_ih(F.linear(x, self.weight_ih)) + \
+                self.ln_hh(F.linear(h_prev, self.weight_hh)) + self.bias
+        
+        i, f, g, o = gates.chunk(<span class="number">4</span>, <span class="number">1</span>)
+        
+        <span class="comment"># LSTM gates</span>
+        i = torch.sigmoid(i)  <span class="comment"># input gate</span>
+        f = torch.sigmoid(f)  <span class="comment"># forget gate</span>
+        g = torch.tanh(g)     <span class="comment"># cell gate</span>
+        o = torch.sigmoid(o)  <span class="comment"># output gate</span>
+        
+        <span class="comment"># Cell state with LayerNorm</span>
+        c = f * c_prev + i * g
+        c_norm = self.ln_c(c)
+        h = o * torch.tanh(c_norm)
+        
+        <span class="keyword">return</span> h, c
+                </div>
             </div>
-        </section>
+        </div>
 
-        <!-- Related Work -->
-        <section class="section">
-            <h2><span class="icon">🔗</span> Related Work</h2>
+        <!-- Related Papers -->
+        <div class="section">
+            <h2><span class="icon">📚</span> Related Work</h2>
             
-            <div class="related-grid">
-                <a href="batchnorm.html" class="related-card">
-                    <h4>Batch Normalization</h4>
-                    <p>Ioffe & Szegedy, 2015 — The predecessor that normalizes across the batch dimension</p>
-                </a>
-                <a href="transformer.html" class="related-card">
-                    <h4>Transformer</h4>
-                    <p>Vaswani et al., 2017 — Popularized LayerNorm in "Attention Is All You Need"</p>
-                </a>
-                <a href="adam.html" class="related-card">
-                    <h4>Adam Optimizer</h4>
-                    <p>Kingma & Ba, 2014 — Adaptive optimization by the same first author (Jimmy Ba)</p>
-                </a>
-                <a href="rmsnorm.html" class="related-card">
-                    <h4>RMSNorm</h4>
-                    <p>Zhang & Sennrich, 2019 — Simplified normalization: removes mean centering</p>
-                </a>
-                <a href="groupnorm.html" class="related-card">
-                    <h4>Group Normalization</h4>
-                    <p>Wu & He, 2018 — Normalizes across grouped channels for small batches</p>
-                </a>
-                <a href="instancenorm.html" class="related-card">
-                    <h4>Instance Normalization</h4>
-                    <p>Ulyanov et al., 2016 — Normalizes each sample and each channel independently</p>
-                </a>
+            <div class="insight-grid">
+                <div class="insight-card">
+                    <h4>📄 Batch Normalization (2015)</h4>
+                    <p>Sergey Ioffe & Christian Szegedy. The inspiration for LayerNorm. Normalizes across the batch dimension but has mini-batch dependency issues.</p>
+                </div>
+                <div class="insight-card">
+                    <h4>📄 Weight Normalization (2016)</h4>
+                    <p>Tim Salimans & Diederik Kingma. Uses L2 norm of weights for normalization. Different invariance properties than LayerNorm.</p>
+                </div>
+                <div class="insight-card">
+                    <h4>📄 RMSNorm (2019)</h4>
+                    <p>Biao Zhang & Rico Sennrich. Simplifies LayerNorm by removing mean centering, using only root mean square. Used in modern LLMs like Llama.</p>
+                </div>
+                <div class="insight-card">
+                    <h4>📄 Group Normalization (2018)</h4>
+                    <p>Yuxin Wu & Kaiming He. Divides channels into groups for normalization. Effective for visual tasks with small batches.</p>
+                </div>
+                <div class="insight-card">
+                    <h4>📄 Instance Normalization (2016)</h4>
+                    <p>Dmitry Ulyanov et al. Normalizes each sample and each channel independently. Widely used in style transfer.</p>
+                </div>
+                <div class="insight-card">
+                    <h4>📄 DeepNorm (2022)</h4>
+                    <p>Microsoft Research. Addresses training instability in deep Transformers by modifying LayerNorm with residual scaling.</p>
+                </div>
             </div>
-        </section>
+        </div>
+
+        <!-- Summary -->
+        <div class="section">
+            <h2><span class="icon">🎯</span> Summary</h2>
+            <p>Layer Normalization is a simple yet powerful technique that addresses the key limitations of Batch Normalization. By normalizing across features instead of across the batch, it:</p>
+            
+            <ul class="impact-list">
+                <li>
+                    <span class="check">✓</span>
+                    <span><strong>Removes batch size dependency</strong> - Works with any batch size, including online learning with batch size 1</span>
+                </li>
+                <li>
+                    <span class="check">✓</span>
+                    <span><strong>Simplifies RNN application</strong> - Same computation at every time step, no separate statistics needed per time-step</span>
+                </li>
+                <li>
+                    <span class="check">✓</span>
+                    <span><strong>Identical train/test behavior</strong> - No running averages needed, same computation in both phases</span>
+                </li>
+                <li>
+                    <span class="check">✓</span>
+                    <span><strong>Stabilizes hidden dynamics</strong> - Invariance to re-scaling prevents exploding/vanishing gradients in RNNs</span>
+                </li>
+                <li>
+                    <span class="check">✓</span>
+                    <span><strong>Enables faster training</strong> - Substantial speedup in convergence across various tasks</span>
+                </li>
+            </ul>
+            
+            <p>Today, Layer Normalization is a fundamental component of modern deep learning architectures, particularly in Transformers where it enables stable training of very deep models. Its variants (RMSNorm, DeepNorm) continue to power state-of-the-art language models like GPT-4, Llama, and Claude.</p>
+        </div>
+
+        <!-- Navigation -->
+        <div class="nav-footer">
+            <a href="../index.html">← Back to All Papers</a>
+            <a href="rmsnorm.html">RMSNorm (2019) →</a>
+        </div>
     </div>
 
-    <footer>
-        <p>Part of the <a href="../index.html">AI Neural Networks</a> collection — Exploring the foundations of modern AI</p>
-        <p style="margin-top: 10px; font-size: 0.8rem;">Created: 2026 | Paper: Ba, Kiros & Hinton (2016)</p>
+    <footer style="text-align: center; padding: 40px 20px; color: #555577; border-top: 1px solid rgba(99, 102, 241, 0.1); margin-top: 40px;">
+        <p>🤖 This page is part of <a href="https://patbby.github.io/ai-neural-networks/" style="color: #6366f1; text-decoration: none;">AI Neural Networks Visualized</a></p>
+        <p style="font-size: 0.85rem; margin-top: 10px;">Maintained by AI. Content based on "Layer Normalization" (Ba, Kiros, Hinton, 2016)</p>
     </footer>
 </body>
 </html>

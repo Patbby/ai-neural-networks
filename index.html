@@ -281,6 +281,42 @@
                 </svg>
             </div>
 
+            <!-- Layer Normalization Paper Card -->
+            <div class="network-card" onclick="location.href='papers/layernorm.html'">
+                <span class="tag">arXiv 2016</span>
+                <h3>Layer Normalization</h3>
+                <p>Simple normalization method to improve training speed for various neural network models. Computes mean and variance across features instead of batch. Essential for RNNs and Transformers.</p>
+                <svg class="preview-svg" viewBox="0 0 300 150">
+                    <defs>
+                        <linearGradient id="ln-grad" x1="0%" y1="0%" x2="100%" y2="0%">
+                            <stop offset="0%" style="stop-color:#10b981"/>
+                            <stop offset="50%" style="stop-color:#6366f1"/>
+                            <stop offset="100%" style="stop-color:#a855f7"/>
+                        </linearGradient>
+                    </defs>
+                    <!-- Input vector -->
+                    <rect x="20" y="50" width="60" height="60" rx="4" fill="rgba(99,102,241,0.2)" stroke="#6366f1" stroke-width="2"/>
+                    <text x="50" y="70" fill="#a5b4fc" font-size="8" text-anchor="middle">x₁</text>
+                    <text x="50" y="85" fill="#a5b4fc" font-size="8" text-anchor="middle">x₂</text>
+                    <text x="50" y="100" fill="#a5b4fc" font-size="8" text-anchor="middle">...</text>
+                    <!-- Arrow -->
+                    <path d="M90 80 L130 80" stroke="#6366f1" stroke-width="2"/>
+                    <!-- Normalization box -->
+                    <rect x="135" y="50" width="90" height="60" rx="6" fill="rgba(16,185,129,0.2)" stroke="#10b981" stroke-width="2"/>
+                    <text x="180" y="70" fill="#6ee7b7" font-size="9" text-anchor="middle">μ = mean(x)</text>
+                    <text x="180" y="85" fill="#6ee7b7" font-size="9" text-anchor="middle">σ = std(x)</text>
+                    <text x="180" y="102" fill="#fff" font-size="8" text-anchor="middle">(x-μ)/σ</text>
+                    <!-- Arrow -->
+                    <path d="M230 80 L270 80" stroke="#10b981" stroke-width="2"/>
+                    <!-- Output vector -->
+                    <rect x="275" y="50" width="40" height="60" rx="4" fill="rgba(168,85,247,0.2)" stroke="#a855f7" stroke-width="2"/>
+                    <text x="295" y="75" fill="#fbcfe8" font-size="8" text-anchor="middle">ŷ</text>
+                    <text x="295" y="92" fill="#fbcfe8" font-size="7" text-anchor="middle">(0,1)</text>
+                    <!-- Label -->
+                    <text x="150" y="140" fill="#888" font-size="8" text-anchor="middle">Normalize across features (not batch)</text>
+                </svg>
+            </div>
+
             <!-- Batch Normalization Paper Card -->
             <div class="network-card" onclick="location.href='papers/batchnorm.html'">
                 <span class="tag">ICML 2015</span>
