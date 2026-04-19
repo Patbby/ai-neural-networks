@@ -3587,6 +3587,74 @@
                     <text x="260" y="132" fill="#6366f1" font-size="5" text-anchor="middle">No replay buffer</text>
                 </svg>
             </div>
+
+            <!-- PPO Paper Card -->
+            <div class="network-card" onclick="location.href='papers/ppo.html'">
+                <span class="tag">arXiv 2017</span>
+                <h3>PPO</h3>
+                <p>Proximal Policy Optimization Algorithms — OpenAI's breakthrough RL algorithm. Simple, scalable, and the foundation of RLHF for ChatGPT. Clipped surrogate objective enables stable, sample-efficient training with multiple epochs per data batch.</p>
+                <svg class="preview-svg" viewBox="0 0 300 150">
+                    <defs>
+                        <linearGradient id="ppo-grad" x1="0%" y1="0%" x2="100%" y2="0%">
+                            <stop offset="0%" style="stop-color:#10b981"/>
+                            <stop offset="50%" style="stop-color:#6366f1"/>
+                            <stop offset="100%" style="stop-color:#a855f7"/>
+                        </linearGradient>
+                        <marker id="ppo-arrow" markerWidth="8" markerHeight="6" refX="7" refY="3" orient="auto">
+                            <polygon points="0 0, 8 3, 0 6" fill="#10b981"/>
+                        </marker>
+                    </defs>
+                    <!-- Title -->
+                    <text x="150" y="12" fill="#8888aa" font-size="8" text-anchor="middle">Clipped Surrogate Objective</text>
+                    
+                    <!-- Input: Trajectory -->
+                    <rect x="10" y="35" width="45" height="35" rx="4" fill="rgba(99,102,241,0.2)" stroke="#6366f1" stroke-width="1.5"/>
+                    <text x="32" y="50" fill="#a5b4fc" font-size="5" text-anchor="middle">Old</text>
+                    <text x="32" y="58" fill="#a5b4fc" font-size="5" text-anchor="middle">Policy</text>
+                    <text x="32" y="66" fill="#8888aa" font-size="4" text-anchor="middle">π_old</text>
+                    
+                    <!-- Arrow -->
+                    <path d="M 60 52 L 80 52" stroke="#6366f1" stroke-width="1.5" marker-end="url(#ppo-arrow)"/>
+                    <text x="70" y="48" fill="#888" font-size="4" text-anchor="middle">data</text>
+                    
+                    <!-- Ratio box -->
+                    <rect x="85" y="35" width="50" height="35" rx="4" fill="rgba(16,185,129,0.2)" stroke="#10b981" stroke-width="1.5"/>
+                    <text x="110" y="50" fill="#10b981" font-size="6" font-weight="bold" text-anchor="middle">r(θ) =</text>
+                    <text x="110" y="58" fill="#10b981" font-size="5" text-anchor="middle">π_θ/π_old</text>
+                    <text x="110" y="66" fill="#6ee7b7" font-size="4" text-anchor="middle">probability ratio</text>
+                    
+                    <!-- Clipping visualization -->
+                    <g transform="translate(145, 40)">
+                        <line x1="0" y1="25" x2="40" y2="25" stroke="#10b981" stroke-width="2"/>
+                        <!-- Clip boundaries -->
+                        <line x1="10" y1="15" x2="10" y2="35" stroke="#f59e0b" stroke-width="1" stroke-dasharray="2,1"/>
+                        <line x1="30" y1="15" x2="30" y2="35" stroke="#f59e0b" stroke-width="1" stroke-dasharray="2,1"/>
+                        <text x="10" y="12" fill="#f59e0b" font-size="4" text-anchor="middle">1-ε</text>
+                        <text x="30" y="12" fill="#f59e0b" font-size="4" text-anchor="middle">1+ε</text>
+                        <text x="20" y="40" fill="#888" font-size="4" text-anchor="middle">clipped</text>
+                    </g>
+                    
+                    <!-- Actor-Critic -->
+                    <rect x="195" y="30" width="45" height="40" rx="4" fill="url(#ppo-grad)" opacity="0.3" stroke="#6366f1" stroke-width="2"/>
+                    <text x="217" y="48" fill="#fff" font-size="6" font-weight="bold" text-anchor="middle">Actor</text>
+                    <text x="217" y="55" fill="#a5b4fc" font-size="5" text-anchor="middle">Critic</text>
+                    <text x="217" y="64" fill="#888" font-size="4" text-anchor="middle">V(s)</text>
+                    
+                    <!-- Update arrow -->
+                    <path d="M 245 50 L 275 50" stroke="#ec4899" stroke-width="2" stroke-dasharray="3,2" marker-end="url(#ppo-arrow)"/>
+                    
+                    <!-- Formula -->
+                    <rect x="60" y="85" width="180" height="50" rx="6" fill="rgba(20,20,35,0.8)" stroke="#6366f1" stroke-width="1"/>
+                    <text x="150" y="100" fill="#fff" font-size="7" font-weight="bold" text-anchor="middle">PPO Objective</text>
+                    <text x="150" y="115" fill="#a5b4fc" font-size="6" text-anchor="middle">L = min(r·A, clip(r,1-ε,1+ε)·A)</text>
+                    <text x="150" y="128" fill="#10b981" font-size="5" text-anchor="middle">Multiple epochs on same data → sample efficient</text>
+                    
+                    <!-- RLHF tag -->
+                    <rect x="245" y="5" width="50" height="18" rx="3" fill="rgba(16,185,129,0.3)" stroke="#10b981" stroke-width="1"/>
+                    <text x="270" y="12" fill="#10b981" font-size="5" font-weight="bold" text-anchor="middle">RLHF 🔥</text>
+                    <text x="270" y="19" fill="#6ee7b7" font-size="4" text-anchor="middle">ChatGPT</text>
+                </svg>
+            </div>
         </div>
     </div>
 
