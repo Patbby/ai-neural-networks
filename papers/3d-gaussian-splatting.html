@@ -1,0 +1,710 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>3D Gaussian Splatting - AI Neural Networks</title>
+    <link rel="stylesheet" href="../assets/css/styles.css">
+    <style>
+        /* Paper-specific styles */
+        .gaussian-primitive {
+            animation: pulse 3s ease-in-out infinite;
+        }
+        @keyframes pulse {
+            0%, 100% { opacity: 0.7; }
+            50% { opacity: 1; }
+        }
+        .splat-animation {
+            animation: splat 2s ease-out forwards;
+        }
+        @keyframes splat {
+            0% { transform: scale(0); opacity: 0; }
+            50% { transform: scale(1.2); opacity: 0.8; }
+            100% { transform: scale(1); opacity: 0.6; }
+        }
+        .ray-march {
+            stroke-dasharray: 5;
+            animation: march 1s linear infinite;
+        }
+        @keyframes march {
+            to { stroke-dashoffset: -10; }
+        }
+    </style>
+</head>
+<body class="paper-page">
+    <nav class="nav-bar">
+        <a href="../index.html" class="nav-link">← Back to Papers</a>
+    </nav>
+
+    <main class="paper-content">
+        <!-- Hero Section -->
+        <header class="paper-hero">
+            <div class="paper-badges">
+                <span class="badge year">2023</span>
+                <span class="badge venue">SIGGRAPH</span>
+                <span class="badge type">3D Vision</span>
+            </div>
+            <h1 class="paper-title">3D Gaussian Splatting<br><span class="subtitle">for Real-Time Radiance Field Rendering</span></h1>
+            <p class="paper-authors">
+                <strong>Bernhard Kerbl</strong>, 
+                <strong>Georgios Kopanas</strong>, 
+                <strong>Thomas Leimkühler</strong>, 
+                <strong>George Drettakis</strong>
+            </p>
+            <p class="paper-affiliation">Inria, Université Côte d'Azur, CNRS</p>
+            
+            <div class="paper-links">
+                <a href="https://repo-sam.inria.fr/fungraph/3d-gaussian-splatting/" class="btn-primary" target="_blank">Project Page</a>
+                <a href="https://arxiv.org/abs/2308.04075" class="btn-secondary" target="_blank">arXiv</a>
+                <a href="https://github.com/graphdeco-inria/gaussian-splatting" class="btn-secondary" target="_blank">GitHub</a>
+            </div>
+        </header>
+
+        <!-- Key Innovation -->
+        <section class="section">
+            <h2>🎯 Key Innovation</h2>
+            <div class="innovation-highlight">
+                <p class="lead">Replace neural networks with <strong>explicit 3D Gaussian primitives</strong> to achieve <strong>real-time photorealistic rendering</strong> while maintaining quality competitive with Neural Radiance Fields (NeRF).</p>
+            </div>
+            
+            <div class="key-metrics">
+                <div class="metric-card">
+                    <span class="metric-value">134-650</span>
+                    <span class="metric-label">FPS at 1080p</span>
+                </div>
+                <div class="metric-card">
+                    <span class="metric-value">~1 min</span>
+                    <span class="metric-label">Training Time</span>
+                </div>
+                <div class="metric-card">
+                    <span class="metric-value">50-100×</span>
+                    <span class="metric-label">Faster than NeRF</span>
+                </div>
+            </div>
+        </section>
+
+        <!-- Problem Statement -->
+        <section class="section">
+            <h2>📋 Problem Statement</h2>
+            <div class="problem-grid">
+                <div class="problem-before">
+                    <h3>Before: NeRF's Limitations</h3>
+                    <ul class="limitation-list">
+                        <li>❌ <strong>Slow rendering:</strong> ~30 seconds per frame (V100)</li>
+                        <li>❌ <strong>Costly ray marching:</strong> Hundreds of MLP queries per ray</li>
+                        <li>❌ <strong>Long training:</strong> 1-2 days for high quality</li>
+                        <li>❌ <strong>Fixed after training:</strong> Cannot edit geometry</li>
+                    </ul>
+                </div>
+                <div class="solution-arrow">→</div>
+                <div class="solution-after">
+                    <h3>Solution: 3D Gaussians</h3>
+                    <ul class="solution-list">
+                        <li>✅ <strong>Real-time:</strong> 100+ FPS rendering</li>
+                        <li>✅ <strong>Fast rasterization:</strong> GPU tile-based sorting</li>
+                        <li>✅ <strong>Quick training:</strong> Minutes instead of days</li>
+                        <li>✅ <strong>Explicit representation:</strong> Editable point cloud</li>
+                    </ul>
+                </div>
+            </div>
+        </section>
+
+        <!-- Architecture Section -->
+        <section class="section">
+            <h2>🏗️ Architecture & Method</h2>
+            
+            <h3>Core Representation</h3>
+            <p>The scene is represented as a collection of <strong>3D anisotropic Gaussians</strong>, each defined by:</p>
+            
+            <div class="gaussian-params">
+                <div class="param-card">
+                    <span class="param-symbol">μ</span>
+                    <span class="param-name">Center Position</span>
+                    <span class="param-desc">(x, y, z) in world coordinates</span>
+                </div>
+                <div class="param-card">
+                    <span class="param-symbol">Σ</span>
+                    <span class="param-name">Covariance Matrix</span>
+                    <span class="param-desc">3×3 anisotropic shape</span>
+                </div>
+                <div class="param-card">
+                    <span class="param-symbol">α</span>
+                    <span class="param-name">Opacity</span>
+                    <span class="param-desc">Per-Gaussian transparency</span>
+                </div>
+                <div class="param-card">
+                    <span class="param-symbol">SH</span>
+                    <span class="param-name">Spherical Harmonics</span>
+                    <span class="param-desc">View-dependent color (0-3 degrees)</span>
+                </div>
+            </div>
+
+            <!-- Gaussian Primitive SVG -->
+            <div class="architecture-viz">
+                <h3>3D Gaussian Primitive</h3>
+                <svg viewBox="0 0 400 300" class="gaussian-viz">
+                    <defs>
+                        <radialGradient id="gaussGradient" cx="50%" cy="50%" r="50%">
+                            <stop offset="0%" style="stop-color:#6366f1;stop-opacity:0.9" />
+                            <stop offset="50%" style="stop-color:#a855f7;stop-opacity:0.6" />
+                            <stop offset="100%" style="stop-color:#6366f1;stop-opacity:0.1" />
+                        </radialGradient>
+                        <marker id="arrow" markerWidth="10" markerHeight="10" refX="9" refY="3" orient="auto">
+                            <polygon points="0 0, 10 3, 0 6" fill="#6366f1"/>
+                        </marker>
+                    </defs>
+                    
+                    <!-- 3D Ellipsoid representing Gaussian -->
+                    <ellipse cx="200" cy="150" rx="120" ry="80" fill="url(#gaussGradient)" stroke="#6366f1" stroke-width="2" class="gaussian-primitive"/>
+                    
+                    <!-- Center point -->
+                    <circle cx="200" cy="150" r="4" fill="#fff"/>
+                    <text x="210" y="145" fill="#fff" font-size="12">μ (center)</text>
+                    
+                    <!-- Scale vectors -->
+                    <line x1="200" y1="150" x2="320" y2="150" stroke="#ec4899" stroke-width="2" marker-end="url(#arrow)"/>
+                    <text x="325" y="148" fill="#ec4899" font-size="11">s₁ (scale)</text>
+                    
+                    <line x1="200" y1="150" x2="200" y2="70" stroke="#10b981" stroke-width="2" marker-end="url(#arrow)"/>
+                    <text x="205" y="65" fill="#10b981" font-size="11">s₂</text>
+                    
+                    <line x1="200" y1="150" x2="140" y2="210" stroke="#f59e0b" stroke-width="2" stroke-dasharray="5,5" marker-end="url(#arrow)"/>
+                    <text x="100" y="220" fill="#f59e0b" font-size="11">s₃ (into screen)</text>
+                    
+                    <!-- Rotation indicator -->
+                    <path d="M 280 110 Q 300 130 290 150" fill="none" stroke="#6366f1" stroke-width="1.5"/>
+                    <text x="285" y="105" fill="#6366f1" font-size="11">R (rotation)</text>
+                    
+                    <!-- Opacity indicator -->
+                    <rect x="60" y="240" width="15" height="15" fill="#6366f1" opacity="0.9"/>
+                    <rect x="80" y="240" width="15" height="15" fill="#6366f1" opacity="0.6"/>
+                    <rect x="100" y="240" width="15" height="15" fill="#6366f1" opacity="0.3"/>
+                    <text x="125" y="252" fill="#fff" font-size="11">α opacity falloff</text>
+                </svg>
+            </div>
+
+            <h3>Covariance Decomposition</h3>
+            <p>To ensure positive semi-definite covariance during optimization, the covariance matrix is decomposed into <strong>scaling</strong> and <strong>rotation</strong>:</p>
+            
+            <div class="formula-box">
+                <p class="formula">Σ = RSS<sup>T</sup>R<sup>T</sup></p>
+                <p class="formula-desc">Where <strong>S</strong> is a diagonal scaling matrix and <strong>R</strong> is a rotation matrix (represented as quaternions for optimization stability).</p>
+            </div>
+        </section>
+
+        <!-- Rendering Pipeline -->
+        <section class="section">
+            <h2>🎨 Differentiable Rasterization Pipeline</h2>
+            
+            <div class="pipeline-steps">
+                <div class="step">
+                    <div class="step-number">1</div>
+                    <h4>View Transform</h4>
+                    <p>Project 3D Gaussians to 2D image space using EWA (Elliptical Weighted Average) splatting</p>
+                </div>
+                <div class="step">
+                    <div class="step-number">2</div>
+                    <h4>Tile Sorting</h4>
+                    <p>Sort Gaussians by depth per 16×16 pixel tile using GPU-based radix sort</p>
+                </div>
+                <div class="step">
+                    <div class="step-number">3</div>
+                    <h4>α-Blending</h4>
+                    <p>Accumulate colors front-to-back using standard alpha compositing</p>
+                </div>
+            </div>
+
+            <!-- Splatting Visualization SVG -->
+            <div class="architecture-viz">
+                <h3>Gaussian Splatting Process</h3>
+                <svg viewBox="0 0 700 350" class="splatting-viz">
+                    <defs>
+                        <radialGradient id="splat1" cx="50%" cy="50%" r="50%">
+                            <stop offset="0%" style="stop-color:#6366f1;stop-opacity:0.8"/>
+                            <stop offset="100%" style="stop-color:#6366f1;stop-opacity:0"/>
+                        </radialGradient>
+                        <radialGradient id="splat2" cx="50%" cy="50%" r="50%">
+                            <stop offset="0%" style="stop-color:#ec4899;stop-opacity:0.8"/>
+                            <stop offset="100%" style="stop-color:#ec4899;stop-opacity:0"/>
+                        </radialGradient>
+                        <radialGradient id="splat3" cx="50%" cy="50%" r="50%">
+                            <stop offset="0%" style="stop-color:#10b981;stop-opacity:0.8"/>
+                            <stop offset="100%" style="stop-color:#10b981;stop-opacity:0"/>
+                        </radialGradient>
+                    </defs>
+                    
+                    <!-- Title labels -->
+                    <text x="120" y="30" fill="#fff" font-size="14" font-weight="bold" text-anchor="middle">3D Gaussians</text>
+                    <text x="350" y="30" fill="#fff" font-size="14" font-weight="bold" text-anchor="middle">Projection & Sort</text>
+                    <text x="580" y="30" fill="#fff" font-size="14" font-weight="bold" text-anchor="middle">Composited Image</text>
+                    
+                    <!-- 3D Gaussians (left panel) -->
+                    <rect x="20" y="50" width="200" height="280" fill="#1a1a2e" stroke="#6366f1" stroke-width="1"/>
+                    
+                    <!-- 3D ellipses representing Gaussians at different depths -->
+                    <ellipse cx="100" cy="150" rx="40" ry="30" fill="url(#splat1)" opacity="0.7"/>
+                    <ellipse cx="140" cy="180" rx="35" ry="25" fill="url(#splat2)" opacity="0.6"/>
+                    <ellipse cx="80" cy="200" rx="45" ry="35" fill="url(#splat3)" opacity="0.5"/>
+                    <ellipse cx="150" cy="130" rx="30" ry="20" fill="url(#splat1)" opacity="0.8"/>
+                    <ellipse cx="110" cy="220" rx="38" ry="28" fill="url(#splat2)" opacity="0.4"/>
+                    
+                    <!-- Depth indicators -->
+                    <text x="180" y="135" fill="#fff" font-size="10">z=1.0</text>
+                    <text x="170" y="165" fill="#fff" font-size="10">z=1.2</text>
+                    <text x="45" y="190" fill="#fff" font-size="10">z=1.5</text>
+                    
+                    <!-- Arrow to middle -->
+                    <path d="M 230 190 L 270 190" stroke="#6366f1" stroke-width="2" marker-end="url(#arrow)"/>
+                    
+                    <!-- 2D Tiles (middle panel) -->
+                    <rect x="280" y="50" width="140" height="280" fill="#1a1a2e" stroke="#6366f1" stroke-width="1"/>
+                    
+                    <!-- Tile grid -->
+                    <g stroke="#333" stroke-width="0.5">
+                        <line x1="280" y1="90" x2="420" y2="90"/>
+                        <line x1="280" y1="130" x2="420" y2="130"/>
+                        <line x1="280" y1="170" x2="420" y2="170"/>
+                        <line x1="280" y1="210" x2="420" y2="210"/>
+                        <line x1="280" y1="250" x2="420" y2="250"/>
+                        <line x1="280" y1="290" x2="420" y2="290"/>
+                        <line x1="315" y1="50" x2="315" y2="330"/>
+                        <line x1="350" y1="50" x2="350" y2="330"/>
+                        <line x1="385" y1="50" x2="385" y2="330"/>
+                    </g>
+                    
+                    <!-- Sorted Gaussians in tiles -->
+                    <ellipse cx="332" cy="115" rx="18" ry="12" fill="url(#splat1)" opacity="0.8"/>
+                    <ellipse cx="367" cy="155" rx="15" ry="10" fill="url(#splat2)" opacity="0.6"/>
+                    <ellipse cx="297" cy="195" rx="20" ry="15" fill="url(#splat3)" opacity="0.5"/>
+                    
+                    <!-- Tile labels -->
+                    <text x="290" y="75" fill="#666" font-size="9">Tile (0,0)</text>
+                    <text x="325" y="75" fill="#666" font-size="9">(1,0)</text>
+                    
+                    <!-- Sorted list indicator -->
+                    <text x="350" y="315" fill="#6366f1" font-size="10" text-anchor="middle">Depth-sorted per tile</text>
+                    
+                    <!-- Arrow to right -->
+                    <path d="M 430 190 L 470 190" stroke="#6366f1" stroke-width="2" marker-end="url(#arrow)"/>
+                    
+                    <!-- Final Image (right panel) -->
+                    <rect x="480" y="50" width="200" height="280" fill="#1a1a2e" stroke="#6366f1" stroke-width="1"/>
+                    
+                    <!-- Blended result -->
+                    <ellipse cx="580" cy="180" rx="70" ry="100" fill="url(#splat1)" opacity="0.6"/>
+                    <ellipse cx="560" cy="160" rx="50" ry="60" fill="url(#splat2)" opacity="0.4"/>
+                    <ellipse cx="600" cy="200" rx="45" ry="55" fill="url(#splat3)" opacity="0.3"/>
+                    
+                    <!-- Blending formula -->
+                    <text x="580" y="320" fill="#10b981" font-size="11" text-anchor="middle">C = Σ cᵢαᵢTᵢ</text>
+                    <text x="580" y="335" fill="#888" font-size="9" text-anchor="middle">T = ∏(1-αⱼ)</text>
+                </svg>
+            </div>
+
+            <h3>Projection Mathematics</h3>
+            <p>The 3D covariance Σ is projected to 2D using the Jacobian of the affine camera transformation:</p>
+            <div class="formula-box">
+                <p class="formula">Σ′ = JW Σ W<sup>T</sup>J<sup>T</sup></p>
+                <p class="formula-desc">Where <strong>W</strong> is the viewing transformation and <strong>J</strong> is the Jacobian of the projective transformation.</p>
+            </div>
+        </section>
+
+        <!-- Optimization Section -->
+        <section class="section">
+            <h2>⚙️ Optimization Strategy</h2>
+            
+            <h3>Adaptive Density Control</h3>
+            <p>The key innovation enabling high-quality reconstruction is <strong>adaptive Gaussian management</strong> during training:</p>
+            
+            <div class="adaptive-control">
+                <div class="control-card">
+                    <h4>📈 Densification</h4>
+                    <p>Split large Gaussians with high view-space gradient:</p>
+                    <ul>
+                        <li>Trigger: ‖∇L‖ > threshold</li>
+                        <li>Split into two smaller Gaussians</li>
+                        <li>New scale: 1.6× original</li>
+                    </ul>
+                </div>
+                <div class="control-card">
+                    <h4>🗑️ Pruning</h4>
+                    <p>Remove low-contribution Gaussians:</p>
+                    <ul>
+                        <li>α < 0.005 (nearly transparent)</li>
+                        <li>Too large in world space</li>
+                        <li>Keep ~80% after warm-up</li>
+                    </ul>
+                </div>
+                <div class="control-card">
+                    <h4>🆕 Cloning</h4>
+                    <p>Duplicate Gaussians in under-reconstructed regions:</p>
+                    <ul>
+                        <li>Small Gaussians with high gradient</li>
+                        <li>Copy to same position</li>
+                        <li>Refine during optimization</li>
+                    </ul>
+                </div>
+            </div>
+
+            <!-- Training SVG -->
+            <div class="architecture-viz">
+                <h3>Training Process</h3>
+                <svg viewBox="0 0 600 200" class="training-viz">
+                    <defs>
+                        <marker id="arrow2" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto">
+                            <polygon points="0 0, 8 4, 0 8" fill="#6366f1"/>
+                        </marker>
+                    </defs>
+                    
+                    <!-- Training loop -->
+                    <rect x="50" y="40" width="100" height="40" rx="5" fill="#6366f1" opacity="0.3" stroke="#6366f1"/>
+                    <text x="100" y="65" fill="#fff" font-size="11" text-anchor="middle">Render</text>
+                    
+                    <path d="M 150 60 L 200 60" stroke="#6366f1" marker-end="url(#arrow2)"/>
+                    
+                    <rect x="200" y="40" width="100" height="40" rx="5" fill="#ec4899" opacity="0.3" stroke="#ec4899"/>
+                    <text x="250" y="65" fill="#fff" font-size="11" text-anchor="middle">Compute Loss</text>
+                    
+                    <path d="M 300 60 L 350 60" stroke="#6366f1" marker-end="url(#arrow2)"/>
+                    
+                    <rect x="350" y="40" width="100" height="40" rx="5" fill="#10b981" opacity="0.3" stroke="#10b981"/>
+                    <text x="400" y="65" fill="#fff" font-size="11" text-anchor="middle">Backprop</text>
+                    
+                    <!-- Adaptive control -->
+                    <path d="M 400 80 L 400 120 L 320 120" stroke="#f59e0b" marker-end="url(#arrow2)"/>
+                    
+                    <rect x="220" y="110" width="100" height="40" rx="5" fill="#f59e0b" opacity="0.3" stroke="#f59e0b"/>
+                    <text x="270" y="135" fill="#fff" font-size="11" text-anchor="middle">Densify/Prune</text>
+                    
+                    <!-- Loop back -->
+                    <path d="M 220 130 L 100 130 L 100 80" stroke="#6366f1" marker-end="url(#arrow2)"/>
+                    
+                    <!-- Labels -->
+                    <text x="300" y="20" fill="#fff" font-size="12" text-anchor="middle" font-weight="bold">Per-Iteration</text>
+                    <text x="270" y="170" fill="#f59e0b" font-size="11" text-anchor="middle">Every N iterations</text>
+                </svg>
+            </div>
+
+            <h3>Loss Function</h3>
+            <div class="formula-box">
+                <p class="formula">L = (1 - λ)L<sub>1</sub> + λL<sub>SSIM</sub></p>
+                <p class="formula-desc">Combined L1 and <a href="ssim.html">SSIM</a> loss with λ = 0.2. SSIM captures structural similarity while L1 preserves details.</p>
+            </div>
+        </section>
+
+        <!-- Results Section -->
+        <section class="section">
+            <h2>📊 Results & Impact</h2>
+            
+            <h3>Performance Benchmarks</h3>
+            <table class="results-table">
+                <thead>
+                    <tr>
+                        <th>Method</th>
+                        <th>FPS (1080p)</th>
+                        <th>PSNR↑</th>
+                        <th>SSIM↑</th>
+                        <th>LPIPS↓</th>
+                        <th>Training Time</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr class="highlight">
+                        <td><strong>3D Gaussian Splatting</strong></td>
+                        <td>134-650</td>
+                        <td>27.21</td>
+                        <td>0.815</td>
+                        <td>0.214</td>
+                        <td>~1 min</td>
+                    </tr>
+                    <tr>
+                        <td>NeRF (原始)</td>
+                        <td>0.03</td>
+                        <td>31.01</td>
+                        <td>0.947</td>
+                        <td>0.081</td>
+                        <td>1-2 days</td>
+                    </tr>
+                    <tr>
+                        <td>Instant-NGP</td>
+                        <td>12</td>
+                        <td>27.76</td>
+                        <td>0.817</td>
+                        <td>0.205</td>
+                        <td>5 min</td>
+                    </tr>
+                    <tr>
+                        <td>Mip-NeRF 360</td>
+                        <td>0.36</td>
+                        <td>29.23</td>
+                        <td>0.886</td>
+                        <td>0.121</td>
+                        <td>48 hours</td>
+                    </tr>
+                    <tr>
+                        <td>Plenoxels</td>
+                        <td>4.5</td>
+                        <td>26.41</td>
+                        <td>0.795</td>
+                        <td>0.251</td>
+                        <td>11 min</td>
+                    </tr>
+                </tbody>
+            </table>
+            <p class="table-note">Tested on Mip-NeRF 360 dataset. 3DGS achieves competitive quality with orders of magnitude faster rendering.</p>
+
+            <h3>Key Advantages</h3>
+            <div class="advantages-grid">
+                <div class="advantage-item">
+                    <span class="adv-icon">⚡</span>
+                    <h4>Real-Time Performance</h4>
+                    <p>100-600+ FPS enables interactive applications, VR/AR, and real-time editing</p>
+                </div>
+                <div class="advantage-item">
+                    <span class="adv-icon">🎨</span>
+                    <h4>Editable</h4>
+                    <p>Explicit point cloud representation allows manipulation, deletion, and insertion</p>
+                </div>
+                <div class="advantage-item">
+                    <span class="adv-icon">📦</span>
+                    <h4>Compact</h4>
+                    <p>~10-100MB per scene vs. GBs for voxel-based or mesh representations</p>
+                </div>
+                <div class="advantage-item">
+                    <span class="adv-icon">🔧</span>
+                    <h4>Easy to Deploy</h4>
+                    <p>Standard CUDA rasterization - no special hardware or ray tracing required</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Code Section -->
+        <section class="section">
+            <h2>💻 Implementation</h2>
+            
+            <h3>Gaussian Representation (PyTorch)</h3>
+            <pre class="code-block"><code class="language-python">import torch
+import torch.nn as nn
+
+class GaussianModel(nn.Module):
+    def __init__(self, num_points=100_000):
+        super().__init__()
+        
+        # Learnable parameters for each Gaussian
+        self._xyz = nn.Parameter(torch.randn(num_points, 3) * 0.1)
+        self._features_dc = nn.Parameter(torch.rand(num_points, 3))
+        self._features_rest = nn.Parameter(torch.zeros(num_points, 45))  # SH
+        self._opacity = nn.Parameter(torch.randn(num_points, 1))
+        self._scaling = nn.Parameter(torch.randn(num_points, 3))
+        self._rotation = nn.Parameter(torch.randn(num_points, 4))  # Quaternion
+        
+    def get_covariance(self, scaling_modifier=1.0):
+        """Build 3x3 covariance from scale and rotation"""
+        # Rotation from quaternion
+        r = self._rotation  # [N, 4]
+        R = build_rotation(r)  # [N, 3, 3]
+        
+        # Scale matrix
+        S = torch.diag_embed(
+            self._scaling * scaling_modifier
+        )  # [N, 3, 3]
+        
+        # Covariance: RSS^T R^T
+        covariance = R @ S @ S.transpose(-2, -1) @ R.transpose(-2, -1)
+        return covariance
+    
+    def get_opacity(self):
+        return torch.sigmoid(self._opacity)
+    
+    def get_features(self, view_direction):
+        """Compute view-dependent color from SH"""
+        # Evaluate spherical harmonics
+        sh_features = self._features_dc + \
+                      eval_sh(3, self._features_rest, view_direction)
+        return torch.sigmoid(sh_features)</code></pre>
+
+            <h3>Rasterization (CUDA pseudo-code)</h3>
+            <pre class="code-block"><code class="language-cpp">// Tile-based rasterization kernel
+template &lt;typename T&gt;
+__global__ void renderCUDA(
+    const Gaussian2D* gaussians,  // Projected 2D Gaussians
+    const float2* points_xy,
+    const float4* conic_opacity,
+    const float* colors,
+    const uint2* tiles,           // Tile ranges per Gaussian
+    uint32_t* contributions,        // Per-tile Gaussian indices
+    float* final_color,
+    float* final_depth
+) {
+    // Identify pixel
+    uint32_t pix_x = blockIdx.x * blockDim.x + threadIdx.x;
+    uint32_t pix_y = blockIdx.y * blockDim.y + threadIdx.y;
+    
+    // Get tile range
+    uint2 tile_range = tiles[blockIdx.z];
+    
+    // Alpha blending loop
+    float T = 1.0f;  // Transmittance
+    float3 color = {0, 0, 0};
+    float depth = 0;
+    
+    for (int i = tile_range.x; i &lt; tile_range.y && T > 0.01f; i++) {
+        // Load Gaussian
+        Gaussian2D g = gaussians[contributions[i]];
+        
+        // Compute 2D Gaussian value
+        float2 d = {pix_x - g.x, pix_y - g.y};
+        float power = -0.5f * (conic_opacity[i].x * d.x * d.x + 
+                               conic_opacity[i].z * d.y * d.y +
+                               2 * conic_opacity[i].y * d.x * d.y);
+        
+        if (power > 0.0f) continue;
+        
+        float alpha = min(0.99f, conic_opacity[i].w * exp(power));
+        float test_T = T * (1 - alpha);
+        
+        // Accumulate
+        color += colors[i] * alpha * T;
+        depth += g.depth * alpha * T;
+        T = test_T;
+    }
+    
+    // Write output
+    final_color[pix_idx] = color;
+}</code></pre>
+
+            <h3>Adaptive Control</h3>
+            <pre class="code-block"><code class="language-python">def densify_and_split(self, grads, grad_threshold, scene_extent):
+    """Split large Gaussians with high gradient"""
+    # Find candidates
+    big_gaussians = self.get_scaling().max(dim=1).values > scene_extent * 0.01
+    high_grad = grads.norm(dim=-1) > grad_threshold
+    
+    candidates = big_gaussians & high_grad
+    n_split = candidates.sum()
+    
+    if n_split == 0:
+        return
+    
+    # Split: create two children per parent
+    stds = self.get_scaling()[candidates].repeat(2, 1)
+    means = torch.zeros((stds.size(0), 3), device="cuda")
+    
+    # Sample new positions around parent
+    samples = torch.normal(mean=means, std=stds)
+    
+    # Update parameters
+    new_xyz = self._xyz[candidates].repeat(2, 1) + samples
+    new_scaling = self.scaling_inverse_activation(
+        self.get_scaling()[candidates].repeat(2, 1) / (1.6)
+    )
+    
+    # Update optimizer states
+    self._xyz = nn.Parameter(torch.cat([self._xyz, new_xyz], dim=0))
+    self._scaling = nn.Parameter(torch.cat([self._scaling, new_scaling], dim=0))
+    # ... similar for other parameters</code></pre>
+        </section>
+
+        <!-- Applications -->
+        <section class="section">
+            <h2>🚀 Applications & Extensions</h2>
+            
+            <div class="extensions-list">
+                <div class="extension-card">
+                    <h4>🎮 Real-Time Rendering</h4>
+                    <p>Direct deployment in games, virtual production, and interactive 3D viewers</p>
+                </div>
+                <div class="extension-card">
+                    <h4>📱 Mobile/VR</h4>
+                    <p>Lightweight enough for mobile devices and VR headsets with acceptable quality</p>
+                </div>
+                <div class="extension-card">
+                    <h4>🎬 VFX & Film</h4>
+                    <p>Digitizing real locations for visual effects without massive LiDAR scans</p>
+                </div>
+                <div class="extension-card">
+                    <h4>🏛️ Cultural Heritage</h4>
+                    <p>Preserving historical sites with photorealistic detail and real-time exploration</p>
+                </div>
+                <div class="extension-card">
+                    <h4>🤖 Robotics</h4>
+                    <p>Real-time scene understanding and mapping for autonomous navigation</p>
+                </div>
+                <div class="extension-card">
+                    <h4>✏️ Editing</h4>
+                    <p>Manipulating individual Gaussians for object removal, insertion, deformation</p>
+                </div>
+            </div>
+
+            <h3>Notable Follow-up Work</h3>
+            <ul class="follow-up">
+                <li><strong>Mip-Splatting</strong> - Anti-aliasing for multi-scale rendering</li>
+                <li><strong>4D Gaussian Splatting</strong> - Dynamic scene reconstruction</li>
+                <li><strong>Sugar</strong> - Mesh extraction from Gaussians</li>
+                <li><strong>GaussianEditor</strong> - Text-driven editing</li>
+                <li><strong>PhysGaussian</strong> - Physics simulation with Gaussians</li>
+                <li><strong>Relightable 3DGS</strong> - Decomposition for relighting</li>
+            </ul>
+        </section>
+
+        <!-- Related Papers -->
+        <section class="section">
+            <h2>📚 Related Work</h2>
+            
+            <div class="related-grid">
+                <div class="related-card foundational">
+                    <span class="relation">Inspired By</span>
+                    <h4><a href="nerf.html">NeRF</a></h4>
+                    <p>Neural Radiance Fields - The original implicit approach that 3DGS seeks to accelerate</p>
+                </div>
+                <div class="related-card foundational">
+                    <span class="relation">EWA Splatting</span>
+                    <h4>Zwicker et al., 2001</h4>
+                    <p>Surface Splatting - Foundation for projecting 3D ellipses to 2D</p>
+                </div>
+                <div class="related-card improvement">
+                    <span class="relation">Faster Alternative</span>
+                    <h4><a href="instant-ngp.html">Instant-NGP</a></h4>
+                    <p>Hash encoding for faster NeRF training</p>
+                </div>
+                <div class="related-card improvement">
+                    <span class="relation">Builds On</span>
+                    <h4>Plenoxels</h4>
+                    <p>Voxel-based radiance fields without neural networks</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Paper Info Footer -->
+        <footer class="paper-footer">
+            <div class="citation">
+                <h4>Citation</h4>
+                <pre class="citation-text">@inproceedings{kerbl3Dgaussians,
+  author = {Kerbl, Bernhard and Kopanas, Georgios and Leimk{\"u}hler, Thomas and Drettakis, George},
+  title = {3D Gaussian Splatting for Real-Time Radiance Field Rendering},
+  journal = {ACM Trans. Graph.},
+  year = {2023},
+  volume = {42},
+  number = {4},
+  publisher = {ACM},
+  articleno = {139}
+}</pre>
+            </div>
+            
+            <div class="resources">
+                <h4>Resources</h4>
+                <ul>
+                    <li><a href="https://repo-sam.inria.fr/fungraph/3d-gaussian-splatting/" target="_blank">Official Project Page</a></li>
+                    <li><a href="https://github.com/graphdeco-inria/gaussian-splatting" target="_blank">GitHub Repository</a></li>
+                    <li><a href="https://arxiv.org/abs/2308.04075" target="_blank">arXiv Paper</a></li>
+                    <li><a href="https://huggingface.co/spaces/camenduru/gaussian-splatting" target="_blank">Interactive Demo</a></li>
+                </ul>
+            </div>
+        </footer>
+    </main>
+
+    <footer class="site-footer">
+        <p>AI Neural Networks Paper Collection</p>
+    </footer>
+</body>
+</html>

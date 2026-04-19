@@ -3175,6 +3175,59 @@
                     <text x="150" y="140" fill="#8888aa" font-size="8" text-anchor="middle">Differentiable memory access • Learn algorithms • Copy, sort, repeat</text>
                 </svg>
             </div>
+
+            <!-- 3D Gaussian Splatting Paper Card -->
+            <div class="network-card" onclick="location.href='papers/3d-gaussian-splatting.html'">
+                <span class="tag">SIGGRAPH 2023</span>
+                <h3>3D Gaussian Splatting</h3>
+                <p>Real-Time Radiance Field Rendering — Revolutionary alternative to NeRF using explicit 3D Gaussian primitives instead of neural networks. Achieves 100-600+ FPS photorealistic rendering with ~1 minute training time vs. days for NeRF.</p>
+                <svg class="preview-svg" viewBox="0 0 300 150">
+                    <defs>
+                        <radialGradient id="gauss-gradient" cx="50%" cy="50%" r="50%">
+                            <stop offset="0%" style="stop-color:#6366f1;stop-opacity:0.8"/>
+                            <stop offset="50%" style="stop-color:#a855f7;stop-opacity:0.5"/>
+                            <stop offset="100%" style="stop-color:#6366f1;stop-opacity:0.1"/>
+                        </radialGradient>
+                        <radialGradient id="gauss-pink" cx="50%" cy="50%" r="50%">
+                            <stop offset="0%" style="stop-color:#ec4899;stop-opacity:0.7"/>
+                            <stop offset="100%" style="stop-color:#ec4899;stop-opacity:0.1"/>
+                        </radialGradient>
+                        <radialGradient id="gauss-green" cx="50%" cy="50%" r="50%">
+                            <stop offset="0%" style="stop-color:#10b981;stop-opacity:0.7"/>
+                            <stop offset="100%" style="stop-color:#10b981;stop-opacity:0.1"/>
+                        </radialGradient>
+                    </defs>
+                    
+                    <!-- Multiple 3D Gaussians representing the scene -->
+                    <ellipse cx="80" cy="75" rx="40" ry="30" fill="url(#gauss-gradient)" opacity="0.6"/>
+                    <ellipse cx="130" cy="95" rx="35" ry="25" fill="url(#gauss-pink)" opacity="0.5"/>
+                    <ellipse cx="170" cy="65" rx="30" ry="20" fill="url(#gauss-green)" opacity="0.7"/>
+                    <ellipse cx="200" cy="85" rx="38" ry="28" fill="url(#gauss-gradient)" opacity="0.5"/>
+                    <ellipse cx="150" cy="120" rx="32" ry="22" fill="url(#gauss-pink)" opacity="0.4"/>
+                    
+                    <!-- Center points -->
+                    <circle cx="80" cy="75" r="3" fill="#fff"/>
+                    <circle cx="130" cy="95" r="3" fill="#fff"/>
+                    <circle cx="170" cy="65" r="3" fill="#fff"/>
+                    
+                    <!-- Annotation arrows -->
+                    <text x="40" y="35" fill="#6366f1" font-size="8">3D Gaussians</text>
+                    <path d="M55 38 L75 60" stroke="#6366f1" stroke-width="1" fill="none"/>
+                    
+                    <!-- Parameters label -->
+                    <text x="220" y="40" fill="#10b981" font-size="7">μ, Σ, α, SH</text>
+                    <path d="M215 42 L190 65" stroke="#10b981" stroke-width="1" fill="none"/>
+                    
+                    <!-- Speed indicator -->
+                    <rect x="230" y="100" width="60" height="35" rx="5" fill="rgba(16,185,129,0.2)" stroke="#10b981" stroke-width="1.5"/>
+                    <text x="260" y="115" fill="#6ee7b7" font-size="9" text-anchor="middle">Real-Time</text>
+                    <text x="260" y="128" fill="#6ee7b7" font-size="10" font-weight="bold" text-anchor="middle">134-650 FPS</text>
+                    
+                    <!-- Labels -->
+                    <text x="150" y="140" fill="#8888aa" font-size="8" text-anchor="middle">Anisotropic 3D Gaussians • Differentiable rasterization • No neural network</text>
+                    <text x="150" y="148" fill="#10b981" font-size="7" text-anchor="middle">50-100× faster than NeRF • ~1 min training • Editable point cloud</text>
+                </svg>
+            </div>
         </div>
     </div>
 
