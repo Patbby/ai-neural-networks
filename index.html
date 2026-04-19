@@ -321,6 +321,49 @@
                 </svg>
             </div>
 
+            <!-- AlphaGo Zero Paper Card -->
+            <div class="network-card" onclick="location.href='papers/alphago-zero.html'">
+                <span class="tag">Nature 2017</span>
+                <h3>AlphaGo Zero</h3>
+                <p>Mastering the game of Go without human knowledge. The first AI to achieve superhuman performance tabula rasa - learning entirely through self-play with no human data. Defeated AlphaGo 100-0 in just 3 days.</p>
+                <svg class="preview-svg" viewBox="0 0 300 150">
+                    <defs>
+                        <linearGradient id="agz-grad" x1="0%" y1="0%" x2="100%" y2="0%">
+                            <stop offset="0%" style="stop-color:#6366f1"/>
+                            <stop offset="50%" style="stop-color:#a855f7"/>
+                            <stop offset="100%" style="stop-color:#ec4899"/>
+                        </linearGradient>
+                        <marker id="agz-arrow" markerWidth="8" markerHeight="6" refX="7" refY="3" orient="auto">
+                            <polygon points="0 0, 8 3, 0 6" fill="#6366f1"/>
+                        </marker>
+                    </defs>
+                    <!-- Self-Play Loop -->
+                    <circle cx="150" cy="75" r="55" fill="none" stroke="url(#agz-grad)" stroke-width="2" stroke-dasharray="4,2"/>
+                    <!-- Neural Network -->
+                    <rect x="115" y="50" width="70" height="50" rx="6" fill="rgba(99,102,241,0.3)" stroke="#6366f1" stroke-width="2"/>
+                    <text x="150" y="70" fill="#a5b4fc" font-size="8" text-anchor="middle">Residual</text>
+                    <text x="150" y="82" fill="#a5b4fc" font-size="8" text-anchor="middle">Network</text>
+                    <!-- Policy Head -->
+                    <circle cx="205" cy="60" r="12" fill="rgba(236,72,153,0.4)" stroke="#ec4899" stroke-width="2"/>
+                    <text x="205" y="64" fill="#fbcfe8" font-size="7" text-anchor="middle">π</text>
+                    <!-- Value Head -->
+                    <circle cx="205" cy="90" r="12" fill="rgba(16,185,129,0.4)" stroke="#10b981" stroke-width="2"/>
+                    <text x="205" y="94" fill="#6ee7b7" font-size="7" text-anchor="middle">v</text>
+                    <!-- Arrows from network -->
+                    <path d="M185 65 L193 60" stroke="#6366f1" stroke-width="1.5" marker-end="url(#agz-arrow)"/>
+                    <path d="M185 85 L193 90" stroke="#6366f1" stroke-width="1.5" marker-end="url(#agz-arrow)"/>
+                    <!-- MCTS -->
+                    <rect x="235" y="65" width="45" height="40" rx="4" fill="rgba(245,158,11,0.3)" stroke="#f59e0b" stroke-width="2"/>
+                    <text x="257" y="85" fill="#fbbf24" font-size="7" text-anchor="middle">MCTS</text>
+                    <!-- Arrow to self-play -->
+                    <path d="M235 85 L200 85" stroke="#f59e0b" stroke-width="1.5" marker-end="url(#agz-arrow)"/>
+                    <!-- Self-play arrow around circle -->
+                    <path d="M 95 75 Q 80 40 150 20" fill="none" stroke="#ec4899" stroke-width="1.5" marker-end="url(#agz-arrow)" opacity="0.7"/>
+                    <text x="150" y="135" fill="#10b981" font-size="9" text-anchor="middle">🔄 Self-Play + Pure RL = 100-0 Victory</text>
+                    <text x="150" y="148" fill="#888" font-size="8" text-anchor="middle">No human data, tabula rasa learning</text>
+                </svg>
+            </div>
+
             <!-- InstructGPT Paper Card -->
             <div class="network-card" onclick="location.href='papers/instructgpt.html'">
                 <span class="tag">NeurIPS 2022 (Oral)</span>
