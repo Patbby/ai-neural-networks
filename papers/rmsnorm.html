@@ -306,16 +306,23 @@
         
         .comparison-table .yes { color: #10b981; }
         .comparison-table .no { color: #ef4444; }
-        .comparison-table .partial { color: #f59e0b; }
         
         .speed-badge {
             display: inline-block;
-            background: linear-gradient(135deg, #10b981 0%, #34d399 100%);
-            color: #0a0a0f;
-            padding: 4px 12px;
-            border-radius: 20px;
+            padding: 4px 10px;
+            border-radius: 12px;
             font-size: 0.85rem;
             font-weight: 600;
+        }
+        
+        .speed-badge.fast {
+            background: rgba(16, 185, 129, 0.2);
+            color: #10b981;
+        }
+        
+        .speed-badge.medium {
+            background: rgba(245, 158, 11, 0.2);
+            color: #f59e0b;
         }
         
         @media (max-width: 768px) {
@@ -338,7 +345,6 @@
             </linearGradient>
         </defs>
         <g opacity="0.3">
-            <!-- Neural network nodes -->
             <circle cx="200" cy="200" r="3" fill="#6366f1">
                 <animate attributeName="opacity" values="0.3;1;0.3" dur="3s" repeatCount="indefinite"/>
             </circle>
@@ -363,7 +369,6 @@
             <circle cx="1600" cy="300" r="3" fill="#ec4899">
                 <animate attributeName="opacity" values="0.3;1;0.3" dur="2.8s" repeatCount="indefinite"/>
             </circle>
-            <!-- Connections -->
             <line x1="200" y1="200" x2="400" y2="300" stroke="#6366f1" stroke-width="0.5" opacity="0.2"/>
             <line x1="400" y1="300" x2="600" y2="150" stroke="#6366f1" stroke-width="0.5" opacity="0.2"/>
             <line x1="600" y1="150" x2="800" y2="400" stroke="#6366f1" stroke-width="0.5" opacity="0.2"/>
@@ -375,17 +380,17 @@
     </svg>
 
     <div class="hero">
-        <h1>⚡ RMSNorm</h1>
-        <p class="subtitle">Root Mean Square Layer Normalization — A simplified, faster alternative to LayerNorm that removes mean-centering while maintaining training stability</p>
+        <h1>📐 RMSNorm</h1>
+        <p class="subtitle">Root Mean Square Layer Normalization — A simpler, faster alternative to LayerNorm that removes mean centering while maintaining training stability and performance</p>
         <div class="meta">
             <span>📅 2019</span>
-            <span>👤 Biao Zhang, Rico Sennrich</span>
+            <span>👤 Biao Zhang & Rico Sennrich</span>
             <span>🏛️ University of Edinburgh & University of Zurich</span>
         </div>
         <div class="badges">
             <a href="https://arxiv.org/abs/1910.07467" class="badge arxiv" target="_blank">📄 arXiv:1910.07467</a>
             <a href="https://arxiv.org/pdf/1910.07467.pdf" class="badge pdf" target="_blank">📑 PDF</a>
-            <a href="https://github.com/bzhangGo/rmsnorm" class="badge code" target="_blank">💻 Official Code</a>
+            <a href="https://github.com/bzhangGo/rmsnorm" class="badge code" target="_blank">💻 GitHub</a>
         </div>
     </div>
 
@@ -393,64 +398,78 @@
         <!-- Problem Statement -->
         <div class="section">
             <h2><span class="icon">🎯</span> Problem Statement</h2>
-            <p><strong>Layer Normalization (LayerNorm)</strong> has become essential for stabilizing deep neural network training, particularly in Transformers and RNNs. However, it introduces computational overhead that can significantly slow down training, especially for recurrent networks where sequences are processed step-by-step.</p>
+            <p><strong>Layer Normalization</strong> has been widely adopted to stabilize deep neural network training by normalizing activations. However, it introduces significant computational overhead that becomes especially problematic for:</p>
             
             <div class="insight-grid">
                 <div class="insight-card">
-                    <h4>🐌 Computational Cost</h4>
-                    <p>LayerNorm requires computing both mean and variance across features, then re-centering and re-scaling — operations that add up across millions of parameters.</p>
-                </div>
-                <div class="insight-card">
-                    <h4>❓ Re-centering Necessity</h4>
-                    <p>Prior work assumed both re-centering (mean subtraction) and re-scaling were essential for normalization success — but is re-centering actually needed?</p>
-                </div>
-                <div class="insight-card">
-                    <h4>⚡ Speed vs Quality Trade-off</h4>
-                    <p>Existing normalization methods force a choice: accept slower training with LayerNorm, or risk instability with simpler approaches.</p>
+                    <h4>⏱️ Slow Training</h4>
+                    <p>LayerNorm requires computing both mean and variance across features, which adds computational cost that scales with network depth.</p>
                 </div>
                 <div class="insight-card">
                     <h4>🔄 RNN Bottleneck</h4>
-                    <p>LayerNorm's overhead is especially painful for RNNs where normalization must be applied at every time step, compounding the cost.</p>
+                    <p>Recurrent networks with LayerNorm suffer from significant slowdowns at each time step, compounding across long sequences.</p>
+                </div>
+                <div class="insight-card">
+                    <h4>📊 Two Learnable Params</h4>
+                    <p>LayerNorm requires both gain (γ) and bias (β) parameters, doubling the parameter count for normalization layers.</p>
+                </div>
+                <div class="insight-card">
+                    <h4>❓ Question</h4>
+                    <p>Is the mean centering operation in LayerNorm actually necessary for training stability and performance?</p>
                 </div>
             </div>
             
             <div class="highlight-box">
-                <strong>Core Question:</strong> Can we simplify LayerNorm by removing the mean-centering step while maintaining — or even improving — its benefits? What if re-scaling invariance alone is sufficient?
+                <strong>Core Insight:</strong> The authors hypothesize that <em>re-centering invariance</em> (subtracting the mean) in LayerNorm is dispensable — only <em>re-scaling invariance</em> (dividing by the standard deviation) contributes to its success. This leads to a simpler, faster alternative.
             </div>
         </div>
 
         <!-- Key Innovation -->
         <div class="section">
             <h2><span class="icon">💡</span> Key Innovation</h2>
-            <p><strong>RMSNorm</strong> (Root Mean Square Layer Normalization) challenges the conventional wisdom that both re-centering and re-scaling are necessary. The authors hypothesize that <strong>re-scaling invariance alone</strong> is the key property that makes LayerNorm successful.</p>
+            <p><strong>RMSNorm</strong> (Root Mean Square Layer Normalization) simplifies LayerNorm by removing the mean subtraction step entirely. It normalizes activations using only the root mean square (RMS) statistic:</p>
             
             <div class="formula-box">
-                <div class="formula" style="font-size: 1.1rem;">
-                    RMSNorm(x) = x / RMS(x) ⊙ g
+                <div class="formula">
+                    RMS(x) = √(1/d Σᵢ xᵢ²)
                 </div>
-                <div class="formula" style="font-size: 1rem; color: #8888aa; margin-top: 10px;">
-                    where RMS(x) = √(1/d Σᵢ xᵢ²)
-                </div>
-                <div class="label">Compare to LayerNorm: LN(x) = (x − μ) / √(σ² + ε) ⊙ g + b</div>
+                <div class="label">Root Mean Square — captures the magnitude of the vector without centering</div>
             </div>
             
-            <p>The key simplifications are:</p>
-            <ul style="color: #b8b8d0; margin-left: 20px; margin-bottom: 15px;">
-                <li><strong>No mean subtraction:</strong> RMSNorm removes the μ (mean) computation entirely</li>
-                <li><strong>No bias term:</strong> Only a learnable gain parameter g, no additive bias b</li>
-                <li><strong>Simpler statistics:</strong> Only computes root mean square, not variance</li>
+            <div class="formula-box">
+                <div class="formula">
+                    RMSNorm(x) = x / RMS(x) · γ
+                </div>
+                <div class="label">RMSNorm — simpler than LayerNorm, with only one learnable parameter (γ)</div>
+            </div>
+            
+            <p>The key advantages of this simplification:</p>
+            
+            <ul class="impact-list">
+                <li>
+                    <span class="check">✓</span>
+                    <span><strong>Fewer operations:</strong> No need to compute the mean, saving one pass over the data</span>
+                </li>
+                <li>
+                    <span class="check">✓</span>
+                    <span><strong>Single parameter:</strong> Only learnable gain (γ), no bias (β) needed</span>
+                </li>
+                <li>
+                    <span class="check">✓</span>
+                    <span><strong>Re-scaling invariance preserved:</strong> The property that actually matters for training stability</span>
+                </li>
+                <li>
+                    <span class="check">✓</span>
+                    <span><strong>Implicit learning rate adaptation:</strong> RMSNorm provides natural gradient scaling</span>
+                </li>
             </ul>
-            
-            <div class="highlight-box">
-                <strong>Insight:</strong> By dropping re-centering, RMSNorm maintains the crucial re-scaling invariance property while being computationally simpler and faster. The implicit learning rate adaptation ability is preserved.
-            </div>
         </div>
 
         <!-- Architecture Visualization -->
         <div class="section">
             <h2><span class="icon">🏗️</span> Architecture & Method</h2>
             
-            <svg class="architecture-svg" viewBox="0 0 900 580" style="max-height: 580px;">
+            <svg class="architecture-svg" viewBox="0 0 900 600" style="max-height: 600px;">
                 <defs>
                     <linearGradient id="neuron-grad" x1="0%" y1="0%" x2="0%" y2="100%">
                         <stop offset="0%" style="stop-color:#6366f1"/>
@@ -460,130 +479,112 @@
                         <stop offset="0%" style="stop-color:#10b981"/>
                         <stop offset="100%" style="stop-color:#34d399"/>
                     </linearGradient>
-                    <linearGradient id="rms-grad" x1="0%" y1="0%" x2="100%" y2="0%">
-                        <stop offset="0%" style="stop-color:#f59e0b"/>
-                        <stop offset="100%" style="stop-color:#fbbf24"/>
-                    </linearGradient>
                     <marker id="arrow-head" markerWidth="10" markerHeight="10" refX="9" refY="3" orient="auto">
                         <polygon points="0 0, 10 3, 0 6" fill="#6366f1"/>
                     </marker>
                 </defs>
                 
                 <!-- Title -->
-                <text x="450" y="30" fill="#fff" font-size="18" font-weight="bold" text-anchor="middle">RMSNorm vs LayerNorm: Computational Flow</text>
+                <text x="450" y="30" fill="#fff" font-size="18" font-weight="bold" text-anchor="middle">LayerNorm vs RMSNorm: Computational Comparison</text>
                 
                 <!-- LayerNorm Section -->
-                <rect x="50" y="60" width="380" height="240" rx="10" fill="rgba(99,102,241,0.1)" stroke="rgba(99,102,241,0.3)" stroke-width="2"/>
-                <text x="240" y="85" fill="#a5b4fc" font-size="14" font-weight="bold" text-anchor="middle">LayerNorm (4 Operations)</text>
+                <rect x="50" y="60" width="380" height="220" rx="10" fill="rgba(239,68,68,0.1)" stroke="rgba(239,68,68,0.3)" stroke-width="2"/>
+                <text x="240" y="85" fill="#fca5a5" font-size="14" font-weight="bold" text-anchor="middle">LayerNorm (4 Steps)</text>
                 
-                <!-- LayerNorm: Input -->
-                <g transform="translate(80, 110)">
-                    <rect x="0" y="0" width="80" height="60" rx="5" fill="rgba(99,102,241,0.2)" stroke="#6366f1" stroke-width="2"/>
-                    <text x="40" y="25" fill="#6366f1" font-size="10" text-anchor="middle">Input x</text>
-                    <text x="40" y="45" fill="#8888aa" font-size="9" text-anchor="middle">[x₁, x₂, ..., xₙ]</text>
+                <!-- LayerNorm Steps -->
+                <g transform="translate(70, 100)">
+                    <!-- Step 1: Mean -->
+                    <rect x="0" y="0" width="160" height="40" rx="5" fill="rgba(99,102,241,0.2)" stroke="#6366f1" stroke-width="1"/>
+                    <text x="80" y="25" fill="#a5b4fc" font-size="10" text-anchor="middle">① μ = (1/d) Σᵢ xᵢ</text>
+                    
+                    <!-- Step 2: Variance -->
+                    <rect x="0" y="50" width="160" height="40" rx="5" fill="rgba(99,102,241,0.2)" stroke="#6366f1" stroke-width="1"/>
+                    <text x="80" y="75" fill="#a5b4fc" font-size="10" text-anchor="middle">② σ² = (1/d) Σᵢ (xᵢ−μ)²</text>
+                    
+                    <!-- Step 3: Normalize -->
+                    <rect x="0" y="100" width="160" height="40" rx="5" fill="rgba(16,185,129,0.2)" stroke="#10b981" stroke-width="1"/>
+                    <text x="80" y="125" fill="#6ee7b7" font-size="10" text-anchor="middle">③ x̂ = (x − μ) / √(σ²+ε)</text>
+                    
+                    <!-- Step 4: Scale & Shift -->
+                    <rect x="0" y="150" width="160" height="40" rx="5" fill="rgba(168,85,247,0.2)" stroke="#a855f7" stroke-width="1"/>
+                    <text x="80" y="175" fill="#fff" font-size="10" text-anchor="middle">④ y = γ·x̂ + β</text>
+                    
+                    <!-- Arrow to output -->
+                    <path d="M 170 170 L 250 170" stroke="#6366f1" stroke-width="2" marker-end="url(#arrow-head)"/>
+                    <rect x="260" y="150" width="80" height="40" rx="5" fill="rgba(239,68,68,0.2)" stroke="#ef4444" stroke-width="2"/>
+                    <text x="300" y="175" fill="#fca5a5" font-size="11" text-anchor="middle">Output</text>
                 </g>
-                
-                <!-- Arrow to mean -->
-                <path d="M 170 140 L 200 120" stroke="#6366f1" stroke-width="2" marker-end="url(#arrow-head)"/>
-                <path d="M 170 140 L 200 160" stroke="#6366f1" stroke-width="2" marker-end="url(#arrow-head)"/>
-                
-                <!-- Mean computation -->
-                <rect x="210" y="95" width="70" height="40" rx="5" fill="rgba(239,68,68,0.2)" stroke="#ef4444" stroke-width="2"/>
-                <text x="245" y="115" fill="#fca5a5" font-size="10" text-anchor="middle">① μ = mean(x)</text>
-                <text x="245" y="130" fill="#fca5a5" font-size="9" text-anchor="middle">(sum/n)</text>
-                
-                <!-- Variance computation -->
-                <rect x="210" y="145" width="70" height="40" rx="5" fill="rgba(239,68,68,0.2)" stroke="#ef4444" stroke-width="2"/>
-                <text x="245" y="165" fill="#fca5a5" font-size="10" text-anchor="middle">② σ² = var(x)</text>
-                <text x="245" y="180" fill="#fca5a5" font-size="9" text-anchor="middle">(sum sq/n)</text>
-                
-                <!-- Arrow to normalization -->
-                <path d="M 290 120 L 320 120" stroke="#6366f1" stroke-width="2" marker-end="url(#arrow-head)"/>
-                <path d="M 290 165 L 320 140" stroke="#6366f1" stroke-width="2" marker-end="url(#arrow-head)"/>
-                
-                <!-- Normalize box -->
-                <rect x="330" y="95" width="80" height="70" rx="5" fill="rgba(16,185,129,0.2)" stroke="#10b981" stroke-width="2"/>
-                <text x="370" y="115" fill="#6ee7b7" font-size="9" text-anchor="middle">③ Normalize:</text>
-                <text x="370" y="132" fill="#6ee7b7" font-size="8" text-anchor="middle">(x - μ) / √(σ²+ε)</text>
-                <text x="370" y="148" fill="#6ee7b7" font-size="8" text-anchor="middle">④ Scale + Shift:</text>
-                <text x="370" y="162" fill="#6ee7b7" font-size="8" text-anchor="middle">⊙g + b</text>
                 
                 <!-- RMSNorm Section -->
-                <rect x="470" y="60" width="380" height="240" rx="10" fill="rgba(245,158,11,0.1)" stroke="rgba(245,158,11,0.3)" stroke-width="2"/>
-                <text x="660" y="85" fill="#fbbf24" font-size="14" font-weight="bold" text-anchor="middle">RMSNorm (2 Operations)</text>
+                <rect x="470" y="60" width="380" height="220" rx="10" fill="rgba(16,185,129,0.1)" stroke="rgba(16,185,129,0.3)" stroke-width="2"/>
+                <text x="660" y="85" fill="#6ee7b7" font-size="14" font-weight="bold" text-anchor="middle">RMSNorm (2 Steps)</text>
                 
-                <!-- RMSNorm: Input -->
-                <g transform="translate(500, 110)">
-                    <rect x="0" y="0" width="80" height="60" rx="5" fill="rgba(245,158,11,0.2)" stroke="#f59e0b" stroke-width="2"/>
-                    <text x="40" y="25" fill="#fbbf24" font-size="10" text-anchor="middle">Input x</text>
-                    <text x="40" y="45" fill="#8888aa" font-size="9" text-anchor="middle">[x₁, x₂, ..., xₙ]</text>
-                </g>
-                
-                <!-- Skip mean! -->
-                <rect x="500" y="185" width="80" height="40" rx="5" fill="rgba(239,68,68,0.1)" stroke="rgba(239,68,68,0.3)" stroke-dasharray="4,2"/>
-                <text x="540" y="205" fill="#ef4444" font-size="10" text-anchor="middle">❌ Skip μ</text>
-                <text x="540" y="220" fill="#ef4444" font-size="9" text-anchor="middle">(not needed)</text>
-                
-                <!-- Arrow to RMS -->
-                <path d="M 590 140 L 620 140" stroke="#f59e0b" stroke-width="2" marker-end="url(#arrow-head)"/>
-                
-                <!-- RMS computation -->
-                <rect x="630" y="115" width="80" height="50" rx="5" fill="rgba(16,185,129,0.2)" stroke="#10b981" stroke-width="2"/>
-                <text x="670" y="135" fill="#6ee7b7" font-size="10" text-anchor="middle">① RMS(x)</text>
-                <text x="670" y="155" fill="#6ee7b7" font-size="9" text-anchor="middle">√(Σxᵢ²/n)</text>
-                
-                <!-- Arrow to normalize -->
-                <path d="M 720 140 L 750 140" stroke="#f59e0b" stroke-width="2" marker-end="url(#arrow-head)"/>
-                
-                <!-- Normalize box -->
-                <rect x="760" y="105" width="70" height="70" rx="5" fill="rgba(16,185,129,0.2)" stroke="#10b981" stroke-width="2"/>
-                <text x="795" y="125" fill="#6ee7b7" font-size="9" text-anchor="middle">② Normalize:</text>
-                <text x="795" y="145" fill="#6ee7b7" font-size="9" text-anchor="middle">x / RMS(x)</text>
-                <text x="795" y="165" fill="#6ee7b7" font-size="9" text-anchor="middle">⊙ g only</text>
-                
-                <!-- Speed comparison -->
-                <rect x="50" y="320" width="800" height="120" rx="10" fill="rgba(10,10,15,0.8)" stroke="rgba(99,102,241,0.2)" stroke-width="1"/>
-                <text x="450" y="345" fill="#fff" font-size="14" font-weight="bold" text-anchor="middle">Speed Improvement: 7% - 64% faster</text>
-                
-                <!-- Speed bars -->
-                <g transform="translate(80, 365)">
-                    <text x="0" y="15" fill="#8888aa" font-size="11">RNN:</text>
-                    <rect x="60" y="5" width="200" height="20" rx="3" fill="rgba(239,68,68,0.3)"/>
-                    <text x="270" y="20" fill="#ef4444" font-size="11">Baseline (LayerNorm)</text>
+                <!-- RMSNorm Steps -->
+                <g transform="translate(490, 100)">
+                    <!-- Step 1: RMS only -->
+                    <rect x="0" y="0" width="160" height="60" rx="5" fill="rgba(99,102,241,0.2)" stroke="#6366f1" stroke-width="1"/>
+                    <text x="80" y="25" fill="#a5b4fc" font-size="10" text-anchor="middle">① RMS = √(1/d Σᵢ xᵢ²)</text>
+                    <text x="80" y="45" fill="#8888aa" font-size="9" text-anchor="middle">(No mean subtraction!)</text>
                     
-                    <rect x="60" y="35" width="320" height="20" rx="3" fill="url(#norm-grad)"/>
-                    <text x="390" y="50" fill="#10b981" font-size="11">+60% faster with RMSNorm</text>
-                </g>
-                
-                <g transform="translate(450, 365)">
-                    <text x="0" y="15" fill="#8888aa" font-size="11">Transformer:</text>
-                    <rect x="80" y="5" width="150" height="20" rx="3" fill="rgba(239,68,68,0.3)"/>
-                    <text x="240" y="20" fill="#ef4444" font-size="11">Baseline</text>
+                    <!-- Step 2: Normalize & Scale -->
+                    <rect x="0" y="80" width="160" height="50" rx="5" fill="rgba(16,185,129,0.2)" stroke="#10b981" stroke-width="1"/>
+                    <text x="80" y="105" fill="#6ee7b7" font-size="10" text-anchor="middle">② y = (x / RMS) · γ</text>
+                    <text x="80" y="120" fill="#8888aa" font-size="9" text-anchor="middle">(No bias parameter!)</text>
                     
-                    <rect x="80" y="35" width="190" height="20" rx="3" fill="url(#norm-grad)"/>
-                    <text x="280" y="50" fill="#10b981" font-size="11">+27% faster</text>
+                    <!-- Arrow to output -->
+                    <path d="M 170 105 L 250 105" stroke="#6366f1" stroke-width="2" marker-end="url(#arrow-head)"/>
+                    <rect x="260" y="85" width="80" height="40" rx="5" fill="rgba(16,185,129,0.2)" stroke="#10b981" stroke-width="2"/>
+                    <text x="300" y="110" fill="#6ee7b7" font-size="11" text-anchor="middle">Output</text>
                 </g>
                 
-                <!-- Formula comparison at bottom -->
-                <g transform="translate(50, 460)">
-                    <rect x="0" y="0" width="380" height="100" rx="10" fill="rgba(99,102,241,0.1)" stroke="rgba(99,102,241,0.3)"/>
-                    <text x="190" y="25" fill="#a5b4fc" font-size="12" font-weight="bold" text-anchor="middle">LayerNorm Formula</text>
-                    <text x="190" y="50" fill="#e0e0ff" font-size="14" font-family="monospace" text-anchor="middle">LN(x) = γ ⊙ (x − μ) / √(σ² + ε) + β</text>
-                    <text x="190" y="75" fill="#8888aa" font-size="10" text-anchor="middle">4 params: μ, σ, γ, β | requires mean & variance</text>
+                <!-- Comparison Section -->
+                <rect x="50" y="300" width="800" height="280" rx="10" fill="rgba(20,20,35,0.8)" stroke="rgba(99,102,241,0.3)" stroke-width="2"/>
+                <text x="450" y="330" fill="#fff" font-size="16" font-weight="bold" text-anchor="middle">Detailed Formula Comparison</text>
+                
+                <!-- LayerNorm Formula -->
+                <g transform="translate(80, 360)">
+                    <text x="0" y="0" fill="#fca5a5" font-size="12" font-weight="bold">LayerNorm:</text>
+                    <rect x="0" y="15" width="330" height="80" rx="5" fill="rgba(239,68,68,0.1)" stroke="#ef4444" stroke-width="1"/>
+                    <text x="165" y="45" fill="#fff" font-size="11" text-anchor="middle">μ = (1/H) Σᵢ xᵢ</text>
+                    <text x="165" y="65" fill="#fff" font-size="11" text-anchor="middle">σ² = (1/H) Σᵢ (xᵢ − μ)²</text>
+                    <text x="165" y="85" fill="#a5b4fc" font-size="11" text-anchor="middle">y = γ · (x − μ) / √(σ² + ε) + β</text>
                 </g>
                 
-                <g transform="translate(470, 460)">
-                    <rect x="0" y="0" width="380" height="100" rx="10" fill="rgba(245,158,11,0.1)" stroke="rgba(245,158,11,0.3)"/>
-                    <text x="190" y="25" fill="#fbbf24" font-size="12" font-weight="bold" text-anchor="middle">RMSNorm Formula</text>
-                    <text x="190" y="50" fill="#e0e0ff" font-size="14" font-family="monospace" text-anchor="middle">RMSNorm(x) = x ⊙ g / RMS(x)</text>
-                    <text x="190" y="75" fill="#8888aa" font-size="10" text-anchor="middle">2 params: RMS, g | no mean needed</text>
+                <!-- RMSNorm Formula -->
+                <g transform="translate(470, 360)">
+                    <text x="0" y="0" fill="#6ee7b7" font-size="12" font-weight="bold">RMSNorm:</text>
+                    <rect x="0" y="15" width="330" height="60" rx="5" fill="rgba(16,185,129,0.1)" stroke="#10b981" stroke-width="1"/>
+                    <text x="165" y="45" fill="#fff" font-size="11" text-anchor="middle">RMS(x) = √(1/H Σᵢ xᵢ²)</text>
+                    <text x="165" y="65" fill="#a5b4fc" font-size="11" text-anchor="middle">y = x / RMS(x) · γ</text>
+                </g>
+                
+                <!-- Parameter Count Comparison -->
+                <g transform="translate(80, 470)">
+                    <rect x="0" y="0" width="330" height="90" rx="5" fill="rgba(239,68,68,0.05)" stroke="rgba(239,68,68,0.2)" stroke-width="1"/>
+                    <text x="165" y="25" fill="#fca5a5" font-size="11" font-weight="bold" text-anchor="middle">LayerNorm Parameters</text>
+                    <text x="165" y="50" fill="#fff" font-size="10" text-anchor="middle">γ (gain): H parameters</text>
+                    <text x="165" y="70" fill="#fff" font-size="10" text-anchor="middle">β (bias): H parameters</text>
+                    <text x="165" y="88" fill="#ef4444" font-size="10" font-weight="bold" text-anchor="middle">Total: 2H parameters</text>
+                </g>
+                
+                <g transform="translate(470, 470)">
+                    <rect x="0" y="0" width="330" height="90" rx="5" fill="rgba(16,185,129,0.05)" stroke="rgba(16,185,129,0.2)" stroke-width="1"/>
+                    <text x="165" y="25" fill="#6ee7b7" font-size="11" font-weight="bold" text-anchor="middle">RMSNorm Parameters</text>
+                    <text x="165" y="50" fill="#fff" font-size="10" text-anchor="middle">γ (gain): H parameters</text>
+                    <text x="165" y="70" fill="#8888aa" font-size="10" text-anchor="middle">β (bias): None</text>
+                    <text x="165" y="88" fill="#10b981" font-size="10" font-weight="bold" text-anchor="middle">Total: H parameters (50%)</text>
                 </g>
             </svg>
+            
+            <div class="highlight-box">
+                <strong>Simplification Impact:</strong> RMSNorm removes the need to compute the mean, reducing operations by ~15-30%. It also eliminates the bias parameter (β), cutting learnable parameters in half while maintaining comparable training stability and final performance.
+            </div>
         </div>
 
-        <!-- Comparison Table -->
+        <!-- Re-scaling Invariance -->
         <div class="section">
-            <h2><span class="icon">⚖️</span> RMSNorm vs LayerNorm Comparison</h2>
+            <h2><span class="icon">⚖️</span> Re-scaling Invariance Property</h2>
+            <p>Both LayerNorm and RMSNorm provide <strong>re-scaling invariance</strong> — the key property for training stability. However, RMSNorm achieves this without re-centering:</p>
             
             <table class="comparison-table">
                 <thead>
@@ -595,92 +596,178 @@
                 </thead>
                 <tbody>
                     <tr>
-                        <td>Mean computation</td>
-                        <td class="yes">Required (μ)</td>
-                        <td class="no">❌ Not needed</td>
-                    </tr>
-                    <tr>
-                        <td>Variance computation</td>
-                        <td class="yes">Required (σ²)</td>
-                        <td class="partial">RMS only (√mean(x²))</td>
-                    </tr>
-                    <tr>
-                        <td>Learnable parameters</td>
-                        <td>γ (gain) + β (bias)</td>
-                        <td>g (gain only)</td>
-                    </tr>
-                    <tr>
-                        <td>Re-centering invariance</td>
-                        <td class="yes">✓ Yes</td>
-                        <td class="no">✗ No</td>
-                    </tr>
-                    <tr>
                         <td>Re-scaling invariance</td>
                         <td class="yes">✓ Yes</td>
                         <td class="yes">✓ Yes (preserved)</td>
                     </tr>
                     <tr>
-                        <td>Implicit learning rate adaptation</td>
+                        <td>Re-centering invariance</td>
                         <td class="yes">✓ Yes</td>
-                        <td class="yes">✓ Yes (preserved)</td>
+                        <td class="no">✗ No (removed)</td>
                     </tr>
                     <tr>
-                        <td>Computational cost</td>
-                        <td>Higher (mean + variance)</td>
-                        <td class="yes">Lower (RMS only)</td>
+                        <td>Computation complexity</td>
+                        <td>O(2d) per sample</td>
+                        <td>O(d) per sample (~50%)</td>
                     </tr>
                     <tr>
-                        <td>Speed improvement</td>
+                        <td>Learnable parameters</td>
+                        <td>2d (γ, β)</td>
+                        <td>d (γ only)</td>
+                    </tr>
+                    <tr>
+                        <td>Training speedup</td>
                         <td>Baseline</td>
-                        <td class="yes"><span class="speed-badge">7% - 64% faster</span></td>
+                        <td>7% ~ 64% faster</td>
                     </tr>
                 </tbody>
             </table>
             
-            <p><strong>Key insight:</strong> The authors demonstrate that <em>re-scaling invariance</em> (not re-centering) is the crucial property for LayerNorm's success. By preserving only this property, RMSNorm achieves comparable performance with significantly reduced computation.</p>
+            <svg class="architecture-svg" viewBox="0 0 900 250" style="max-height: 250px;">
+                <defs>
+                    <marker id="inv-arrow" markerWidth="10" markerHeight="10" refX="9" refY="3" orient="auto">
+                        <polygon points="0 0, 10 3, 0 6" fill="#6366f1"/>
+                    </marker>
+                </defs>
+                
+                <!-- Title -->
+                <text x="450" y="30" fill="#fff" font-size="16" font-weight="bold" text-anchor="middle">Re-scaling Invariance Visualization</text>
+                
+                <!-- Input scaling -->
+                <g transform="translate(100, 70)">
+                    <rect x="0" y="0" width="140" height="50" rx="5" fill="rgba(99,102,241,0.2)" stroke="#6366f1" stroke-width="2"/>
+                    <text x="70" y="22" fill="#fff" font-size="11" text-anchor="middle">Original Input</text>
+                    <text x="70" y="40" fill="#a5b4fc" font-size="10" text-anchor="middle">x = [2, 4, 6]</text>
+                </g>
+                
+                <!-- Scaling arrow -->
+                <path d="M 250 95 L 320 95" stroke="#6366f1" stroke-width="2" marker-end="url(#inv-arrow)"/>
+                <text x="285" y="85" fill="#8888aa" font-size="10" text-anchor="middle">× 2</text>
+                
+                <!-- Scaled input -->
+                <g transform="translate(330, 70)">
+                    <rect x="0" y="0" width="140" height="50" rx="5" fill="rgba(99,102,241,0.2)" stroke="#6366f1" stroke-width="2"/>
+                    <text x="70" y="22" fill="#fff" font-size="11" text-anchor="middle">Scaled Input</text>
+                    <text x="70" y="40" fill="#a855f7" font-size="10" text-anchor="middle">x' = [4, 8, 12]</text>
+                </g>
+                
+                <!-- Branch -->
+                <path d="M 470 95 L 500 95" stroke="#6366f1" stroke-width="2"/>
+                <path d="M 500 95 L 500 135 L 550 135" stroke="#6366f1" stroke-width="2" marker-end="url(#inv-arrow)"/>
+                <path d="M 500 95 L 500 55 L 550 55" stroke="#6366f1" stroke-width="2" marker-end="url(#inv-arrow)"/>
+                
+                <!-- RMSNorm boxes -->
+                <g transform="translate(560, 30)">
+                    <rect x="0" y="0" width="100" height="50" rx="5" fill="rgba(16,185,129,0.2)" stroke="#10b981" stroke-width="2"/>
+                    <text x="50" y="22" fill="#6ee7b7" font-size="11" text-anchor="middle">RMSNorm(x)</text>
+                    <text x="50" y="40" fill="#fff" font-size="10" text-anchor="middle">[0.37, 0.74, 1.11]</text>
+                </g>
+                
+                <g transform="translate(560, 110)">
+                    <rect x="0" y="0" width="100" height="50" rx="5" fill="rgba(16,185,129,0.2)" stroke="#10b981" stroke-width="2"/>
+                    <text x="50" y="22" fill="#6ee7b7" font-size="11" text-anchor="middle">RMSNorm(x')</text>
+                    <text x="50" y="40" fill="#fff" font-size="10" text-anchor="middle">[0.37, 0.74, 1.11]</text>
+                </g>
+                
+                <!-- Output -->
+                <path d="M 670 55 L 720 55 L 720 95 L 750 95" stroke="#a855f7" stroke-width="2" marker-end="url(#inv-arrow)"/>
+                <path d="M 670 135 L 720 135 L 720 95 L 750 95" stroke="#a855f7" stroke-width="2" marker-end="url(#inv-arrow)"/>
+                
+                <g transform="translate(760, 70)">
+                    <rect x="0" y="0" width="120" height="50" rx="5" fill="rgba(168,85,247,0.2)" stroke="#a855f7" stroke-width="2"/>
+                    <text x="60" y="22" fill="#fff" font-size="11" text-anchor="middle">Same Output!</text>
+                    <text x="60" y="40" fill="#a5b4fc" font-size="10" text-anchor="middle">Normalized vectors</text>
+                </g>
+                
+                <!-- Bottom text -->
+                <text x="450" y="210" fill="#6ee7b7" font-size="12" text-anchor="middle">✓ RMSNorm is invariant to input scaling — a key property for stable training</text>
+                <text x="450" y="235" fill="#8888aa" font-size="11" text-anchor="middle">Both RMSNorm(x) and RMSNorm(λ·x) produce the same normalized output (up to the learnable gain)</text>
+            </svg>
+        </div>
+
+        <!-- pRMSNorm -->
+        <div class="section">
+            <h2><span class="icon">🔬</span> Partial RMSNorm (pRMSNorm)</h2>
+            <p>The paper also introduces <strong>pRMSNorm</strong> — an extension where RMS is estimated from only p% of the summed inputs, potentially offering further speedup:</p>
+            
+            <div class="formula-box">
+                <div class="formula">
+                    pRMSNorm(x) = x / RMS(x₁ₚ) · γ
+                </div>
+                <div class="label">Where x₁ₚ represents the first p% of elements in x</div>
+            </div>
+            
+            <div class="insight-grid">
+                <div class="insight-card">
+                    <h4>🎯 Theoretical Benefit</h4>
+                    <p>Estimating RMS from fewer elements could reduce computation further while maintaining the re-scaling invariance property.</p>
+                </div>
+                <div class="insight-card">
+                    <h4>⚠️ Empirical Finding</h4>
+                    <p>The paper notes that while theoretically faster, pRMSNorm did not consistently show speed improvements in their experiments, suggesting the need for optimized implementations.</p>
+                </div>
+            </div>
         </div>
 
         <!-- Results & Impact -->
         <div class="section">
-            <h2><span class="icon">📊</span> Results & Impact</h2>
+            <h2><span class="icon">📈</span> Results & Impact</h2>
             
-            <p>RMSNorm was evaluated across multiple tasks and architectures, demonstrating both speed improvements and competitive (or better) performance:</p>
+            <p>RMSNorm achieves <strong>comparable performance</strong> to LayerNorm while delivering significant speed improvements across diverse architectures:</p>
+            
+            <table class="comparison-table">
+                <thead>
+                    <tr>
+                        <th>Model/Task</th>
+                        <th>Speed Improvement</th>
+                        <th>Performance</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>GRU-based RMSSearch</td>
+                        <td><span class="speed-badge fast">7-15% faster</span></td>
+                        <td>Comparable BLEU</td>
+                    </tr>
+                    <tr>
+                        <td>LSTM Language Model</td>
+                        <td><span class="speed-badge fast">15-30% faster</span></td>
+                        <td>Similar perplexity</td>
+                    </tr>
+                    <tr>
+                        <td>Transformer NMT</td>
+                        <td><span class="speed-badge medium">10-20% faster</span></td>
+                        <td>Matching BLEU scores</td>
+                    </tr>
+                    <tr>
+                        <td>Deep RNN (many layers)</td>
+                        <td><span class="speed-badge fast">30-64% faster</span></td>
+                        <td>No degradation</td>
+                    </tr>
+                </tbody>
+            </table>
             
             <ul class="impact-list">
                 <li>
                     <span class="check">✓</span>
-                    <div>
-                        <strong>Machine Translation (IWSLT 2015 German-English):</strong> RMSNorm achieved comparable BLEU scores to LayerNorm while reducing training time by <strong>30-40%</strong> on RNN models.
-                    </div>
+                    <span><strong>Speed vs Steps Tradeoff:</strong> While LayerNorm may converge in fewer steps, RMSNorm's faster per-step execution results in better wall-clock time</span>
                 </li>
                 <li>
                     <span class="check">✓</span>
-                    <div>
-                        <strong>Language Modeling (Penn Treebank):</strong> LSTM with RMSNorm matched LayerNorm perplexity with <strong>15-20% speedup</strong>.
-                    </div>
+                    <span><strong>Deep Networks:</strong> Speedup is most pronounced in deep RNNs where normalization is applied at every layer and time step</span>
                 </li>
                 <li>
                     <span class="check">✓</span>
-                    <div>
-                        <strong>Image Classification (CIFAR-10):</strong> ResNet with RMSNorm achieved similar accuracy with <strong>10-15% faster</strong> training.
-                    </div>
+                    <span><strong>Memory Efficiency:</strong> Fewer intermediate values to store (no mean computation) reduces memory overhead</span>
                 </li>
                 <li>
                     <span class="check">✓</span>
-                    <div>
-                        <strong>Transformer Models:</strong> RMSNorm reduced training time by <strong>7-15%</strong> while maintaining translation quality on WMT benchmarks.
-                    </div>
-                </li>
-                <li>
-                    <span class="check">✓</span>
-                    <div>
-                        <strong>RNNs (most dramatic gains):</strong> Up to <strong>64% faster</strong> training due to per-step normalization overhead reduction.
-                    </div>
+                    <span><strong>Modern LLM Adoption:</strong> RMSNorm is now the default in Llama, Chinchilla, and other large language models</span>
                 </li>
             </ul>
             
             <div class="highlight-box">
-                <strong>Why it works:</strong> RMSNorm maintains the implicit learning rate adaptation property of LayerNorm — the effective learning rate becomes inversely proportional to the RMS of the inputs, automatically adjusting to different parameter scales without manual tuning.
+                <strong>Real-World Impact:</strong> In 2023-2024, RMSNorm became the normalization method of choice for modern LLMs including Meta's Llama series, Google's Chinchilla, and many other Transformer variants. Its simplicity and efficiency make it ideal for training billion-parameter models.
             </div>
         </div>
 
@@ -688,177 +775,221 @@
         <div class="section">
             <h2><span class="icon">💻</span> Code Implementation</h2>
             
-            <p>Official implementation and modern usage in PyTorch and other frameworks:</p>
-            
             <div class="code-block">
-                <div class="code-header">PyTorch Implementation (Official)</div>
+                <div class="code-header">PyTorch - RMSNorm Implementation</div>
                 <div class="code-content">
-<pre><span class="keyword">import</span> torch
+<span class="keyword">import</span> torch
 <span class="keyword">import</span> torch.nn <span class="keyword">as</span> nn
 
 <span class="keyword">class</span> <span class="function">RMSNorm</span>(nn.Module):
-    <span class="comment">"""Root Mean Square Layer Normalization"""</span>
+    <span class="string">"""
+    Root Mean Square Layer Normalization (Zhang & Sennrich, 2019)
     
-    <span class="keyword">def</span> <span class="function">__init__</span>(self, dim: int, eps: float = <span class="number">1e-6</span>):
+    Simpler and faster than LayerNorm:
+    - No mean subtraction (removes centering)
+    - Only gain parameter (no bias)
+    - ~30-50% speedup in many cases
+    """</span>
+    
+    <span class="keyword">def</span> <span class="function">__init__</span>(self, hidden_size, eps=<span class="number">1e-6</span>):
         super().__init__()
+        self.hidden_size = hidden_size
         self.eps = eps
-        <span class="comment"># Learnable gain parameter only (no bias)</span>
-        self.weight = nn.Parameter(torch.ones(dim))
+        <span class="comment"># Only learnable gain (no bias!)</span>
+        self.weight = nn.Parameter(torch.ones(hidden_size))
     
     <span class="keyword">def</span> <span class="function">forward</span>(self, x):
-        <span class="comment"># Compute RMS along last dimension</span>
-        rms = torch.sqrt(torch.mean(x ** <span class="number">2</span>, dim=<span class="number">-1</span>, keepdim=<span class="keyword">True</span>) + self.eps)
-        <span class="comment"># Normalize and scale</span>
-        x_norm = x / rms
-        <span class="keyword">return</span> self.weight * x_norm
+        <span class="comment"># x: (batch_size, ..., hidden_size)</span>
+        
+        <span class="comment"># Step 1: Compute RMS (Root Mean Square)</span>
+        <span class="comment"># Mean of squares = variance without centering</span>
+        mean_square = x.pow(<span class="number">2</span>).mean(dim=<span class="number">-1</span>, keepdim=<span class="keyword">True</span>)
+        rms = torch.sqrt(mean_square + self.eps)
+        
+        <span class="comment"># Step 2: Normalize by RMS</span>
+        x_normalized = x / rms
+        
+        <span class="comment"># Step 3: Apply learnable gain</span>
+        output = x_normalized * self.weight
+        
+        <span class="keyword">return</span> output
 
-<span class="comment"># Usage example</span>
-norm = RMSNorm(dim=<span class="number">768</span>, eps=<span class="number">1e-6</span>)
-x = torch.randn(<span class="number">2</span>, <span class="number">128</span>, <span class="number">768</span>)  <span class="comment"># (batch, seq_len, hidden_dim)</span>
-output = norm(x)</pre>
+<span class="comment"># Usage in modern Transformer (like Llama)</span>
+<span class="keyword">class</span> <span class="function">TransformerBlock</span>(nn.Module):
+    <span class="keyword">def</span> <span class="function">__init__</span>(self, hidden_size, num_heads):
+        super().__init__()
+        self.attn = nn.MultiheadAttention(hidden_size, num_heads, batch_first=<span class="keyword">True</span>)
+        <span class="comment"># Pre-norm with RMSNorm</span>
+        self.attn_norm = RMSNorm(hidden_size)
+        self.ffn_norm = RMSNorm(hidden_size)
+        self.ffn = nn.Sequential(
+            nn.Linear(hidden_size, <span class="number">4</span> * hidden_size),
+            nn.GELU(),
+            nn.Linear(<span class="number">4</span> * hidden_size, hidden_size)
+        )
+    
+    <span class="keyword">def</span> <span class="function">forward</span>(self, x):
+        <span class="comment"># Pre-norm architecture: normalize before attention/FFN</span>
+        x = x + self.attn(self.attn_norm(x), self.attn_norm(x), self.attn_norm(x))[0]
+        x = x + self.ffn(self.ffn_norm(x))
+        <span class="keyword">return</span> x
                 </div>
             </div>
             
             <div class="code-block">
-                <div class="code-header">Hugging Face Transformers (LLaMA Example)</div>
+                <div class="code-header">PyTorch - Optimized RMSNorm with rsqrt</div>
                 <div class="code-content">
-<pre><span class="comment"># RMSNorm is used in LLaMA, Mistral, and other modern LLMs</span>
-<span class="keyword">from</span> transformers <span class="keyword">import</span> LlamaForCausalLM, LlamaTokenizer
+<span class="keyword">class</span> <span class="function">RMSNormOptimized</span>(nn.Module):
+    <span class="string">"""
+    Optimized RMSNorm using torch.rsqrt for better numerical stability
+    and computational efficiency (rsqrt is faster than 1/sqrt)
+    """</span>
+    
+    <span class="keyword">def</span> <span class="function">__init__</span>(self, hidden_size, eps=<span class="number">1e-6</span>):
+        super().__init__()
+        self.eps = eps
+        self.weight = nn.Parameter(torch.ones(hidden_size))
+    
+    <span class="keyword">def</span> <span class="function">forward</span>(self, x):
+        <span class="comment"># Compute variance (mean of squares)</span>
+        variance = x.pow(<span class="number">2</span>).mean(dim=<span class="number">-1</span>, keepdim=<span class="keyword">True</span>)
+        
+        <span class="comment"># Use rsqrt for numerical efficiency: rsqrt(x) = 1/sqrt(x)</span>
+        x_normalized = x * torch.rsqrt(variance + self.eps)
+        
+        <span class="keyword">return</span> x_normalized * self.weight
 
-<span class="comment"># LLaMA uses RMSNorm instead of LayerNorm</span>
-model = LlamaForCausalLM.from_pretrained(<span class="string">"meta-llama/Llama-2-7b"</span>)
-
-<span class="comment"># Check model configuration - you'll find RMSNorm layers</span>
-<span class="keyword">for</span> name, module <span class="keyword">in</span> model.named_modules():
-    <span class="keyword">if</span> <span class="string">"norm"</span> <span class="keyword">in</span> name.lower():
-        <span class="function">print</span>(<span class="string">f"{name}: {type(module).__name__}"</span>)</pre>
+<span class="comment"># Comparison: LayerNorm vs RMSNorm</span>
+<span class="keyword">def</span> <span class="function">compare</span>():
+    hidden_size = <span class="number">4096</span>
+    batch_size = <span class="number">32</span>
+    seq_len = <span class="number">512</span>
+    
+    <span class="comment"># LayerNorm: 2 * hidden_size = 8192 parameters</span>
+    layernorm = nn.LayerNorm(hidden_size)
+    
+    <span class="comment"># RMSNorm: 1 * hidden_size = 4096 parameters (50%)</span>
+    rmsnorm = RMSNorm(hidden_size)
+    
+    x = torch.randn(batch_size, seq_len, hidden_size)
+    
+    <span class="comment"># Both produce similar outputs with ~same quality</span>
+    out_ln = layernorm(x)
+    out_rms = rmsnorm(x)
+    
+    print(<span class="string">f"LayerNorm params: {sum(p.numel() for p in layernorm.parameters())}"</span>)
+    print(<span class="string">f"RMSNorm params: {sum(p.numel() for p in rmsnorm.parameters())}"</span>)
+    <span class="comment"># Output: LayerNorm: 8192, RMSNorm: 4096</span>
                 </div>
             </div>
             
             <div class="code-block">
-                <div class="code-header">Comparison: RMSNorm vs LayerNorm Lines of Code</div>
+                <div class="code-header">JAX/Flax - RMSNorm for Large-Scale Training</div>
                 <div class="code-content">
-<pre><span class="comment"># LayerNorm (more operations)</span>
-mean = x.mean(dim=<span class="number">-1</span>, keepdim=<span class="keyword">True</span>)           <span class="comment"># 1. Compute mean</span>
-var = x.var(dim=<span class="number">-1</span>, keepdim=<span class="keyword">True</span>, unbiased=<span class="keyword">False</span>)  <span class="comment"># 2. Compute variance</span>
-x_norm = (x - mean) / torch.sqrt(var + eps)      <span class="comment"># 3. Normalize</span>
-output = gamma * x_norm + beta                   <span class="comment"># 4. Scale + shift</span>
+<span class="keyword">import</span> jax
+<span class="keyword">import</span> jax.numpy <span class="keyword">as</span> jnp
+<span class="keyword">from</span> flax <span class="keyword">import</span> linen <span class="keyword">as</span> nn
 
-<span class="comment"># RMSNorm (fewer operations)</span>
-rms = torch.sqrt((x ** <span class="number">2</span>).mean(dim=<span class="number">-1</span>, keepdim=<span class="keyword">True</span>) + eps)  <span class="comment"># 1. RMS only</span>
-output = (x / rms) * weight                                           <span class="comment"># 2. Normalize + scale</span></pre>
+<span class="keyword">class</span> <span class="function">RMSNorm</span>(nn.Module):
+    <span class="string">"""RMSNorm for JAX/Flax (used in PaLM, Gemma, etc.)"""</span>
+    epsilon: float = <span class="number">1e-6</span>
+    
+    <span class="keyword">def</span> <span class="function">setup</span>(self):
+        self.scale = self.param(<span class="string">'scale'</span>, nn.initializers.ones, (<span class="number">-1</span>,))
+    
+    <span class="keyword">def</span> <span class="function">__call__</span>(self, x):
+        <span class="comment"># Compute RMS</span>
+        var = jnp.mean(jnp.square(x), axis=<span class="number">-1</span>, keepdims=<span class="keyword">True</span>)
+        normed = x * jax.lax.rsqrt(var + self.epsilon)
+        <span class="keyword">return</span> normed * self.scale
+
+<span class="comment"># T5X-style RMSNorm (used in many production systems)</span>
+<span class="keyword">def</span> <span class="function">rms_norm</span>(x, weight, epsilon=<span class="number">1e-6</span>):
+    <span class="string">"""Functional RMSNorm implementation."""</span>
+    var = jnp.mean(jnp.square(x), axis=<span class="number">-1</span>, keepdims=<span class="keyword">True</span>)
+    normed = x * jax.lax.rsqrt(var + epsilon)
+    <span class="keyword">return</span> normed * weight
                 </div>
             </div>
         </div>
 
-        <!-- Partial RMSNorm -->
-        <div class="section">
-            <h2><span class="icon">🔬</span> Partial RMSNorm (pRMSNorm)</h2>
-            
-            <p>The paper also introduces <strong>Partial RMSNorm (pRMSNorm)</strong> — an extension that estimates RMS using only a percentage (p%) of the input dimensions, further reducing computation:</p>
-            
-            <div class="formula-box">
-                <div class="formula">
-                    pRMSNorm(x) = x ⊙ g / pRMS(x)
-                </div>
-                <div class="label" style="font-size: 0.9rem;">
-                    pRMS(x) = √(d/(p·d) Σᵢ∈S xᵢ²) where S is a random subset of size p·d
-                </div>
-            </div>
-            
-            <p><strong>Key findings for pRMSNorm:</strong></p>
-            <ul style="color: #b8b8d0; margin-left: 20px; margin-bottom: 15px;">
-                <li>Using <strong>p = 10%</strong> (only 10% of features) still achieves <strong>90% of full RMSNorm's performance</strong></li>
-                <li>Creates a tunable speed/quality trade-off controlled by p</li>
-                <li>Particularly useful for extremely large hidden dimensions where full RMS computation is expensive</li>
-            </ul>
-        </div>
-
-        <!-- Adoption in Modern LLMs -->
-        <div class="section">
-            <h2><span class="icon">🚀</span> Adoption in Modern AI</h2>
-            
-            <p>RMSNorm has become the <strong>default normalization method</strong> in many state-of-the-art language models:</p>
-            
-            <div class="insight-grid">
-                <div class="insight-card">
-                    <h4>🦙 LLaMA / LLaMA-2 / LLaMA-3</h4>
-                    <p>Meta's open foundation models use RMSNorm. Paper states: "We use RMSNorm instead of LayerNorm, which slightly improves convergence speed."</p>
-                </div>
-                <div class="insight-card">
-                    <h4>🌪️ Mistral</h4>
-                    <p>The Mistral series of models (7B, 8x7B, etc.) use RMSNorm for efficient pre-training and inference.</p>
-                </div>
-                <div class="insight-card">
-                    <h4>💎 Gemma</h4>
-                    <p>Google's open-weight Gemma models incorporate RMSNorm as part of their architecture design.</p>
-                </div>
-                <div class="insight-card">
-                    <h4>🔮 Other Transformers</h4>
-                    <p>RMSNorm is increasingly adopted in vision transformers, speech models, and multimodal architectures for efficiency gains.</p>
-                </div>
-            </div>
-        </div>
-
-        <!-- Related Work -->
+        <!-- Related Papers -->
         <div class="section">
             <h2><span class="icon">📚</span> Related Work</h2>
             
-            <p>RMSNorm builds upon and relates to several key normalization techniques:</p>
-            
-            <ul style="color: #b8b8d0; margin-left: 20px;">
-                <li style="margin-bottom: 12px;">
-                    <strong>Layer Normalization (2016):</strong> 
-                    <a href="layernorm.html" style="color: #6366f1;">Ba, Kiros, Hinton</a> — The direct predecessor. RMSNorm questions and simplifies its assumptions.
-                </li>
-                <li style="margin-bottom: 12px;">
-                    <strong>Batch Normalization (2015):</strong> 
-                    Ioffe & Szegedy — Normalization across batch dimension. Inspired the field but unsuitable for RNNs and small batches.
-                </li>
-                <li style="margin-bottom: 12px;">
-                    <strong>Weight Normalization (2016):</strong> 
-                    Salimans & Kingma — Alternative approach that normalizes weight vectors instead of activations.
-                </li>
-                <li style="margin-bottom: 12px;">
-                    <strong>Group Normalization (2018):</strong> 
-                    Wu & He — Splits channels into groups for normalization, effective for computer vision with small batches.
-                </li>
-                <li style="margin-bottom: 12px;">
-                    <strong>NormFormer (2021):</strong> 
-                    Shleifer et al. — Explores additional normalization layers in Transformers, citing RMSNorm as a foundation.
-                </li>
-                <li style="margin-bottom: 12px;">
-                    <strong>DeepNorm (2022):</strong> 
-                    Wang et al. — Scaling strategy for training 1000-layer Transformers, uses modified RMSNorm approach.
-                </li>
-            </ul>
-        </div>
-
-        <!-- Citation -->
-        <div class="section">
-            <h2><span class="icon">📖</span> Citation</h2>
-            
-            <div class="code-block">
-                <div class="code-header">BibTeX</div>
-                <div class="code-content">
-<pre>@inproceedings{zhang2019root,
-  title={Root Mean Square Layer Normalization},
-  author={Zhang, Biao and Sennrich, Rico},
-  booktitle={Advances in Neural Information Processing Systems},
-  volume={32},
-  pages={12360--12371},
-  year={2019},
-  publisher={Curran Associates, Inc.}
-}</pre>
+            <div class="insight-grid">
+                <div class="insight-card">
+                    <h4>📄 Layer Normalization (2016)</h4>
+                    <p>Jimmy Lei Ba et al. The foundation that RMSNorm builds upon. RMSNorm proves that mean subtraction is dispensable.</p>
+                </div>
+                <div class="insight-card">
+                    <h4>📄 Llama / LLaMA-2 (2023)</h4>
+                    <p>Meta AI. Uses RMSNorm instead of LayerNorm throughout the architecture, demonstrating its effectiveness at scale.</p>
+                </div>
+                <div class="insight-card">
+                    <h4>📄 Chinchilla (2022)</h4>
+                    <p>DeepMind. Employs RMSNorm for its 70B parameter model, validating the approach for large-scale training.</p>
+                </div>
+                <div class="insight-card">
+                    <h4>📄 Gemma (2024)</h4>
+                    <p>Google. Uses RMSNorm in their open-weight models, further cementing it as the standard for efficient LLMs.</p>
+                </div>
+                <div class="insight-card">
+                    <h4>📄 DeepNorm (2022)</h4>
+                    <p>Microsoft. Extends normalization ideas for training 1000-layer Transformers, building on RMSNorm insights.</p>
+                </div>
+                <div class="insight-card">
+                    <h4>📜 Pre-LN vs Post-LN</h4>
+                    <p>On Layer Normalization in the Transformer Architecture (Xiong et al., 2020). Explores where to place normalization.</p>
                 </div>
             </div>
         </div>
+
+        <!-- Summary -->
+        <div class="section">
+            <h2><span class="icon">🎯</span> Summary</h2>
+            <p>RMSNorm demonstrates that sometimes <strong>less is more</strong> in deep learning. By carefully analyzing what actually contributes to LayerNorm's success, Zhang and Sennrich created a simpler, faster alternative:</p>
+            
+            <ul class="impact-list">
+                <li>
+                    <span class="check">✓</span>
+                    <span><strong>Removes dispensable computation</strong> — Mean subtraction provides minimal benefit but adds significant overhead</span>
+                </li>
+                <li>
+                    <span class="check">✓</span>
+                    <span><strong>Preserves what matters</strong> — Re-scaling invariance, the key property for training stability, is maintained</span>
+                </li>
+                <li>
+                    <span class="check">✓</span>
+                    <span><strong>Halves parameter count</strong> — Only γ needed, no β bias parameter</span>
+                </li>
+                <li>
+                    <span class="check">✓</span>
+                    <span><strong>7%~64% speedup</strong> — Wall-clock time improvement across diverse architectures</span>
+                </li>
+                <li>
+                    <span class="check">✓</span>
+                    <span><strong>Powers modern LLMs</strong> — Adopted by Llama, Chinchilla, Gemma, and other state-of-the-art models</span>
+                </li>
+            </ul>
+            
+            <p>RMSNorm is a perfect example of the <strong>efficiency-through-simplicity</strong> principle in neural network design. By questioning assumptions about what normalization "needs" to do, the authors achieved real performance gains that have stood the test of time and scale.</p>
+            
+            <div class="highlight-box">
+                <strong>Bottom Line:</strong> If you're building or training modern neural networks — especially Transformers or RNNs — RMSNorm offers a drop-in replacement for LayerNorm that's faster, simpler, and equally effective. It's become the default choice for a reason.
+            </div>
+        </div>
+
+        <!-- Navigation -->
+        <div class="nav-footer">
+            <a href="../index.html">← Back to All Papers</a>
+            <a href="layernorm.html">LayerNorm (2016) →</a>
+        </div>
     </div>
 
-    <div class="nav-footer">
-        <a href="layernorm.html">← Layer Normalization</a>
-        <a href="../index.html">🏠 Back to Home</a>
-    </div>
-
+    <footer style="text-align: center; padding: 40px 20px; color: #555577; border-top: 1px solid rgba(99, 102, 241, 0.1); margin-top: 40px;">
+        <p>🤖 This page is part of <a href="https://patbby.github.io/ai-neural-networks/" style="color: #6366f1; text-decoration: none;">AI Neural Networks Visualized</a></p>
+        <p style="font-size: 0.85rem; margin-top: 10px;">Maintained by AI. Content based on "Root Mean Square Layer Normalization" (Zhang & Sennrich, NeurIPS 2019)</p>
+    </footer>
 </body>
 </html>

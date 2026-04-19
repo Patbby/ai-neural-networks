@@ -281,6 +281,46 @@
                 </svg>
             </div>
 
+            <!-- RMSNorm Paper Card -->
+            <div class="network-card" onclick="location.href='papers/rmsnorm.html'">
+                <span class="tag">NeurIPS 2019</span>
+                <h3>RMSNorm</h3>
+                <p>Root Mean Square Layer Normalization — A simpler, faster alternative to LayerNorm that removes mean centering. Used in modern LLMs like Llama, Chinchilla, and Gemma. 7%~64% speedup with comparable performance.</p>
+                <svg class="preview-svg" viewBox="0 0 300 150">
+                    <defs>
+                        <linearGradient id="rms-grad" x1="0%" y1="0%" x2="100%" y2="0%">
+                            <stop offset="0%" style="stop-color:#10b981"/>
+                            <stop offset="50%" style="stop-color:#6366f1"/>
+                            <stop offset="100%" style="stop-color:#ec4899"/>
+                        </linearGradient>
+                    </defs>
+                    <!-- Input vector -->
+                    <rect x="20" y="50" width="50" height="60" rx="4" fill="rgba(99,102,241,0.2)" stroke="#6366f1" stroke-width="2"/>
+                    <text x="45" y="70" fill="#a5b4fc" font-size="8" text-anchor="middle">x₁</text>
+                    <text x="45" y="85" fill="#a5b4fc" font-size="8" text-anchor="middle">x₂</text>
+                    <text x="45" y="100" fill="#a5b4fc" font-size="8" text-anchor="middle">...</text>
+                    <!-- Cross out mean calculation -->
+                    <line x1="80" y1="70" x2="120" y2="110" stroke="#ef4444" stroke-width="2"/>
+                    <rect x="75" y="50" width="50" height="30" rx="3" fill="rgba(239,68,68,0.2)" stroke="#ef4444" stroke-width="1"/>
+                    <text x="100" y="70" fill="#fca5a5" font-size="7" text-anchor="middle">μ=0</text>
+                    <!-- Arrow -->
+                    <path d="M130 80 L145 80" stroke="#6366f1" stroke-width="2"/>
+                    <!-- RMSNorm box (simpler) -->
+                    <rect x="150" y="50" width="70" height="60" rx="6" fill="rgba(16,185,129,0.2)" stroke="#10b981" stroke-width="2"/>
+                    <text x="185" y="72" fill="#6ee7b7" font-size="9" text-anchor="middle">RMS(x)</text>
+                    <text x="185" y="90" fill="#6ee7b7" font-size="8" text-anchor="middle">√(Σx²/d)</text>
+                    <text x="185" y="105" fill="#fff" font-size="7" text-anchor="middle">No centering!</text>
+                    <!-- Arrow -->
+                    <path d="M225 80 L255 80" stroke="#10b981" stroke-width="2"/>
+                    <!-- Output vector -->
+                    <rect x="260" y="50" width="30" height="60" rx="4" fill="rgba(168,85,247,0.2)" stroke="#a855f7" stroke-width="2"/>
+                    <text x="275" y="75" fill="#fbcfe8" font-size="8" text-anchor="middle">y</text>
+                    <text x="275" y="92" fill="#fbcfe8" font-size="7" text-anchor="middle">·γ</text>
+                    <!-- Label -->
+                    <text x="150" y="140" fill="#888" font-size="8" text-anchor="middle">Simpler than LayerNorm: no μ, no β, only RMS</text>
+                </svg>
+            </div>
+
             <!-- Layer Normalization Paper Card -->
             <div class="network-card" onclick="location.href='papers/layernorm.html'">
                 <span class="tag">arXiv 2016</span>
