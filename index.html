@@ -3448,6 +3448,62 @@
                 </svg>
             </div>
 
+            <!-- GraphSAGE Paper Card -->
+            <div class="network-card" onclick="location.href='papers/graphsage.html'">
+                <span class="tag">NIPS 2017</span>
+                <h3>GraphSAGE</h3>
+                <p>Inductive Representation Learning on Large Graphs - The first scalable inductive GNN framework that learns aggregation functions rather than individual embeddings, enabling predictions on unseen nodes and evolving graphs without retraining.</p>
+                <svg class="preview-svg" viewBox="0 0 300 150">
+                    <defs>
+                        <linearGradient id="graphsage-grad" x1="0%" y1="0%" x2="100%" y2="0%">
+                            <stop offset="0%" style="stop-color:#f59e0b"/>
+                            <stop offset="50%" style="stop-color:#ec4899"/>
+                            <stop offset="100%" style="stop-color:#a855f7"/>
+                        </linearGradient>
+                        <marker id="sage-arrow" markerWidth="8" markerHeight="6" refX="7" refY="3" orient="auto">
+                            <polygon points="0 0, 8 3, 0 6" fill="#f59e0b"/>
+                        </marker>
+                    </defs>
+                    <!-- Target node (large) -->
+                    <circle cx="70" cy="75" r="18" fill="url(#graphsage-grad)" opacity="0.8"/>
+                    <text x="70" y="79" fill="#fff" font-size="10" font-weight="bold" text-anchor="middle">v</text>
+                    
+                    <!-- Sampled neighbors (smaller) -->
+                    <circle cx="40" cy="40" r="10" fill="#f59e0b" opacity="0.5"/>
+                    <circle cx="100" cy="40" r="10" fill="#f59e0b" opacity="0.6"/>
+                    <circle cx="30" cy="75" r="10" fill="#f59e0b" opacity="0.4"/>
+                    <circle cx="110" cy="75" r="10" fill="#f59e0b" opacity="0.5"/>
+                    <circle cx="40" cy="110" r="10" fill="#f59e0b" opacity="0.6"/>
+                    <circle cx="100" cy="110" r="10" fill="#f59e0b" opacity="0.5"/>
+                    
+                    <!-- Sample indicator -->
+                    <circle cx="150" cy="75" r="15" fill="none" stroke="#ec4899" stroke-width="1.5" stroke-dasharray="3,2"/>
+                    <text x="150" y="79" fill="#ec4899" font-size="8" text-anchor="middle">k</text>
+                    
+                    <!-- Connection lines -->
+                    <line x1="50" y1="45" x2="55" y2="60" stroke="#f59e0b" stroke-width="1" opacity="0.6"/>
+                    <line x1="90" y1="45" x2="85" y2="60" stroke="#f59e0b" stroke-width="1" opacity="0.6"/>
+                    <line x1="40" y1="75" x2="52" y2="75" stroke="#f59e0b" stroke-width="1" opacity="0.6"/>
+                    <line x1="100" y1="75" x2="88" y2="75" stroke="#f59e0b" stroke-width="1" opacity="0.6"/>
+                    <line x1="50" y1="105" x2="55" y2="90" stroke="#f59e0b" stroke-width="1" opacity="0.6"/>
+                    <line x1="90" y1="105" x2="85" y2="90" stroke="#f59e0b" stroke-width="1" opacity="0.6"/>
+                    
+                    <!-- Aggregation box -->
+                    <rect x="175" y="45" width="100" height="60" rx="5" fill="rgba(245,158,11,0.2)" stroke="#f59e0b" stroke-width="2"/>
+                    <text x="225" y="65" fill="#fbbf24" font-size="10" font-weight="bold" text-anchor="middle">AGGREGATE</text>
+                    <text x="225" y="82" fill="#8888aa" font-size="7" text-anchor="middle">Mean/LSTM/Pool</text>
+                    <text x="225" y="95" fill="#a855f7" font-size="6" text-anchor="middle">hᵥᵏ ← f({hᵤᵏ⁻¹})</text>
+                    
+                    <!-- Arrow to aggregation -->
+                    <path d="M165 75 L170 75" stroke="#f59e0b" stroke-width="2" marker-end="url(#sage-arrow)"/>
+                    
+                    <!-- Labels -->
+                    <text x="70" y="135" fill="#888" font-size="8" text-anchor="middle">Sample & Aggregate</text>
+                    <text x="225" y="35" fill="#f59e0b" font-size="7" text-anchor="middle">Inductive</text>
+                    <text x="225" y="125" fill="#10b981" font-size="7" text-anchor="middle">Works on Unseen Nodes ✓</text>
+                </svg>
+            </div>
+
             <!-- Neural ODE Paper Card -->
             <div class="network-card" onclick="location.href='papers/neural-ode.html'">
                 <span class="tag">NeurIPS 2018 (Best Paper)</span>
