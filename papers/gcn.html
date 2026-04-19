@@ -1,0 +1,681 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GCN - Semi-Supervised Classification with Graph Convolutional Networks | 2017</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            background: #0a0a0f;
+            color: #e0e0ff;
+            line-height: 1.8;
+        }
+        
+        .bg-animation {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+            opacity: 0.2;
+        }
+        
+        header {
+            background: linear-gradient(135deg, rgba(99,102,241,0.15) 0%, rgba(168,85,247,0.1) 100%);
+            padding: 60px 20px;
+            text-align: center;
+            border-bottom: 1px solid rgba(99, 102, 241, 0.2);
+        }
+        
+        .back-link {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            color: #8888aa;
+            text-decoration: none;
+            font-size: 0.95rem;
+            transition: color 0.3s;
+        }
+        
+        .back-link:hover {
+            color: #a5b4fc;
+        }
+        
+        h1 {
+            font-size: 2.8rem;
+            background: linear-gradient(135deg, #6366f1 0%, #a855f7 50%, #ec4899 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 15px;
+            font-weight: 800;
+        }
+        
+        .paper-meta {
+            color: #8888aa;
+            font-size: 1.1rem;
+            margin-bottom: 25px;
+        }
+        
+        .authors {
+            color: #a5b4fc;
+            font-size: 1.2rem;
+            margin-bottom: 20px;
+        }
+        
+        .badges {
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+        
+        .badge {
+            background: rgba(99, 102, 241, 0.2);
+            color: #a5b4fc;
+            padding: 8px 20px;
+            border-radius: 25px;
+            text-decoration: none;
+            font-size: 0.9rem;
+            border: 1px solid rgba(99, 102, 241, 0.3);
+            transition: all 0.3s;
+        }
+        
+        .badge:hover {
+            background: rgba(99, 102, 241, 0.3);
+            transform: translateY(-2px);
+        }
+        
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 50px 20px;
+        }
+        
+        h2 {
+            font-size: 1.8rem;
+            color: #fff;
+            margin: 50px 0 25px;
+            padding-bottom: 15px;
+            border-bottom: 2px solid rgba(99, 102, 241, 0.3);
+        }
+        
+        p {
+            color: #b0b0d0;
+            margin-bottom: 20px;
+            font-size: 1.1rem;
+        }
+        
+        .highlight-box {
+            background: rgba(99, 102, 241, 0.1);
+            border-left: 4px solid #6366f1;
+            padding: 25px;
+            margin: 30px 0;
+            border-radius: 0 10px 10px 0;
+        }
+        
+        .highlight-box h3 {
+            color: #a5b4fc;
+            margin-bottom: 10px;
+        }
+        
+        .formula {
+            background: rgba(20, 20, 35, 0.8);
+            padding: 20px;
+            border-radius: 10px;
+            font-family: 'Courier New', monospace;
+            color: #a5b4fc;
+            margin: 20px 0;
+            text-align: center;
+            font-size: 1.2rem;
+            border: 1px solid rgba(99, 102, 241, 0.2);
+        }
+        
+        .architecture-diagram {
+            background: rgba(20, 20, 35, 0.6);
+            border-radius: 15px;
+            padding: 40px;
+            margin: 40px 0;
+            border: 1px solid rgba(99, 102, 241, 0.2);
+        }
+        
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin: 40px 0;
+        }
+        
+        .stat-card {
+            background: rgba(20, 20, 35, 0.8);
+            border: 1px solid rgba(99, 102, 241, 0.2);
+            border-radius: 15px;
+            padding: 25px;
+            text-align: center;
+        }
+        
+        .stat-value {
+            font-size: 2.5rem;
+            font-weight: 800;
+            background: linear-gradient(135deg, #6366f1, #a855f7);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        
+        .stat-label {
+            color: #8888aa;
+            margin-top: 10px;
+        }
+        
+        .code-block {
+            background: #0d0d15;
+            border-radius: 10px;
+            padding: 25px;
+            margin: 30px 0;
+            overflow-x: auto;
+            border: 1px solid rgba(99, 102, 241, 0.2);
+        }
+        
+        .code-block pre {
+            color: #a5b4fc;
+            font-family: 'Courier New', monospace;
+            line-height: 1.6;
+        }
+        
+        .code-block .comment { color: #555577; }
+        .code-block .keyword { color: #ec4899; }
+        .code-block .string { color: #10b981; }
+        .code-block .function { color: #f59e0b; }
+        
+        .related-papers {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 20px;
+            margin: 30px 0;
+        }
+        
+        .paper-card {
+            background: rgba(20, 20, 35, 0.8);
+            border: 1px solid rgba(99, 102, 241, 0.2);
+            border-radius: 15px;
+            padding: 25px;
+            transition: all 0.3s;
+        }
+        
+        .paper-card:hover {
+            transform: translateY(-5px);
+            border-color: rgba(99, 102, 241, 0.4);
+            box-shadow: 0 10px 30px rgba(99, 102, 241, 0.1);
+        }
+        
+        .paper-card h4 {
+            color: #fff;
+            margin-bottom: 10px;
+            font-size: 1.1rem;
+        }
+        
+        .paper-card p {
+            color: #8888aa;
+            font-size: 0.95rem;
+            margin-bottom: 15px;
+        }
+        
+        .paper-card a {
+            color: #6366f1;
+            text-decoration: none;
+            font-size: 0.9rem;
+        }
+        
+        .paper-card a:hover {
+            color: #a855f7;
+        }
+        
+        .impact-list {
+            list-style: none;
+            padding: 0;
+        }
+        
+        .impact-list li {
+            padding: 15px 0;
+            border-bottom: 1px solid rgba(99, 102, 241, 0.1);
+            display: flex;
+            align-items: flex-start;
+            gap: 15px;
+        }
+        
+        .impact-list li:last-child {
+            border-bottom: none;
+        }
+        
+        .impact-icon {
+            width: 40px;
+            height: 40px;
+            background: rgba(99, 102, 241, 0.2);
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+        }
+        
+        footer {
+            background: rgba(20, 20, 35, 0.8);
+            padding: 40px 20px;
+            text-align: center;
+            border-top: 1px solid rgba(99, 102, 241, 0.2);
+            margin-top: 80px;
+        }
+        
+        footer p {
+            color: #8888aa;
+            margin: 0;
+        }
+
+        .graph-visualization {
+            background: rgba(20, 20, 35, 0.6);
+            border-radius: 15px;
+            padding: 30px;
+            margin: 30px 0;
+            border: 1px solid rgba(99, 102, 241, 0.2);
+            text-align: center;
+        }
+
+        .layer-explanation {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            margin: 30px 0;
+        }
+
+        .layer-card {
+            background: rgba(20, 20, 35, 0.8);
+            border: 1px solid rgba(99, 102, 241, 0.2);
+            border-radius: 15px;
+            padding: 20px;
+        }
+
+        .layer-card h4 {
+            color: #a855f7;
+            margin-bottom: 10px;
+        }
+    </style>
+</head>
+<body>
+    <svg class="bg-animation" viewBox="0 0 100 100" preserveAspectRatio="none">
+        <defs>
+            <pattern id="grid" width="10" height="10" patternUnits="userSpaceOnUse">
+                <path d="M 10 0 L 0 0 0 10" fill="none" stroke="#6366f1" stroke-width="0.1"/>
+            </pattern>
+        </defs>
+        <rect width="100%" height="100%" fill="url(#grid)" />
+    </svg>
+
+    <header>
+        <a href="../index.html" class="back-link">← Back to Papers</a>
+        <h1>GCN</h1>
+        <p class="paper-meta">Semi-Supervised Classification with Graph Convolutional Networks</p>
+        <p class="authors">Thomas N. Kipf & Max Welling</p>
+        <p class="paper-meta">ICLR 2017 • University of Amsterdam</p>
+        <div class="badges">
+            <a href="https://arxiv.org/abs/1609.02907" class="badge" target="_blank">📄 arXiv</a>
+            <a href="https://openreview.net/forum?id=SJU4ayYgl" class="badge" target="_blank">🌐 OpenReview</a>
+            <a href="https://github.com/tkipf/gcn" class="badge" target="_blank">💻 Code</a>
+        </div>
+    </header>
+
+    <div class="container">
+        <h2>🎯 Problem Statement</h2>
+        <p>
+            Before GCN, learning on graph-structured data faced significant challenges:
+        </p>
+        <ul style="color: #b0b0d0; margin-left: 30px; margin-bottom: 20px;">
+            <li>Traditional CNNs cannot directly operate on non-Euclidean graph data</li>
+            <li>Spectral methods were computationally expensive (O(n³) for eigendecomposition)</li>
+            <li>Graph neural networks of the time didn't scale to large graphs</li>
+            <li>Limited labeled data in many graph learning scenarios (e.g., citation networks)</li>
+        </ul>
+        <p>
+            The key question: <strong>How can we generalize convolutions to graphs efficiently, enabling scalable deep learning on graph-structured data?</strong>
+        </p>
+
+        <h2>💡 Key Innovation</h2>
+        <div class="highlight-box">
+            <h3>Spectral Graph Convolution via First-Order Approximation</h3>
+            <p>
+                GCN introduces a scalable, layer-wise propagation rule based on a first-order approximation of spectral graph convolutions. This elegant simplification reduces complexity from O(n³) to O(|E|), making it linear in the number of edges.
+            </p>
+        </div>
+
+        <div class="formula">
+            H<sup>(l+1)</sup> = σ(<span style="color: #ec4899;">D̃</span><sup>-1/2</sup> <span style="color: #a855f7;">Ã</span> <span style="color: #ec4899;">D̃</span><sup>-1/2</sup> <span style="color: #6366f1;">H<sup>(l)</sup></span> <span style="color: #f59e0b;">W<sup>(l)</sup></span>)
+        </div>
+        <p style="text-align: center; color: #8888aa; font-size: 0.9rem;">
+            The GCN propagation rule: Normalized adjacency matrix × Node features × Learnable weights
+        </p>
+
+        <h2>🏗️ Architecture</h2>
+        
+        <div class="graph-visualization">
+            <svg viewBox="0 0 800 450" width="100%" height="auto">
+                <defs>
+                    <linearGradient id="nodeGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+                        <stop offset="0%" style="stop-color:#6366f1;stop-opacity:1" />
+                        <stop offset="100%" style="stop-color:#a855f7;stop-opacity:1" />
+                    </linearGradient>
+                    <linearGradient id="edgeGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+                        <stop offset="0%" style="stop-color:#6366f1;stop-opacity:0.6" />
+                        <stop offset="100%" style="stop-color:#a855f7;stop-opacity:0.6" />
+                    </linearGradient>
+                    <marker id="arrowhead" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto">
+                        <polygon points="0 0, 10 3.5, 0 7" fill="#6366f1" />
+                    </marker>
+                </defs>
+
+                <!-- Title -->
+                <text x="400" y="30" text-anchor="middle" fill="#fff" font-size="18" font-weight="bold">GCN Layer-by-Layer Propagation</text>
+
+                <!-- Input Layer: Graph -->
+                <g transform="translate(100, 80)">
+                    <text x="0" y="-10" fill="#a855f7" font-size="14" font-weight="bold">Input Graph</text>
+                    <text x="0" y="10" fill="#8888aa" font-size="11">Features X</text>
+                    
+                    <!-- Nodes -->
+                    <circle cx="0" cy="40" r="12" fill="url(#nodeGrad)" stroke="#6366f1" stroke-width="2"/>
+                    <circle cx="50" cy="25" r="12" fill="url(#nodeGrad)" stroke="#6366f1" stroke-width="2"/>
+                    <circle cx="80" cy="60" r="12" fill="url(#nodeGrad)" stroke="#6366f1" stroke-width="2"/>
+                    <circle cx="30" cy="80" r="12" fill="url(#nodeGrad)" stroke="#6366f1" stroke-width="2"/>
+                    <circle cx="70" cy="100" r="12" fill="url(#nodeGrad)" stroke="#6366f1" stroke-width="2"/>
+                    <text x="0" cy="40" fill="#fff" font-size="10" text-anchor="middle" dy="4">1</text>
+                    <text x="50" y="25" fill="#fff" font-size="10" text-anchor="middle" dy="4">2</text>
+                    <text x="80" y="60" fill="#fff" font-size="10" text-anchor="middle" dy="4">3</text>
+                    <text x="30" y="80" fill="#fff" font-size="10" text-anchor="middle" dy="4">4</text>
+                    <text x="70" y="100" fill="#fff" font-size="10" text-anchor="middle" dy="4">5</text>
+                    
+                    <!-- Edges -->
+                    <line x1="0" y1="40" x2="50" y2="25" stroke="url(#edgeGrad)" stroke-width="2"/>
+                    <line x1="50" y1="25" x2="80" y2="60" stroke="url(#edgeGrad)" stroke-width="2"/>
+                    <line x1="0" y1="40" x2="30" y2="80" stroke="url(#edgeGrad)" stroke-width="2"/>
+                    <line x1="30" y1="80" x2="70" y2="100" stroke="url(#edgeGrad)" stroke-width="2"/>
+                    <line x1="50" y1="25" x2="70" y2="100" stroke="url(#edgeGrad)" stroke-width="2"/>
+                    <line x1="80" y1="60" x2="70" y2="100" stroke="url(#edgeGrad)" stroke-width="2"/>
+                </g>
+
+                <!-- Arrow -->
+                <path d="M 250 150 L 320 150" stroke="#6366f1" stroke-width="3" marker-end="url(#arrowhead)" fill="none"/>
+                <text x="285" y="140" fill="#8888aa" font-size="12" text-anchor="middle">Conv</text>
+
+                <!-- Hidden Layer 1 -->
+                <g transform="translate(380, 80)">
+                    <text x="0" y="-10" fill="#a855f7" font-size="14" font-weight="bold">GCN Layer 1</text>
+                    <text x="0" y="10" fill="#8888aa" font-size="11">ReLU(ÃXW⁰)</text>
+                    
+                    <circle cx="0" cy="40" r="14" fill="#6366f1" opacity="0.8"/>
+                    <circle cx="50" cy="25" r="14" fill="#6366f1" opacity="0.8"/>
+                    <circle cx="80" cy="60" r="14" fill="#6366f1" opacity="0.8"/>
+                    <circle cx="30" cy="80" r="14" fill="#6366f1" opacity="0.8"/>
+                    <circle cx="70" cy="100" r="14" fill="#6366f1" opacity="0.8"/>
+                    
+                    <line x1="0" y1="40" x2="50" y2="25" stroke="#6366f1" stroke-width="1.5" opacity="0.5"/>
+                    <line x1="50" y1="25" x2="80" y2="60" stroke="#6366f1" stroke-width="1.5" opacity="0.5"/>
+                    <line x1="0" y1="40" x2="30" y2="80" stroke="#6366f1" stroke-width="1.5" opacity="0.5"/>
+                    <line x1="30" y1="80" x2="70" y2="100" stroke="#6366f1" stroke-width="1.5" opacity="0.5"/>
+                    <line x1="50" y1="25" x2="70" y2="100" stroke="#6366f1" stroke-width="1.5" opacity="0.5"/>
+                    <line x1="80" y1="60" x2="70" y2="100" stroke="#6366f1" stroke-width="1.5" opacity="0.5"/>
+                </g>
+
+                <!-- Arrow -->
+                <path d="M 510 150 L 580 150" stroke="#6366f1" stroke-width="3" marker-end="url(#arrowhead)" fill="none"/>
+                <text x="545" y="140" fill="#8888aa" font-size="12" text-anchor="middle">Conv</text>
+
+                <!-- Hidden Layer 2 -->
+                <g transform="translate(640, 80)">
+                    <text x="0" y="-10" fill="#a855f7" font-size="14" font-weight="bold">GCN Layer 2</text>
+                    <text x="0" y="10" fill="#8888aa" font-size="11">softmax(ÃH¹W¹)</text>
+                    
+                    <circle cx="0" cy="40" r="14" fill="#a855f7" opacity="0.8"/>
+                    <circle cx="50" cy="25" r="14" fill="#a855f7" opacity="0.8"/>
+                    <circle cx="80" cy="60" r="14" fill="#a855f7" opacity="0.8"/>
+                    <circle cx="30" cy="80" r="14" fill="#a855f7" opacity="0.8"/>
+                    <circle cx="70" cy="100" r="14" fill="#a855f7" opacity="0.8"/>
+                    
+                    <line x1="0" y1="40" x2="50" y2="25" stroke="#a855f7" stroke-width="1.5" opacity="0.5"/>
+                    <line x1="50" y1="25" x2="80" y2="60" stroke="#a855f7" stroke-width="1.5" opacity="0.5"/>
+                    <line x1="0" y1="40" x2="30" y2="80" stroke="#a855f7" stroke-width="1.5" opacity="0.5"/>
+                    <line x1="30" y1="80" x2="70" y2="100" stroke="#a855f7" stroke-width="1.5" opacity="0.5"/>
+                    <line x1="50" y1="25" x2="70" y2="100" stroke="#a855f7" stroke-width="1.5" opacity="0.5"/>
+                    <line x1="80" y1="60" x2="70" y2="100" stroke="#a855f7" stroke-width="1.5" opacity="0.5"/>
+                </g>
+
+                <!-- Arrow Down -->
+                <path d="M 710 190 L 710 220" stroke="#6366f1" stroke-width="3" marker-end="url(#arrowhead)" fill="none"/>
+
+                <!-- Output: Classification -->
+                <g transform="translate(640, 250)">
+                    <text x="0" y="0" fill="#a855f7" font-size="14" font-weight="bold">Output</text>
+                    <text x="0" y="20" fill="#8888aa" font-size="11">Node Classifications</text>
+                    
+                    <rect x="-20" y="40" width="40" height="20" rx="5" fill="#10b981" opacity="0.8"/>
+                    <rect x="30" y="25" width="40" height="20" rx="5" fill="#f59e0b" opacity="0.8"/>
+                    <rect x="60" y="60" width="40" height="20" rx="5" fill="#10b981" opacity="0.8"/>
+                    <rect x="10" y="80" width="40" height="20" rx="5" fill="#ec4899" opacity="0.8"/>
+                    <rect x="50" y="100" width="40" height="20" rx="5" fill="#f59e0b" opacity="0.8"/>
+                    
+                    <text x="0" y="54" fill="#fff" font-size="10" text-anchor="middle">Class A</text>
+                    <text x="50" y="39" fill="#fff" font-size="10" text-anchor="middle">Class B</text>
+                    <text x="80" y="74" fill="#fff" font-size="10" text-anchor="middle">Class A</text>
+                    <text x="30" y="94" fill="#fff" font-size="10" text-anchor="middle">Class C</text>
+                    <text x="70" y="114" fill="#fff" font-size="10" text-anchor="middle">Class B</text>
+                </g>
+
+                <!-- Formula Box -->
+                <g transform="translate(100, 320)">
+                    <rect x="0" y="0" width="550" height="100" rx="10" fill="rgba(20, 20, 35, 0.8)" stroke="#6366f1" stroke-width="1"/>
+                    <text x="275" y="25" fill="#fff" font-size="14" font-weight="bold" text-anchor="middle">GCN Propagation Rule</text>
+                    <text x="275" y="55" fill="#a5b4fc" font-size="16" text-anchor="middle" font-family="monospace">Z = f(X, A) = softmax(Ã ReLU(Ã X W⁽⁰⁾) W⁽¹⁾)</text>
+                    <text x="275" y="80" fill="#8888aa" font-size="12" text-anchor="middle">Ã = D̃^(-½) (A + I) D̃^(-½)  — Symmetric Normalization</text>
+                </g>
+            </svg>
+        </div>
+
+        <h2>🔬 Method Details</h2>
+        
+        <div class="layer-explanation">
+            <div class="layer-card">
+                <h4>1. Adjacency Matrix (A)</h4>
+                <p style="font-size: 0.95rem;">Represents graph structure. A<sub>ij</sub> = 1 if nodes i and j are connected, 0 otherwise. Self-connections added via I (identity).</p>
+            </div>
+            <div class="layer-card">
+                <h4>2. Degree Matrix (D̃)</h4>
+                <p style="font-size: 0.95rem;">Diagonal matrix where D̃<sub>ii</sub> = Σ<sub>j</sub>(A<sub>ij</sub> + I<sub>ij</sub>). Counts connections including self-loops.</p>
+            </div>
+            <div class="layer-card">
+                <h4>3. Normalization (D̃<sup>-1/2</sup>ÃD̃<sup>-1/2</sup>)</h4>
+                <p style="font-size: 0.95rem;">Symmetric normalization prevents numerical instabilities and exploding/vanishing gradients.</p>
+            </div>
+            <div class="layer-card">
+                <h4>4. Feature Transformation (W)</h4>
+                <p style="font-size: 0.95rem;">Learnable weight matrix transforms features at each layer. Enables complex feature learning.</p>
+            </div>
+        </div>
+
+        <div class="formula">
+            <strong>Normalized Adjacency Matrix:</strong><br><br>
+            Ã = D̃<sup>-1/2</sup> (A + I<sub>N</sub>) D̃<sup>-1/2</sup>
+        </div>
+
+        <h2>📊 Results & Impact</h2>
+        
+        <div class="stats-grid">
+            <div class="stat-card">
+                <div class="stat-value">81.5%</div>
+                <div class="stat-label">Cora Dataset<br>(semi-supervised)</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value">70.3%</div>
+                <div class="stat-label">Citeseer Dataset<br>(semi-supervised)</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value">79.0%</div>
+                <div class="stat-label">Pubmed Dataset<br>(semi-supervised)</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value">O(|E|)</div>
+                <div class="stat-label">Time Complexity<br>(linear in edges)</div>
+            </div>
+        </div>
+
+        <ul class="impact-list">
+            <li>
+                <div class="impact-icon">🚀</div>
+                <div>
+                    <strong style="color: #fff;">Scalability Breakthrough</strong><br>
+                    <span style="color: #8888aa;">Reduced spectral convolution from O(n³) to O(|E|), enabling application to large-scale graphs</span>
+                </div>
+            </li>
+            <li>
+                <div class="impact-icon">🌐</div>
+                <div>
+                    <strong style="color: #fff;">Foundation for GNNs</strong><br>
+                    <span style="color: #8888aa;">Became the foundational architecture for modern Graph Neural Networks, cited by 30,000+ papers</span>
+                </div>
+            </li>
+            <li>
+                <div class="impact-icon">🔬</div>
+                <div>
+                    <strong style="color: #fff;">Semi-Supervised Success</strong><br>
+                    <span style="color: #8888aa;">Demonstrated effective semi-supervised learning with only 5.2% labeled nodes on citation networks</span>
+                </div>
+            </li>
+            <li>
+                <div class="impact-icon">📈</div>
+                <div>
+                    <strong style="color: #fff;">Simplified Propagation</strong><br>
+                    <span style="color: #8888aa;">The renormalized adjacency trick Ã = D̃^(-½)(A+I)D̃^(-½) became standard practice</span>
+                </div>
+            </li>
+        </ul>
+
+        <h2>💻 PyTorch Implementation</h2>
+        
+        <div class="code-block">
+            <pre><span class="comment"># GCN Layer Implementation in PyTorch</span>
+<span class="keyword">import</span> torch
+<span class="keyword">import</span> torch.nn <span class="keyword">as</span> nn
+<span class="keyword">import</span> torch.nn.functional <span class="keyword">as</span> F
+
+<span class="keyword">class</span> <span class="function">GCNLayer</span>(nn.Module):
+    <span class="keyword">def</span> <span class="function">__init__</span>(self, in_features, out_features):
+        super(GCNLayer, self).__init__()
+        self.linear = nn.Linear(in_features, out_features)
+    
+    <span class="keyword">def</span> <span class="function">forward</span>(self, X, adj):
+        <span class="comment"># X: Node features (N × in_features)</span>
+        <span class="comment"># adj: Normalized adjacency matrix Ã (N × N)</span>
+        X = self.linear(X)           <span class="comment"># Feature transformation</span>
+        X = torch.mm(adj, X)          <span class="comment"># Graph convolution: ÃXW</span>
+        <span class="keyword">return</span> X
+
+<span class="keyword">class</span> <span class="function">GCN</span>(nn.Module):
+    <span class="keyword">def</span> <span class="function">__init__</span>(self, nfeat, nhid, nclass, dropout=0.5):
+        super(GCN, self).__init__()
+        self.gc1 = GCNLayer(nfeat, nhid)
+        self.gc2 = GCNLayer(nhid, nclass)
+        self.dropout = dropout
+    
+    <span class="keyword">def</span> <span class="function">forward</span>(self, x, adj):
+        x = F.relu(self.gc1(x, adj))
+        x = F.dropout(x, self.dropout, training=self.training)
+        x = self.gc2(x, adj)
+        <span class="keyword">return</span> F.log_softmax(x, dim=1)
+
+<span class="comment"># Compute normalized adjacency matrix Ã</span>
+<span class="keyword">def</span> <span class="function">normalize_adj</span>(adj):
+    <span class="string">"""Symmetric normalization: D̃^(-½)(A+I)D̃^(-½)"""</span>
+    adj = adj + torch.eye(adj.size(0))  <span class="comment"># Add self-loops</span>
+    deg = adj.sum(dim=1)                 <span class="comment"># Degree matrix</span>
+    deg_inv_sqrt = torch.pow(deg, -0.5)
+    deg_inv_sqrt[torch.isinf(deg_inv_sqrt)] = 0
+    deg_mat = torch.diag(deg_inv_sqrt)
+    <span class="keyword">return</span> deg_mat @ adj @ deg_mat       <span class="comment"># Ã = D̃^(-½) Ã D̃^(-½)</span></pre>
+        </div>
+
+        <h2>🔗 Related Work</h2>
+        
+        <div class="related-papers">
+            <div class="paper-card">
+                <h4>Graph Attention Networks (GAT)</h4>
+                <p>Veličković et al., 2017 • ICLR 2018<br>Introduces attention mechanism to graph convolutions, allowing nodes to weigh neighbor importance.</p>
+                <a href="https://arxiv.org/abs/1710.10903" target="_blank">Read Paper →</a>
+            </div>
+            <div class="paper-card">
+                <h4>GraphSAGE</h4>
+                <p>Hamilton et al., 2017 • NeurIPS 2017<br>Inductive framework generating node embeddings by sampling and aggregating features.</p>
+                <a href="https://arxiv.org/abs/1706.02216" target="_blank">Read Paper →</a>
+            </div>
+            <div class="paper-card">
+                <h4>ChebNet</h4>
+                <p>Defferrard et al., 2016 • NeurIPS 2016<br>Spectral CNNs on graphs using Chebyshev polynomial approximation.</p>
+                <a href="https://arxiv.org/abs/1606.09375" target="_blank">Read Paper →</a>
+            </div>
+            <div class="paper-card">
+                <h4>Semi-Supervised Embedding</h4>
+                <p>Weston et al., 2008 • ICML 2008<br>Earlier work on semi-supervised learning with neural networks on graphs.</p>
+                <a href="https://dl.acm.org/doi/10.1145/1390156.1390268" target="_blank">Read Paper →</a>
+            </div>
+            <div class="paper-card">
+                <h4>DeepWalk</h4>
+                <p>Perozzi et al., 2014 • KDD 2014<br>Learns node embeddings using random walks and SkipGram.</p>
+                <a href="https://arxiv.org/abs/1403.6652" target="_blank">Read Paper →</a>
+            </div>
+            <div class="paper-card">
+                <h4>MoNet</h4>
+                <p>Monti et al., 2017 • CVPR 2017<br>Mixture model CNNs for learning on graphs and manifolds.</p>
+                <a href="https://arxiv.org/abs/1611.08402" target="_blank">Read Paper →</a>
+            </div>
+        </div>
+
+        <h2>📚 Key Insights</h2>
+        
+        <div class="highlight-box">
+            <h3>Why GCN Works So Well</h3>
+            <p>
+                <strong>1. Spectral Approximation:</strong> By taking only the first-order Chebyshev approximation (K=1), GCN achieves an optimal balance between computational efficiency and expressiveness.
+            </p>
+            <p>
+                <strong>2. Renormalization Trick:</strong> Adding self-loops (I<sub>N</sub>) and symmetric normalization prevents the numerical instabilities that plagued earlier spectral methods.
+            </p>
+            <p>
+                <strong>3. Semi-Supervised Structure:</strong> The graph Laplacian regularization naturally propagates labels from labeled to unlabeled nodes through graph connections.
+            </p>
+            <p>
+                <strong>4. Weight Sharing:</strong> Like CNNs, GCN uses shared weights across all nodes, enabling the model to generalize to unseen graph structures.
+            </p>
+        </div>
+
+        <h2>🎯 Citation</h2>
+        <div class="code-block">
+            <pre>@inproceedings{kipf2017semi,
+  title={Semi-Supervised Classification with Graph Convolutional Networks},
+  author={Kipf, Thomas N and Welling, Max},
+  booktitle={International Conference on Learning Representations (ICLR)},
+  year={2017},
+  url={https://openreview.net/forum?id=SJU4ayYgl}
+}</pre>
+        </div>
+    </div>
+
+    <footer>
+        <p>Part of the AI Neural Networks Collection • Generated for Educational Purposes</p>
+        <p style="margin-top: 10px; font-size: 0.9rem;">Last updated: April 20, 2026</p>
+    </footer>
+</body>
+</html>

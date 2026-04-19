@@ -3403,6 +3403,51 @@
                 </svg>
             </div>
             
+            <!-- GCN Paper Card -->
+            <div class="network-card" onclick="location.href='papers/gcn.html'">
+                <span class="tag">ICLR 2017</span>
+                <h3>GCN</h3>
+                <p>Semi-Supervised Classification with Graph Convolutional Networks - The foundational paper for modern graph neural networks. Introduces a scalable layer-wise propagation rule via spectral graph convolution approximation, enabling efficient semi-supervised learning on graph-structured data.</p>
+                <svg class="preview-svg" viewBox="0 0 300 150">
+                    <defs>
+                        <linearGradient id="gcn-grad" x1="0%" y1="0%" x2="100%" y2="0%">
+                            <stop offset="0%" style="stop-color:#6366f1"/>
+                            <stop offset="50%" style="stop-color:#a855f7"/>
+                            <stop offset="100%" style="stop-color:#10b981"/>
+                        </linearGradient>
+                        <marker id="gcn-arrow" markerWidth="8" markerHeight="6" refX="7" refY="3" orient="auto">
+                            <polygon points="0 0, 8 3, 0 6" fill="#6366f1"/>
+                        </marker>
+                    </defs>
+                    <!-- Graph nodes -->
+                    <circle cx="50" cy="45" r="12" fill="url(#gcn-grad)" opacity="0.8"/>
+                    <circle cx="80" cy="30" r="12" fill="url(#gcn-grad)" opacity="0.6"/>
+                    <circle cx="110" cy="55" r="12" fill="url(#gcn-grad)" opacity="0.7"/>
+                    <circle cx="70" cy="80" r="12" fill="url(#gcn-grad)" opacity="0.9"/>
+                    <circle cx="100" cy="100" r="12" fill="url(#gcn-grad)" opacity="0.5"/>
+                    <!-- Edges -->
+                    <line x1="50" y1="45" x2="80" y2="30" stroke="#6366f1" stroke-width="1.5" opacity="0.6"/>
+                    <line x1="80" y1="30" x2="110" y2="55" stroke="#6366f1" stroke-width="1.5" opacity="0.6"/>
+                    <line x1="50" y1="45" x2="70" y2="80" stroke="#6366f1" stroke-width="1.5" opacity="0.6"/>
+                    <line x1="70" y1="80" x2="100" y2="100" stroke="#6366f1" stroke-width="1.5" opacity="0.6"/>
+                    <line x1="80" y1="30" x2="100" y2="100" stroke="#6366f1" stroke-width="1.5" opacity="0.6"/>
+                    <line x1="110" y1="55" x2="100" y2="100" stroke="#6366f1" stroke-width="1.5" opacity="0.6"/>
+                    <line x1="50" y1="45" x2="110" y2="55" stroke="#6366f1" stroke-width="1" opacity="0.4"/>
+                    <!-- Self-loops -->
+                    <circle cx="50" cy="33" r="3" fill="none" stroke="#a855f7" stroke-width="1"/>
+                    <circle cx="80" cy="18" r="3" fill="none" stroke="#a855f7" stroke-width="1"/>
+                    <!-- Propagation arrow -->
+                    <path d="M140 70 L180 70" stroke="#6366f1" stroke-width="2" marker-end="url(#gcn-arrow)"/>
+                    <!-- Convolution -->
+                    <rect x="190" y="45" width="95" height="50" rx="5" fill="rgba(99,102,241,0.2)" stroke="#6366f1" stroke-width="2"/>
+                    <text x="237" y="65" fill="#fff" font-size="8" text-anchor="middle">D̃⁻¹/² Ã D̃⁻¹/²</text>
+                    <text x="237" y="82" fill="#a5b4fc" font-size="6" text-anchor="middle">Normalized Conv</text>
+                    <!-- Labels -->
+                    <text x="80" y="130" fill="#888" font-size="8" text-anchor="middle">Graph → Spectral Conv → Features</text>
+                    <text x="237" y="30" fill="#10b981" font-size="7" text-anchor="middle">O(|E|) complexity</text>
+                </svg>
+            </div>
+
             <!-- Neural ODE Paper Card -->
             <div class="network-card" onclick="location.href='papers/neural-ode.html'">
                 <span class="tag">NeurIPS 2018 (Best Paper)</span>
