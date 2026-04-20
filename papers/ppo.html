@@ -1,10 +1,24 @@
 <!DOCTYPE html>
-<html lang="zh-CN">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>PPO - Proximal Policy Optimization | 2017</title>
+    <title>PPO - Proximal Policy Optimization | AI Neural Networks</title>
+    <link rel="stylesheet" href="../assets/css/style.css">
     <style>
+        :root {
+            --primary: #6366f1;
+            --primary-dark: #4f46e5;
+            --secondary: #ec4899;
+            --accent: #10b981;
+            --bg-dark: #0a0a0f;
+            --bg-card: #13131f;
+            --bg-hover: #1a1a2e;
+            --text-primary: #f8fafc;
+            --text-secondary: #94a3b8;
+            --border: #27273a;
+        }
+        
         * {
             margin: 0;
             padding: 0;
@@ -13,895 +27,924 @@
         
         body {
             font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
-            background: #0a0a0f;
-            color: #e0e0ff;
-            line-height: 1.8;
-        }
-        
-        .bg-animation {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            z-index: -1;
-            opacity: 0.2;
-        }
-        
-        header {
-            background: linear-gradient(135deg, rgba(16, 185, 129, 0.15) 0%, rgba(99, 102, 241, 0.1) 100%);
-            padding: 60px 20px;
-            text-align: center;
-            border-bottom: 1px solid rgba(16, 185, 129, 0.2);
-        }
-        
-        .back-link {
-            position: absolute;
-            top: 20px;
-            left: 20px;
-            color: #8888aa;
-            text-decoration: none;
-            font-size: 0.95rem;
-            transition: color 0.3s;
-        }
-        
-        .back-link:hover {
-            color: #10b981;
-        }
-        
-        h1 {
-            font-size: 2.8rem;
-            background: linear-gradient(135deg, #10b981 0%, #6366f1 50%, #a855f7 100%);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
-            margin-bottom: 15px;
-            font-weight: 800;
-        }
-        
-        .paper-meta {
-            color: #8888aa;
-            font-size: 1.1rem;
-            margin-bottom: 25px;
-        }
-        
-        .authors {
-            color: #10b981;
-            font-size: 1.2rem;
-            margin-bottom: 20px;
-        }
-        
-        .badges {
-            display: flex;
-            gap: 15px;
-            justify-content: center;
-            flex-wrap: wrap;
-        }
-        
-        .badge {
-            background: rgba(16, 185, 129, 0.2);
-            color: #10b981;
-            padding: 8px 20px;
-            border-radius: 25px;
-            text-decoration: none;
-            font-size: 0.9rem;
-            border: 1px solid rgba(16, 185, 129, 0.3);
-            transition: all 0.3s;
-        }
-        
-        .badge:hover {
-            background: rgba(16, 185, 129, 0.3);
-            transform: translateY(-2px);
+            background: var(--bg-dark);
+            color: var(--text-primary);
+            line-height: 1.6;
         }
         
         .container {
-            max-width: 900px;
+            max-width: 1200px;
             margin: 0 auto;
-            padding: 50px 20px;
+            padding: 0 24px;
+        }
+        
+        /* Navigation */
+        nav {
+            background: rgba(10, 10, 15, 0.8);
+            backdrop-filter: blur(12px);
+            border-bottom: 1px solid var(--border);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+        
+        .nav-content {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            height: 64px;
+        }
+        
+        .logo {
+            font-size: 1.25rem;
+            font-weight: 700;
+            color: var(--primary);
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .nav-links {
+            display: flex;
+            gap: 24px;
+            list-style: none;
+        }
+        
+        .nav-links a {
+            color: var(--text-secondary);
+            text-decoration: none;
+            font-size: 0.875rem;
+            transition: color 0.2s;
+        }
+        
+        .nav-links a:hover {
+            color: var(--text-primary);
+        }
+        
+        /* Hero Section */
+        .hero {
+            padding: 80px 0 60px;
+            background: linear-gradient(135deg, var(--bg-dark) 0%, var(--bg-card) 100%);
+            border-bottom: 1px solid var(--border);
+        }
+        
+        .hero-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            background: rgba(99, 102, 241, 0.1);
+            border: 1px solid rgba(99, 102, 241, 0.3);
+            color: var(--primary);
+            padding: 8px 16px;
+            border-radius: 50px;
+            font-size: 0.875rem;
+            font-weight: 500;
+            margin-bottom: 24px;
+        }
+        
+        .hero h1 {
+            font-size: 3rem;
+            font-weight: 800;
+            line-height: 1.1;
+            margin-bottom: 20px;
+            background: linear-gradient(135deg, var(--text-primary) 0%, var(--primary) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        
+        .hero-subtitle {
+            font-size: 1.25rem;
+            color: var(--text-secondary);
+            margin-bottom: 32px;
+            max-width: 700px;
+        }
+        
+        .hero-meta {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 24px;
+            margin-bottom: 32px;
+        }
+        
+        .meta-item {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+        }
+        
+        .meta-label {
+            font-size: 0.75rem;
+            color: var(--text-secondary);
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+        
+        .meta-value {
+            font-size: 0.9375rem;
+            color: var(--text-primary);
+            font-weight: 500;
+        }
+        
+        .paper-links {
+            display: flex;
+            gap: 12px;
+            flex-wrap: wrap;
+        }
+        
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 12px 24px;
+            border-radius: 8px;
+            font-size: 0.875rem;
+            font-weight: 500;
+            text-decoration: none;
+            transition: all 0.2s;
+        }
+        
+        .btn-primary {
+            background: var(--primary);
+            color: white;
+        }
+        
+        .btn-primary:hover {
+            background: var(--primary-dark);
+        }
+        
+        .btn-secondary {
+            background: var(--bg-hover);
+            color: var(--text-primary);
+            border: 1px solid var(--border);
+        }
+        
+        .btn-secondary:hover {
+            background: var(--border);
+        }
+        
+        /* Section Styles */
+        section {
+            padding: 60px 0;
+            border-bottom: 1px solid var(--border);
+        }
+        
+        section:last-child {
+            border-bottom: none;
         }
         
         h2 {
-            font-size: 1.8rem;
-            color: #fff;
-            margin: 50px 0 25px;
-            padding-bottom: 15px;
-            border-bottom: 2px solid rgba(16, 185, 129, 0.3);
+            font-size: 1.875rem;
+            font-weight: 700;
+            margin-bottom: 24px;
+            color: var(--text-primary);
+        }
+        
+        h3 {
+            font-size: 1.25rem;
+            font-weight: 600;
+            margin: 32px 0 16px;
+            color: var(--text-primary);
         }
         
         p {
-            color: #b0b0d0;
-            margin-bottom: 20px;
-            font-size: 1.1rem;
+            color: var(--text-secondary);
+            margin-bottom: 16px;
+            font-size: 1rem;
+            line-height: 1.7;
         }
         
         .highlight-box {
-            background: rgba(16, 185, 129, 0.1);
-            border-left: 4px solid #10b981;
-            padding: 25px;
-            margin: 30px 0;
-            border-radius: 0 10px 10px 0;
+            background: linear-gradient(135deg, rgba(99, 102, 241, 0.1) 0%, rgba(236, 72, 153, 0.1) 100%);
+            border: 1px solid rgba(99, 102, 241, 0.3);
+            border-radius: 12px;
+            padding: 24px;
+            margin: 24px 0;
         }
         
-        .highlight-box h3 {
-            color: #10b981;
-            margin-bottom: 10px;
+        .highlight-box p {
+            color: var(--text-primary);
+            margin: 0;
+            font-size: 1.125rem;
         }
         
-        .formula {
-            background: rgba(20, 20, 35, 0.8);
-            padding: 20px;
-            border-radius: 10px;
-            font-family: 'Courier New', monospace;
-            color: #10b981;
-            margin: 20px 0;
+        /* Architecture Diagram */
+        .architecture-container {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            padding: 32px;
+            margin: 32px 0;
+            overflow-x: auto;
+        }
+        
+        .architecture-svg {
+            width: 100%;
+            min-width: 800px;
+            height: auto;
+        }
+        
+        /* Formula Box */
+        .formula-box {
+            background: var(--bg-hover);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 24px;
+            margin: 24px 0;
             text-align: center;
-            font-size: 1.2rem;
-            border: 1px solid rgba(16, 185, 129, 0.2);
+            font-family: 'Times New Roman', Georgia, serif;
+            font-size: 1.25rem;
+            color: var(--text-primary);
         }
         
-        .architecture-diagram {
-            background: rgba(20, 20, 35, 0.6);
-            border-radius: 15px;
-            padding: 40px;
-            margin: 40px 0;
-            border: 1px solid rgba(16, 185, 129, 0.2);
+        .formula-caption {
+            text-align: center;
+            font-size: 0.875rem;
+            color: var(--text-secondary);
+            margin-top: 12px;
         }
         
+        /* Code Block */
+        .code-block {
+            background: #0d0d12;
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            overflow: hidden;
+            margin: 24px 0;
+        }
+        
+        .code-header {
+            background: var(--bg-card);
+            padding: 12px 16px;
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .code-dot {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+        }
+        
+        .code-dot.red { background: #ef4444; }
+        .code-dot.yellow { background: #eab308; }
+        .code-dot.green { background: #22c55e; }
+        
+        .code-title {
+            font-size: 0.875rem;
+            color: var(--text-secondary);
+            margin-left: 8px;
+        }
+        
+        pre {
+            padding: 20px;
+            overflow-x: auto;
+            font-family: 'Consolas', 'Monaco', 'Courier New', monospace;
+            font-size: 0.875rem;
+            line-height: 1.6;
+        }
+        
+        code {
+            color: var(--text-primary);
+        }
+        
+        .code-comment { color: #6b7280; }
+        .code-keyword { color: #c084fc; }
+        .code-function { color: #60a5fa; }
+        .code-string { color: #4ade80; }
+        .code-number { color: #f472b6; }
+        
+        /* Related Papers */
+        .related-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 20px;
+            margin-top: 24px;
+        }
+        
+        .related-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 20px;
+            transition: all 0.2s;
+        }
+        
+        .related-card:hover {
+            border-color: var(--primary);
+            transform: translateY(-2px);
+        }
+        
+        .related-card h4 {
+            font-size: 1rem;
+            font-weight: 600;
+            margin-bottom: 8px;
+            color: var(--text-primary);
+        }
+        
+        .related-card p {
+            font-size: 0.875rem;
+            color: var(--text-secondary);
+            margin: 0;
+        }
+        
+        .related-card .year {
+            display: inline-block;
+            background: rgba(99, 102, 241, 0.1);
+            color: var(--primary);
+            padding: 4px 12px;
+            border-radius: 50px;
+            font-size: 0.75rem;
+            font-weight: 500;
+            margin-bottom: 12px;
+        }
+        
+        /* List Styles */
+        ul, ol {
+            margin: 16px 0;
+            padding-left: 24px;
+        }
+        
+        li {
+            color: var(--text-secondary);
+            margin-bottom: 12px;
+            line-height: 1.7;
+        }
+        
+        /* Impact Stats */
         .stats-grid {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
             gap: 20px;
-            margin: 40px 0;
+            margin: 32px 0;
         }
         
         .stat-card {
-            background: rgba(20, 20, 35, 0.8);
-            border: 1px solid rgba(16, 185, 129, 0.2);
-            border-radius: 15px;
-            padding: 25px;
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 24px;
             text-align: center;
         }
         
         .stat-value {
             font-size: 2.5rem;
             font-weight: 800;
-            background: linear-gradient(135deg, #10b981, #6366f1);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
+            color: var(--primary);
+            margin-bottom: 8px;
         }
         
         .stat-label {
-            color: #8888aa;
-            margin-top: 10px;
+            font-size: 0.875rem;
+            color: var(--text-secondary);
         }
         
-        .code-block {
-            background: #0d0d15;
-            border-radius: 10px;
-            padding: 25px;
-            margin: 30px 0;
-            overflow-x: auto;
-            border: 1px solid rgba(16, 185, 129, 0.2);
-        }
-        
-        .code-block pre {
-            color: #a5b4fc;
-            font-family: 'Courier New', monospace;
-            line-height: 1.6;
-        }
-        
-        .code-block .comment { color: #555577; }
-        .code-block .keyword { color: #ec4899; }
-        .code-block .string { color: #10b981; }
-        .code-block .function { color: #f59e0b; }
-        .code-block .number { color: #a855f7; }
-        
-        .related-papers {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-            gap: 20px;
-            margin: 30px 0;
-        }
-        
-        .paper-card {
-            background: rgba(20, 20, 35, 0.8);
-            border: 1px solid rgba(16, 185, 129, 0.2);
-            border-radius: 15px;
-            padding: 25px;
-            transition: all 0.3s;
-        }
-        
-        .paper-card:hover {
-            transform: translateY(-5px);
-            border-color: rgba(16, 185, 129, 0.4);
-            box-shadow: 0 10px 30px rgba(16, 185, 129, 0.1);
-        }
-        
-        .paper-card h4 {
-            color: #fff;
-            margin-bottom: 10px;
-            font-size: 1.1rem;
-        }
-        
-        .paper-card p {
-            color: #8888aa;
-            font-size: 0.95rem;
-            margin-bottom: 15px;
-        }
-        
-        .paper-card a {
-            color: #10b981;
-            text-decoration: none;
-            font-size: 0.9rem;
-        }
-        
-        .paper-card a:hover {
-            color: #6366f1;
-        }
-        
-        .impact-list {
-            list-style: none;
-            padding: 0;
-        }
-        
-        .impact-list li {
-            padding: 15px 0;
-            border-bottom: 1px solid rgba(16, 185, 129, 0.1);
-            display: flex;
-            align-items: flex-start;
-            gap: 15px;
-        }
-        
-        .impact-list li:last-child {
-            border-bottom: none;
-        }
-        
-        .impact-icon {
-            width: 40px;
-            height: 40px;
-            background: rgba(16, 185, 129, 0.2);
-            border-radius: 10px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            flex-shrink: 0;
-        }
-        
+        /* Footer */
         footer {
-            background: rgba(20, 20, 35, 0.8);
-            padding: 40px 20px;
+            background: var(--bg-card);
+            border-top: 1px solid var(--border);
+            padding: 40px 0;
             text-align: center;
-            border-top: 1px solid rgba(16, 185, 129, 0.2);
-            margin-top: 80px;
         }
         
         footer p {
-            color: #8888aa;
+            color: var(--text-secondary);
+            font-size: 0.875rem;
             margin: 0;
         }
-
-        .ppo-visualization {
-            background: rgba(20, 20, 35, 0.6);
-            border-radius: 15px;
-            padding: 30px;
-            margin: 30px 0;
-            border: 1px solid rgba(16, 185, 129, 0.2);
-            text-align: center;
-        }
-
-        .comparison-table {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-            gap: 20px;
-            margin: 30px 0;
-        }
-
-        .method-card {
-            background: rgba(20, 20, 35, 0.8);
-            border: 1px solid rgba(16, 185, 129, 0.2);
-            border-radius: 15px;
-            padding: 20px;
-        }
-
-        .method-card h4 {
-            color: #10b981;
-            margin-bottom: 15px;
-        }
-
-        .clip-visual {
-            background: rgba(20, 20, 35, 0.8);
-            border-radius: 15px;
-            padding: 25px;
-            margin: 25px 0;
-            border: 1px solid rgba(16, 185, 129, 0.2);
+        
+        /* Responsive */
+        @media (max-width: 768px) {
+            .hero h1 {
+                font-size: 2rem;
+            }
+            
+            .hero-subtitle {
+                font-size: 1rem;
+            }
+            
+            .nav-links {
+                display: none;
+            }
+            
+            h2 {
+                font-size: 1.5rem;
+            }
         }
     </style>
 </head>
 <body>
-    <svg class="bg-animation" viewBox="0 0 100 100" preserveAspectRatio="none">
-        <defs>
-            <pattern id="grid" width="10" height="10" patternUnits="userSpaceOnUse">
-                <path d="M 10 0 L 0 0 0 10" fill="none" stroke="#10b981" stroke-width="0.1"/>
-            </pattern>
-        </defs>
-        <rect width="100%" height="100%" fill="url(#grid)" />
-    </svg>
+    <nav>
+        <div class="container">
+            <div class="nav-content">
+                <a href="../index.html" class="logo">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/>
+                    </svg>
+                    AI Neural Networks
+                </a>
+                <ul class="nav-links">
+                    <li><a href="../index.html">Home</a></li>
+                    <li><a href="../cnn.html">CNN</a></li>
+                    <li><a href="../gnn.html">GNN</a></li>
+                    <li><a href="../gat.html">GAT</a></li>
+                </ul>
+            </div>
+        </div>
+    </nav>
 
-    <header>
-        <a href="../index.html" class="back-link">← Back to Papers</a>
-        <h1>PPO</h1>
-        <p class="paper-meta">Proximal Policy Optimization Algorithms</p>
-        <p class="authors">John Schulman, Filip Wolski, Prafulla Dhariwal, Alec Radford, Oleg Klimov</p>
-        <p class="paper-meta">OpenAI • arXiv:1707.06347 • August 2017</p>
-        <div class="badges">
-            <a href="https://arxiv.org/abs/1707.06347" class="badge" target="_blank">📄 arXiv</a>
-            <a href="https://openai.com/research/openai-baselines-ppo" class="badge" target="_blank">🌐 OpenAI</a>
-            <a href="https://github.com/openai/baselines" class="badge" target="_blank">💻 Code</a>
+    <header class="hero">
+        <div class="container">
+            <div class="hero-badge">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/>
+                </svg>
+                Reinforcement Learning
+            </div>
+            <h1>Proximal Policy Optimization</h1>
+            <p class="hero-subtitle">A simple, efficient, and stable policy gradient method that clips probability ratios to prevent destructive policy updates. The go-to algorithm for modern RL applications.</p>
+            
+            <div class="hero-meta">
+                <div class="meta-item">
+                    <span class="meta-label">Authors</span>
+                    <span class="meta-value">John Schulman, Filip Wolski, Prafulla Dhariwal, Alec Radford, Oleg Klimov</span>
+                </div>
+                <div class="meta-item">
+                    <span class="meta-label">Institution</span>
+                    <span class="meta-value">OpenAI</span>
+                </div>
+                <div class="meta-item">
+                    <span class="meta-label">Year</span>
+                    <span class="meta-value">2017</span>
+                </div>
+                <div class="meta-item">
+                    <span class="meta-label">Venue</span>
+                    <span class="meta-value">arXiv 1707.06347</span>
+                </div>
+            </div>
+            
+            <div class="paper-links">
+                <a href="https://arxiv.org/abs/1707.06347" class="btn btn-primary" target="_blank">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+                        <polyline points="14 2 14 8 20 8"/>
+                    </svg>
+                    Read Paper
+                </a>
+                <a href="https://github.com/openai/baselines" class="btn btn-secondary" target="_blank">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22"/>
+                    </svg>
+                    Code
+                </a>
+                <a href="https://spinningup.openai.com/en/latest/algorithms/ppo.html" class="btn btn-secondary" target="_blank">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <circle cx="12" cy="12" r="10"/>
+                        <line x1="12" y1="16" x2="12" y2="12"/>
+                        <line x1="12" y1="8" x2="12.01" y2="8"/>
+                    </svg>
+                    Spinning Up
+                </a>
+            </div>
         </div>
     </header>
 
-    <div class="container">
-        <h2>🎯 Problem Statement</h2>
-        <p>
-            Before PPO, policy gradient methods faced a fundamental dilemma:
-        </p>
-        <ul style="color: #b0b0d0; margin-left: 30px; margin-bottom: 20px;">
-            <li><strong>Vanilla Policy Gradient (VPG)</strong> — Simple but sample inefficient (one gradient update per data sample)</li>
-            <li><strong>Trust Region Policy Optimization (TRPO)</strong> — Theoretically sound but computationally expensive with complex conjugate gradient methods</li>
-            <li><strong>Constraint-based methods</strong> — Hard to implement, don't work well with architectures involving parameter sharing</li>
-        </ul>
-        <p>
-            The key question: <strong>How can we achieve the stability and reliability of trust region methods while keeping the algorithm simple enough for general use?</strong>
-        </p>
-
-        <h2>💡 Key Innovation</h2>
-        <div class="highlight-box">
-            <h3>Clipped Surrogate Objective</h3>
-            <p>
-                PPO introduces a clipped surrogate objective that <strong>penalizes large policy changes</strong> without the computational burden of second-order methods. Instead of enforcing hard constraints like TRPO, PPO uses a soft clipping mechanism that discourages but doesn't prohibit large ratio deviations.
-            </p>
-        </div>
-
-        <div class="formula">
-            L<sup>CLIP</sup>(θ) = Ê<sub>t</sub>[min(r<sub>t</sub>(θ)Â<sub>t</sub>, clip(r<sub>t</sub>(θ), 1−ε, 1+ε)Â<sub>t</sub>)]
-        </div>
-        <p style="text-align: center; color: #8888aa; font-size: 0.9rem;">
-            The PPO-Clip objective: Take the minimum of unclipped and clipped objectives, ensuring pessimistic bound
-        </p>
-
-        <h2>🏗️ Architecture & Algorithm</h2>
-        
-        <div class="ppo-visualization">
-            <svg viewBox="0 0 900 550" width="100%" height="auto">
-                <defs>
-                    <linearGradient id="actorGrad" x1="0%" y1="0%" x2="100%" y2="100%">
-                        <stop offset="0%" style="stop-color:#10b981;stop-opacity:1" />
-                        <stop offset="100%" style="stop-color:#6366f1;stop-opacity:1" />
-                    </linearGradient>
-                    <linearGradient id="criticGrad" x1="0%" y1="0%" x2="100%" y2="100%">
-                        <stop offset="0%" style="stop-color:#a855f7;stop-opacity:1" />
-                        <stop offset="100%" style="stop-color:#ec4899;stop-opacity:1" />
-                    </linearGradient>
-                    <linearGradient id="envGrad" x1="0%" y1="0%" x2="100%" y2="100%">
-                        <stop offset="0%" style="stop-color:#f59e0b;stop-opacity:1" />
-                        <stop offset="100%" style="stop-color:#ef4444;stop-opacity:1" />
-                    </linearGradient>
-                    <marker id="arrow" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto">
-                        <polygon points="0 0, 10 3.5, 0 7" fill="#10b981" />
-                    </marker>
-                    <marker id="arrow-back" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto">
-                        <polygon points="0 0, 10 3.5, 0 7" fill="#6366f1" />
-                    </marker>
-                </defs>
-
-                <!-- Title -->
-                <text x="450" y="30" text-anchor="middle" fill="#fff" font-size="20" font-weight="bold">PPO Actor-Critic Architecture</text>
-
-                <!-- Environment -->
-                <g transform="translate(50, 100)">
-                    <rect x="0" y="0" width="120" height="100" rx="10" fill="url(#envGrad)" stroke="#f59e0b" stroke-width="2"/>
-                    <text x="60" y="35" fill="#fff" font-size="14" font-weight="bold" text-anchor="middle">Environment</text>
-                    <text x="60" y="55" fill="#fff" font-size="11" text-anchor="middle">s → s'</text>
-                    <text x="60" y="72" fill="#fff" font-size="11" text-anchor="middle">r = reward</text>
-                </g>
-
-                <!-- State Arrow -->
-                <path d="M 180 150 L 260 150" stroke="#10b981" stroke-width="3" marker-end="url(#arrow)" fill="none"/>
-                <text x="220" y="140" fill="#8888aa" font-size="12" text-anchor="middle">state s</text>
-
-                <!-- Actor Network -->
-                <g transform="translate(280, 60)">
-                    <text x="60" y="-10" fill="#10b981" font-size="14" font-weight="bold" text-anchor="middle">Actor (πθ)</text>
-                    <text x="60" y="5" fill="#8888aa" font-size="11" text-anchor="middle">Policy Network</text>
-                    
-                    <!-- Neural network visualization -->
-                    <rect x="0" y="20" width="120" height="180" rx="10" fill="rgba(20,20,35,0.8)" stroke="#10b981" stroke-width="2"/>
-                    
-                    <!-- Input layer -->
-                    <circle cx="20" cy="50" r="8" fill="#10b981"/>
-                    <circle cx="20" cy="80" r="8" fill="#10b981"/>
-                    <circle cx="20" cy="110" r="8" fill="#10b981"/>
-                    <circle cx="20" cy="140" r="8" fill="#10b981"/>
-                    
-                    <!-- Hidden layer -->
-                    <circle cx="60" cy="60" r="8" fill="#6366f1"/>
-                    <circle cx="60" cy="95" r="8" fill="#6366f1"/>
-                    <circle cx="60" cy="130" r="8" fill="#6366f1"/>
-                    <circle cx="60" cy="165" r="8" fill="#6366f1"/>
-                    
-                    <!-- Output layer -->
-                    <circle cx="100" cy="80" r="8" fill="#a855f7"/>
-                    <circle cx="100" cy="110" r="8" fill="#a855f7"/>
-                    <circle cx="100" cy="140" r="8" fill="#a855f7"/>
-                    
-                    <!-- Connections -->
-                    <g stroke="#10b981" stroke-width="1" opacity="0.4">
-                        <line x1="28" y1="50" x2="52" y2="60"/>
-                        <line x1="28" y1="50" x2="52" y2="95"/>
-                        <line x1="28" y1="80" x2="52" y2="60"/>
-                        <line x1="28" y1="80" x2="52" y2="95"/>
-                        <line x1="28" y1="80" x2="52" y2="130"/>
-                        <line x1="28" y1="110" x2="52" y2="95"/>
-                        <line x1="28" y1="110" x2="52" y2="130"/>
-                        <line x1="28" y1="110" x2="52" y2="165"/>
-                        <line x1="28" y1="140" x2="52" y2="130"/>
-                        <line x1="28" y1="140" x2="52" y2="165"/>
-                    </g>
-                    
-                    <g stroke="#6366f1" stroke-width="1" opacity="0.4">
-                        <line x1="68" y1="60" x2="92" y2="80"/>
-                        <line x1="68" y1="60" x2="92" y2="110"/>
-                        <line x1="68" y1="95" x2="92" y2="80"/>
-                        <line x1="68" y1="95" x2="92" y2="110"/>
-                        <line x1="68" y1="95" x2="92" y2="140"/>
-                        <line x1="68" y1="130" x2="92" y2="110"/>
-                        <line x1="68" y1="130" x2="92" y2="140"/>
-                        <line x1="68" y1="165" x2="92" y2="140"/>
-                    </g>
-                    
-                    <text x="60" y="195" fill="#8888aa" font-size="10" text-anchor="middle">πθ(a|s)</text>
-                </g>
-
-                <!-- Action Arrow -->
-                <path d="M 410 150 L 490 150" stroke="#10b981" stroke-width="3" marker-end="url(#arrow)" fill="none"/>
-                <text x="450" y="140" fill="#8888aa" font-size="12" text-anchor="middle">action a</text>
-
-                <!-- Action box -->
-                <g transform="translate(500, 120)">
-                    <rect x="0" y="0" width="80" height="60" rx="8" fill="rgba(16,185,129,0.2)" stroke="#10b981" stroke-width="2"/>
-                    <text x="40" y="25" fill="#fff" font-size="12" font-weight="bold" text-anchor="middle">Action</text>
-                    <text x="40" y="42" fill="#fff" font-size="10" text-anchor="middle">a ~ π</text>
-                </g>
-
-                <!-- Action to Environment -->
-                <path d="M 590 150 L 650 150 L 650 250 L 180 250 L 180 210" stroke="#f59e0b" stroke-width="2" marker-end="url(#arrow)" fill="none" stroke-dasharray="5,5"/>
-                <text x="400" y="265" fill="#8888aa" font-size="11" text-anchor="middle">execute action, observe next state</text>
-
-                <!-- Critic Network -->
-                <g transform="translate(280, 300)">
-                    <text x="60" y="-10" fill="#a855f7" font-size="14" font-weight="bold" text-anchor="middle">Critic (Vφ)</text>
-                    <text x="60" y="5" fill="#8888aa" font-size="11" text-anchor="middle">Value Network</text>
-                    
-                    <!-- Neural network visualization -->
-                    <rect x="0" y="20" width="120" height="150" rx="10" fill="rgba(20,20,35,0.8)" stroke="#a855f7" stroke-width="2"/>
-                    
-                    <!-- Input layer -->
-                    <circle cx="20" cy="50" r="8" fill="#a855f7"/>
-                    <circle cx="20" cy="80" r="8" fill="#a855f7"/>
-                    <circle cx="20" cy="110" r="8" fill="#a855f7"/>
-                    <circle cx="20" cy="140" r="8" fill="#a855f7"/>
-                    
-                    <!-- Hidden layer -->
-                    <circle cx="60" cy="60" r="8" fill="#ec4899"/>
-                    <circle cx="60" cy="95" r="8" fill="#ec4899"/>
-                    <circle cx="60" cy="130" r="8" fill="#ec4899"/>
-                    
-                    <!-- Output -->
-                    <circle cx="100" cy="95" r="8" fill="#f59e0b"/>
-                    
-                    <!-- Connections -->
-                    <g stroke="#a855f7" stroke-width="1" opacity="0.4">
-                        <line x1="28" y1="50" x2="52" y2="60"/>
-                        <line x1="28" y1="50" x2="52" y2="95"/>
-                        <line x1="28" y1="80" x2="52" y2="60"/>
-                        <line x1="28" y1="80" x2="52" y2="95"/>
-                        <line x1="28" y1="80" x2="52" y2="130"/>
-                        <line x1="28" y1="110" x2="52" y2="95"/>
-                        <line x1="28" y1="110" x2="52" y2="130"/>
-                        <line x1="28" y1="140" x2="52" y2="130"/>
-                    </g>
-                    
-                    <g stroke="#ec4899" stroke-width="1" opacity="0.4">
-                        <line x1="68" y1="60" x2="92" y2="95"/>
-                        <line x1="68" y1="95" x2="92" y2="95"/>
-                        <line x1="68" y1="130" x2="92" y2="95"/>
-                    </g>
-                    
-                    <text x="60" y="175" fill="#8888aa" font-size="10" text-anchor="middle">Vφ(s)</text>
-                </g>
-
-                <!-- Value Arrow -->
-                <path d="M 410 390 L 600 390 L 600 180" stroke="#a855f7" stroke-width="2" marker-end="url(#arrow)" fill="none"/>
-                <text x="500" y="405" fill="#8888aa" font-size="11" text-anchor="middle">state value estimate</text>
-
-                <!-- PPO Update Box -->
-                <g transform="translate(600, 280)">
-                    <rect x="0" y="0" width="250" height="180" rx="10" fill="rgba(20,20,35,0.9)" stroke="#10b981" stroke-width="2"/>
-                    <text x="125" y="25" fill="#10b981" font-size="14" font-weight="bold" text-anchor="middle">PPO Update (Mini-batch)</text>
-                    
-                    <text x="10" y="50" fill="#8888aa" font-size="10">1. Compute advantage: Â</text>
-                    <text x="10" y="65" fill="#8888aa" font-size="10">2. Calculate ratio: r(θ) = πθ/πθold</text>
-                    <text x="10" y="80" fill="#8888aa" font-size="10">3. Clip ratio: clip(r, 1-ε, 1+ε)</text>
-                    <text x="10" y="95" fill="#8888aa" font-size="10">4. Take minimum: L = min(r·A, clip·A)</text>
-                    <text x="10" y="115" fill="#10b981" font-size="11" font-weight="bold">Objectives:</text>
-                    <text x="10" y="130" fill="#a5b4fc" font-size="9">L<sup>CLIP</sup> + c₁·L<sup>VF</sup> - c₂·H(π)</text>
-                    <text x="10" y="148" fill="#8888aa" font-size="9">Multiple epochs on same data</text>
-                    <text x="10" y="163" fill="#8888aa" font-size="9">(unlike vanilla policy gradient)</text>
-                </g>
-
-                <!-- Data flow to update -->
-                <path d="M 170 200 L 170 320 L 270 320" stroke="#6366f1" stroke-width="2" marker-end="url(#arrow-back)" fill="none"/>
-                <text x="200" y="310" fill="#8888aa" font-size="10" text-anchor="middle">trajectory</text>
-
-                <!-- Back to actor -->
-                <path d="M 600 340 L 350 340 L 350 260" stroke="#10b981" stroke-width="2" marker-end="url(#arrow)" fill="none" stroke-dasharray="3,3"/>
-                <text x="480" y="355" fill="#8888aa" font-size="10" text-anchor="middle">update policy params</text>
-            </svg>
-        </div>
-
-        <h2>🔬 The Clipping Mechanism</h2>
-        
-        <div class="clip-visual">
-            <svg viewBox="0 0 800 350" width="100%" height="auto">
-                <defs>
-                    <linearGradient id="clipGrad" x1="0%" y1="0%" x2="0%" y2="100%">
-                        <stop offset="0%" style="stop-color:#10b981;stop-opacity:0.3" />
-                        <stop offset="100%" style="stop-color:#10b981;stop-opacity:0.05" />
-                    </linearGradient>
-                    <linearGradient id="penaltyGrad" x1="0%" y1="0%" x2="0%" y2="100%">
-                        <stop offset="0%" style="stop-color:#ef4444;stop-opacity:0.3" />
-                        <stop offset="100%" style="stop-color:#ef4444;stop-opacity:0.05" />
-                    </linearGradient>
-                </defs>
-
-                <!-- Title -->
-                <text x="400" y="25" text-anchor="middle" fill="#fff" font-size="18" font-weight="bold">PPO Clipping Visualization (Advantage A > 0)</text>
-
-                <!-- Axes -->
-                <line x1="80" y1="280" x2="720" y2="280" stroke="#8888aa" stroke-width="2"/>
-                <line x1="80" y1="280" x2="80" y2="50" stroke="#8888aa" stroke-width="2"/>
-                <text x="400" y="310" fill="#8888aa" font-size="14" text-anchor="middle">Probability Ratio r(θ) = πθ(a|s) / πθold(a|s)</text>
-                <text x="30" y="165" fill="#8888aa" font-size="14" text-anchor="middle" transform="rotate(-90, 30, 165)">Objective Value</text>
-
-                <!-- Center line at r = 1 -->
-                <line x1="400" y1="280" x2="400" y2="50" stroke="#6366f1" stroke-width="1" stroke-dasharray="3,3"/>
-                <text x="400" y="295" fill="#6366f1" font-size="12" text-anchor="middle">r = 1</text>
-
-                <!-- Clipping boundaries -->
-                <line x1="280" y1="50" x2="280" y2="280" stroke="#f59e0b" stroke-width="2" stroke-dasharray="5,5"/>
-                <line x1="520" y1="50" x2="520" y2="280" stroke="#f59e0b" stroke-width="2" stroke-dasharray="5,5"/>
-                <text x="280" y="295" fill="#f59e0b" font-size="11" text-anchor="middle">1-ε</text>
-                <text x="520" y="295" fill="#f59e0b" font-size="11" text-anchor="middle">1+ε</text>
-
-                <!-- Unclipped objective (r * A) -->
-                <path d="M 80 240 Q 240 100 400 60" stroke="#ec4899" stroke-width="2" fill="none" opacity="0.5"/>
-                <text x="180" y="80" fill="#ec4899" font-size="12">Unclipped: r × A</text>
-
-                <!-- Clipped objective (flat regions) -->
-                <path d="M 80 240 L 280 140 L 280 140 L 520 60 L 720 60" stroke="#10b981" stroke-width="3" fill="none"/>
+    <main>
+        <section id="problem">
+            <div class="container">
+                <h2>🎯 Problem Statement</h2>
+                <p>Policy gradient methods are foundational to deep reinforcement learning, but they suffer from a critical flaw: <strong>destructive policy updates</strong>. When the policy network is updated too aggressively, it can collapse to a catastrophic state from which recovery is difficult or impossible.</p>
                 
-                <!-- Fill safe region -->
-                <polygon points="280,140 280,280 520,280 520,60" fill="url(#clipGrad)" opacity="0.5"/>
+                <p>Prior work attempted to solve this with <strong>Trust Region Policy Optimization (TRPO)</strong>, which uses second-order methods and constraints to ensure stable updates. However, TRPO is:</p>
                 
-                <!-- Label clipped regions -->
-                <text x="600" y="90" fill="#10b981" font-size="12">Clipped Region</text>
-                <text x="400" y="240" fill="#10b981" font-size="11" text-anchor="middle">Optimization continues</text>
+                <ul>
+                    <li><strong>Complex</strong> - Requires conjugate gradient and Fisher-vector products</li>
+                    <li><strong>Computationally expensive</strong> - Cannot take advantage of GPU batch processing efficiently</li>
+                    <li><strong>Incompatible</strong> with certain architectures (like those with parameter sharing between policy and value functions)</li>
+                </ul>
                 
-                <!-- Penalty region left -->
-                <polygon points="80,240 280,140 280,280" fill="url(#penaltyGrad)" opacity="0.3"/>
-                <text x="160" y="200" fill="#ef4444" font-size="11" text-anchor="middle">Penalty</text>
+                <div class="highlight-box">
+                    <p>💡 <strong>The Question:</strong> Can we achieve the stability benefits of TRPO with the simplicity and computational efficiency of first-order optimization methods?</p>
+                </div>
+            </div>
+        </section>
+
+        <section id="innovation">
+            <div class="container">
+                <h2>💡 Key Innovation</h2>
+                <p>PPO introduces a <strong>clipped surrogate objective</strong> that removes the need for complex trust region calculations while achieving the same stability guarantees. The core insight is elegantly simple:</p>
                 
-                <!-- Penalty region right -->
-                <polygon points="520,60 520,280 720,280 720,60" fill="url(#penaltyGrad)" opacity="0.3"/>
-                <text x="620" y="150" fill="#ef4444" font-size="11" text-anchor="middle">Penalty</text>
-
-                <!-- Legend -->
-                <g transform="translate(550, 70)">
-                    <rect x="0" y="0" width="150" height="110" rx="5" fill="rgba(20,20,35,0.8)" stroke="#6366f1" stroke-width="1"/>
-                    <line x1="10" y1="20" x2="40" y2="20" stroke="#10b981" stroke-width="3"/>
-                    <text x="50" y="25" fill="#fff" font-size="10">PPO Objective</text>
-                    <line x1="10" y1="45" x2="40" y2="45" stroke="#ec4899" stroke-width="2" opacity="0.5"/>
-                    <text x="50" y="50" fill="#fff" font-size="10">Unclipped (VPG)</text>
-                    <rect x="10" y="65" width="30" height="15" fill="url(#clipGrad)" opacity="0.7"/>
-                    <text x="50" y="77" fill="#fff" font-size="10">Safe update zone</text>
-                    <rect x="10" y="88" width="30" height="15" fill="url(#penaltyGrad)" opacity="0.7"/>
-                    <text x="50" y="100" fill="#fff" font-size="10">Penalty zone</text>
-                </g>
-            </svg>
-        </div>
-
-        <div class="formula">
-            <strong>Probability Ratio:</strong> r<sub>t</sub>(θ) = π<sub>θ</sub>(a<sub>t</sub>|s<sub>t</sub>) / π<sub>θold</sub>(a<sub>t</sub>|s<sub>t</sub>)
-        </div>
-
-        <p>
-            When the ratio exceeds (1+ε), the objective is "clipped" — preventing the policy from changing too dramatically in a single update. The <code>min()</code> operator takes the pessimistic bound, ensuring we don't over-optimize when the advantage estimate might be noisy.
-        </p>
-
-        <h2>📊 Algorithm Variants</h2>
-        
-        <div class="comparison-table">
-            <div class="method-card">
-                <h4>PPO-Clip (Main)</h4>
-                <p style="font-size: 0.95rem;">
-                    <strong>Clipped surrogate objective</strong><br><br>
-                    Uses clipping on the probability ratio to constrain policy updates<br><br>
-                    • Simple to implement<br>
-                    • No KL constraints needed<br>
-                    • Works with parameter sharing<br><br>
-                    <span style="color: #10b981;">Recommended as default choice</span>
-                </p>
-            </div>
-            <div class="method-card">
-                <h4>PPO-Penalty (Adaptive KL)</h4>
-                <p style="font-size: 0.95rem;">
-                    <strong>KL-divergence penalty</strong><br><br>
-                    Uses a penalty term on KL divergence, with adaptive coefficient β<br><br>
-                    • Automatically adjusts β to hit target KL<br>
-                    • More theoretically grounded<br>
-                    • Slightly more complex<br><br>
-                    <span style="color: #a855f7;">When strict control needed</span>
-                </p>
-            </div>
-            <div class="method-card">
-                <h4>vs. TRPO</h4>
-                <p style="font-size: 0.95rem;">
-                    <strong>Trust Region Constraint</strong><br><br>
-                    TRPO uses hard KL constraint with conjugate gradient<br><br>
-                    • Second-order method<br>
-                    • Expensive Fisher-vector products<br>
-                    • Doesn't work well with dropout/noise<br><br>
-                    <span style="color: #ef4444;">PPO achieves similar results faster</span>
-                </p>
-            </div>
-            <div class="method-card">
-                <h4>vs. Vanilla PG</h4>
-                <p style="font-size: 0.95rem;">
-                    <strong>REINFORCE / A2C</strong><br><br>
-                    Vanilla policy gradient uses single update per sample<br><br>
-                    • Sample inefficient<br>
-                    • Large policy updates can cause collapse<br>
-                    • Sensitive to step size<br><br>
-                    <span style="color: #10b981;">PPO enables multiple epochs</span>
-                </p>
-            </div>
-        </div>
-
-        <h2>📊 Results & Impact</h2>
-        
-        <div class="stats-grid">
-            <div class="stat-card">
-                <div class="stat-value">5000+</div>
-                <div class="stat-label">Citations<br>(Google Scholar)</div>
-            </div>
-            <div class="stat-card">
-                <div class="stat-value">100+</div>
-                <div class="stat-label">Million Parameters<br>Scales to large models</div>
-            </div>
-            <div class="stat-card">
-                <div class="stat-value">RLHF</div>
-                <div class="stat-label">Foundation for<br>ChatGPT training</div>
-            </div>
-            <div class="stat-card">
-                <div class="stat-value">O(n)</div>
-                <div class="stat-label">Per-Update Cost<br>vs O(n³) for TRPO</div>
-            </div>
-        </div>
-
-        <ul class="impact-list">
-            <li>
-                <div class="impact-icon">🤖</div>
-                <div>
-                    <strong style="color: #fff;">RLHF Revolution</strong><br>
-                    <span style="color: #8888aa;">PPO is the algorithm behind InstructGPT and ChatGPT's reinforcement learning from human feedback (RLHF)</span>
+                <p><strong>Instead of constraining the policy update, penalize updates that move the probability ratio too far from 1.</strong></p>
+                
+                <h3>The Clipped Objective</h3>
+                <div class="formula-box">
+                    L<sup>CLIP</sup>(θ) = E<sub>t</sub>[ min( r<sub>t</sub>(θ)Â<sub>t</sub>, clip(r<sub>t</sub>(θ), 1-ε, 1+ε)Â<sub>t</sub> ) ]
                 </div>
-            </li>
-            <li>
-                <div class="impact-icon">⚡</div>
-                <div>
-                    <strong style="color: #fff;">Sample Efficiency</strong><br>
-                    <span style="color: #8888aa;">Multiple epochs on collected data (unlike vanilla PG) — typically 4x more sample efficient</span>
+                <p class="formula-caption">The PPO-Clip objective function, where r<sub>t</sub>(θ) is the probability ratio and ε is the clipping hyperparameter (typically 0.1 or 0.2)</p>
+                
+                <p>This clipped objective implements a <strong>pessimistic bound</strong> on the policy update:</p>
+                <ul>
+                    <li>When the advantage is positive, the objective flattens when r<sub>t</sub> > 1+ε</li>
+                    <li>When the advantage is negative, the objective flattens when r<sub>t</sub> < 1-ε</li>
+                    <li>The minimum operation takes the lower of the two, preventing the policy from over-optimizing any single batch</li>
+                </ul>
+                
+                <h3>Advantages Over TRPO</h3>
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <div class="stat-value">1st</div>
+                        <div class="stat-label">Order Optimization Only</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-value">4-6×</div>
+                        <div class="stat-label">Faster Per Update</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-value">Few</div>
+                        <div class="stat-label">Hyperparameters</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-value">✓</div>
+                        <div class="stat-label">Parameter Sharing OK</div>
+                    </div>
                 </div>
-            </li>
-            <li>
-                <div class="impact-icon">🔧</div>
-                <div>
-                    <strong style="color: #fff;">Implementation Simplicity</strong><br>
-                    <span style="color: #8888aa;">Simple clipped objective eliminates complex second-order optimization; works with any differentiable policy architecture</span>
+            </div>
+        </section>
+
+        <section id="architecture">
+            <div class="container">
+                <h2>🏗️ Architecture & Method</h2>
+                
+                <div class="architecture-container">
+                    <svg class="architecture-svg" viewBox="0 0 900 550" xmlns="http://www.w3.org/2000/svg">
+                        <!-- Background -->
+                        <rect width="900" height="550" fill="#13131f" rx="8"/>
+                        
+                        <!-- Title -->
+                        <text x="450" y="30" text-anchor="middle" fill="#f8fafc" font-size="18" font-weight="600">PPO Actor-Critic Architecture</text>
+                        
+                        <!-- Environment -->
+                        <rect x="20" y="70" width="120" height="80" fill="#1a1a2e" stroke="#6366f1" stroke-width="2" rx="8"/>
+                        <text x="80" y="95" text-anchor="middle" fill="#f8fafc" font-size="14" font-weight="600">Environment</text>
+                        <text x="80" y="115" text-anchor="middle" fill="#94a3b8" font-size="11">s<sub>t</sub>, r<sub>t</sub>, done</text>
+                        <text x="80" y="135" text-anchor="middle" fill="#94a3b8" font-size="11">Gym/Custom</text>
+                        
+                        <!-- State Arrow -->
+                        <path d="M140 110 L200 110" stroke="#10b981" stroke-width="3" marker-end="url(#arrowGreen)"/>
+                        <text x="170" y="100" text-anchor="middle" fill="#10b981" font-size="11">state s<sub>t</sub></text>
+                        
+                        <!-- Shared Network -->
+                        <rect x="200" y="60" width="160" height="120" fill="#1a1a2e" stroke="#ec4899" stroke-width="2" rx="8"/>
+                        <text x="280" y="85" text-anchor="middle" fill="#f8fafc" font-size="14" font-weight="600">Shared Feature</text>
+                        <text x="280" y="105" text-anchor="middle" fill="#f8fafc" font-size="14" font-weight="600">Network</text>
+                        <rect x="220" y="115" width="120" height="20" fill="#27273a" rx="4"/>
+                        <text x="280" y="129" text-anchor="middle" fill="#94a3b8" font-size="10">Conv/MLP Layers</text>
+                        <rect x="220" y="140" width="120" height="20" fill="#27273a" rx="4"/>
+                        <text x="280" y="154" text-anchor="middle" fill="#94a3b8" font-size="10">φ(s) Features</text>
+                        
+                        <!-- Actor Head -->
+                        <rect x="400" y="70" width="140" height="90" fill="#1a1a2e" stroke="#6366f1" stroke-width="2" rx="8"/>
+                        <text x="470" y="95" text-anchor="middle" fill="#f8fafc" font-size="14" font-weight="600">Actor (Policy)</text>
+                        <rect x="415" y="105" width="110" height="18" fill="#27273a" rx="4"/>
+                        <text x="470" y="117" text-anchor="middle" fill="#94a3b8" font-size="10">π<sub>θ</sub>(a|s) Distribution</text>
+                        <rect x="415" y="128" width="110" height="18" fill="#27273a" rx="4"/>
+                        <text x="470" y="140" text-anchor="middle" fill="#94a3b8" font-size="10">Action Sampling</text>
+                        
+                        <!-- Action Arrow -->
+                        <path d="M540 115 L600 115" stroke="#f59e0b" stroke-width="3" marker-end="url(#arrowYellow)"/>
+                        <text x="570" y="105" text-anchor="middle" fill="#f59e0b" font-size="11">action a<sub>t</sub></text>
+                        
+                        <!-- Critic Head -->
+                        <rect x="400" y="180" width="140" height="70" fill="#1a1a2e" stroke="#10b981" stroke-width="2" rx="8"/>
+                        <text x="470" y="205" text-anchor="middle" fill="#f8fafc" font-size="14" font-weight="600">Critic (Value)</text>
+                        <rect x="415" y="218" width="110" height="20" fill="#27273a" rx="4"/>
+                        <text x="470" y="232" text-anchor="middle" fill="#94a3b8" font-size="10">V<sub>φ</sub>(s) Value</text>
+                        
+                        <!-- Advantage Arrow to PPO -->
+                        <path d="M540 215 L580 215 L580 320 L600 320" stroke="#10b981" stroke-width="2" stroke-dasharray="4,2"/>
+                        
+                        <!-- Trajectory Buffer -->
+                        <rect x="620" y="70" width="130" height="130" fill="#1a1a2e" stroke="#f59e0b" stroke-width="2" rx="8"/>
+                        <text x="685" y="95" text-anchor="middle" fill="#f8fafc" font-size="14" font-weight="600">Trajectory</text>
+                        <text x="685" y="115" text-anchor="middle" fill="#f8fafc" font-size="14" font-weight="600">Buffer</text>
+                        <text x="685" y="140" text-anchor="middle" fill="#94a3b8" font-size="10">(s, a, r, s')</text>
+                        <text x="685" y="158" text-anchor="middle" fill="#94a3b8" font-size="10">N timesteps</text>
+                        <text x="685" y="176" text-anchor="middle" fill="#94a3b8" font-size="10">Multiple epochs</text>
+                        
+                        <!-- Buffer to PPO -->
+                        <path d="M685 200 L685 280 L650 280" stroke="#ec4899" stroke-width="2" marker-end="url(#arrowPink)"/>
+                        
+                        <!-- PPO Update Box -->
+                        <rect x="420" y="270" width="230" height="130" fill="#1a1a2e" stroke="#ec4899" stroke-width="3" rx="12"/>
+                        <text x="535" y="295" text-anchor="middle" fill="#ec4899" font-size="16" font-weight="700">PPO Update</text>
+                        
+                        <!-- Clip Box -->
+                        <rect x="435" y="310" width="90" height="35" fill="#27273a" stroke="#6366f1" stroke-width="2" rx="6"/>
+                        <text x="480" y="332" text-anchor="middle" fill="#f8fafc" font-size="12">Clip(r, 1±ε)</text>
+                        
+                        <!-- Min Box -->
+                        <rect x="545" y="310" width="90" height="35" fill="#27273a" stroke="#6366f1" stroke-width="2" rx="6"/>
+                        <text x="590" y="332" text-anchor="middle" fill="#f8fafc" font-size="12">min(rA, clip)</text>
+                        
+                        <!-- Loss Components -->
+                        <text x="480" y="365" text-anchor="middle" fill="#94a3b8" font-size="10">+ Value Loss</text>
+                        <text x="590" y="365" text-anchor="middle" fill="#94a3b8" font-size="10">- Entropy Bonus</text>
+                        
+                        <!-- Back to Policy -->
+                        <path d="M480 270 L480 230 L400 230" stroke="#ec4899" stroke-width="2" marker-end="url(#arrowPink)"/>
+                        <path d="M590 270 L590 210 L540 210" stroke="#ec4899" stroke-width="2" marker-end="url(#arrowPink)"/>
+                        
+                        <!-- Legend -->
+                        <rect x="680" y="270" width="200" height="260" fill="#0d0d12" stroke="#27273a" stroke-width="1" rx="8"/>
+                        <text x="780" y="290" text-anchor="middle" fill="#f8fafc" font-size="12" font-weight="600">Training Loop</text>
+                        
+                        <circle cx="700" cy="310" r="6" fill="#10b981"/>
+                        <text x="715" y="314" fill="#94a3b8" font-size="10">1. Collect N steps</text>
+                        
+                        <circle cx="700" cy="330" r="6" fill="#f59e0b"/>
+                        <text x="715" y="334" fill="#94a3b8" font-size="10">2. Compute GAE</text>
+                        
+                        <circle cx="700" cy="350" r="6" fill="#6366f1"/>
+                        <text x="715" y="354" fill="#94a3b8" font-size="10">3. Sample minibatch</text>
+                        
+                        <circle cx="700" cy="370" r="6" fill="#ec4899"/>
+                        <text x="715" y="374" fill="#94a3b8" font-size="10">4. Update K epochs</text>
+                        
+                        <circle cx="700" cy="390" r="6" fill="#8b5cf6"/>
+                        <text x="715" y="394" fill="#94a3b8" font-size="10">5. Repeat</text>
+                        
+                        <line x1="690" y1="410" x2="870" y2="410" stroke="#27273a"/>
+                        
+                        <text x="780" y="430" text-anchor="middle" fill="#f8fafc" font-size="11" font-weight="600">Key Hyperparams</text>
+                        <text x="695" y="450" fill="#94a3b8" font-size="9">• Clipping ε: 0.1-0.2</text>
+                        <text x="695" y="465" fill="#94a3b8" font-size="9">• Epochs K: 3-4</text>
+                        <text x="695" y="480" fill="#94a3b8" font-size="9">• Batch size: 64-512</text>
+                        <text x="695" y="495" fill="#94a3b8" font-size="9">• GAE λ: 0.95</text>
+                        <text x="695" y="510" fill="#94a3b8" font-size="9">• Learning rate: 3e-4</text>
+                        
+                        <!-- Arrow Markers -->
+                        <defs>
+                            <marker id="arrowGreen" markerWidth="10" markerHeight="10" refX="9" refY="3" orient="auto">
+                                <path d="M0,0 L0,6 L9,3 z" fill="#10b981"/>
+                            </marker>
+                            <marker id="arrowYellow" markerWidth="10" markerHeight="10" refX="9" refY="3" orient="auto">
+                                <path d="M0,0 L0,6 L9,3 z" fill="#f59e0b"/>
+                            </marker>
+                            <marker id="arrowPink" markerWidth="10" markerHeight="10" refX="9" refY="3" orient="auto">
+                                <path d="M0,0 L0,6 L9,3 z" fill="#ec4899"/>
+                            </marker>
+                        </defs>
+                        
+                        <!-- Clipping Visualization (Bottom) -->
+                        <rect x="20" y="420" width="380" height="110" fill="#0d0d12" stroke="#27273a" stroke-width="1" rx="8"/>
+                        <text x="210" y="442" text-anchor="middle" fill="#f8fafc" font-size="12" font-weight="600">Clipping Visualization</text>
+                        
+                        <!-- Graph -->
+                        <line x1="50" y1="510" x2="350" y2="510" stroke="#27273a" stroke-width="1"/>
+                        <line x1="50" y1="510" x2="50" y2="455" stroke="#27273a" stroke-width="1"/>
+                        
+                        <!-- Ratio curve -->
+                        <path d="M50 480 Q100 500 130 480 T200 460 T350 455" stroke="#6366f1" stroke-width="2" fill="none"/>
+                        <!-- Clipped curve -->
+                        <path d="M50 480 L80 485 L120 485 L180 465 L220 465 L350 455" stroke="#ec4899" stroke-width="3" fill="none"/>
+                        <!-- Clip bounds -->
+                        <line x1="100" y1="455" x2="100" y2="515" stroke="#f59e0b" stroke-width="1" stroke-dasharray="3,3"/>
+                        <line x1="260" y1="455" x2="260" y2="515" stroke="#f59e0b" stroke-width="1" stroke-dasharray="3,3"/>
+                        <text x="100" y="525" text-anchor="middle" fill="#f59e0b" font-size="9">1-ε</text>
+                        <text x="260" y="525" text-anchor="middle" fill="#f59e0b" font-size="9">1+ε</text>
+                        <text x="200" y="495" text-anchor="middle" fill="#6366f1" font-size="9">unclipped</text>
+                        <text x="200" y="442" text-anchor="middle" fill="#ec4899" font-size="9">clipped</text>
+                    </svg>
                 </div>
-            </li>
-            <li>
-                <div class="impact-icon">🏆</div>
-                <div>
-                    <strong style="color: #fff;">SOTA Performance</strong><br>
-                    <span style="color: #8888aa;">Outperforms A2C and matches TRPO on Atari and MuJoCo benchmarks with fraction of the compute</span>
+                
+                <h3>The Complete Algorithm</h3>
+                <ol>
+                    <li><strong>Collect Trajectories:</strong> Run the current policy π<sub>θ<sub>old</sub></sub> in the environment for N timesteps, storing (s<sub>t</sub>, a<sub>t</sub>, r<sub>t</sub>, s<sub>t+1</sub>)</li>
+                    <li><strong>Compute Returns:</strong> Use Generalized Advantage Estimation (GAE) to compute advantage estimates Â<sub>t</sub> and discounted returns</li>
+                    <li><strong>Multiple Epochs:</strong> For K epochs, sample random minibatches from the collected trajectories</li>
+                    <li><strong>Clipped Update:</strong> For each minibatch, compute the clipped surrogate loss and update both policy and value networks</li>
+                    <li><strong>Repeat:</strong> Discard old trajectories and collect new ones with the updated policy</li>
+                </ol>
+            </div>
+        </section>
+
+        <section id="results">
+            <div class="container">
+                <h2>📊 Results & Impact</h2>
+                
+                <p>PPO quickly became the default choice for deep RL research and applications, demonstrating strong performance across diverse benchmarks:</p>
+                
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <div class="stat-value">20K+</div>
+                        <div class="stat-label">Citations</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-value">7</div>
+                        <div class="stat-label">Atari Games Mastered</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-value">1st</div>
+                        <div class="stat-label">Place in OpenAI RL Contest</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-value">∞</div>
+                        <div class="stat-label">Real-World Applications</div>
+                    </div>
                 </div>
-            </li>
-        </ul>
+                
+                <h3>Benchmark Performance</h3>
+                <p>On the Atari domain and MuJoCo continuous control tasks, PPO achieved:</p>
+                <ul>
+                    <li><strong>Comparable performance to TRPO</strong> with 4-6× faster wall-clock time</li>
+                    <li><strong>Better sample efficiency</strong> than A2C/A3C on most tasks</li>
+                    <li><strong>Stable training</strong> without manual tuning of learning rate schedules</li>
+                    <li><strong>Scalability</strong> to distributed settings with hundreds of parallel workers</li>
+                </ul>
+                
+                <h3>Real-World Adoption</h3>
+                <p>PPO has become the go-to algorithm for production RL systems:</p>
+                <ul>
+                    <li><strong>ChatGPT / GPT-4:</strong> PPO with RLHF for fine-tuning language models</li>
+                    <li><strong>Stable Baselines3:</strong> Default algorithm choice for research</li>
+                    <li><strong>Unity ML-Agents:</strong> Primary training algorithm</li>
+                    <li><strong>Ray RLlib:</strong> Most widely used algorithm in distributed RL</li>
+                    <li><strong>Robotics:</strong> Sim-to-real transfer in manipulation and locomotion</li>
+                </ul>
+            </div>
+        </section>
 
-        <h2>💻 PyTorch Implementation</h2>
-        
-        <div class="code-block">
-            <pre><span class="comment"># PPO Implementation in PyTorch</span>
-<span class="keyword">import</span> torch
-<span class="keyword">import</span> torch.nn <span class="keyword">as</span> nn
-<span class="keyword">import</span> torch.optim <span class="keyword">as</span> optim
-<span class="keyword">from</span> torch.distributions <span class="keyword">import</span> Categorical
-
-<span class="keyword">class</span> <span class="function">ActorCritic</span>(nn.Module):
-    <span class="keyword">def</span> <span class="function">__init__</span>(self, state_dim, action_dim, hidden_dim=<span class="number">256</span>):
-        super(ActorCritic, self).__init__()
-        <span class="comment"># Shared feature extractor</span>
-        self.shared = nn.Sequential(
-            nn.Linear(state_dim, hidden_dim),
-            nn.ReLU(),
-            nn.Linear(hidden_dim, hidden_dim),
-            nn.ReLU()
-        )
-        <span class="comment"># Actor head (policy)</span>
-        self.actor = nn.Linear(hidden_dim, action_dim)
-        <span class="comment"># Critic head (value)</span>
-        self.critic = nn.Linear(hidden_dim, <span class="number">1</span>)
+        <section id="code">
+            <div class="container">
+                <h2>💻 Code Implementation</h2>
+                
+                <div class="code-block">
+                    <div class="code-header">
+                        <span class="code-dot red"></span>
+                        <span class="code-dot yellow"></span>
+                        <span class="code-dot green"></span>
+                        <span class="code-title">ppo_core.py - PPO Loss Computation</span>
+                    </div>
+                    <pre><code><span class="code-comment"># PPO Clipped Surrogate Loss</span>
+<span class="code-keyword">def</span> <span class="code-function">compute_ppo_loss</span>(logits_new, logits_old, actions, advantages, epsilon=<span class="code-number">0.2</span>):
+    <span class="code-comment"># 1. Compute probability ratios</span>
+    probs_new = torch.softmax(logits_new, dim=-<span class="code-number">1</span>)
+    probs_old = torch.softmax(logits_old, dim=-<span class="code-number">1</span>)
     
-    <span class="keyword">def</span> <span class="function">forward</span>(self, state):
-        features = self.shared(state)
-        action_probs = torch.softmax(self.actor(features), dim=-<span class="number">1</span>)
-        state_value = self.critic(features)
-        <span class="keyword">return</span> action_probs, state_value
+    <span class="code-comment"># Gather probabilities for taken actions</span>
+    probs_new_actions = probs_new.gather(-<span class="code-number">1</span>, actions.unsqueeze(-<span class="code-number">1</span>)).squeeze()
+    probs_old_actions = probs_old.gather(-<span class="code-number">1</span>, actions.unsqueeze(-<span class="code-number">1</span>)).squeeze()
     
-    <span class="keyword">def</span> <span class="function">get_action</span>(self, state):
-        probs, value = self.forward(state)
-        dist = Categorical(probs)
-        action = dist.sample()
-        <span class="keyword">return</span> action, dist.log_prob(action), value
-
-<span class="keyword">class</span> <span class="function">PPO</span>:
-    <span class="keyword">def</span> <span class="function">__init__</span>(self, state_dim, action_dim, lr=<span class="number">3e-4</span>, 
-                 gamma=<span class="number">0.99</span>, epsilon=<span class="number">0.2</span>, 
-                 epochs=<span class="number">4</span>, batch_size=<span class="number">64</span>):
-        self.policy = ActorCritic(state_dim, action_dim)
-        self.optimizer = optim.Adam(self.policy.parameters(), lr=lr)
-        self.gamma = gamma
-        self.epsilon = epsilon  <span class="comment"># Clipping parameter</span>
-        self.epochs = epochs
-        self.batch_size = batch_size
+    <span class="code-comment"># 2. Compute ratio r_t(θ)</span>
+    ratio = probs_new_actions / (probs_old_actions + <span class="code-number">1e-8</span>)
     
-    <span class="keyword">def</span> <span class="function">compute_advantages</span>(self, rewards, values, dones):
-        <span class="string">"""GAE (Generalized Advantage Estimation)"""</span>
-        advantages = []
-        gae = <span class="number">0</span>
-        <span class="keyword">for</span> t <span class="keyword">in</span> reversed(range(len(rewards))):
-            <span class="keyword">if</span> t == len(rewards) - <span class="number">1</span>:
-                next_value = <span class="number">0</span>
-            <span class="keyword">else</span>:
-                next_value = values[t + <span class="number">1</span>]
-            delta = rewards[t] + self.gamma * next_value * (<span class="number">1</span> - dones[t]) - values[t]
-            gae = delta + self.gamma * <span class="number">0.95</span> * (<span class="number">1</span> - dones[t]) * gae
-            advantages.insert(<span class="number">0</span>, gae)
-        <span class="keyword">return</span> torch.tensor(advantages)
+    <span class="code-comment"># 3. Unclipped objective</span>
+    unclipped = ratio * advantages
     
-    <span class="keyword">def</span> <span class="function">update</span>(self, states, actions, old_log_probs, 
-                returns, advantages):
-        states = torch.stack(states)
-        actions = torch.stack(actions)
-        old_log_probs = torch.stack(old_log_probs)
-        
-        <span class="comment"># Multiple epochs on same data (key PPO innovation)</span>
-        <span class="keyword">for</span> _ <span class="keyword">in</span> range(self.epochs):
-            <span class="comment"># Get current policy distribution</span>
-            probs, state_values = self.policy(states)
-            dist = Categorical(probs)
+    <span class="code-comment"># 4. Clipped objective</span>
+    clipped_ratio = torch.clamp(ratio, <span class="code-number">1</span> - epsilon, <span class="code-number">1</span> + epsilon)
+    clipped = clipped_ratio * advantages
+    
+    <span class="code-comment"># 5. Take minimum (pessimistic bound)</span>
+    policy_loss = -torch.min(unclipped, clipped).mean()
+    
+    <span class="code-comment"># 6. Add value loss and entropy bonus</span>
+    value_loss = F.mse_loss(values, returns)
+    entropy_bonus = -entropy_coef * (probs_new * torch.log(probs_new + <span class="code-number">1e-8</span>)).sum(dim=-<span class="code-number">1</span>).mean()
+    
+    <span class="code-keyword">return</span> policy_loss + value_loss + entropy_bonus</code></pre>
+                </div>
+                
+                <div class="code-block">
+                    <div class="code-header">
+                        <span class="code-dot red"></span>
+                        <span class="code-dot yellow"></span>
+                        <span class="code-dot green"></span>
+                        <span class="code-title">training_loop.py - PPO Training Loop</span>
+                    </div>
+                    <pre><code><span class="code-comment"># PPO Training Loop</span>
+<span class="code-keyword">for</span> iteration <span class="code-keyword">in</span> range(num_iterations):
+    <span class="code-comment"># 1. Collect trajectories using current policy</span>
+    trajectories = []
+    <span class="code-keyword">for</span> step <span class="code-keyword">in</span> range(num_steps):
+        <span class="code-keyword">with</span> torch.no_grad():
+            action, log_prob, value = policy.act(state)
+        next_state, reward, done, _ = env.step(action)
+        trajectories.append((state, action, reward, value, log_prob))
+        state = next_state
+    
+    <span class="code-comment"># 2. Compute GAE advantages</span>
+    advantages = compute_gae(trajectories, gamma=<span class="code-number">0.99</span>, lam=<span class="code-number">0.95</span>)
+    
+    <span class="code-comment"># 3. Multiple epochs of updates</span>
+    <span class="code-keyword">for</span> epoch <span class="code-keyword">in</span> range(num_epochs):
+        <span class="code-keyword">for</span> batch <span class="code-keyword">in</span> sample_minibatches(trajectories, advantages):
+            <span class="code-comment"># 4. Compute new logits with updated policy</span>
+            logits_new, values_new = policy(batch.states)
+            logits_old = batch.logits_old  <span class="code-comment"># Detached</span>
             
-            <span class="comment"># Calculate new log probabilities</span>
-            log_probs = dist.log_prob(actions)
+            <span class="code-comment"># 5. Compute PPO loss and update</span>
+            loss = compute_ppo_loss(logits_new, logits_old, 
+                                   batch.actions, batch.advantages, 
+                                   epsilon=<span class="code-number">0.2</span>)
             
-            <span class="comment"># Probability ratio r(θ)</span>
-            ratios = torch.exp(log_probs - old_log_probs)
-            
-            <span class="comment"># Clipped surrogate objective (THE KEY PPO EQUATION)</span>
-            surr1 = ratios * advantages
-            surr2 = torch.clamp(ratios, <span class="number">1</span> - self.epsilon, 
-                               <span class="number">1</span> + self.epsilon) * advantages
-            actor_loss = -torch.min(surr1, surr2).mean()
-            
-            <span class="comment"># Critic loss (MSE)</span>
-            critic_loss = nn.MSELoss()(state_values.squeeze(), returns)
-            
-            <span class="comment"># Entropy bonus for exploration</span>
-            entropy = dist.entropy().mean()
-            
-            <span class="comment"># Combined loss</span>
-            loss = actor_loss + <span class="number">0.5</span> * critic_loss - <span class="number">0.01</span> * entropy
-            
-            self.optimizer.zero_grad()
+            optimizer.zero_grad()
             loss.backward()
-            self.optimizer.step()
-        
-        <span class="keyword">return</span> loss.item()</pre>
-        </div>
+            torch.nn.utils.clip_grad_norm_(policy.parameters(), max_norm=<span class="code-number">0.5</span>)
+            optimizer.step()</code></pre>
+                </div>
+                
+                <h3>Hyperparameter Recommendations</h3>
+                <table style="width: 100%; border-collapse: collapse; margin-top: 20px;">
+                    <thead>
+                        <tr style="border-bottom: 1px solid var(--border);">
+                            <th style="text-align: left; padding: 12px; color: var(--text-primary);">Parameter</th>
+                            <th style="text-align: left; padding: 12px; color: var(--text-primary);">Value</th>
+                            <th style="text-align: left; padding: 12px; color: var(--text-primary);">Description</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr style="border-bottom: 1px solid var(--border);">
+                            <td style="padding: 12px; color: var(--text-secondary);">Clipping (ε)</td>
+                            <td style="padding: 12px; color: var(--text-primary);">0.1 - 0.2</td>
+                            <td style="padding: 12px; color: var(--text-secondary);">Larger for simpler tasks, smaller for complex</td>
+                        </tr>
+                        <tr style="border-bottom: 1px solid var(--border);">
+                            <td style="padding: 12px; color: var(--text-secondary);">Epochs (K)</td>
+                            <td style="padding: 12px; color: var(--text-primary);">3 - 10</td>
+                            <td style="padding: 12px; color: var(--text-secondary);">More epochs for better sample efficiency</td>
+                        </tr>
+                        <tr style="border-bottom: 1px solid var(--border);">
+                            <td style="padding: 12px; color: var(--text-secondary);">Batch Size</td>
+                            <td style="padding: 12px; color: var(--text-primary);">64 - 512</td>
+                            <td style="padding: 12px; color: var(--text-secondary);">Larger batches for more stable gradients</td>
+                        </tr>
+                        <tr style="border-bottom: 1px solid var(--border);">
+                            <td style="padding: 12px; color: var(--text-secondary);">GAE Lambda (λ)</td>
+                            <td style="padding: 12px; color: var(--text-primary);">0.9 - 0.99</td>
+                            <td style="padding: 12px; color: var(--text-secondary);">Bias-variance tradeoff for advantage estimates</td>
+                        </tr>
+                        <tr style="border-bottom: 1px solid var(--border);">
+                            <td style="padding: 12px; color: var(--text-secondary);">Learning Rate</td>
+                            <td style="padding: 12px; color: var(--text-primary);">3e-4</td>
+                            <td style="padding: 12px; color: var(--text-secondary);">Adam optimizer, often with linear decay</td>
+                        </tr>
+                        <tr>
+                            <td style="padding: 12px; color: var(--text-secondary);">Entropy Coefficient</td>
+                            <td style="padding: 12px; color: var(--text-primary);">0.01 - 0.001</td>
+                            <td style="padding: 12px; color: var(--text-secondary);">Exploration bonus, decay over time</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </section>
 
-        <h2>🔗 Related Work</h2>
-        
-        <div class="related-papers">
-            <div class="paper-card">
-                <h4>TRPO (Trust Region Policy Optimization)</h4>
-                <p>Schulman et al., 2015 • ICML 2015<br>Theoretical foundation for PPO. Uses constrained optimization with KL divergence and conjugate gradient.</p>
-                <a href="https://arxiv.org/abs/1502.05477" target="_blank">Read Paper →</a>
+        <section id="related">
+            <div class="container">
+                <h2>🔗 Related Work</h2>
+                
+                <div class="related-grid">
+                    <div class="related-card">
+                        <span class="year">2015</span>
+                        <h4>TRPO</h4>
+                        <p>Trust Region Policy Optimization - The second-order method that inspired PPO's trust region concept</p>
+                    </div>
+                    <div class="related-card">
+                        <span class="year">2016</span>
+                        <h4>A3C</h4>
+                        <p>Asynchronous Advantage Actor-Critic - Parallelized policy gradient method, predecessor to distributed PPO</p>
+                    </div>
+                    <div class="related-card">
+                        <span class="year">2018</span>
+                        <h4>SAC</h4>
+                        <p>Soft Actor-Critic - Off-policy maximum entropy RL with automatic temperature tuning</p>
+                    </div>
+                    <div class="related-card">
+                        <span class="year">2020</span>
+                        <h4>MAPPO</h4>
+                        <p>Multi-Agent PPO - Extension for multi-agent cooperative and competitive settings</p>
+                    </div>
+                    <div class="related-card">
+                        <span class="year">2022</span>
+                        <h4>InstructGPT</h4>
+                        <p>Using PPO for RLHF - Training language models to follow human instructions</p>
+                    </div>
+                    <div class="related-card">
+                        <span class="year">2024</span>
+                        <h4>DAPO</h4>
+                        <p>Distributed PPO variants for large-scale LLM alignment at scale</p>
+                    </div>
+                </div>
             </div>
-            <div class="paper-card">
-                <h4>A3C (Asynchronous Advantage Actor-Critic)</h4>
-                <p>Mnih et al., 2016 • ICML 2016<br>Parallel actor-critic training. PPO builds on this architecture but adds the clipping innovation.</p>
-                <a href="https://arxiv.org/abs/1602.01783" target="_blank">Read Paper →</a>
-            </div>
-            <div class="paper-card">
-                <h4>GAE (Generalized Advantage Estimation)</h4>
-                <p>Schulman et al., 2016 • arXiv<br>Method for estimating advantages with bias-variance tradeoff. Standard in PPO implementations.</p>
-                <a href="https://arxiv.org/abs/1506.02438" target="_blank">Read Paper →</a>
-            </div>
-            <div class="paper-card">
-                <h4>InstructGPT / RLHF</h4>
-                <p>Ouyang et al., 2022 • NeurIPS 2022<br>Demonstrates PPO's power for fine-tuning LLMs with human feedback — the foundation of ChatGPT.</p>
-                <a href="https://arxiv.org/abs/2203.02155" target="_blank">Read Paper →</a>
-            </div>
-            <div class="paper-card">
-                <h4>IMPALA</h4>
-                <p>Espeholt et al., 2018 • ICML 2018<br>Scalable distributed RL with V-trace. Alternative to PPO for large-scale training.</p>
-                <a href="https://arxiv.org/abs/1802.01561" target="_blank">Read Paper →</a>
-            </div>
-            <div class="paper-card">
-                <h4>SAC (Soft Actor-Critic)</h4>
-                <p>Haarnoja et al., 2018 • ICML 2018<br>Maximum entropy RL for continuous control. Often compared with PPO as off-policy alternative.</p>
-                <a href="https://arxiv.org/abs/1801.01290" target="_blank">Read Paper →</a>
-            </div>
-        </div>
-
-        <h2>📚 Key Insights</h2>
-        
-        <div class="highlight-box">
-            <h3>Why PPO Became the Default</h3>
-            <p>
-                <strong>1. Simplicity Over Complexity:</strong> PPO achieves 90% of TRPO's benefits with 10% of the code. No conjugate gradients, no Fisher information matrices.
-            </p>
-            <p>
-                <strong>2. Multiple Epochs:</strong> Unlike vanilla PG, PPO can perform multiple gradient updates on the same collected data, dramatically improving sample efficiency.
-            </p>
-            <p>
-                <strong>3. The Min Trick:</strong> Taking the minimum of clipped and unclipped objectives is a "pessimistic bound" — it prevents over-optimization when the advantage estimate is noisy.
-            </p>
-            <p>
-                <strong>4. Architecture Agnostic:</strong> Works with any differentiable policy, including RNNs, Transformers, and architectures with parameter sharing (unlike TRPO).
-            </p>
-            <p>
-                <strong>5. The ε Hyperparameter:</strong> Typically set to 0.1 or 0.2. This single hyperparameter controls the "step size" — much simpler than adaptive KL penalties.
-            </p>
-        </div>
-
-        <h2>🎯 Citation</h2>
-        <div class="code-block">
-            <pre>@article{schulman2017proximal,
-  title={Proximal Policy Optimization Algorithms},
-  author={Schulman, John and Wolski, Filip and Dhariwal, Prafulla and Radford, Alec and Klimov, Oleg},
-  journal={arXiv preprint arXiv:1707.06347},
-  year={2017},
-  url={https://arxiv.org/abs/1707.06347}
-}</pre>
-        </div>
-    </div>
+        </section>
+    </main>
 
     <footer>
-        <p>Part of the AI Neural Networks Collection • Generated for Educational Purposes</p>
-        <p style="margin-top: 10px; font-size: 0.9rem;">Last updated: April 20, 2026</p>
+        <div class="container">
+            <p>Part of the AI Neural Networks educational series • Auto-generated by Kimi Claw</p>
+        </div>
     </footer>
 </body>
 </html>
