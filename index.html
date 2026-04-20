@@ -3803,6 +3803,67 @@
                     </defs>
                 </svg>
             </div>
+
+            <!-- ADALINE Paper Card -->
+            <div class="network-card" onclick="location.href='papers/adaline.html'">
+                <span class="tag">Stanford 1960</span>
+                <h3>ADALINE</h3>
+                <p>Adaptive Linear Neuron — The first gradient-based neural learning algorithm. Introduced the LMS (Least Mean Squares) rule, establishing the mathematical foundation for modern deep learning optimization. Every SGD-based trainer traces back to this 1960 breakthrough.</p>
+                <svg class="preview-svg" viewBox="0 0 300 150">
+                    <defs>
+                        <linearGradient id="adaline-grad" x1="0%" y1="0%" x2="100%" y2="0%">
+                            <stop offset="0%" style="stop-color:#06b6d4"/>
+                            <stop offset="100%" style="stop-color:#6366f1"/>
+                        </linearGradient>
+                    </defs>
+                    <!-- Title -->
+                    <text x="150" y="15" fill="#8888aa" font-size="9" text-anchor="middle">LMS Learning Rule (1960)</text>
+                    
+                    <!-- Input x1 -->
+                    <circle cx="40" cy="50" r="15" fill="rgba(6,182,212,0.3)" stroke="#06b6d4" stroke-width="2"/>
+                    <text x="40" y="54" fill="#fff" font-size="8" text-anchor="middle">x₁</text>
+                    
+                    <!-- Input x2 -->
+                    <circle cx="40" cy="85" r="15" fill="rgba(6,182,212,0.3)" stroke="#06b6d4" stroke-width="2"/>
+                    <text x="40" y="89" fill="#fff" font-size="8" text-anchor="middle">x₂</text>
+                    
+                    <!-- Weight lines -->
+                    <line x1="55" y1="50" x2="110" y2="68" stroke="#6366f1" stroke-width="2"/>
+                    <text x="75" y="52" fill="#a5b4fc" font-size="6">w₁</text>
+                    
+                    <line x1="55" y1="85" x2="110" y2="72" stroke="#6366f1" stroke-width="2"/>
+                    <text x="75" y="82" fill="#a5b4fc" font-size="6">w₂</text>
+                    
+                    <!-- Summation -->
+                    <circle cx="125" cy="70" r="20" fill="rgba(16,185,129,0.3)" stroke="#10b981" stroke-width="2"/>
+                    <text x="125" y="68" fill="#fff" font-size="10" font-weight="bold" text-anchor="middle">Σ</text>
+                    <text x="125" y="78" fill="#6ee7b7" font-size="6" text-anchor="middle">w·x</text>
+                    
+                    <!-- Linear output -->
+                    <line x1="145" y1="70" x2="170" y2="70" stroke="#ec4899" stroke-width="2"/>
+                    <rect x="170" y="55" width="50" height="30" rx="4" fill="rgba(236,72,153,0.2)" stroke="#ec4899" stroke-width="1.5"/>
+                    <text x="195" y="67" fill="#f472b6" font-size="7" text-anchor="middle">Linear</text>
+                    <text x="195" y="78" fill="#f472b6" font-size="6" text-anchor="middle">y = w·x</text>
+                    
+                    <!-- Feedback arrow -->
+                    <path d="M195 55 L195 35 L125 35 L125 50" stroke="#ef4444" stroke-width="1.5" stroke-dasharray="3,2" fill="none"/>
+                    <text x="160" y="32" fill="#ef4444" font-size="6" text-anchor="middle">δ = t - y</text>
+                    
+                    <!-- Formula box -->
+                    <rect x="70" y="105" width="160" height="35" rx="4" fill="rgba(20,20,35,0.8)" stroke="#06b6d4" stroke-width="1"/>
+                    <text x="150" y="118" fill="#22d3ee" font-size="7" font-weight="bold" text-anchor="middle">Widrow-Hoff Delta Rule</text>
+                    <text x="150" y="132" fill="#fff" font-size="8" text-anchor="middle">Δw = η · (t - y) · x</text>
+                    
+                    <!-- Legend -->
+                    <text x="150" y="148" fill="#64748b" font-size="5" text-anchor="middle">First gradient-based neural learning • Foundation of modern SGD</text>
+                    
+                    <defs>
+                        <marker id="chinchilla-arrow" markerWidth="8" markerHeight="6" refX="7" refY="3" orient="auto">
+                            <polygon points="0 0, 8 3, 0 6" fill="#10b981"/>
+                        </marker>
+                    </defs>
+                </svg>
+            </div>
         </div>
     </div>
 
