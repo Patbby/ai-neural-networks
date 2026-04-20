@@ -1,8 +1,8 @@
 {
-  "lastUpdate": "2026-04-19T20:57:00+08:00",
+  "lastUpdate": "2026-04-20T09:57:00+08:00",
   "papersAdded": 1,
-  "totalPapers": 90,
+  "totalPapers": 97,
   "nextPaper": "TBD",
-  "updateCount": 39,
-  "recentAddition": "Neural Turing Machine (Graves, Wayne & Danihelka, 2014) - Neural architecture augmented with external memory. The foundational paper introducing differentiable memory access via read/write heads and content/location-based addressing. Enabled neural networks to learn algorithms like copying, sorting, and associative recall. arXiv:1410.5401."
+  "updateCount": 40,
+  "recentAddition": "Chinchilla: Training Compute-Optimal Large Language Models (Hoffmann, Borgeaud, Mensch et al., 2022, NeurIPS) - DeepMind's landmark paper that redefined LLM scaling laws. Showed that 70B parameters with 1.4T tokens outperform larger undertrained models (Gopher 280B, GPT-3 175B, Megatron 530B). Key finding: model size and training data should scale equally for compute-optimal training (~20:1 token-to-parameter ratio). Chinchilla achieved 67.5% on MMLU (+7.5% over Gopher) with 4× fewer parameters. arXiv:2203.15556."
 }

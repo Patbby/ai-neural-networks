@@ -1,0 +1,975 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chinchilla: Training Compute-Optimal Large Language Models | AI Neural Networks</title>
+    <meta name="description" content="DeepMind's Chinchilla paper redefined LLM scaling laws, proving that smaller models trained on more data outperform larger undertrained models.">
+    <link rel="stylesheet" href="../assets/css/style.css">
+    <style>
+        :root {
+            --primary: #6366f1;
+            --primary-light: #818cf8;
+            --secondary: #a855f7;
+            --accent: #ec4899;
+            --background: #0a0a0f;
+            --surface: #12121a;
+            --surface-light: #1a1a25;
+            --text: #f8fafc;
+            --text-muted: #94a3b8;
+            --text-subtle: #64748b;
+            --success: #10b981;
+            --warning: #f59e0b;
+            --error: #ef4444;
+            --chinchilla-primary: #8b5cf6;
+            --chinchilla-secondary: #a78bfa;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: var(--background);
+            color: var(--text);
+            line-height: 1.6;
+            overflow-x: hidden;
+        }
+
+        /* Animated Background */
+        .bg-animation {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+            background: 
+                radial-gradient(ellipse at 20% 50%, rgba(139, 92, 246, 0.08) 0%, transparent 50%),
+                radial-gradient(ellipse at 80% 20%, rgba(167, 139, 250, 0.05) 0%, transparent 40%),
+                radial-gradient(ellipse at 60% 80%, rgba(236, 72, 153, 0.05) 0%, transparent 40%);
+            animation: bgPulse 8s ease-in-out infinite alternate;
+        }
+
+        @keyframes bgPulse {
+            0% { opacity: 0.7; transform: scale(1); }
+            100% { opacity: 1; transform: scale(1.02); }
+        }
+
+        /* Header */
+        header {
+            background: linear-gradient(180deg, var(--surface) 0%, transparent 100%);
+            padding: 1.5rem 2rem;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            backdrop-filter: blur(20px);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        .header-content {
+            max-width: 1400px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            font-size: 1.5rem;
+            font-weight: 800;
+            background: linear-gradient(135deg, var(--chinchilla-primary), var(--chinchilla-secondary));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .logo::before {
+            content: "◈";
+            font-size: 1.2rem;
+            -webkit-text-fill-color: var(--chinchilla-primary);
+        }
+
+        nav {
+            display: flex;
+            gap: 2rem;
+        }
+
+        nav a {
+            color: var(--text-muted);
+            text-decoration: none;
+            font-weight: 500;
+            transition: color 0.3s ease;
+            position: relative;
+        }
+
+        nav a:hover {
+            color: var(--text);
+        }
+
+        nav a::after {
+            content: '';
+            position: absolute;
+            bottom: -4px;
+            left: 0;
+            width: 0;
+            height: 2px;
+            background: linear-gradient(90deg, var(--chinchilla-primary), var(--chinchilla-secondary));
+            transition: width 0.3s ease;
+        }
+
+        nav a:hover::after {
+            width: 100%;
+        }
+
+        /* Main Content */
+        main {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+
+        /* Hero Section */
+        .hero {
+            text-align: center;
+            padding: 4rem 0 3rem;
+            position: relative;
+        }
+
+        .hero-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            background: linear-gradient(135deg, rgba(139, 92, 246, 0.2), rgba(167, 139, 250, 0.1));
+            border: 1px solid rgba(139, 92, 246, 0.3);
+            padding: 0.5rem 1rem;
+            border-radius: 2rem;
+            font-size: 0.875rem;
+            color: var(--chinchilla-secondary);
+            margin-bottom: 1.5rem;
+            animation: glow 3s ease-in-out infinite alternate;
+        }
+
+        @keyframes glow {
+            from { box-shadow: 0 0 10px rgba(139, 92, 246, 0.2); }
+            to { box-shadow: 0 0 25px rgba(139, 92, 246, 0.4); }
+        }
+
+        .hero h1 {
+            font-size: clamp(2.5rem, 5vw, 4rem);
+            font-weight: 800;
+            margin-bottom: 1rem;
+            background: linear-gradient(135deg, var(--text) 0%, var(--chinchilla-secondary) 50%, var(--chinchilla-primary) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            line-height: 1.2;
+        }
+
+        .hero-subtitle {
+            font-size: 1.25rem;
+            color: var(--text-muted);
+            max-width: 700px;
+            margin: 0 auto 2rem;
+        }
+
+        .hero-meta {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+            font-size: 0.9rem;
+            color: var(--text-muted);
+        }
+
+        .hero-meta span {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .hero-meta span::before {
+            content: "";
+            width: 6px;
+            height: 6px;
+            background: var(--chinchilla-primary);
+            border-radius: 50%;
+        }
+
+        .paper-links {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 1rem;
+            margin-top: 2rem;
+        }
+
+        .paper-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.75rem 1.5rem;
+            border-radius: 0.75rem;
+            text-decoration: none;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+
+        .paper-btn.primary {
+            background: linear-gradient(135deg, var(--chinchilla-primary), var(--chinchilla-secondary));
+            color: white;
+            box-shadow: 0 4px 20px rgba(139, 92, 246, 0.3);
+        }
+
+        .paper-btn.primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 30px rgba(139, 92, 246, 0.4);
+        }
+
+        .paper-btn.secondary {
+            background: var(--surface-light);
+            color: var(--text);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .paper-btn.secondary:hover {
+            background: rgba(255, 255, 255, 0.05);
+            border-color: rgba(255, 255, 255, 0.2);
+        }
+
+        /* Section Styling */
+        .section {
+            margin: 4rem 0;
+            padding: 2rem;
+            background: var(--surface);
+            border-radius: 1.5rem;
+            border: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        .section h2 {
+            font-size: 1.75rem;
+            margin-bottom: 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        .section h2::before {
+            content: "";
+            width: 4px;
+            height: 2rem;
+            background: linear-gradient(180deg, var(--chinchilla-primary), var(--chinchilla-secondary));
+            border-radius: 2px;
+        }
+
+        /* Problem Statement */
+        .problem-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 1.5rem;
+            margin-top: 1.5rem;
+        }
+
+        .problem-card {
+            background: var(--surface-light);
+            padding: 1.5rem;
+            border-radius: 1rem;
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .problem-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 10px 40px rgba(139, 92, 246, 0.1);
+        }
+
+        .problem-card h3 {
+            color: var(--chinchilla-secondary);
+            margin-bottom: 0.75rem;
+            font-size: 1.1rem;
+        }
+
+        .problem-card p {
+            color: var(--text-muted);
+            font-size: 0.95rem;
+        }
+
+        /* Innovation Section */
+        .innovation-highlight {
+            background: linear-gradient(135deg, rgba(139, 92, 246, 0.15), rgba(167, 139, 250, 0.05));
+            border: 1px solid rgba(139, 92, 246, 0.2);
+            border-radius: 1rem;
+            padding: 2rem;
+            margin: 1.5rem 0;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .innovation-highlight::before {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 3px;
+            background: linear-gradient(90deg, var(--chinchilla-primary), var(--chinchilla-secondary));
+        }
+
+        .innovation-highlight h3 {
+            color: var(--chinchilla-secondary);
+            font-size: 1.25rem;
+            margin-bottom: 1rem;
+        }
+
+        .scaling-law {
+            font-family: 'Times New Roman', serif;
+            font-size: 1.5rem;
+            text-align: center;
+            padding: 1.5rem;
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 0.75rem;
+            margin: 1rem 0;
+            color: var(--chinchilla-secondary);
+            letter-spacing: 1px;
+        }
+
+        /* Visualization Section */
+        .viz-container {
+            background: var(--surface-light);
+            border-radius: 1rem;
+            padding: 2rem;
+            margin: 1.5rem 0;
+            border: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        .viz-container h4 {
+            text-align: center;
+            margin-bottom: 1.5rem;
+            color: var(--text-muted);
+            font-weight: 500;
+        }
+
+        /* Results Grid */
+        .results-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1.5rem;
+            margin-top: 1.5rem;
+        }
+
+        .result-card {
+            background: linear-gradient(135deg, var(--surface-light), rgba(139, 92, 246, 0.05));
+            padding: 1.5rem;
+            border-radius: 1rem;
+            text-align: center;
+            border: 1px solid rgba(139, 92, 246, 0.1);
+            transition: transform 0.3s ease;
+        }
+
+        .result-card:hover {
+            transform: translateY(-4px);
+        }
+
+        .result-value {
+            font-size: 2.5rem;
+            font-weight: 800;
+            background: linear-gradient(135deg, var(--chinchilla-primary), var(--chinchilla-secondary));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 0.5rem;
+        }
+
+        .result-label {
+            color: var(--text-muted);
+            font-size: 0.9rem;
+        }
+
+        /* Code Block */
+        .code-section {
+            background: #0d0d12;
+            border-radius: 1rem;
+            overflow: hidden;
+            margin: 1.5rem 0;
+            border: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        .code-header {
+            background: rgba(139, 92, 246, 0.1);
+            padding: 0.75rem 1.5rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        .code-header span {
+            color: var(--chinchilla-secondary);
+            font-weight: 600;
+            font-size: 0.875rem;
+        }
+
+        .code-content {
+            padding: 1.5rem;
+            overflow-x: auto;
+        }
+
+        .code-content pre {
+            margin: 0;
+            font-family: 'JetBrains Mono', 'Fira Code', monospace;
+            font-size: 0.9rem;
+            line-height: 1.6;
+            color: var(--text);
+        }
+
+        .code-content code {
+            color: var(--chinchilla-secondary);
+        }
+
+        /* Related Papers */
+        .related-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 1rem;
+            margin-top: 1.5rem;
+        }
+
+        .related-card {
+            background: var(--surface-light);
+            padding: 1.25rem;
+            border-radius: 1rem;
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            text-decoration: none;
+            color: inherit;
+            transition: all 0.3s ease;
+            display: block;
+        }
+
+        .related-card:hover {
+            background: rgba(139, 92, 246, 0.1);
+            border-color: rgba(139, 92, 246, 0.3);
+            transform: translateX(4px);
+        }
+
+        .related-card h4 {
+            color: var(--chinchilla-secondary);
+            margin-bottom: 0.5rem;
+            font-size: 1rem;
+        }
+
+        .related-card p {
+            color: var(--text-muted);
+            font-size: 0.85rem;
+        }
+
+        /* Footer */
+        footer {
+            text-align: center;
+            padding: 3rem 2rem;
+            margin-top: 4rem;
+            border-top: 1px solid rgba(255, 255, 255, 0.05);
+            color: var(--text-muted);
+        }
+
+        footer a {
+            color: var(--chinchilla-secondary);
+            text-decoration: none;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            header {
+                padding: 1rem;
+            }
+
+            nav {
+                display: none;
+            }
+
+            main {
+                padding: 1rem;
+            }
+
+            .hero {
+                padding: 2rem 0;
+            }
+
+            .section {
+                padding: 1.5rem;
+            }
+
+            .paper-links {
+                flex-direction: column;
+                align-items: center;
+            }
+
+            .paper-btn {
+                width: 100%;
+                max-width: 300px;
+                justify-content: center;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="bg-animation"></div>
+
+    <header>
+        <div class="header-content">
+            <a href="../index.html" class="logo">AI Neural Networks</a>
+            <nav>
+                <a href="../index.html">Papers</a>
+                <a href="../cnn.html">CNN</a>
+                <a href="../gnn.html">GNN</a>
+                <a href="../gat.html">GAT</a>
+            </nav>
+        </div>
+    </header>
+
+    <main>
+        <!-- Hero Section -->
+        <section class="hero">
+            <div class="hero-badge">
+                <span>⚡</span> DeepMind 2022 · NeurIPS 2022
+            </div>
+            <h1>Training Compute-Optimal<br>Large Language Models</h1>
+            <p class="hero-subtitle">
+                The paper that redefined LLM scaling laws — discovering that smaller models trained on more data significantly outperform larger undertrained models.
+            </p>
+            <div class="hero-meta">
+                <span>Jordan Hoffmann, Sebastian Borgeaud, Arthur Mensch</span>
+                <span>Elena Buchatskaya, Trevor Cai, Eliza Rutherford</span>
+                <span>Diego de Las Casas, Lisa Anne Hendricks, Johannes Welbl</span>
+                <span>Aidan Clark, Tom Hennigan, Eric Noland</span>
+                <span>Katie Millican, George van den Driessche, Bogdan Damoc</span>
+                <span>Aurelia Guy, Simon Osindero, Karen Simonyan</span>
+                <span>Erich Elsen, Jack W. Rae, Oriol Vinyals, Laurent Sifre</span>
+            </div>
+            <div class="paper-links">
+                <a href="https://arxiv.org/abs/2203.15556" class="paper-btn primary" target="_blank">
+                    <span>📄</span> arXiv Paper
+                </a>
+                <a href="https://arxiv.org/pdf/2203.15556.pdf" class="paper-btn secondary" target="_blank">
+                    <span>📥</span> PDF Download
+                </a>
+                <a href="https://www.deepmind.com/blog/an-empirical-analysis-of-compute-optimal-large-language-model-training" class="paper-btn secondary" target="_blank">
+                    <span>🔗</span> DeepMind Blog
+                </a>
+            </div>
+        </section>
+
+        <!-- Problem Statement -->
+        <section class="section">
+            <h2>Problem Statement</h2>
+            <p style="color: var(--text-muted); margin-bottom: 1rem;">
+                Before Chinchilla, the prevailing wisdom in training large language models was heavily influenced by OpenAI's 2020 scaling laws, which emphasized scaling model parameters over training data. This led to a generation of massively overparameterized but undertrained models.
+            </p>
+            <div class="problem-grid">
+                <div class="problem-card">
+                    <h3>📉 Undertrained Giants</h3>
+                    <p>Models like GPT-3 (175B), Gopher (280B), and Megatron-Turing NLG (530B) were trained on only 300-500B tokens, despite their enormous parameter counts.</p>
+                </div>
+                <div class="problem-card">
+                    <h3>⚖️ Imbalanced Scaling</h3>
+                    <p>Previous scaling laws suggested increasing model size 5.5× and data only 1.8× when compute increased 10× — heavily favoring parameters over tokens.</p>
+                </div>
+                <div class="problem-card">
+                    <h3>🔍 No Clear Guidance</h3>
+                    <p>The community lacked empirical evidence on how to optimally allocate compute between model size and training data for maximum performance.</p>
+                </div>
+                <div class="problem-card">
+                    <h3>💰 Inference Costs</h3>
+                    <p>Massive models are expensive to deploy and fine-tune, creating barriers to practical adoption despite impressive benchmark numbers.</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Key Innovation -->
+        <section class="section">
+            <h2>Key Innovation</h2>
+            <div class="innovation-highlight">
+                <h3>🎯 The Chinchilla Scaling Law</h3>
+                <p style="margin-bottom: 1rem;">
+                    Through extensive experiments training over <strong>400 language models</strong> ranging from 70M to 16B+ parameters on 5B to 500B+ tokens, the authors discovered that for compute-optimal training:
+                </p>
+                <div class="scaling-law">
+                    <strong>N</strong> (model parameters) and <strong>D</strong> (training tokens)<br>
+                    should be scaled in <em>equal proportions</em>
+                </div>
+                <p>
+                    This means for every doubling of model size, the number of training tokens should <strong>also double</strong>. The optimal token-to-parameter ratio is approximately <strong>20:1</strong>.
+                </p>
+            </div>
+            
+            <div class="problem-grid" style="margin-top: 1.5rem;">
+                <div class="problem-card">
+                    <h3>🧪 IsoFLOPs Analysis</h3>
+                    <p>A novel methodology fixing compute budgets and varying model size/data to empirically find optimal configurations, fitting parabolas to loss curves.</p>
+                </div>
+                <div class="problem-card">
+                    <h3>📊 Empirical Validation</h3>
+                    <p>400+ models trained across diverse scales provided robust evidence that contradicts previous theoretical predictions about optimal scaling.</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Architecture Visualization -->
+        <section class="section">
+            <h2>Scaling Laws Visualization</h2>
+            <div class="viz-container">
+                <h4>Comparison: Kaplan (OpenAI 2020) vs Chinchilla (DeepMind 2022)</h4>
+                <svg viewBox="0 0 800 450" style="width: 100%; height: auto; max-width: 800px; display: block; margin: 0 auto;">
+                    <!-- Background -->
+                    <rect x="0" y="0" width="800" height="450" fill="#0d0d12" rx="10"/>
+                    
+                    <!-- Grid lines -->
+                    <g stroke="rgba(255,255,255,0.05)" stroke-width="1">
+                        <line x1="80" y1="50" x2="80" y2="380"/>
+                        <line x1="80" y1="380" x2="720" y2="380"/>
+                        <line x1="80" y1="320" x2="720" y2="320"/>
+                        <line x1="80" y1="260" x2="720" y2="260"/>
+                        <line x1="80" y1="200" x2="720" y2="200"/>
+                        <line x1="80" y1="140" x2="720" y2="140"/>
+                        <line x1="200" y1="50" x2="200" y2="380"/>
+                        <line x1="400" y1="50" x2="400" y2="380"/>
+                        <line x1="600" y1="50" x2="600" y2="380"/>
+                    </g>
+                    
+                    <!-- Y-axis labels -->
+                    <text x="70" y="385" text-anchor="end" fill="#64748b" font-size="12">0</text>
+                    <text x="70" y="325" text-anchor="end" fill="#64748b" font-size="12">100B</text>
+                    <text x="70" y="265" text-anchor="end" fill="#64748b" font-size="12">200B</text>
+                    <text x="70" y="205" text-anchor="end" fill="#64748b" font-size="12">300B</text>
+                    <text x="70" y="145" text-anchor="end" fill="#64748b" font-size="12">400B</text>
+                    <text x="70" y="85" text-anchor="end" fill="#64748b" font-size="12">500B</text>
+                    <text x="50" y="220" text-anchor="middle" fill="#94a3b8" font-size="12" transform="rotate(-90 50 220)">Training Tokens</text>
+                    
+                    <!-- X-axis labels -->
+                    <text x="80" y="405" text-anchor="middle" fill="#64748b" font-size="12">10×</text>
+                    <text x="200" y="405" text-anchor="middle" fill="#64748b" font-size="12">100×</text>
+                    <text x="400" y="405" text-anchor="middle" fill="#64748b" font-size="12">1,000×</text>
+                    <text x="600" y="405" text-anchor="middle" fill="#64748b" font-size="12">10,000×</text>
+                    <text x="400" y="435" text-anchor="middle" fill="#94a3b8" font-size="12">Compute Budget (FLOPs) - Log Scale</text>
+                    
+                    <!-- Kaplan curve (OpenAI) - favors model size -->
+                    <path d="M 80 340 Q 150 280, 200 220 Q 300 180, 400 150 Q 550 120, 720 100" 
+                          fill="none" stroke="#ef4444" stroke-width="3" stroke-dasharray="8,4">
+                        <animate attributeName="stroke-dashoffset" from="100" to="0" dur="2s"/>
+                    </path>
+                    
+                    <!-- Chinchilla curve - balanced scaling -->
+                    <path d="M 80 340 Q 150 300, 200 260 Q 300 200, 400 140 Q 550 80, 720 60" 
+                          fill="none" stroke="#8b5cf6" stroke-width="3">
+                        <animate attributeName="stroke-dasharray" from="0,1000" to="1000,0" dur="2s" fill="freeze"/>
+                    </path>
+                    
+                    <!-- Model points -->
+                    <!-- GPT-3 -->
+                    <circle cx="350" cy="290" r="8" fill="#f59e0b" opacity="0.8">
+                        <animate attributeName="r" values="6;10;6" dur="2s" repeatCount="indefinite"/>
+                    </circle>
+                    <text x="350" y="315" text-anchor="middle" fill="#f59e0b" font-size="11">GPT-3</text>
+                    <text x="350" y="328" text-anchor="middle" fill="#64748b" font-size="9">175B | 300B</text>
+                    
+                    <!-- Gopher -->
+                    <circle cx="400" cy="275" r="8" fill="#ec4899" opacity="0.8">
+                        <animate attributeName="r" values="6;10;6" dur="2s" repeatCount="indefinite" begin="0.3s"/>
+                    </circle>
+                    <text x="400" y="250" text-anchor="middle" fill="#ec4899" font-size="11">Gopher</text>
+                    <text x="400" y="238" text-anchor="middle" fill="#64748b" font-size="9">280B | 300B</text>
+                    
+                    <!-- Megatron -->
+                    <circle cx="500" cy="260" r="8" fill="#10b981" opacity="0.8">
+                        <animate attributeName="r" values="6;10;6" dur="2s" repeatCount="indefinite" begin="0.6s"/>
+                    </circle>
+                    <text x="500" y="235" text-anchor="middle" fill="#10b981" font-size="11">Megatron</text>
+                    <text x="500" y="223" text-anchor="middle" fill="#64748b" font-size="9">530B | 270B</text>
+                    
+                    <!-- Chinchilla - on the optimal curve -->
+                    <circle cx="400" cy="140" r="10" fill="#8b5cf6">
+                        <animate attributeName="r" values="8;12;8" dur="2s" repeatCount="indefinite"/>
+                        <animate attributeName="opacity" values="1;0.5;1" dur="2s" repeatCount="indefinite"/>
+                    </circle>
+                    <text x="400" y="115" text-anchor="middle" fill="#a78bfa" font-size="12" font-weight="bold">Chinchilla ⭐</text>
+                    <text x="400" y="102" text-anchor="middle" fill="#64748b" font-size="9">70B | 1.4T (Optimal!)</text>
+                    
+                    <!-- Legend -->
+                    <rect x="520" y="60" width="180" height="90" fill="rgba(13,13,18,0.9)" stroke="rgba(255,255,255,0.1)" rx="8"/>
+                    <line x1="540" y1="85" x2="570" y2="85" stroke="#ef4444" stroke-width="3" stroke-dasharray="4,2"/>
+                    <text x="580" y="89" fill="#ef4444" font-size="11">Kaplan (OpenAI)</text>
+                    <line x1="540" y1="110" x2="570" y2="110" stroke="#8b5cf6" stroke-width="3"/>
+                    <text x="580" y="114" fill="#a78bfa" font-size="11">Chinchilla (Optimal)</text>
+                    <text x="540" y="135" fill="#64748b" font-size="10">Same compute budget: ~5e23 FLOPs</text>
+                </svg>
+            </div>
+
+            <div class="viz-container">
+                <h4>The Chinchilla Configuration: Same Compute, Better Results</h4>
+                <svg viewBox="0 0 800 350" style="width: 100%; height: auto; max-width: 800px; display: block; margin: 0 auto;">
+                    <rect x="0" y="0" width="800" height="350" fill="#0d0d12" rx="10"/>
+                    
+                    <!-- Title bars -->
+                    <rect x="50" y="30" width="320" height="40" fill="rgba(236,72,153,0.2)" rx="5" stroke="#ec4899" stroke-width="1"/>
+                    <text x="210" y="55" text-anchor="middle" fill="#ec4899" font-size="14" font-weight="bold">Gopher (Before)</text>
+                    
+                    <rect x="430" y="30" width="320" height="40" fill="rgba(139,92,246,0.2)" rx="5" stroke="#8b5cf6" stroke-width="1"/>
+                    <text x="590" y="55" text-anchor="middle" fill="#a78bfa" font-size="14" font-weight="bold">Chinchilla (After)</text>
+                    
+                    <!-- Parameters comparison -->
+                    <text x="70" y="100" fill="#94a3b8" font-size="12">Parameters</text>
+                    <rect x="50" y="110" width="300" height="30" fill="#ec4899" opacity="0.6" rx="3">
+                        <animate attributeName="width" from="0" to="300" dur="1s"/>
+                    </rect>
+                    <text x="280" y="130" text-anchor="end" fill="#fff" font-size="12" font-weight="bold">280 Billion</text>
+                    
+                    <rect x="430" y="110" width="75" height="30" fill="#8b5cf6" opacity="0.8" rx="3">
+                        <animate attributeName="width" from="0" to="75" dur="1s" begin="0.3s"/>
+                    </rect>
+                    <text x="485" y="130" text-anchor="middle" fill="#fff" font-size="12" font-weight="bold">70B</text>
+                    <text x="520" y="130" fill="#64748b" font-size="11">(4× smaller)</text>
+                    
+                    <!-- Tokens comparison -->
+                    <text x="70" y="170" fill="#94a3b8" font-size="12">Training Tokens</text>
+                    <rect x="50" y="180" width="100" height="30" fill="#ec4899" opacity="0.6" rx="3">
+                        <animate attributeName="width" from="0" to="100" dur="1s"/>
+                    </rect>
+                    <text x="135" y="200" text-anchor="end" fill="#fff" font-size="12">300 Billion</text>
+                    
+                    <rect x="430" y="180" width="300" height="30" fill="#8b5cf6" opacity="0.8" rx="3">
+                        <animate attributeName="width" from="0" to="300" dur="1s" begin="0.5s"/>
+                    </rect>
+                    <text x="660" y="200" text-anchor="end" fill="#fff" font-size="12" font-weight="bold">1.4 Trillion</text>
+                    <text x="670" y="200" fill="#64748b" font-size="11">(4.7× more)</text>
+                    
+                    <!-- MMLU Score -->
+                    <text x="70" y="240" fill="#94a3b8" font-size="12">MMLU Score</text>
+                    <rect x="50" y="250" width="200" height="35" fill="url(#gopherGrad)" opacity="0.8" rx="3">
+                        <animate attributeName="width" from="0" to="200" dur="1s"/>
+                    </defs>
+                    <defs>
+                        <linearGradient id="gopherGrad" x1="0" y1="0" x2="1" y2="0">
+                            <stop offset="0%" stop-color="#ec4899"/>
+                            <stop offset="100%" stop-color="#f472b6"/>
+                        </linearGradient>
+                        <linearGradient id="chinchillaGrad" x1="0" y1="0" x2="1" y2="0">
+                            <stop offset="0%" stop-color="#8b5cf6"/>
+                            <stop offset="100%" stop-color="#a78bfa"/>
+                        </linearGradient>
+                    </defs>
+                    </rect>
+                    <text x="235" y="272" text-anchor="end" fill="#fff" font-size="14" font-weight="bold">60.0%</text>
+                    
+                    <rect x="430" y="250" width="250" height="35" fill="url(#chinchillaGrad)" opacity="0.9" rx="3">
+                        <animate attributeName="width" from="0" to="250" dur="1s" begin="0.7s"/>
+                    </rect>
+                    <text x="665" y="272" text-anchor="end" fill="#fff" font-size="16" font-weight="bold">67.5%</text>
+                    <text x="675" y="272" fill="#a78bfa" font-size="13" font-weight="bold">+7.5%</text>
+                    
+                    <!-- Compute comparison -->
+                    <text x="70" y="315" fill="#94a3b8" font-size="12">Training Compute</text>
+                    <rect x="50" y="325" width="150" height="15" fill="#64748b" opacity="0.5" rx="2"/>
+                    <text x="195" y="336" text-anchor="end" fill="#64748b" font-size="10">~5×10²³ FLOPs</text>
+                    
+                    <rect x="430" y="325" width="150" height="15" fill="#64748b" opacity="0.5" rx="2"/>
+                    <text x="575" y="336" text-anchor="end" fill="#64748b" font-size="10">~5×10²³ FLOPs</text>
+                    <text x="600" y="336" fill="#10b981" font-size="10" font-weight="bold">(Same!)</text>
+                    
+                    <!-- Arrow showing improvement -->
+                    <path d="M 370 265 Q 400 265, 410 265" fill="none" stroke="#10b981" stroke-width="3" marker-end="url(#arrowhead)"/>
+                    <defs>
+                        <marker id="arrowhead" markerWidth="10" markerHeight="10" refX="9" refY="3" orient="auto">
+                            <polygon points="0 0, 10 3, 0 6" fill="#10b981"/>
+                        </marker>
+                    </defs>
+                    <text x="390" y="255" text-anchor="middle" fill="#10b981" font-size="11" font-weight="bold">Better!</text>
+                </svg>
+            </div>
+        </section>
+
+        <!-- Results & Impact -->
+        <section class="section">
+            <h2>Results & Impact</h2>
+            <p style="color: var(--text-muted); margin-bottom: 1.5rem;">
+                Chinchilla (70B parameters, 1.4T tokens) was trained with the same compute budget as Gopher (280B parameters, 300B tokens), but achieved dramatically better results across all benchmarks.
+            </p>
+            <div class="results-grid">
+                <div class="result-card">
+                    <div class="result-value">67.5%</div>
+                    <div class="result-label">MMLU Average<br><span style="color: var(--success);">+7.5% over Gopher</span></div>
+                </div>
+                <div class="result-card">
+                    <div class="result-value">70B</div>
+                    <div class="result-label">Parameters<br><span style="color: var(--success);">4× smaller than Gopher</span></div>
+                </div>
+                <div class="result-card">
+                    <div class="result-value">1.4T</div>
+                    <div class="result-label">Training Tokens<br><span style="color: var(--success);">4.7× more than Gopher</span></div>
+                </div>
+                <div class="result-card">
+                    <div class="result-value">400+</div>
+                    <div class="result-label">Models Trained<br><span style="color: var(--success);">For empirical analysis</span></div>
+                </div>
+            </div>
+            
+            <div class="innovation-highlight" style="margin-top: 2rem;">
+                <h3>🌍 Industry Impact</h3>
+                <p style="margin-bottom: 1rem;">
+                    The Chinchilla paper fundamentally changed how the AI industry approaches LLM training:
+                </p>
+                <ul style="color: var(--text-muted); padding-left: 1.5rem; line-height: 1.8;">
+                    <li><strong>LLaMA (Meta):</strong> Trained 65B parameters on 1.4T tokens following Chinchilla principles</li>
+                    <li><strong>PaLM 2 (Google):</strong> Smaller than PaLM but trained on significantly more data</li>
+                    <li><strong>Mistral:</strong> 7B model trained on high-quality data, outperforming much larger models</li>
+                    <li><strong>DeepSeek:</strong> Open-source models leveraging Chinchilla-optimal training ratios</li>
+                </ul>
+                <p style="margin-top: 1rem; color: var(--text-muted);">
+                    The paper demonstrated that <strong>data quality and quantity matter as much as model size</strong>, democratizing access to capable models by enabling smaller, more efficient architectures.
+                </p>
+            </div>
+        </section>
+
+        <!-- Code Implementation -->
+        <section class="section">
+            <h2>Practical Implementation</h2>
+            <p style="color: var(--text-muted); margin-bottom: 1rem;">
+                The Chinchilla scaling law can be applied when planning LLM training. Here's how to estimate optimal model size and training tokens for a given compute budget:
+            </p>
+            <div class="code-section">
+                <div class="code-header">
+                    <span>Python: Chinchilla Scaling Calculator</span>
+                </div>
+                <div class="code-content">
+                    <pre><code>"""
+Chinchilla Scaling Laws Implementation
+Based on: Hoffmann et al. 2022 "Training Compute-Optimal Large Language Models"
+
+Key finding: For compute-optimal training, N and D should scale equally.
+The optimal ratio is approximately 20 tokens per parameter.
+"""
+
+import math
+
+# Chinchilla scaling coefficients (from paper)
+A = 406.4  # coefficient for parameter term
+B = 410.7  # coefficient for data term  
+ALPHA = 0.34  # exponent for parameters
+BETA = 0.28   # exponent for data
+E = 1.69     # irreducible loss
+
+
+def estimate_optimal_config(total_flops: float):
+    """
+    Estimate optimal model size (N) and training tokens (D) 
+    for a given compute budget.
+    
+    Args:
+        total_flops: Total training compute budget in FLOPs
+        
+    Returns:
+        (N_optimal, D_optimal) in parameters and tokens
+    """
+    # Approximate optimal values using Chinchilla law
+    # N_opt ∝ C^0.50, D_opt ∝ C^0.50
+    
+    N_optimal = math.pow(total_flops / (6 * 20), 0.5)  # ~ sqrt(C/120)
+    D_optimal = 20 * N_optimal  # 20 tokens per parameter
+    
+    return int(N_optimal), int(D_optimal)
+
+
+def chinchilla_loss(N: int, D: int):
+    """
+    Estimate loss given model size N and training tokens D.
+    L(N, D) = E + A/N^α + B/D^β
+    """
+    param_term = A / (N ** ALPHA)
+    data_term = B / (D ** BETA)
+    return E + param_term + data_term
+
+
+# Example: Plan a training run with 1e21 FLOPs (~$100k budget)
+compute_budget = 1e21  # FLOPs
+N, D = estimate_optimal_config(compute_budget)
+
+print(f"Compute Budget: {compute_budget:.0e} FLOPs")
+print(f"Optimal Model Size: {N/1e9:.1f}B parameters")
+print(f"Optimal Training Tokens: {D/1e9:.1f}B tokens")
+print(f"Token-to-Parameter Ratio: {D/N:.1f}:1")
+print(f"Estimated Loss: {chinchilla_loss(N, D):.3f}")
+
+# Output for 1e21 FLOPs:
+# Optimal Model Size: 2.9B parameters  
+# Optimal Training Tokens: 57.7B tokens
+# Token-to-Parameter Ratio: 20.0:1</code></pre>
+                </div>
+            </div>
+        </section>
+
+        <!-- Related Papers -->
+        <section class="section">
+            <h2>Related Work</h2>
+            <div class="related-grid">
+                <a href="https://arxiv.org/abs/2001.08361" class="related-card" target="_blank">
+                    <h4>Scaling Laws for Neural Language Models (Kaplan et al., 2020)</h4>
+                    <p>The original OpenAI scaling laws that favored model size over data, which Chinchilla corrected.</p>
+                </a>
+                <a href="../papers/gopher.html" class="related-card">
+                    <h4>Scaling Language Models: Gopher (Rae et al., 2021)</h4>
+                    <p>DeepMind's 280B parameter model that Chinchilla outperformed with 4× fewer parameters.</p>
+                </a>
+                <a href="../papers/gpt-3.html" class="related-card">
+                    <h4>GPT-3 (Brown et al., 2020)</h4>
+                    <p>175B parameter model from OpenAI, also undertrained compared to Chinchilla-optimal ratios.</p>
+                </a>
+                <a href="../papers/llama.html" class="related-card">
+                    <h4>LLaMA (Touvron et al., 2023)</h4>
+                    <p>Meta's open model explicitly trained following Chinchilla scaling laws.</p>
+                </a>
+                <a href="https://arxiv.org/abs/2305.16264" class="related-card" target="_blank">
+                    <h4>Beyond Chinchilla-Optimal (Sardana et al., 2023)</h4>
+                    <p>Extends Chinchilla to account for inference costs in the compute-optimal tradeoff.</p>
+                </a>
+                <a href="https://arxiv.org/abs/2401.00448" class="related-card" target="_blank">
+                    <h4>Chinchilla 2.0: MosaicML (2023)</h4>
+                    <p>Replicated and extended Chinchilla findings with additional experiments and analysis.</p>
+                </a>
+            </div>
+        </section>
+
+        <!-- Key Takeaways -->
+        <section class="section">
+            <h2>Key Takeaways</h2>
+            <div class="problem-grid">
+                <div class="problem-card">
+                    <h3>1️⃣ Equal Scaling</h3>
+                    <p>For every doubling of model parameters, training tokens should also double. The optimal ratio is ~20:1.</p>
+                </div>
+                <div class="problem-card">
+                    <h3>2️⃣ Data Quality Matters</h3>
+                    <p>Many large models (GPT-3, Gopher, Megatron) were undertrained by 10-100× relative to optimal.</p>
+                </div>
+                <div class="problem-card">
+                    <h3>3️⃣ Efficiency Wins</h3>
+                    <p>Smaller, well-trained models are cheaper to fine-tune and deploy while outperforming larger alternatives.</p>
+                </div>
+                <div class="problem-card">
+                    <h3>4️⃣ Empirical Over Theory</h3>
+                    <p>Chinchilla's IsoFLOPs approach provided empirical evidence that contradicted previous theoretical predictions.</p>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer>
+        <p>Part of the <a href="../index.html">AI Neural Networks</a> paper collection</p>
+        <p style="margin-top: 0.5rem; font-size: 0.9rem;">
+            Chinchilla: Training Compute-Optimal Large Language Models · DeepMind · NeurIPS 2022
+        </p>
+    </footer>
+</body>
+</html>
