@@ -3864,7 +3864,944 @@
                     </defs>
                 </svg>
             </div>
-        </div>
+        
+            <!-- BART Paper Card -->
+            <div class="network-card" onclick="location.href='papers/bart.html'">
+                <span class="tag">ACL 2019</span>
+                <h3>BART</h3>
+                <p>Denoising sequence-to-sequence pre-training. Combines BERT-style bidirectional encoder with GPT-style autoregressive decoder.</p>
+                <svg class="preview-svg" viewBox="0 0 300 150">
+                    <defs>
+                        <linearGradient id="bart-grad" x1="0%" y1="0%" x2="100%" y2="100%">
+                            <stop offset="0%" style="stop-color:#7c3aed"/>
+                            <stop offset="100%" style="stop-color:#7c3aed88"/>
+                        </linearGradient>
+                    </defs>
+                    <text x="150" y="15" fill="#8888aa" font-size="10" text-anchor="middle">Transformer Architecture</text>
+                    <rect x="20" y="25" width="60" height="100" rx="5" fill="url(#bart-grad)" opacity="0.6"/>
+                    <text x="50" y="80" fill="#fff" font-size="9" text-anchor="middle">Input</text>
+                    <path d="M 80 50 L 120 50" stroke="#7c3aed" stroke-width="2" marker-end="url(#arrowhead)"/>
+                    <path d="M 80 75 L 120 75" stroke="#7c3aed" stroke-width="2" marker-end="url(#arrowhead)"/>
+                    <path d="M 80 100 L 120 100" stroke="#7c3aed" stroke-width="2" marker-end="url(#arrowhead)"/>
+                    <rect x="120" y="25" width="60" height="100" rx="5" fill="url(#bart-grad)" opacity="0.8"/>
+                    <text x="150" y="80" fill="#fff" font-size="9" text-anchor="middle">Transformer</text>
+                    <path d="M 180 50 L 220 50" stroke="#7c3aed" stroke-width="2" marker-end="url(#arrowhead)"/>
+                    <path d="M 180 75 L 220 75" stroke="#7c3aed" stroke-width="2" marker-end="url(#arrowhead)"/>
+                    <path d="M 180 100 L 220 100" stroke="#7c3aed" stroke-width="2" marker-end="url(#arrowhead)"/>
+                    <rect x="220" y="25" width="60" height="100" rx="5" fill="url(#bart-grad)" opacity="0.6"/>
+                    <text x="250" y="80" fill="#fff" font-size="9" text-anchor="middle">Output</text>
+                </svg>
+            </div>
+
+            <!-- CapsNet Paper Card -->
+            <div class="network-card" onclick="location.href='papers/capsnet.html'">
+                <span class="tag">NIPS 2017</span>
+                <h3>CapsNet</h3>
+                <p>Dynamic routing between capsules. Preserves spatial hierarchies and pose information better than CNNs using capsule vectors.</p>
+                <svg class="preview-svg" viewBox="0 0 300 150">
+                    <defs>
+                        <linearGradient id="capsnet-grad" x1="0%" y1="0%" x2="100%" y2="100%">
+                            <stop offset="0%" style="stop-color:#0ea5e9"/>
+                            <stop offset="100%" style="stop-color:#0ea5e988"/>
+                        </linearGradient>
+                    </defs>
+                    <text x="150" y="15" fill="#8888aa" font-size="10" text-anchor="middle">Network Architecture</text>
+                    <circle cx="150" cy="75" r="35" fill="url(#capsnet-grad)" opacity="0.6"/>
+                    <text x="150" y="80" fill="#fff" font-size="10" text-anchor="middle">CapsNet</text>
+                </svg>
+            </div>
+
+            <!-- CLIP Paper Card -->
+            <div class="network-card" onclick="location.href='papers/clip.html'">
+                <span class="tag">OpenAI 2021</span>
+                <h3>CLIP</h3>
+                <p>Contrastive Language-Image Pre-training. Jointly trains image and text encoders on 400M image-text pairs for zero-shot transfer.</p>
+                <svg class="preview-svg" viewBox="0 0 300 150">
+                    <defs>
+                        <linearGradient id="clip-grad" x1="0%" y1="0%" x2="100%" y2="100%">
+                            <stop offset="0%" style="stop-color:#f59e0b"/>
+                            <stop offset="100%" style="stop-color:#f59e0b88"/>
+                        </linearGradient>
+                    </defs>
+                    <text x="150" y="15" fill="#8888aa" font-size="10" text-anchor="middle">Vision Transformer</text>
+                    <rect x="10" y="30" width="40" height="40" rx="3" fill="url(#clip-grad)" opacity="0.7"/>
+                    <rect x="55" y="30" width="40" height="40" rx="3" fill="url(#clip-grad)" opacity="0.7"/>
+                    <rect x="100" y="30" width="40" height="40" rx="3" fill="url(#clip-grad)" opacity="0.7"/>
+                    <rect x="10" y="75" width="40" height="40" rx="3" fill="url(#clip-grad)" opacity="0.7"/>
+                    <rect x="55" y="75" width="40" height="40" rx="3" fill="url(#clip-grad)" opacity="0.7"/>
+                    <rect x="100" y="75" width="40" height="40" rx="3" fill="url(#clip-grad)" opacity="0.7"/>
+                    <text x="85" y="130" fill="#8888aa" font-size="9" text-anchor="middle">Patches</text>
+                    <path d="M 145 50 L 180 50 L 180 100 L 145 100 Z" stroke="#f59e0b" stroke-width="2" fill="none"/>
+                    <text x="162" y="80" fill="#f59e0b" font-size="9" text-anchor="middle">PE</text>
+                    <path d="M 195 50 L 240 50 L 240 100 L 195 100 Z" stroke="#f59e0b" stroke-width="2" fill="none"/>
+                    <text x="217" y="80" fill="#f59e0b" font-size="8" text-anchor="middle">Transformer</text>
+                    <path d="M 245 75 L 280 75" stroke="#f59e0b" stroke-width="2" marker-end="url(#arrowhead)"/>
+                    <text x="265" y="65" fill="#8888aa" font-size="8">class</text>
+                </svg>
+            </div>
+
+            <!-- DALL-E Paper Card -->
+            <div class="network-card" onclick="location.href='papers/dalle.html'">
+                <span class="tag">OpenAI 2021</span>
+                <h3>DALL-E</h3>
+                <p>Zero-Shot Text-to-Image Generation. Discrete variational autoencoder with autoregressive transformer for text-to-image synthesis.</p>
+                <svg class="preview-svg" viewBox="0 0 300 150">
+                    <defs>
+                        <linearGradient id="dalle-grad" x1="0%" y1="0%" x2="100%" y2="100%">
+                            <stop offset="0%" style="stop-color:#ec4899"/>
+                            <stop offset="100%" style="stop-color:#ec489988"/>
+                        </linearGradient>
+                    </defs>
+                    <text x="150" y="15" fill="#8888aa" font-size="10" text-anchor="middle">Diffusion Process</text>
+                    <text x="50" y="40" fill="#8888aa" font-size="9" text-anchor="middle">Noisy Image</text>
+                    <circle cx="50" cy="75" r="25" fill="url(#dalle-grad)" opacity="0.4"/>
+                    <text x="50" y="80" fill="#fff" font-size="8" text-anchor="middle">x_t</text>
+                    <path d="M 80 75 L 120 75" stroke="#ec4899" stroke-width="2" marker-end="url(#arrowhead)"/>
+                    <text x="100" y="65" fill="#ec4899" font-size="8">Denoise</text>
+                    <rect x="120" y="50" width="60" height="50" rx="5" fill="url(#dalle-grad)" opacity="0.8"/>
+                    <text x="150" y="80" fill="#fff" font-size="8" text-anchor="middle">UNet</text>
+                    <path d="M 180 75 L 220 75" stroke="#ec4899" stroke-width="2" marker-end="url(#arrowhead)"/>
+                    <text x="200" y="65" fill="#ec4899" font-size="8">Predict</text>
+                    <circle cx="250" cy="75" r="25" fill="url(#dalle-grad)" opacity="0.9"/>
+                    <text x="250" y="80" fill="#fff" font-size="8" text-anchor="middle">x_{t-1}</text>
+                </svg>
+            </div>
+
+            <!-- DCGAN Paper Card -->
+            <div class="network-card" onclick="location.href='papers/dcgan.html'">
+                <span class="tag">arXiv 2015</span>
+                <h3>DCGAN</h3>
+                <p>Deep Convolutional GAN. First stable GAN architecture with convolutional layers, BatchNorm, and LeakyReLU for stable training.</p>
+                <svg class="preview-svg" viewBox="0 0 300 150">
+                    <defs>
+                        <linearGradient id="dcgan-grad" x1="0%" y1="0%" x2="100%" y2="100%">
+                            <stop offset="0%" style="stop-color:#ec4899"/>
+                            <stop offset="100%" style="stop-color:#ec489988"/>
+                        </linearGradient>
+                    </defs>
+                    <text x="150" y="15" fill="#8888aa" font-size="10" text-anchor="middle">GAN Architecture</text>
+                    <text x="75" y="35" fill="#8888aa" font-size="9" text-anchor="middle">Generator</text>
+                    <rect x="20" y="45" width="110" height="60" rx="5" fill="url(#dcgan-grad)" opacity="0.7"/>
+                    <text x="75" y="80" fill="#fff" font-size="9" text-anchor="middle">Noise → Image</text>
+                    <text x="225" y="35" fill="#8888aa" font-size="9" text-anchor="middle">Discriminator</text>
+                    <rect x="170" y="45" width="110" height="60" rx="5" fill="url(#dcgan-grad)" opacity="0.5"/>
+                    <text x="225" y="80" fill="#fff" font-size="9" text-anchor="middle">Real/Fake</text>
+                    <path d="M 130 75 L 165 75" stroke="#ec4899" stroke-width="2" marker-end="url(#arrowhead)"/>
+                    <text x="147" y="65" fill="#ec4899" font-size="8">Generated</text>
+                    <path d="M 165 60 L 130 60" stroke="#ef4444" stroke-width="2" marker-end="url(#arrowhead)" stroke-dasharray="5,5"/>
+                    <text x="147" y="55" fill="#ef4444" font-size="8">Feedback</text>
+                </svg>
+            </div>
+
+            <!-- DDPM (Diffusion) Paper Card -->
+            <div class="network-card" onclick="location.href='papers/ddpm.html'">
+                <span class="tag">NeurIPS 2020</span>
+                <h3>DDPM (Diffusion)</h3>
+                <p>Denoising Diffusion Probabilistic Models. Gradual denoising process outperforms GANs in image quality and diversity without adversarial training.</p>
+                <svg class="preview-svg" viewBox="0 0 300 150">
+                    <defs>
+                        <linearGradient id="ddpm-grad" x1="0%" y1="0%" x2="100%" y2="100%">
+                            <stop offset="0%" style="stop-color:#ec4899"/>
+                            <stop offset="100%" style="stop-color:#ec489988"/>
+                        </linearGradient>
+                    </defs>
+                    <text x="150" y="15" fill="#8888aa" font-size="10" text-anchor="middle">Diffusion Process</text>
+                    <text x="50" y="40" fill="#8888aa" font-size="9" text-anchor="middle">Noisy Image</text>
+                    <circle cx="50" cy="75" r="25" fill="url(#ddpm-grad)" opacity="0.4"/>
+                    <text x="50" y="80" fill="#fff" font-size="8" text-anchor="middle">x_t</text>
+                    <path d="M 80 75 L 120 75" stroke="#ec4899" stroke-width="2" marker-end="url(#arrowhead)"/>
+                    <text x="100" y="65" fill="#ec4899" font-size="8">Denoise</text>
+                    <rect x="120" y="50" width="60" height="50" rx="5" fill="url(#ddpm-grad)" opacity="0.8"/>
+                    <text x="150" y="80" fill="#fff" font-size="8" text-anchor="middle">UNet</text>
+                    <path d="M 180 75 L 220 75" stroke="#ec4899" stroke-width="2" marker-end="url(#arrowhead)"/>
+                    <text x="200" y="65" fill="#ec4899" font-size="8">Predict</text>
+                    <circle cx="250" cy="75" r="25" fill="url(#ddpm-grad)" opacity="0.9"/>
+                    <text x="250" y="80" fill="#fff" font-size="8" text-anchor="middle">x_{t-1}</text>
+                </svg>
+            </div>
+
+            <!-- Deep Learning (Nature) Paper Card -->
+            <div class="network-card" onclick="location.href='papers/deep-learning-nature.html'">
+                <span class="tag">Nature 2015</span>
+                <h3>Deep Learning (Nature)</h3>
+                <p>Deep learning review in Nature. Comprehensive overview of deep learning methods, applications, and future directions.</p>
+                <svg class="preview-svg" viewBox="0 0 300 150">
+                    <defs>
+                        <linearGradient id="deep-learning-nature-grad" x1="0%" y1="0%" x2="100%" y2="100%">
+                            <stop offset="0%" style="stop-color:#0ea5e9"/>
+                            <stop offset="100%" style="stop-color:#0ea5e988"/>
+                        </linearGradient>
+                    </defs>
+                    <text x="150" y="15" fill="#8888aa" font-size="10" text-anchor="middle">Network Architecture</text>
+                    <circle cx="150" cy="75" r="35" fill="url(#deep-learning-nature-grad)" opacity="0.6"/>
+                    <text x="150" y="80" fill="#fff" font-size="10" text-anchor="middle">Deep Learn</text>
+                </svg>
+            </div>
+
+            <!-- DenseNet Paper Card -->
+            <div class="network-card" onclick="location.href='papers/densenet.html'">
+                <span class="tag">CVPR 2017</span>
+                <h3>DenseNet</h3>
+                <p>Densely Connected Convolutional Networks. Each layer connects to all subsequent layers, improving feature reuse and gradient flow.</p>
+                <svg class="preview-svg" viewBox="0 0 300 150">
+                    <defs>
+                        <linearGradient id="densenet-grad" x1="0%" y1="0%" x2="100%" y2="100%">
+                            <stop offset="0%" style="stop-color:#ef4444"/>
+                            <stop offset="100%" style="stop-color:#ef444488"/>
+                        </linearGradient>
+                    </defs>
+                    <text x="150" y="15" fill="#8888aa" font-size="10" text-anchor="middle">CNN Architecture</text>
+                    <rect x="20" y="30" width="50" height="40" rx="5" fill="url(#densenet-grad)" opacity="0.8"/>
+                    <text x="45" y="55" fill="#fff" font-size="8" text-anchor="middle">Conv3x3</text>
+                    <path d="M 70 50 L 90 50" stroke="#ef4444" stroke-width="2" marker-end="url(#arrowhead)"/>
+                    <rect x="90" y="30" width="50" height="40" rx="5" fill="url(#densenet-grad)" opacity="0.8"/>
+                    <text x="115" y="55" fill="#fff" font-size="8" text-anchor="middle">Conv3x3</text>
+                    <path d="M 140 50 L 160 50" stroke="#ef4444" stroke-width="2" marker-end="url(#arrowhead)"/>
+                    <rect x="160" y="30" width="50" height="40" rx="5" fill="url(#densenet-grad)" opacity="0.6"/>
+                    <text x="185" y="55" fill="#fff" font-size="8" text-anchor="middle">Pool</text>
+                    <path d="M 210 50 L 230 50" stroke="#ef4444" stroke-width="2" marker-end="url(#arrowhead)"/>
+                    <rect x="230" y="30" width="50" height="40" rx="5" fill="url(#densenet-grad)" opacity="0.9"/>
+                    <text x="255" y="55" fill="#fff" font-size="8" text-anchor="middle">FC</text>
+                    <text x="150" y="110" fill="#8888aa" font-size="9" text-anchor="middle">Feature Extraction</text>
+                    <rect x="110" y="120" width="80" height="20" rx="10" fill="#ef4444" opacity="0.3"/>
+                    <text x="150" y="135" fill="#ef4444" font-size="9" text-anchor="middle">Classification</text>
+                </svg>
+            </div>
+
+            <!-- DQN Paper Card -->
+            <div class="network-card" onclick="location.href='papers/dqn.html'">
+                <span class="tag">Nature 2015</span>
+                <h3>DQN</h3>
+                <p>Human-level control through deep reinforcement learning. Combines Q-learning with deep CNN for playing Atari games directly from pixels.</p>
+                <svg class="preview-svg" viewBox="0 0 300 150">
+                    <defs>
+                        <linearGradient id="dqn-grad" x1="0%" y1="0%" x2="100%" y2="100%">
+                            <stop offset="0%" style="stop-color:#0ea5e9"/>
+                            <stop offset="100%" style="stop-color:#0ea5e988"/>
+                        </linearGradient>
+                    </defs>
+                    <text x="150" y="15" fill="#8888aa" font-size="10" text-anchor="middle">Network Architecture</text>
+                    <circle cx="150" cy="75" r="35" fill="url(#dqn-grad)" opacity="0.6"/>
+                    <text x="150" y="80" fill="#fff" font-size="10" text-anchor="middle">DQN</text>
+                </svg>
+            </div>
+
+            <!-- EfficientNet Paper Card -->
+            <div class="network-card" onclick="location.href='papers/efficientnet.html'">
+                <span class="tag">ICML 2019</span>
+                <h3>EfficientNet</h3>
+                <p>Rethinking model scaling. Uniformly scales depth, width, and resolution with a compound coefficient for better efficiency.</p>
+                <svg class="preview-svg" viewBox="0 0 300 150">
+                    <defs>
+                        <linearGradient id="efficientnet-grad" x1="0%" y1="0%" x2="100%" y2="100%">
+                            <stop offset="0%" style="stop-color:#ef4444"/>
+                            <stop offset="100%" style="stop-color:#ef444488"/>
+                        </linearGradient>
+                    </defs>
+                    <text x="150" y="15" fill="#8888aa" font-size="10" text-anchor="middle">CNN Architecture</text>
+                    <rect x="20" y="30" width="50" height="40" rx="5" fill="url(#efficientnet-grad)" opacity="0.8"/>
+                    <text x="45" y="55" fill="#fff" font-size="8" text-anchor="middle">Conv3x3</text>
+                    <path d="M 70 50 L 90 50" stroke="#ef4444" stroke-width="2" marker-end="url(#arrowhead)"/>
+                    <rect x="90" y="30" width="50" height="40" rx="5" fill="url(#efficientnet-grad)" opacity="0.8"/>
+                    <text x="115" y="55" fill="#fff" font-size="8" text-anchor="middle">Conv3x3</text>
+                    <path d="M 140 50 L 160 50" stroke="#ef4444" stroke-width="2" marker-end="url(#arrowhead)"/>
+                    <rect x="160" y="30" width="50" height="40" rx="5" fill="url(#efficientnet-grad)" opacity="0.6"/>
+                    <text x="185" y="55" fill="#fff" font-size="8" text-anchor="middle">Pool</text>
+                    <path d="M 210 50 L 230 50" stroke="#ef4444" stroke-width="2" marker-end="url(#arrowhead)"/>
+                    <rect x="230" y="30" width="50" height="40" rx="5" fill="url(#efficientnet-grad)" opacity="0.9"/>
+                    <text x="255" y="55" fill="#fff" font-size="8" text-anchor="middle">FC</text>
+                    <text x="150" y="110" fill="#8888aa" font-size="9" text-anchor="middle">Feature Extraction</text>
+                    <rect x="110" y="120" width="80" height="20" rx="10" fill="#ef4444" opacity="0.3"/>
+                    <text x="150" y="135" fill="#ef4444" font-size="9" text-anchor="middle">Classification</text>
+                </svg>
+            </div>
+
+            <!-- GoogleNet Paper Card -->
+            <div class="network-card" onclick="location.href='papers/googlenet.html'">
+                <span class="tag">CVPR 2015</span>
+                <h3>GoogleNet</h3>
+                <p>Going deeper with convolutions. Introduced Inception modules with multi-scale feature extraction in a computationally efficient network.</p>
+                <svg class="preview-svg" viewBox="0 0 300 150">
+                    <defs>
+                        <linearGradient id="googlenet-grad" x1="0%" y1="0%" x2="100%" y2="100%">
+                            <stop offset="0%" style="stop-color:#ef4444"/>
+                            <stop offset="100%" style="stop-color:#ef444488"/>
+                        </linearGradient>
+                    </defs>
+                    <text x="150" y="15" fill="#8888aa" font-size="10" text-anchor="middle">CNN Architecture</text>
+                    <rect x="20" y="30" width="50" height="40" rx="5" fill="url(#googlenet-grad)" opacity="0.8"/>
+                    <text x="45" y="55" fill="#fff" font-size="8" text-anchor="middle">Conv3x3</text>
+                    <path d="M 70 50 L 90 50" stroke="#ef4444" stroke-width="2" marker-end="url(#arrowhead)"/>
+                    <rect x="90" y="30" width="50" height="40" rx="5" fill="url(#googlenet-grad)" opacity="0.8"/>
+                    <text x="115" y="55" fill="#fff" font-size="8" text-anchor="middle">Conv3x3</text>
+                    <path d="M 140 50 L 160 50" stroke="#ef4444" stroke-width="2" marker-end="url(#arrowhead)"/>
+                    <rect x="160" y="30" width="50" height="40" rx="5" fill="url(#googlenet-grad)" opacity="0.6"/>
+                    <text x="185" y="55" fill="#fff" font-size="8" text-anchor="middle">Pool</text>
+                    <path d="M 210 50 L 230 50" stroke="#ef4444" stroke-width="2" marker-end="url(#arrowhead)"/>
+                    <rect x="230" y="30" width="50" height="40" rx="5" fill="url(#googlenet-grad)" opacity="0.9"/>
+                    <text x="255" y="55" fill="#fff" font-size="8" text-anchor="middle">FC</text>
+                    <text x="150" y="110" fill="#8888aa" font-size="9" text-anchor="middle">Feature Extraction</text>
+                    <rect x="110" y="120" width="80" height="20" rx="10" fill="#ef4444" opacity="0.3"/>
+                    <text x="150" y="135" fill="#ef4444" font-size="9" text-anchor="middle">Classification</text>
+                </svg>
+            </div>
+
+            <!-- GPT Paper Card -->
+            <div class="network-card" onclick="location.href='papers/gpt.html'">
+                <span class="tag">OpenAI 2018</span>
+                <h3>GPT</h3>
+                <p>Generative Pre-trained Transformer. Introduced decoder-only architecture with generative pre-training for NLP tasks.</p>
+                <svg class="preview-svg" viewBox="0 0 300 150">
+                    <defs>
+                        <linearGradient id="gpt-grad" x1="0%" y1="0%" x2="100%" y2="100%">
+                            <stop offset="0%" style="stop-color:#7c3aed"/>
+                            <stop offset="100%" style="stop-color:#7c3aed88"/>
+                        </linearGradient>
+                    </defs>
+                    <text x="150" y="15" fill="#8888aa" font-size="10" text-anchor="middle">Transformer Architecture</text>
+                    <rect x="20" y="25" width="60" height="100" rx="5" fill="url(#gpt-grad)" opacity="0.6"/>
+                    <text x="50" y="80" fill="#fff" font-size="9" text-anchor="middle">Input</text>
+                    <path d="M 80 50 L 120 50" stroke="#7c3aed" stroke-width="2" marker-end="url(#arrowhead)"/>
+                    <path d="M 80 75 L 120 75" stroke="#7c3aed" stroke-width="2" marker-end="url(#arrowhead)"/>
+                    <path d="M 80 100 L 120 100" stroke="#7c3aed" stroke-width="2" marker-end="url(#arrowhead)"/>
+                    <rect x="120" y="25" width="60" height="100" rx="5" fill="url(#gpt-grad)" opacity="0.8"/>
+                    <text x="150" y="80" fill="#fff" font-size="9" text-anchor="middle">Transformer</text>
+                    <path d="M 180 50 L 220 50" stroke="#7c3aed" stroke-width="2" marker-end="url(#arrowhead)"/>
+                    <path d="M 180 75 L 220 75" stroke="#7c3aed" stroke-width="2" marker-end="url(#arrowhead)"/>
+                    <path d="M 180 100 L 220 100" stroke="#7c3aed" stroke-width="2" marker-end="url(#arrowhead)"/>
+                    <rect x="220" y="25" width="60" height="100" rx="5" fill="url(#gpt-grad)" opacity="0.6"/>
+                    <text x="250" y="80" fill="#fff" font-size="9" text-anchor="middle">Output</text>
+                </svg>
+            </div>
+
+            <!-- GPT-2 Paper Card -->
+            <div class="network-card" onclick="location.href='papers/gpt2.html'">
+                <span class="tag">OpenAI 2019</span>
+                <h3>GPT-2</h3>
+                <p>GPT-2 scales up to 1.5B parameters. Demonstrated strong zero-shot generalization across NLP tasks without task-specific training.</p>
+                <svg class="preview-svg" viewBox="0 0 300 150">
+                    <defs>
+                        <linearGradient id="gpt2-grad" x1="0%" y1="0%" x2="100%" y2="100%">
+                            <stop offset="0%" style="stop-color:#7c3aed"/>
+                            <stop offset="100%" style="stop-color:#7c3aed88"/>
+                        </linearGradient>
+                    </defs>
+                    <text x="150" y="15" fill="#8888aa" font-size="10" text-anchor="middle">Transformer Architecture</text>
+                    <rect x="20" y="25" width="60" height="100" rx="5" fill="url(#gpt2-grad)" opacity="0.6"/>
+                    <text x="50" y="80" fill="#fff" font-size="9" text-anchor="middle">Input</text>
+                    <path d="M 80 50 L 120 50" stroke="#7c3aed" stroke-width="2" marker-end="url(#arrowhead)"/>
+                    <path d="M 80 75 L 120 75" stroke="#7c3aed" stroke-width="2" marker-end="url(#arrowhead)"/>
+                    <path d="M 80 100 L 120 100" stroke="#7c3aed" stroke-width="2" marker-end="url(#arrowhead)"/>
+                    <rect x="120" y="25" width="60" height="100" rx="5" fill="url(#gpt2-grad)" opacity="0.8"/>
+                    <text x="150" y="80" fill="#fff" font-size="9" text-anchor="middle">Transformer</text>
+                    <path d="M 180 50 L 220 50" stroke="#7c3aed" stroke-width="2" marker-end="url(#arrowhead)"/>
+                    <path d="M 180 75 L 220 75" stroke="#7c3aed" stroke-width="2" marker-end="url(#arrowhead)"/>
+                    <path d="M 180 100 L 220 100" stroke="#7c3aed" stroke-width="2" marker-end="url(#arrowhead)"/>
+                    <rect x="220" y="25" width="60" height="100" rx="5" fill="url(#gpt2-grad)" opacity="0.6"/>
+                    <text x="250" y="80" fill="#fff" font-size="9" text-anchor="middle">Output</text>
+                </svg>
+            </div>
+
+            <!-- GPT-3 Paper Card -->
+            <div class="network-card" onclick="location.href='papers/gpt3.html'">
+                <span class="tag">OpenAI 2020</span>
+                <h3>GPT-3</h3>
+                <p>GPT-3 with 175B parameters. Few-shot in-context learning emerges at scale, enabling task adaptation without fine-tuning.</p>
+                <svg class="preview-svg" viewBox="0 0 300 150">
+                    <defs>
+                        <linearGradient id="gpt3-grad" x1="0%" y1="0%" x2="100%" y2="100%">
+                            <stop offset="0%" style="stop-color:#7c3aed"/>
+                            <stop offset="100%" style="stop-color:#7c3aed88"/>
+                        </linearGradient>
+                    </defs>
+                    <text x="150" y="15" fill="#8888aa" font-size="10" text-anchor="middle">Transformer Architecture</text>
+                    <rect x="20" y="25" width="60" height="100" rx="5" fill="url(#gpt3-grad)" opacity="0.6"/>
+                    <text x="50" y="80" fill="#fff" font-size="9" text-anchor="middle">Input</text>
+                    <path d="M 80 50 L 120 50" stroke="#7c3aed" stroke-width="2" marker-end="url(#arrowhead)"/>
+                    <path d="M 80 75 L 120 75" stroke="#7c3aed" stroke-width="2" marker-end="url(#arrowhead)"/>
+                    <path d="M 80 100 L 120 100" stroke="#7c3aed" stroke-width="2" marker-end="url(#arrowhead)"/>
+                    <rect x="120" y="25" width="60" height="100" rx="5" fill="url(#gpt3-grad)" opacity="0.8"/>
+                    <text x="150" y="80" fill="#fff" font-size="9" text-anchor="middle">Transformer</text>
+                    <path d="M 180 50 L 220 50" stroke="#7c3aed" stroke-width="2" marker-end="url(#arrowhead)"/>
+                    <path d="M 180 75 L 220 75" stroke="#7c3aed" stroke-width="2" marker-end="url(#arrowhead)"/>
+                    <path d="M 180 100 L 220 100" stroke="#7c3aed" stroke-width="2" marker-end="url(#arrowhead)"/>
+                    <rect x="220" y="25" width="60" height="100" rx="5" fill="url(#gpt3-grad)" opacity="0.6"/>
+                    <text x="250" y="80" fill="#fff" font-size="9" text-anchor="middle">Output</text>
+                </svg>
+            </div>
+
+            <!-- GPT-4 Paper Card -->
+            <div class="network-card" onclick="location.href='papers/gpt4.html'">
+                <span class="tag">OpenAI 2023</span>
+                <h3>GPT-4</h3>
+                <p>GPT-4 multimodal model accepting text and images. Improved reasoning, factuality, and steerability over GPT-3.</p>
+                <svg class="preview-svg" viewBox="0 0 300 150">
+                    <defs>
+                        <linearGradient id="gpt4-grad" x1="0%" y1="0%" x2="100%" y2="100%">
+                            <stop offset="0%" style="stop-color:#7c3aed"/>
+                            <stop offset="100%" style="stop-color:#7c3aed88"/>
+                        </linearGradient>
+                    </defs>
+                    <text x="150" y="15" fill="#8888aa" font-size="10" text-anchor="middle">Transformer Architecture</text>
+                    <rect x="20" y="25" width="60" height="100" rx="5" fill="url(#gpt4-grad)" opacity="0.6"/>
+                    <text x="50" y="80" fill="#fff" font-size="9" text-anchor="middle">Input</text>
+                    <path d="M 80 50 L 120 50" stroke="#7c3aed" stroke-width="2" marker-end="url(#arrowhead)"/>
+                    <path d="M 80 75 L 120 75" stroke="#7c3aed" stroke-width="2" marker-end="url(#arrowhead)"/>
+                    <path d="M 80 100 L 120 100" stroke="#7c3aed" stroke-width="2" marker-end="url(#arrowhead)"/>
+                    <rect x="120" y="25" width="60" height="100" rx="5" fill="url(#gpt4-grad)" opacity="0.8"/>
+                    <text x="150" y="80" fill="#fff" font-size="9" text-anchor="middle">Transformer</text>
+                    <path d="M 180 50 L 220 50" stroke="#7c3aed" stroke-width="2" marker-end="url(#arrowhead)"/>
+                    <path d="M 180 75 L 220 75" stroke="#7c3aed" stroke-width="2" marker-end="url(#arrowhead)"/>
+                    <path d="M 180 100 L 220 100" stroke="#7c3aed" stroke-width="2" marker-end="url(#arrowhead)"/>
+                    <rect x="220" y="25" width="60" height="100" rx="5" fill="url(#gpt4-grad)" opacity="0.6"/>
+                    <text x="250" y="80" fill="#fff" font-size="9" text-anchor="middle">Output</text>
+                </svg>
+            </div>
+
+            <!-- GRU Paper Card -->
+            <div class="network-card" onclick="location.href='papers/gru.html'">
+                <span class="tag">arXiv 2014</span>
+                <h3>GRU</h3>
+                <p>Gated Recurrent Unit simplifies LSTM with fewer parameters. Uses reset and update gates for efficient sequence modeling.</p>
+                <svg class="preview-svg" viewBox="0 0 300 150">
+                    <defs>
+                        <linearGradient id="gru-grad" x1="0%" y1="0%" x2="100%" y2="100%">
+                            <stop offset="0%" style="stop-color:#6366f1"/>
+                            <stop offset="100%" style="stop-color:#6366f188"/>
+                        </linearGradient>
+                    </defs>
+                    <text x="150" y="15" fill="#8888aa" font-size="10" text-anchor="middle">Sequential Model</text>
+                    <rect x="30" y="50" width="50" height="50" rx="25" fill="url(#gru-grad)" opacity="0.8"/>
+                    <text x="55" y="80" fill="#fff" font-size="10" text-anchor="middle">x_t</text>
+                    <path d="M 80 75 L 120 75" stroke="#6366f1" stroke-width="2" marker-end="url(#arrowhead)"/>
+                    <rect x="120" y="50" width="60" height="50" rx="5" fill="url(#gru-grad)" opacity="0.9"/>
+                    <text x="150" y="70" fill="#fff" font-size="8" text-anchor="middle">RNN</text>
+                    <text x="150" y="85" fill="#fff" font-size="8" text-anchor="middle">Cell</text>
+                    <path d="M 180 75 L 220 75" stroke="#6366f1" stroke-width="2" marker-end="url(#arrowhead)"/>
+                    <rect x="220" y="50" width="50" height="50" rx="25" fill="url(#gru-grad)" opacity="0.8"/>
+                    <text x="245" y="80" fill="#fff" font-size="10" text-anchor="middle">y_t</text>
+                    <!-- Loop back -->
+                    <path d="M 150 100 L 150 120 L 80 120 L 80 100" stroke="#6366f1" stroke-width="1.5" fill="none" marker-end="url(#arrowhead)" opacity="0.6"/>
+                    <text x="110" y="135" fill="#8888aa" font-size="8">hidden state</text>
+                </svg>
+            </div>
+
+            <!-- LLaMA Paper Card -->
+            <div class="network-card" onclick="location.href='papers/llama.html'">
+                <span class="tag">Meta 2023</span>
+                <h3>LLaMA</h3>
+                <p>Open and efficient foundation language models. Competitive performance with smaller model sizes through high-quality pre-training data.</p>
+                <svg class="preview-svg" viewBox="0 0 300 150">
+                    <defs>
+                        <linearGradient id="llama-grad" x1="0%" y1="0%" x2="100%" y2="100%">
+                            <stop offset="0%" style="stop-color:#7c3aed"/>
+                            <stop offset="100%" style="stop-color:#7c3aed88"/>
+                        </linearGradient>
+                    </defs>
+                    <text x="150" y="15" fill="#8888aa" font-size="10" text-anchor="middle">Transformer Architecture</text>
+                    <rect x="20" y="25" width="60" height="100" rx="5" fill="url(#llama-grad)" opacity="0.6"/>
+                    <text x="50" y="80" fill="#fff" font-size="9" text-anchor="middle">Input</text>
+                    <path d="M 80 50 L 120 50" stroke="#7c3aed" stroke-width="2" marker-end="url(#arrowhead)"/>
+                    <path d="M 80 75 L 120 75" stroke="#7c3aed" stroke-width="2" marker-end="url(#arrowhead)"/>
+                    <path d="M 80 100 L 120 100" stroke="#7c3aed" stroke-width="2" marker-end="url(#arrowhead)"/>
+                    <rect x="120" y="25" width="60" height="100" rx="5" fill="url(#llama-grad)" opacity="0.8"/>
+                    <text x="150" y="80" fill="#fff" font-size="9" text-anchor="middle">Transformer</text>
+                    <path d="M 180 50 L 220 50" stroke="#7c3aed" stroke-width="2" marker-end="url(#arrowhead)"/>
+                    <path d="M 180 75 L 220 75" stroke="#7c3aed" stroke-width="2" marker-end="url(#arrowhead)"/>
+                    <path d="M 180 100 L 220 100" stroke="#7c3aed" stroke-width="2" marker-end="url(#arrowhead)"/>
+                    <rect x="220" y="25" width="60" height="100" rx="5" fill="url(#llama-grad)" opacity="0.6"/>
+                    <text x="250" y="80" fill="#fff" font-size="9" text-anchor="middle">Output</text>
+                </svg>
+            </div>
+
+            <!-- LSTM Paper Card -->
+            <div class="network-card" onclick="location.href='papers/lstm.html'">
+                <span class="tag">Neural Comp 1997</span>
+                <h3>LSTM</h3>
+                <p>Long Short-Term Memory networks for sequence learning. Uses input, forget, and output gates to control information flow and avoid vanishing gradients.</p>
+                <svg class="preview-svg" viewBox="0 0 300 150">
+                    <defs>
+                        <linearGradient id="lstm-grad" x1="0%" y1="0%" x2="100%" y2="100%">
+                            <stop offset="0%" style="stop-color:#6366f1"/>
+                            <stop offset="100%" style="stop-color:#6366f188"/>
+                        </linearGradient>
+                    </defs>
+                    <text x="150" y="15" fill="#8888aa" font-size="10" text-anchor="middle">Sequential Model</text>
+                    <rect x="30" y="50" width="50" height="50" rx="25" fill="url(#lstm-grad)" opacity="0.8"/>
+                    <text x="55" y="80" fill="#fff" font-size="10" text-anchor="middle">x_t</text>
+                    <path d="M 80 75 L 120 75" stroke="#6366f1" stroke-width="2" marker-end="url(#arrowhead)"/>
+                    <rect x="120" y="50" width="60" height="50" rx="5" fill="url(#lstm-grad)" opacity="0.9"/>
+                    <text x="150" y="70" fill="#fff" font-size="8" text-anchor="middle">RNN</text>
+                    <text x="150" y="85" fill="#fff" font-size="8" text-anchor="middle">Cell</text>
+                    <path d="M 180 75 L 220 75" stroke="#6366f1" stroke-width="2" marker-end="url(#arrowhead)"/>
+                    <rect x="220" y="50" width="50" height="50" rx="25" fill="url(#lstm-grad)" opacity="0.8"/>
+                    <text x="245" y="80" fill="#fff" font-size="10" text-anchor="middle">y_t</text>
+                    <!-- Loop back -->
+                    <path d="M 150 100 L 150 120 L 80 120 L 80 100" stroke="#6366f1" stroke-width="1.5" fill="none" marker-end="url(#arrowhead)" opacity="0.6"/>
+                    <text x="110" y="135" fill="#8888aa" font-size="8">hidden state</text>
+                </svg>
+            </div>
+
+            <!-- Masked Autoencoder (MAE) Paper Card -->
+            <div class="network-card" onclick="location.href='papers/mae.html'">
+                <span class="tag">CVPR 2022</span>
+                <h3>Masked Autoencoder (MAE)</h3>
+                <p>Masked Autoencoders for self-supervised visual learning. Masks random patches and reconstructs pixels, learning strong visual representations.</p>
+                <svg class="preview-svg" viewBox="0 0 300 150">
+                    <defs>
+                        <linearGradient id="mae-grad" x1="0%" y1="0%" x2="100%" y2="100%">
+                            <stop offset="0%" style="stop-color:#f59e0b"/>
+                            <stop offset="100%" style="stop-color:#f59e0b88"/>
+                        </linearGradient>
+                    </defs>
+                    <text x="150" y="15" fill="#8888aa" font-size="10" text-anchor="middle">Vision Transformer</text>
+                    <rect x="10" y="30" width="40" height="40" rx="3" fill="url(#mae-grad)" opacity="0.7"/>
+                    <rect x="55" y="30" width="40" height="40" rx="3" fill="url(#mae-grad)" opacity="0.7"/>
+                    <rect x="100" y="30" width="40" height="40" rx="3" fill="url(#mae-grad)" opacity="0.7"/>
+                    <rect x="10" y="75" width="40" height="40" rx="3" fill="url(#mae-grad)" opacity="0.7"/>
+                    <rect x="55" y="75" width="40" height="40" rx="3" fill="url(#mae-grad)" opacity="0.7"/>
+                    <rect x="100" y="75" width="40" height="40" rx="3" fill="url(#mae-grad)" opacity="0.7"/>
+                    <text x="85" y="130" fill="#8888aa" font-size="9" text-anchor="middle">Patches</text>
+                    <path d="M 145 50 L 180 50 L 180 100 L 145 100 Z" stroke="#f59e0b" stroke-width="2" fill="none"/>
+                    <text x="162" y="80" fill="#f59e0b" font-size="9" text-anchor="middle">PE</text>
+                    <path d="M 195 50 L 240 50 L 240 100 L 195 100 Z" stroke="#f59e0b" stroke-width="2" fill="none"/>
+                    <text x="217" y="80" fill="#f59e0b" font-size="8" text-anchor="middle">Transformer</text>
+                    <path d="M 245 75 L 280 75" stroke="#f59e0b" stroke-width="2" marker-end="url(#arrowhead)"/>
+                    <text x="265" y="65" fill="#8888aa" font-size="8">class</text>
+                </svg>
+            </div>
+
+            <!-- Mamba Paper Card -->
+            <div class="network-card" onclick="location.href='papers/mamba.html'">
+                <span class="tag">arXiv 2021</span>
+                <h3>Mamba</h3>
+                <p>Selective state spaces for efficient NLP. Combines benefits of RNNs and Transformers with selective SSM for linear-time inference.</p>
+                <svg class="preview-svg" viewBox="0 0 300 150">
+                    <defs>
+                        <linearGradient id="mamba-grad" x1="0%" y1="0%" x2="100%" y2="100%">
+                            <stop offset="0%" style="stop-color:#0ea5e9"/>
+                            <stop offset="100%" style="stop-color:#0ea5e988"/>
+                        </linearGradient>
+                    </defs>
+                    <text x="150" y="15" fill="#8888aa" font-size="10" text-anchor="middle">Network Architecture</text>
+                    <circle cx="150" cy="75" r="35" fill="url(#mamba-grad)" opacity="0.6"/>
+                    <text x="150" y="80" fill="#fff" font-size="10" text-anchor="middle">Mamba</text>
+                </svg>
+            </div>
+
+            <!-- MobileNet Paper Card -->
+            <div class="network-card" onclick="location.href='papers/mobilenet.html'">
+                <span class="tag">arXiv 2017</span>
+                <h3>MobileNet</h3>
+                <p>Efficient convolutional neural networks for mobile vision. Uses depthwise separable convolutions to reduce parameters and compute.</p>
+                <svg class="preview-svg" viewBox="0 0 300 150">
+                    <defs>
+                        <linearGradient id="mobilenet-grad" x1="0%" y1="0%" x2="100%" y2="100%">
+                            <stop offset="0%" style="stop-color:#ef4444"/>
+                            <stop offset="100%" style="stop-color:#ef444488"/>
+                        </linearGradient>
+                    </defs>
+                    <text x="150" y="15" fill="#8888aa" font-size="10" text-anchor="middle">CNN Architecture</text>
+                    <rect x="20" y="30" width="50" height="40" rx="5" fill="url(#mobilenet-grad)" opacity="0.8"/>
+                    <text x="45" y="55" fill="#fff" font-size="8" text-anchor="middle">Conv3x3</text>
+                    <path d="M 70 50 L 90 50" stroke="#ef4444" stroke-width="2" marker-end="url(#arrowhead)"/>
+                    <rect x="90" y="30" width="50" height="40" rx="5" fill="url(#mobilenet-grad)" opacity="0.8"/>
+                    <text x="115" y="55" fill="#fff" font-size="8" text-anchor="middle">Conv3x3</text>
+                    <path d="M 140 50 L 160 50" stroke="#ef4444" stroke-width="2" marker-end="url(#arrowhead)"/>
+                    <rect x="160" y="30" width="50" height="40" rx="5" fill="url(#mobilenet-grad)" opacity="0.6"/>
+                    <text x="185" y="55" fill="#fff" font-size="8" text-anchor="middle">Pool</text>
+                    <path d="M 210 50 L 230 50" stroke="#ef4444" stroke-width="2" marker-end="url(#arrowhead)"/>
+                    <rect x="230" y="30" width="50" height="40" rx="5" fill="url(#mobilenet-grad)" opacity="0.9"/>
+                    <text x="255" y="55" fill="#fff" font-size="8" text-anchor="middle">FC</text>
+                    <text x="150" y="110" fill="#8888aa" font-size="9" text-anchor="middle">Feature Extraction</text>
+                    <rect x="110" y="120" width="80" height="20" rx="10" fill="#ef4444" opacity="0.3"/>
+                    <text x="150" y="135" fill="#ef4444" font-size="9" text-anchor="middle">Classification</text>
+                </svg>
+            </div>
+
+            <!-- Mixture of Experts Paper Card -->
+            <div class="network-card" onclick="location.href='papers/moe.html'">
+                <span class="tag">arXiv 2017</span>
+                <h3>Mixture of Experts</h3>
+                <p>Mixture of Experts layers. Conditions computation on inputs by routing to specialized expert subnetworks for efficient scaling.</p>
+                <svg class="preview-svg" viewBox="0 0 300 150">
+                    <defs>
+                        <linearGradient id="moe-grad" x1="0%" y1="0%" x2="100%" y2="100%">
+                            <stop offset="0%" style="stop-color:#0ea5e9"/>
+                            <stop offset="100%" style="stop-color:#0ea5e988"/>
+                        </linearGradient>
+                    </defs>
+                    <text x="150" y="15" fill="#8888aa" font-size="10" text-anchor="middle">Network Architecture</text>
+                    <circle cx="150" cy="75" r="35" fill="url(#moe-grad)" opacity="0.6"/>
+                    <text x="150" y="80" fill="#fff" font-size="10" text-anchor="middle">Mixture of</text>
+                </svg>
+            </div>
+
+            <!-- NeRF Paper Card -->
+            <div class="network-card" onclick="location.href='papers/nerf.html'">
+                <span class="tag">ECCV 2020</span>
+                <h3>NeRF</h3>
+                <p>Neural Radiance Fields. Continuous scene representation using MLPs for novel view synthesis with impressive photorealism.</p>
+                <svg class="preview-svg" viewBox="0 0 300 150">
+                    <defs>
+                        <linearGradient id="nerf-grad" x1="0%" y1="0%" x2="100%" y2="100%">
+                            <stop offset="0%" style="stop-color:#0ea5e9"/>
+                            <stop offset="100%" style="stop-color:#0ea5e988"/>
+                        </linearGradient>
+                    </defs>
+                    <text x="150" y="15" fill="#8888aa" font-size="10" text-anchor="middle">Neural Radiance Field</text>
+                    <circle cx="150" cy="75" r="40" fill="none" stroke="#0ea5e9" stroke-width="2"/>
+                    <circle cx="150" cy="75" r="30" fill="none" stroke="#0ea5e9" stroke-width="1" opacity="0.5"/>
+                    <circle cx="150" cy="75" r="20" fill="none" stroke="#0ea5e9" stroke-width="1" opacity="0.3"/>
+                    <path d="M 150 35 L 150 25" stroke="#0ea5e9" stroke-width="2" marker-end="url(#arrowhead)"/>
+                    <text x="155" y="30" fill="#0ea5e9" font-size="8">density</text>
+                    <path d="M 190 75 L 210 75" stroke="#0ea5e9" stroke-width="2" marker-end="url(#arrowhead)"/>
+                    <text x="200" y="70" fill="#0ea5e9" font-size="8">RGB</text>
+                    <text x="150" y="130" fill="#8888aa" font-size="9" text-anchor="middle">5D Input → Volume Rendering</text>
+                </svg>
+            </div>
+
+            <!-- Neural Turing Machine Paper Card -->
+            <div class="network-card" onclick="location.href='papers/ntm.html'">
+                <span class="tag">Nature 2014</span>
+                <h3>Neural Turing Machine</h3>
+                <p>Neural Turing Machines combine neural networks with external memory. Introduces attention-based memory operations for differentiable computing.</p>
+                <svg class="preview-svg" viewBox="0 0 300 150">
+                    <defs>
+                        <linearGradient id="ntm-grad" x1="0%" y1="0%" x2="100%" y2="100%">
+                            <stop offset="0%" style="stop-color:#6366f1"/>
+                            <stop offset="100%" style="stop-color:#6366f188"/>
+                        </linearGradient>
+                    </defs>
+                    <text x="150" y="15" fill="#8888aa" font-size="10" text-anchor="middle">Network Architecture</text>
+                    <circle cx="150" cy="75" r="35" fill="url(#ntm-grad)" opacity="0.6"/>
+                    <text x="150" y="80" fill="#fff" font-size="10" text-anchor="middle">Neural Tur</text>
+                </svg>
+            </div>
+
+            <!-- Perceptron Paper Card -->
+            <div class="network-card" onclick="location.href='papers/perceptron.html'">
+                <span class="tag">Psych Review 1958</span>
+                <h3>Perceptron</h3>
+                <p>The foundation of neural networks. A single-layer linear classifier that started the neural network revolution.</p>
+                <svg class="preview-svg" viewBox="0 0 300 150">
+                    <defs>
+                        <linearGradient id="perceptron-grad" x1="0%" y1="0%" x2="100%" y2="100%">
+                            <stop offset="0%" style="stop-color:#6366f1"/>
+                            <stop offset="100%" style="stop-color:#6366f188"/>
+                        </linearGradient>
+                    </defs>
+                    <text x="150" y="15" fill="#8888aa" font-size="10" text-anchor="middle">Network Architecture</text>
+                    <circle cx="150" cy="75" r="35" fill="url(#perceptron-grad)" opacity="0.6"/>
+                    <text x="150" y="80" fill="#fff" font-size="10" text-anchor="middle">Perceptron</text>
+                </svg>
+            </div>
+
+            <!-- ResNeXt Paper Card -->
+            <div class="network-card" onclick="location.href='papers/resnext.html'">
+                <span class="tag">CVPR 2017</span>
+                <h3>ResNeXt</h3>
+                <p>Aggregated Residual Transformations. Introduced cardinality as a new dimension alongside depth and width for CNN design.</p>
+                <svg class="preview-svg" viewBox="0 0 300 150">
+                    <defs>
+                        <linearGradient id="resnext-grad" x1="0%" y1="0%" x2="100%" y2="100%">
+                            <stop offset="0%" style="stop-color:#ef4444"/>
+                            <stop offset="100%" style="stop-color:#ef444488"/>
+                        </linearGradient>
+                    </defs>
+                    <text x="150" y="15" fill="#8888aa" font-size="10" text-anchor="middle">CNN Architecture</text>
+                    <rect x="20" y="30" width="50" height="40" rx="5" fill="url(#resnext-grad)" opacity="0.8"/>
+                    <text x="45" y="55" fill="#fff" font-size="8" text-anchor="middle">Conv3x3</text>
+                    <path d="M 70 50 L 90 50" stroke="#ef4444" stroke-width="2" marker-end="url(#arrowhead)"/>
+                    <rect x="90" y="30" width="50" height="40" rx="5" fill="url(#resnext-grad)" opacity="0.8"/>
+                    <text x="115" y="55" fill="#fff" font-size="8" text-anchor="middle">Conv3x3</text>
+                    <path d="M 140 50 L 160 50" stroke="#ef4444" stroke-width="2" marker-end="url(#arrowhead)"/>
+                    <rect x="160" y="30" width="50" height="40" rx="5" fill="url(#resnext-grad)" opacity="0.6"/>
+                    <text x="185" y="55" fill="#fff" font-size="8" text-anchor="middle">Pool</text>
+                    <path d="M 210 50 L 230 50" stroke="#ef4444" stroke-width="2" marker-end="url(#arrowhead)"/>
+                    <rect x="230" y="30" width="50" height="40" rx="5" fill="url(#resnext-grad)" opacity="0.9"/>
+                    <text x="255" y="55" fill="#fff" font-size="8" text-anchor="middle">FC</text>
+                    <text x="150" y="110" fill="#8888aa" font-size="9" text-anchor="middle">Feature Extraction</text>
+                    <rect x="110" y="120" width="80" height="20" rx="10" fill="#ef4444" opacity="0.3"/>
+                    <text x="150" y="135" fill="#ef4444" font-size="9" text-anchor="middle">Classification</text>
+                </svg>
+            </div>
+
+            <!-- RoBERTa Paper Card -->
+            <div class="network-card" onclick="location.href='papers/roberta.html'">
+                <span class="tag">arXiv 2019</span>
+                <h3>RoBERTa</h3>
+                <p>Robustly optimized BERT approach. Removed NSP task, used larger batches, and dynamic masking to improve BERT.</p>
+                <svg class="preview-svg" viewBox="0 0 300 150">
+                    <defs>
+                        <linearGradient id="roberta-grad" x1="0%" y1="0%" x2="100%" y2="100%">
+                            <stop offset="0%" style="stop-color:#7c3aed"/>
+                            <stop offset="100%" style="stop-color:#7c3aed88"/>
+                        </linearGradient>
+                    </defs>
+                    <text x="150" y="15" fill="#8888aa" font-size="10" text-anchor="middle">Transformer Architecture</text>
+                    <rect x="20" y="25" width="60" height="100" rx="5" fill="url(#roberta-grad)" opacity="0.6"/>
+                    <text x="50" y="80" fill="#fff" font-size="9" text-anchor="middle">Input</text>
+                    <path d="M 80 50 L 120 50" stroke="#7c3aed" stroke-width="2" marker-end="url(#arrowhead)"/>
+                    <path d="M 80 75 L 120 75" stroke="#7c3aed" stroke-width="2" marker-end="url(#arrowhead)"/>
+                    <path d="M 80 100 L 120 100" stroke="#7c3aed" stroke-width="2" marker-end="url(#arrowhead)"/>
+                    <rect x="120" y="25" width="60" height="100" rx="5" fill="url(#roberta-grad)" opacity="0.8"/>
+                    <text x="150" y="80" fill="#fff" font-size="9" text-anchor="middle">Transformer</text>
+                    <path d="M 180 50 L 220 50" stroke="#7c3aed" stroke-width="2" marker-end="url(#arrowhead)"/>
+                    <path d="M 180 75 L 220 75" stroke="#7c3aed" stroke-width="2" marker-end="url(#arrowhead)"/>
+                    <path d="M 180 100 L 220 100" stroke="#7c3aed" stroke-width="2" marker-end="url(#arrowhead)"/>
+                    <rect x="220" y="25" width="60" height="100" rx="5" fill="url(#roberta-grad)" opacity="0.6"/>
+                    <text x="250" y="80" fill="#fff" font-size="9" text-anchor="middle">Output</text>
+                </svg>
+            </div>
+
+            <!-- Stable Diffusion Paper Card -->
+            <div class="network-card" onclick="location.href='papers/stable-diffusion.html'">
+                <span class="tag">CVPR 2022</span>
+                <h3>Stable Diffusion</h3>
+                <p>Latent text-to-image diffusion. Operates in latent space for efficient high-resolution image generation from text prompts.</p>
+                <svg class="preview-svg" viewBox="0 0 300 150">
+                    <defs>
+                        <linearGradient id="stable-diffusion-grad" x1="0%" y1="0%" x2="100%" y2="100%">
+                            <stop offset="0%" style="stop-color:#ec4899"/>
+                            <stop offset="100%" style="stop-color:#ec489988"/>
+                        </linearGradient>
+                    </defs>
+                    <text x="150" y="15" fill="#8888aa" font-size="10" text-anchor="middle">Diffusion Process</text>
+                    <text x="50" y="40" fill="#8888aa" font-size="9" text-anchor="middle">Noisy Image</text>
+                    <circle cx="50" cy="75" r="25" fill="url(#stable-diffusion-grad)" opacity="0.4"/>
+                    <text x="50" y="80" fill="#fff" font-size="8" text-anchor="middle">x_t</text>
+                    <path d="M 80 75 L 120 75" stroke="#ec4899" stroke-width="2" marker-end="url(#arrowhead)"/>
+                    <text x="100" y="65" fill="#ec4899" font-size="8">Denoise</text>
+                    <rect x="120" y="50" width="60" height="50" rx="5" fill="url(#stable-diffusion-grad)" opacity="0.8"/>
+                    <text x="150" y="80" fill="#fff" font-size="8" text-anchor="middle">UNet</text>
+                    <path d="M 180 75 L 220 75" stroke="#ec4899" stroke-width="2" marker-end="url(#arrowhead)"/>
+                    <text x="200" y="65" fill="#ec4899" font-size="8">Predict</text>
+                    <circle cx="250" cy="75" r="25" fill="url(#stable-diffusion-grad)" opacity="0.9"/>
+                    <text x="250" y="80" fill="#fff" font-size="8" text-anchor="middle">x_{t-1}</text>
+                </svg>
+            </div>
+
+            <!-- StyleGAN Paper Card -->
+            <div class="network-card" onclick="location.href='papers/stylegan.html'">
+                <span class="tag">CVPR 2019</span>
+                <h3>StyleGAN</h3>
+                <p>Style-based Generator Architecture. Controls image synthesis at different resolutions through adaptive instance normalization (AdaIN).</p>
+                <svg class="preview-svg" viewBox="0 0 300 150">
+                    <defs>
+                        <linearGradient id="stylegan-grad" x1="0%" y1="0%" x2="100%" y2="100%">
+                            <stop offset="0%" style="stop-color:#ec4899"/>
+                            <stop offset="100%" style="stop-color:#ec489988"/>
+                        </linearGradient>
+                    </defs>
+                    <text x="150" y="15" fill="#8888aa" font-size="10" text-anchor="middle">GAN Architecture</text>
+                    <text x="75" y="35" fill="#8888aa" font-size="9" text-anchor="middle">Generator</text>
+                    <rect x="20" y="45" width="110" height="60" rx="5" fill="url(#stylegan-grad)" opacity="0.7"/>
+                    <text x="75" y="80" fill="#fff" font-size="9" text-anchor="middle">Noise → Image</text>
+                    <text x="225" y="35" fill="#8888aa" font-size="9" text-anchor="middle">Discriminator</text>
+                    <rect x="170" y="45" width="110" height="60" rx="5" fill="url(#stylegan-grad)" opacity="0.5"/>
+                    <text x="225" y="80" fill="#fff" font-size="9" text-anchor="middle">Real/Fake</text>
+                    <path d="M 130 75 L 165 75" stroke="#ec4899" stroke-width="2" marker-end="url(#arrowhead)"/>
+                    <text x="147" y="65" fill="#ec4899" font-size="8">Generated</text>
+                    <path d="M 165 60 L 130 60" stroke="#ef4444" stroke-width="2" marker-end="url(#arrowhead)" stroke-dasharray="5,5"/>
+                    <text x="147" y="55" fill="#ef4444" font-size="8">Feedback</text>
+                </svg>
+            </div>
+
+            <!-- T5 Paper Card -->
+            <div class="network-card" onclick="location.href='papers/t5.html'">
+                <span class="tag">JMLR 2020</span>
+                <h3>T5</h3>
+                <p>Text-to-Text Transfer Transformer. Unified NLP tasks as text generation, pre-trained on large text-to-text corpus (C4).</p>
+                <svg class="preview-svg" viewBox="0 0 300 150">
+                    <defs>
+                        <linearGradient id="t5-grad" x1="0%" y1="0%" x2="100%" y2="100%">
+                            <stop offset="0%" style="stop-color:#7c3aed"/>
+                            <stop offset="100%" style="stop-color:#7c3aed88"/>
+                        </linearGradient>
+                    </defs>
+                    <text x="150" y="15" fill="#8888aa" font-size="10" text-anchor="middle">Transformer Architecture</text>
+                    <rect x="20" y="25" width="60" height="100" rx="5" fill="url(#t5-grad)" opacity="0.6"/>
+                    <text x="50" y="80" fill="#fff" font-size="9" text-anchor="middle">Input</text>
+                    <path d="M 80 50 L 120 50" stroke="#7c3aed" stroke-width="2" marker-end="url(#arrowhead)"/>
+                    <path d="M 80 75 L 120 75" stroke="#7c3aed" stroke-width="2" marker-end="url(#arrowhead)"/>
+                    <path d="M 80 100 L 120 100" stroke="#7c3aed" stroke-width="2" marker-end="url(#arrowhead)"/>
+                    <rect x="120" y="25" width="60" height="100" rx="5" fill="url(#t5-grad)" opacity="0.8"/>
+                    <text x="150" y="80" fill="#fff" font-size="9" text-anchor="middle">Transformer</text>
+                    <path d="M 180 50 L 220 50" stroke="#7c3aed" stroke-width="2" marker-end="url(#arrowhead)"/>
+                    <path d="M 180 75 L 220 75" stroke="#7c3aed" stroke-width="2" marker-end="url(#arrowhead)"/>
+                    <path d="M 180 100 L 220 100" stroke="#7c3aed" stroke-width="2" marker-end="url(#arrowhead)"/>
+                    <rect x="220" y="25" width="60" height="100" rx="5" fill="url(#t5-grad)" opacity="0.6"/>
+                    <text x="250" y="80" fill="#fff" font-size="9" text-anchor="middle">Output</text>
+                </svg>
+            </div>
+
+            <!-- U-Net Paper Card -->
+            <div class="network-card" onclick="location.href='papers/unet.html'">
+                <span class="tag">MICCAI 2015</span>
+                <h3>U-Net</h3>
+                <p>Convolutional networks for biomedical image segmentation. Encoder-decoder architecture with skip connections for precise localization.</p>
+                <svg class="preview-svg" viewBox="0 0 300 150">
+                    <defs>
+                        <linearGradient id="unet-grad" x1="0%" y1="0%" x2="100%" y2="100%">
+                            <stop offset="0%" style="stop-color:#22c55e"/>
+                            <stop offset="100%" style="stop-color:#22c55e88"/>
+                        </linearGradient>
+                    </defs>
+                    <text x="150" y="15" fill="#8888aa" font-size="10" text-anchor="middle">Image Segmentation</text>
+                    <rect x="50" y="30" width="200" height="100" fill="none" stroke="#22c55e" stroke-width="2" rx="5" opacity="0.5"/>
+                    <!-- Grid cells for YOLO or U-Net structure -->
+                    <rect x="60" y="40" width="80" height="80" fill="url(#unet-grad)" opacity="0.5"/>
+                    <rect x="140" y="60" width="40" height="40" fill="url(#unet-grad)" opacity="0.7"/>
+                    <path d="M 100 80 L 200 80 L 150 120 Z" fill="url(#unet-grad)" opacity="0.6"/>
+                    
+                    
+                    <text x="150" y="145" fill="#8888aa" font-size="9" text-anchor="middle">Encoder-Decoder</text>
+                </svg>
+            </div>
+
+            <!-- VGG Net Paper Card -->
+            <div class="network-card" onclick="location.href='papers/vgg.html'">
+                <span class="tag">arXiv 2014</span>
+                <h3>VGG Net</h3>
+                <p>Very Deep Convolutional Networks. Demonstrated that increasing depth with 3x3 convolutions improves accuracy on ImageNet.</p>
+                <svg class="preview-svg" viewBox="0 0 300 150">
+                    <defs>
+                        <linearGradient id="vgg-grad" x1="0%" y1="0%" x2="100%" y2="100%">
+                            <stop offset="0%" style="stop-color:#ef4444"/>
+                            <stop offset="100%" style="stop-color:#ef444488"/>
+                        </linearGradient>
+                    </defs>
+                    <text x="150" y="15" fill="#8888aa" font-size="10" text-anchor="middle">CNN Architecture</text>
+                    <rect x="20" y="30" width="50" height="40" rx="5" fill="url(#vgg-grad)" opacity="0.8"/>
+                    <text x="45" y="55" fill="#fff" font-size="8" text-anchor="middle">Conv3x3</text>
+                    <path d="M 70 50 L 90 50" stroke="#ef4444" stroke-width="2" marker-end="url(#arrowhead)"/>
+                    <rect x="90" y="30" width="50" height="40" rx="5" fill="url(#vgg-grad)" opacity="0.8"/>
+                    <text x="115" y="55" fill="#fff" font-size="8" text-anchor="middle">Conv3x3</text>
+                    <path d="M 140 50 L 160 50" stroke="#ef4444" stroke-width="2" marker-end="url(#arrowhead)"/>
+                    <rect x="160" y="30" width="50" height="40" rx="5" fill="url(#vgg-grad)" opacity="0.6"/>
+                    <text x="185" y="55" fill="#fff" font-size="8" text-anchor="middle">Pool</text>
+                    <path d="M 210 50 L 230 50" stroke="#ef4444" stroke-width="2" marker-end="url(#arrowhead)"/>
+                    <rect x="230" y="30" width="50" height="40" rx="5" fill="url(#vgg-grad)" opacity="0.9"/>
+                    <text x="255" y="55" fill="#fff" font-size="8" text-anchor="middle">FC</text>
+                    <text x="150" y="110" fill="#8888aa" font-size="9" text-anchor="middle">Feature Extraction</text>
+                    <rect x="110" y="120" width="80" height="20" rx="10" fill="#ef4444" opacity="0.3"/>
+                    <text x="150" y="135" fill="#ef4444" font-size="9" text-anchor="middle">Classification</text>
+                </svg>
+            </div>
+
+            <!-- Vision Transformer (ViT) Paper Card -->
+            <div class="network-card" onclick="location.href='papers/vit.html'">
+                <span class="tag">ICLR 2021</span>
+                <h3>Vision Transformer (ViT)</h3>
+                <p>Vision Transformer applies pure transformer architecture to image patches. Achieves excellent results on image classification without convolutions.</p>
+                <svg class="preview-svg" viewBox="0 0 300 150">
+                    <defs>
+                        <linearGradient id="vit-grad" x1="0%" y1="0%" x2="100%" y2="100%">
+                            <stop offset="0%" style="stop-color:#f59e0b"/>
+                            <stop offset="100%" style="stop-color:#f59e0b88"/>
+                        </linearGradient>
+                    </defs>
+                    <text x="150" y="15" fill="#8888aa" font-size="10" text-anchor="middle">Vision Transformer</text>
+                    <rect x="10" y="30" width="40" height="40" rx="3" fill="url(#vit-grad)" opacity="0.7"/>
+                    <rect x="55" y="30" width="40" height="40" rx="3" fill="url(#vit-grad)" opacity="0.7"/>
+                    <rect x="100" y="30" width="40" height="40" rx="3" fill="url(#vit-grad)" opacity="0.7"/>
+                    <rect x="10" y="75" width="40" height="40" rx="3" fill="url(#vit-grad)" opacity="0.7"/>
+                    <rect x="55" y="75" width="40" height="40" rx="3" fill="url(#vit-grad)" opacity="0.7"/>
+                    <rect x="100" y="75" width="40" height="40" rx="3" fill="url(#vit-grad)" opacity="0.7"/>
+                    <text x="85" y="130" fill="#8888aa" font-size="9" text-anchor="middle">Patches</text>
+                    <path d="M 145 50 L 180 50 L 180 100 L 145 100 Z" stroke="#f59e0b" stroke-width="2" fill="none"/>
+                    <text x="162" y="80" fill="#f59e0b" font-size="9" text-anchor="middle">PE</text>
+                    <path d="M 195 50 L 240 50 L 240 100 L 195 100 Z" stroke="#f59e0b" stroke-width="2" fill="none"/>
+                    <text x="217" y="80" fill="#f59e0b" font-size="8" text-anchor="middle">Transformer</text>
+                    <path d="M 245 75 L 280 75" stroke="#f59e0b" stroke-width="2" marker-end="url(#arrowhead)"/>
+                    <text x="265" y="65" fill="#8888aa" font-size="8">class</text>
+                </svg>
+            </div>
+
+            <!-- Word2Vec Paper Card -->
+            <div class="network-card" onclick="location.href='papers/word2vec.html'">
+                <span class="tag">NIPS 2013</span>
+                <h3>Word2Vec</h3>
+                <p>Efficient estimation of word representations in vector space. Introduced skip-gram and CBOW models for learning distributed representations of words.</p>
+                <svg class="preview-svg" viewBox="0 0 300 150">
+                    <defs>
+                        <linearGradient id="word2vec-grad" x1="0%" y1="0%" x2="100%" y2="100%">
+                            <stop offset="0%" style="stop-color:#6366f1"/>
+                            <stop offset="100%" style="stop-color:#6366f188"/>
+                        </linearGradient>
+                    </defs>
+                    <text x="150" y="15" fill="#8888aa" font-size="10" text-anchor="middle">Sequential Model</text>
+                    <rect x="30" y="50" width="50" height="50" rx="25" fill="url(#word2vec-grad)" opacity="0.8"/>
+                    <text x="55" y="80" fill="#fff" font-size="10" text-anchor="middle">x_t</text>
+                    <path d="M 80 75 L 120 75" stroke="#6366f1" stroke-width="2" marker-end="url(#arrowhead)"/>
+                    <rect x="120" y="50" width="60" height="50" rx="5" fill="url(#word2vec-grad)" opacity="0.9"/>
+                    <text x="150" y="70" fill="#fff" font-size="8" text-anchor="middle">RNN</text>
+                    <text x="150" y="85" fill="#fff" font-size="8" text-anchor="middle">Cell</text>
+                    <path d="M 180 75 L 220 75" stroke="#6366f1" stroke-width="2" marker-end="url(#arrowhead)"/>
+                    <rect x="220" y="50" width="50" height="50" rx="25" fill="url(#word2vec-grad)" opacity="0.8"/>
+                    <text x="245" y="80" fill="#fff" font-size="10" text-anchor="middle">y_t</text>
+                    <!-- Loop back -->
+                    <path d="M 150 100 L 150 120 L 80 120 L 80 100" stroke="#6366f1" stroke-width="1.5" fill="none" marker-end="url(#arrowhead)" opacity="0.6"/>
+                    <text x="110" y="135" fill="#8888aa" font-size="8">hidden state</text>
+                </svg>
+            </div>
+
+            <!-- Xception Paper Card -->
+            <div class="network-card" onclick="location.href='papers/xception.html'">
+                <span class="tag">ICCV 2017</span>
+                <h3>Xception</h3>
+                <p>Depthwise separable convolutions for deep learning. Extends Inception with extreme Inception modules for improved efficiency.</p>
+                <svg class="preview-svg" viewBox="0 0 300 150">
+                    <defs>
+                        <linearGradient id="xception-grad" x1="0%" y1="0%" x2="100%" y2="100%">
+                            <stop offset="0%" style="stop-color:#ef4444"/>
+                            <stop offset="100%" style="stop-color:#ef444488"/>
+                        </linearGradient>
+                    </defs>
+                    <text x="150" y="15" fill="#8888aa" font-size="10" text-anchor="middle">CNN Architecture</text>
+                    <rect x="20" y="30" width="50" height="40" rx="5" fill="url(#xception-grad)" opacity="0.8"/>
+                    <text x="45" y="55" fill="#fff" font-size="8" text-anchor="middle">Conv3x3</text>
+                    <path d="M 70 50 L 90 50" stroke="#ef4444" stroke-width="2" marker-end="url(#arrowhead)"/>
+                    <rect x="90" y="30" width="50" height="40" rx="5" fill="url(#xception-grad)" opacity="0.8"/>
+                    <text x="115" y="55" fill="#fff" font-size="8" text-anchor="middle">Conv3x3</text>
+                    <path d="M 140 50 L 160 50" stroke="#ef4444" stroke-width="2" marker-end="url(#arrowhead)"/>
+                    <rect x="160" y="30" width="50" height="40" rx="5" fill="url(#xception-grad)" opacity="0.6"/>
+                    <text x="185" y="55" fill="#fff" font-size="8" text-anchor="middle">Pool</text>
+                    <path d="M 210 50 L 230 50" stroke="#ef4444" stroke-width="2" marker-end="url(#arrowhead)"/>
+                    <rect x="230" y="30" width="50" height="40" rx="5" fill="url(#xception-grad)" opacity="0.9"/>
+                    <text x="255" y="55" fill="#fff" font-size="8" text-anchor="middle">FC</text>
+                    <text x="150" y="110" fill="#8888aa" font-size="9" text-anchor="middle">Feature Extraction</text>
+                    <rect x="110" y="120" width="80" height="20" rx="10" fill="#ef4444" opacity="0.3"/>
+                    <text x="150" y="135" fill="#ef4444" font-size="9" text-anchor="middle">Classification</text>
+                </svg>
+            </div>
+
+            <!-- YOLO Paper Card -->
+            <div class="network-card" onclick="location.href='papers/yolo.html'">
+                <span class="tag">CVPR 2016</span>
+                <h3>YOLO</h3>
+                <p>You Only Look Once. Real-time object detection as a single regression problem, predicting bounding boxes and class probabilities directly.</p>
+                <svg class="preview-svg" viewBox="0 0 300 150">
+                    <defs>
+                        <linearGradient id="yolo-grad" x1="0%" y1="0%" x2="100%" y2="100%">
+                            <stop offset="0%" style="stop-color:#22c55e"/>
+                            <stop offset="100%" style="stop-color:#22c55e88"/>
+                        </linearGradient>
+                    </defs>
+                    <text x="150" y="15" fill="#8888aa" font-size="10" text-anchor="middle">Object Detection</text>
+                    <rect x="50" y="30" width="200" height="100" fill="none" stroke="#22c55e" stroke-width="2" rx="5" opacity="0.5"/>
+                    <!-- Grid cells for YOLO or U-Net structure -->
+                    <rect x="50" y="30" width="40" height="33" fill="url(#yolo-grad)" opacity="0.3"/>
+                    <rect x="90" y="30" width="40" height="33" fill="url(#yolo-grad)" opacity="0.3"/>
+                    <rect x="130" y="30" width="40" height="33" fill="url(#yolo-grad)" opacity="0.3"/>
+                    <rect x="170" y="30" width="40" height="33" fill="url(#yolo-grad)" opacity="0.3"/>
+                    <rect x="210" y="30" width="40" height="33" fill="url(#yolo-grad)" opacity="0.3"/>
+                    <text x="150" y="145" fill="#8888aa" font-size="9" text-anchor="middle">Single Shot Detection</text>
+                </svg>
+            </div>
+
+</div>
     </div>
 
     <footer>
