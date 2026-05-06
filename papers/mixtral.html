@@ -1,0 +1,362 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mixtral 8x7B: A Sparse Mixture of Experts Language Model</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: #0a0a0f;
+            color: #e0e0ff;
+            line-height: 1.7;
+        }
+        .bg-animation {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            z-index: -1; opacity: 0.15;
+            background: radial-gradient(ellipse at 30% 40%, #10b98133 0%, transparent 60%),
+                        radial-gradient(ellipse at 70% 70%, #6366f133 0%, transparent 60%),
+                        radial-gradient(ellipse at 50% 10%, #f59e0b22 0%, transparent 60%);
+        }
+        header {
+            padding: 60px 20px 40px;
+            text-align: center;
+            background: linear-gradient(180deg, rgba(16,185,129,0.1) 0%, transparent 100%);
+            border-bottom: 1px solid rgba(16,185,129,0.2);
+        }
+        .back-btn {
+            display: inline-block;
+            margin-bottom: 30px;
+            color: #34d399;
+            text-decoration: none;
+            font-size: 0.9rem;
+        }
+        .back-btn:hover { color: #6ee7b7; }
+        .paper-badge {
+            display: inline-block;
+            background: linear-gradient(135deg, #10b981, #6366f1);
+            color: white;
+            padding: 4px 16px;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            letter-spacing: 0.05em;
+            margin-bottom: 16px;
+            text-transform: uppercase;
+        }
+        h1 {
+            font-size: 2.2rem;
+            font-weight: 800;
+            background: linear-gradient(135deg, #10b981 0%, #6366f1 50%, #a855f7 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 12px;
+            max-width: 860px;
+            margin-left: auto; margin-right: auto;
+        }
+        .meta { color: #a0a0c0; font-size: 0.95rem; }
+        .meta span { margin: 0 12px; }
+        .container { max-width: 960px; margin: 0 auto; padding: 40px 20px 80px; }
+        .section {
+            background: rgba(255,255,255,0.03);
+            border: 1px solid rgba(255,255,255,0.08);
+            border-radius: 16px;
+            padding: 28px 32px;
+            margin-bottom: 28px;
+        }
+        .section h2 {
+            font-size: 1.3rem;
+            font-weight: 700;
+            color: #34d399;
+            margin-bottom: 16px;
+        }
+        .section p { color: #c8c8e8; margin-bottom: 12px; }
+        .section ul { color: #c8c8e8; padding-left: 20px; }
+        .section li { margin-bottom: 8px; }
+        .highlight {
+            background: rgba(16,185,129,0.08);
+            border-left: 3px solid #10b981;
+            padding: 12px 18px;
+            border-radius: 0 8px 8px 0;
+            margin: 16px 0;
+            color: #d0d0f0;
+            font-style: italic;
+        }
+        .stat-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 16px;
+            margin: 16px 0;
+        }
+        .stat-card {
+            background: rgba(16,185,129,0.07);
+            border: 1px solid rgba(16,185,129,0.2);
+            border-radius: 12px;
+            padding: 16px;
+            text-align: center;
+        }
+        .stat-value {
+            font-size: 1.8rem;
+            font-weight: 800;
+            background: linear-gradient(135deg, #10b981, #6366f1);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        .stat-label { font-size: 0.8rem; color: #8080a0; margin-top: 4px; }
+        .viz-container {
+            background: rgba(0,0,0,0.3);
+            border-radius: 12px;
+            padding: 20px;
+            margin: 16px 0;
+        }
+        .viz-title {
+            text-align: center;
+            font-size: 0.85rem;
+            color: #8080a0;
+            margin-bottom: 16px;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+        }
+        .compare-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.9rem;
+            margin: 16px 0;
+        }
+        .compare-table th {
+            background: rgba(16,185,129,0.15);
+            color: #34d399;
+            padding: 10px 16px;
+            text-align: left;
+            font-weight: 600;
+        }
+        .compare-table td {
+            padding: 10px 16px;
+            border-bottom: 1px solid rgba(255,255,255,0.05);
+            color: #c8c8e8;
+        }
+        .badge-green { color: #4ade80; font-weight: 700; }
+        .badge-blue { color: #60a5fa; font-weight: 700; }
+        .tags { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 12px; }
+        .tag {
+            background: rgba(16,185,129,0.1);
+            border: 1px solid rgba(16,185,129,0.3);
+            color: #34d399;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 0.8rem;
+        }
+        footer {
+            text-align: center;
+            padding: 40px 20px;
+            color: #606080;
+            font-size: 0.85rem;
+            border-top: 1px solid rgba(255,255,255,0.05);
+        }
+    </style>
+</head>
+<body>
+<div class="bg-animation"></div>
+
+<header>
+    <a href="../index.html" class="back-btn">← Back to All Papers</a>
+    <div class="paper-badge">🔀 MoE · 2023</div>
+    <h1>Mixtral 8x7B: A Sparse Mixture of Experts Language Model</h1>
+    <div class="meta">
+        <span>📅 December 2023</span>
+        <span>🏢 Mistral AI</span>
+        <span>📄 arXiv:2401.04088</span>
+    </div>
+</header>
+
+<div class="container">
+
+    <!-- Stats -->
+    <div class="section">
+        <h2>📊 Key Numbers</h2>
+        <div class="stat-grid">
+            <div class="stat-card">
+                <div class="stat-value">8×7B</div>
+                <div class="stat-label">Expert Architecture</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value">46.7B</div>
+                <div class="stat-label">Total Params</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value">12.9B</div>
+                <div class="stat-label">Active Params/Token</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value">32K</div>
+                <div class="stat-label">Context Length</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Abstract -->
+    <div class="section">
+        <h2>📋 Abstract</h2>
+        <p>Mixtral 8x7B is a <strong>Sparse Mixture of Experts (SMoE)</strong> language model that outperforms Llama 2 70B on most benchmarks while using only 12.9B active parameters per token — matching a 13B dense model's inference cost despite having 46.7B total parameters.</p>
+        <div class="highlight">
+            "Mixtral matches or outperforms Llama 2 70B and GPT-3.5 on most benchmarks. On coding and math, it significantly outperforms — all with 6× faster inference."
+        </div>
+    </div>
+
+    <!-- MoE Architecture -->
+    <div class="section">
+        <h2>⚙️ Sparse MoE Architecture</h2>
+        <p>In each transformer layer, Mixtral replaces the standard FFN with 8 expert FFN networks. A router network selects the top-2 experts for each token:</p>
+        <div class="viz-container">
+            <div class="viz-title">MoE Layer: Top-2 Routing per Token</div>
+            <svg viewBox="0 0 680 220" style="width:100%;max-height:220px">
+                <!-- Input token -->
+                <rect x="20" y="85" width="80" height="50" rx="8" fill="rgba(16,185,129,0.2)" stroke="rgba(16,185,129,0.5)" stroke-width="1.5"/>
+                <text x="60" y="115" fill="#34d399" font-size="12" text-anchor="middle" font-weight="700">Token</text>
+                
+                <!-- Router -->
+                <rect x="140" y="85" width="80" height="50" rx="8" fill="rgba(99,102,241,0.2)" stroke="rgba(99,102,241,0.5)" stroke-width="1.5"/>
+                <text x="180" y="108" fill="#a78bfa" font-size="11" text-anchor="middle" font-weight="700">Router</text>
+                <text x="180" y="125" fill="#a78bfa" font-size="10" text-anchor="middle">Top-2 Select</text>
+                
+                <line x1="100" y1="110" x2="140" y2="110" stroke="#34d399" stroke-width="1.5" marker-end="url(#arrow-green)"/>
+                
+                <!-- 8 experts -->
+                <text x="300" y="25" fill="#8080a0" font-size="10" text-anchor="middle">8 Expert FFNs</text>
+                <!-- active experts (highlighted) -->
+                <rect x="265" y="30" width="70" height="32" rx="6" fill="rgba(16,185,129,0.3)" stroke="rgba(16,185,129,0.7)" stroke-width="2"/>
+                <text x="300" y="51" fill="#4ade80" font-size="10" text-anchor="middle" font-weight="700">Expert 1 ✓</text>
+                
+                <rect x="265" y="72" width="70" height="32" rx="6" fill="rgba(99,102,241,0.15)" stroke="rgba(99,102,241,0.3)" stroke-width="1"/>
+                <text x="300" y="93" fill="#a0a0c0" font-size="10" text-anchor="middle">Expert 2</text>
+                
+                <rect x="265" y="114" width="70" height="32" rx="6" fill="rgba(16,185,129,0.3)" stroke="rgba(16,185,129,0.7)" stroke-width="2"/>
+                <text x="300" y="135" fill="#4ade80" font-size="10" text-anchor="middle" font-weight="700">Expert 3 ✓</text>
+                
+                <rect x="265" y="156" width="70" height="32" rx="6" fill="rgba(99,102,241,0.15)" stroke="rgba(99,102,241,0.3)" stroke-width="1"/>
+                <text x="300" y="177" fill="#a0a0c0" font-size="10" text-anchor="middle">Expert 4</text>
+
+                <!-- right side experts -->
+                <rect x="345" y="30" width="70" height="32" rx="6" fill="rgba(99,102,241,0.15)" stroke="rgba(99,102,241,0.3)" stroke-width="1"/>
+                <text x="380" y="51" fill="#a0a0c0" font-size="10" text-anchor="middle">Expert 5</text>
+                
+                <rect x="345" y="72" width="70" height="32" rx="6" fill="rgba(99,102,241,0.15)" stroke="rgba(99,102,241,0.3)" stroke-width="1"/>
+                <text x="380" y="93" fill="#a0a0c0" font-size="10" text-anchor="middle">Expert 6</text>
+                
+                <rect x="345" y="114" width="70" height="32" rx="6" fill="rgba(99,102,241,0.15)" stroke="rgba(99,102,241,0.3)" stroke-width="1"/>
+                <text x="380" y="135" fill="#a0a0c0" font-size="10" text-anchor="middle">Expert 7</text>
+                
+                <rect x="345" y="156" width="70" height="32" rx="6" fill="rgba(99,102,241,0.15)" stroke="rgba(99,102,241,0.3)" stroke-width="1"/>
+                <text x="380" y="177" fill="#a0a0c0" font-size="10" text-anchor="middle">Expert 8</text>
+
+                <!-- lines from router to active experts -->
+                <line x1="220" y1="100" x2="265" y2="46" stroke="#4ade80" stroke-width="1.5" stroke-dasharray="4,2"/>
+                <line x1="220" y1="110" x2="265" y2="130" stroke="#4ade80" stroke-width="1.5" stroke-dasharray="4,2"/>
+
+                <!-- Weighted sum -->
+                <rect x="440" y="85" width="80" height="50" rx="8" fill="rgba(16,185,129,0.2)" stroke="rgba(16,185,129,0.5)" stroke-width="1.5"/>
+                <text x="480" y="108" fill="#34d399" font-size="11" text-anchor="middle" font-weight="700">Weighted</text>
+                <text x="480" y="125" fill="#34d399" font-size="11" text-anchor="middle">Sum</text>
+                
+                <line x1="335" y1="46" x2="440" y2="100" stroke="#4ade80" stroke-width="1.5" stroke-dasharray="4,2"/>
+                <line x1="335" y1="130" x2="440" y2="110" stroke="#4ade80" stroke-width="1.5" stroke-dasharray="4,2"/>
+
+                <!-- Output -->
+                <rect x="560" y="85" width="80" height="50" rx="8" fill="rgba(16,185,129,0.2)" stroke="rgba(16,185,129,0.5)" stroke-width="1.5"/>
+                <text x="600" y="115" fill="#34d399" font-size="12" text-anchor="middle" font-weight="700">Output</text>
+                <line x1="520" y1="110" x2="560" y2="110" stroke="#34d399" stroke-width="1.5"/>
+
+                <!-- Legend -->
+                <rect x="20" y="185" width="12" height="12" rx="2" fill="rgba(16,185,129,0.6)"/>
+                <text x="38" y="197" fill="#34d399" font-size="10">Active expert (top-2)</text>
+                <rect x="180" y="185" width="12" height="12" rx="2" fill="rgba(99,102,241,0.3)"/>
+                <text x="198" y="197" fill="#a0a0c0" font-size="10">Inactive expert (skipped)</text>
+
+                <defs>
+                    <marker id="arrow-green" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto">
+                        <path d="M0,0 L0,6 L8,3 z" fill="#34d399"/>
+                    </marker>
+                </defs>
+            </svg>
+        </div>
+        <p style="font-size:0.85rem;color:#8080a0">Only 2 out of 8 experts are computed per token — achieving 46.7B parameter expressiveness at the cost of ~13B parameters per forward pass.</p>
+    </div>
+
+    <!-- Key Features -->
+    <div class="section">
+        <h2>🔑 Architecture Details</h2>
+        <ul>
+            <li><strong>Sliding Window Attention</strong>: Each layer attends to W previous tokens; information propagates through depth — enables 32K context efficiently</li>
+            <li><strong>Rolling KV Cache</strong>: Fixed-size cache that recycles old keys/values, compatible with sliding window</li>
+            <li><strong>Grouped Query Attention</strong>: Faster inference with fewer KV heads</li>
+            <li><strong>Expert routing formula</strong>: <code>softmax(TopK(x·W_g))</code> — router is a simple linear layer</li>
+            <li><strong>Load balancing</strong>: Auxiliary loss encourages equal expert utilization during training</li>
+        </ul>
+    </div>
+
+    <!-- Efficiency -->
+    <div class="section">
+        <h2>⚡ Efficiency vs Dense Models</h2>
+        <table class="compare-table">
+            <tr>
+                <th>Property</th>
+                <th>Dense 7B</th>
+                <th>Dense 70B</th>
+                <th>Mixtral 8×7B</th>
+            </tr>
+            <tr>
+                <td>Total parameters</td>
+                <td>7B</td>
+                <td>70B</td>
+                <td><span class="badge-blue">46.7B</span></td>
+            </tr>
+            <tr>
+                <td>Active params/token</td>
+                <td>7B</td>
+                <td>70B</td>
+                <td><span class="badge-green">12.9B ✓</span></td>
+            </tr>
+            <tr>
+                <td>MMLU (5-shot)</td>
+                <td>~61%</td>
+                <td>68.9%</td>
+                <td><span class="badge-green">70.6%</span></td>
+            </tr>
+            <tr>
+                <td>Inference speed</td>
+                <td>~1×</td>
+                <td>~0.2×</td>
+                <td><span class="badge-green">~0.7× (6× vs 70B)</span></td>
+            </tr>
+        </table>
+    </div>
+
+    <!-- Impact -->
+    <div class="section">
+        <h2>💡 Impact & Key Takeaways</h2>
+        <ul>
+            <li>Proved SMoE can match much larger dense models at inference cost of a small model</li>
+            <li>Context length of 32K tokens — 4× longer than Llama 2</li>
+            <li>Enabled Mixtral-8×22B and Mixtral Instruct variants widely used in production</li>
+            <li>Inspired subsequent MoE architectures: Deepseek-MoE, Qwen MoE, DBRX</li>
+            <li>Released fully openly — immediately deployable on consumer hardware (quantized)</li>
+        </ul>
+        <div class="tags">
+            <span class="tag">MoE</span>
+            <span class="tag">Sparse Experts</span>
+            <span class="tag">Efficient LLM</span>
+            <span class="tag">Sliding Window Attention</span>
+            <span class="tag">Mistral AI</span>
+            <span class="tag">Open Weights</span>
+        </div>
+    </div>
+
+</div>
+<footer>
+    <p>AI Neural Networks Visualized · <a href="../index.html" style="color:#10b981">Back to Index</a></p>
+</footer>
+</body>
+</html>

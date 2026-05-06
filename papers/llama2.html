@@ -1,0 +1,379 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Llama 2: Open Foundation and Fine-Tuned Chat Models</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: #0a0a0f;
+            color: #e0e0ff;
+            line-height: 1.7;
+        }
+        .bg-animation {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            z-index: -1; opacity: 0.15;
+            background: radial-gradient(ellipse at 20% 50%, #f59e0b33 0%, transparent 60%),
+                        radial-gradient(ellipse at 80% 20%, #6366f133 0%, transparent 60%),
+                        radial-gradient(ellipse at 60% 80%, #10b98133 0%, transparent 60%);
+        }
+        header {
+            padding: 60px 20px 40px;
+            text-align: center;
+            background: linear-gradient(180deg, rgba(245,158,11,0.1) 0%, transparent 100%);
+            border-bottom: 1px solid rgba(245,158,11,0.2);
+        }
+        .back-btn {
+            display: inline-block;
+            margin-bottom: 30px;
+            color: #fbbf24;
+            text-decoration: none;
+            font-size: 0.9rem;
+        }
+        .back-btn:hover { color: #fde68a; }
+        .paper-badge {
+            display: inline-block;
+            background: linear-gradient(135deg, #f59e0b, #ef4444);
+            color: white;
+            padding: 4px 16px;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            letter-spacing: 0.05em;
+            margin-bottom: 16px;
+            text-transform: uppercase;
+        }
+        h1 {
+            font-size: 2.2rem;
+            font-weight: 800;
+            background: linear-gradient(135deg, #f59e0b 0%, #ef4444 50%, #a855f7 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 12px;
+            max-width: 860px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+        .meta { color: #a0a0c0; font-size: 0.95rem; }
+        .meta span { margin: 0 12px; }
+        .container { max-width: 960px; margin: 0 auto; padding: 40px 20px 80px; }
+        .section {
+            background: rgba(255,255,255,0.03);
+            border: 1px solid rgba(255,255,255,0.08);
+            border-radius: 16px;
+            padding: 28px 32px;
+            margin-bottom: 28px;
+        }
+        .section h2 {
+            font-size: 1.3rem;
+            font-weight: 700;
+            color: #fbbf24;
+            margin-bottom: 16px;
+        }
+        .section p { color: #c8c8e8; margin-bottom: 12px; }
+        .section ul { color: #c8c8e8; padding-left: 20px; }
+        .section li { margin-bottom: 8px; }
+        .highlight {
+            background: rgba(245,158,11,0.08);
+            border-left: 3px solid #f59e0b;
+            padding: 12px 18px;
+            border-radius: 0 8px 8px 0;
+            margin: 16px 0;
+            color: #d0d0f0;
+            font-style: italic;
+        }
+        .stat-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 16px;
+            margin: 16px 0;
+        }
+        .stat-card {
+            background: rgba(245,158,11,0.07);
+            border: 1px solid rgba(245,158,11,0.2);
+            border-radius: 12px;
+            padding: 16px;
+            text-align: center;
+        }
+        .stat-value {
+            font-size: 1.8rem;
+            font-weight: 800;
+            background: linear-gradient(135deg, #f59e0b, #ef4444);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        .stat-label { font-size: 0.8rem; color: #8080a0; margin-top: 4px; }
+        .model-cards {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+            gap: 12px;
+            margin: 16px 0;
+        }
+        .model-card {
+            background: rgba(245,158,11,0.08);
+            border: 1px solid rgba(245,158,11,0.25);
+            border-radius: 10px;
+            padding: 14px 10px;
+            text-align: center;
+        }
+        .model-size {
+            font-size: 1.5rem;
+            font-weight: 800;
+            color: #fbbf24;
+        }
+        .model-type { font-size: 0.75rem; color: #a0a0c0; margin-top: 4px; }
+        .pipeline-steps {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            flex-wrap: wrap;
+            margin: 16px 0;
+        }
+        .step-box {
+            flex: 1;
+            min-width: 130px;
+            background: rgba(245,158,11,0.07);
+            border: 1px solid rgba(245,158,11,0.25);
+            border-radius: 10px;
+            padding: 14px 10px;
+            text-align: center;
+        }
+        .step-icon { font-size: 1.6rem; margin-bottom: 6px; }
+        .step-name { font-size: 0.82rem; font-weight: 700; color: #fbbf24; }
+        .step-desc { font-size: 0.72rem; color: #a0a0c0; margin-top: 4px; }
+        .arrow { color: #f59e0b; font-size: 1.4rem; flex-shrink: 0; }
+        .compare-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.9rem;
+            margin: 16px 0;
+        }
+        .compare-table th {
+            background: rgba(245,158,11,0.15);
+            color: #fbbf24;
+            padding: 10px 16px;
+            text-align: left;
+            font-weight: 600;
+        }
+        .compare-table td {
+            padding: 10px 16px;
+            border-bottom: 1px solid rgba(255,255,255,0.05);
+            color: #c8c8e8;
+        }
+        .badge-green { color: #4ade80; font-weight: 700; }
+        .tags { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 12px; }
+        .tag {
+            background: rgba(245,158,11,0.12);
+            border: 1px solid rgba(245,158,11,0.3);
+            color: #fbbf24;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 0.8rem;
+        }
+        footer {
+            text-align: center;
+            padding: 40px 20px;
+            color: #606080;
+            font-size: 0.85rem;
+            border-top: 1px solid rgba(255,255,255,0.05);
+        }
+    </style>
+</head>
+<body>
+<div class="bg-animation"></div>
+
+<header>
+    <a href="../index.html" class="back-btn">← Back to All Papers</a>
+    <div class="paper-badge">🦙 LLM · 2023</div>
+    <h1>Llama 2: Open Foundation and Fine-Tuned Chat Models</h1>
+    <div class="meta">
+        <span>📅 July 2023</span>
+        <span>🏢 Meta AI</span>
+        <span>📄 arXiv:2307.09288</span>
+    </div>
+</header>
+
+<div class="container">
+
+    <!-- Stats -->
+    <div class="section">
+        <h2>📊 Quick Stats</h2>
+        <div class="stat-grid">
+            <div class="stat-card">
+                <div class="stat-value">3</div>
+                <div class="stat-label">Model Sizes (7B/13B/70B)</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value">2T</div>
+                <div class="stat-label">Training Tokens</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value">4096</div>
+                <div class="stat-label">Context Length</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value">Open</div>
+                <div class="stat-label">License (Commercial)</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Abstract -->
+    <div class="section">
+        <h2>📋 Abstract</h2>
+        <p>Llama 2 is a collection of pretrained and fine-tuned large language models from Meta AI, ranging from 7B to 70B parameters. The fine-tuned models, <strong>Llama 2-Chat</strong>, are optimized for dialogue use cases and outperform open-source chat models on most benchmarks while being comparable to some closed-source models like ChatGPT.</p>
+        <div class="highlight">
+            "We are releasing Llama 2 to the public for research and commercial use — the first fully open LLM to challenge GPT-3.5 on head-to-head human preference evaluations."
+        </div>
+    </div>
+
+    <!-- Model Variants -->
+    <div class="section">
+        <h2>🧩 Model Variants</h2>
+        <div class="model-cards">
+            <div class="model-card">
+                <div class="model-size">7B</div>
+                <div class="model-type">Base + Chat</div>
+            </div>
+            <div class="model-card">
+                <div class="model-size">13B</div>
+                <div class="model-type">Base + Chat</div>
+            </div>
+            <div class="model-card">
+                <div class="model-size">34B</div>
+                <div class="model-type">Base (unreleased Chat)</div>
+            </div>
+            <div class="model-card">
+                <div class="model-size">70B</div>
+                <div class="model-type">Base + Chat</div>
+            </div>
+        </div>
+        <p style="font-size:0.85rem;color:#8080a0">All models trained on 2 trillion tokens of public data. Chat versions further fine-tuned with 27,540 human annotations.</p>
+    </div>
+
+    <!-- RLHF Pipeline -->
+    <div class="section">
+        <h2>🔄 Fine-Tuning Pipeline (RLHF)</h2>
+        <div class="pipeline-steps">
+            <div class="step-box">
+                <div class="step-icon">📦</div>
+                <div class="step-name">Pretraining</div>
+                <div class="step-desc">2T tokens, public web + code</div>
+            </div>
+            <div class="arrow">→</div>
+            <div class="step-box">
+                <div class="step-icon">📝</div>
+                <div class="step-name">SFT</div>
+                <div class="step-desc">27K quality dialogues, human-written</div>
+            </div>
+            <div class="arrow">→</div>
+            <div class="step-box">
+                <div class="step-icon">🎯</div>
+                <div class="step-name">RLHF</div>
+                <div class="step-desc">Reward models from human pref. comparisons</div>
+            </div>
+            <div class="arrow">→</div>
+            <div class="step-box">
+                <div class="step-icon">🔁</div>
+                <div class="step-name">Iterative PPO</div>
+                <div class="step-desc">Helpfulness + Safety reward models</div>
+            </div>
+            <div class="arrow">→</div>
+            <div class="step-box">
+                <div class="step-icon">✅</div>
+                <div class="step-name">Llama 2-Chat</div>
+                <div class="step-desc">Safe, helpful assistant</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Architecture -->
+    <div class="section">
+        <h2>⚙️ Architecture Improvements over Llama 1</h2>
+        <ul>
+            <li><strong>Grouped Query Attention (GQA)</strong>: 70B model uses GQA for faster inference — reduces KV cache memory</li>
+            <li><strong>Longer context</strong>: 4096 tokens (2× Llama 1's 2048)</li>
+            <li><strong>RoPE positional embeddings</strong>: Rotary Position Embedding for better length generalization</li>
+            <li><strong>Pre-normalization (RMSNorm)</strong>: Normalize input rather than output for training stability</li>
+            <li><strong>SwiGLU activation</strong>: Gated linear unit variant for improved performance</li>
+        </ul>
+    </div>
+
+    <!-- Safety -->
+    <div class="section">
+        <h2>🛡️ Safety Focus</h2>
+        <p>A key differentiator of Llama 2-Chat is its extensive safety work:</p>
+        <ul>
+            <li><strong>Dual reward models</strong>: Separate models for helpfulness and safety — enable trade-off control</li>
+            <li><strong>Ghost Attention (GAtt)</strong>: System prompt conditioning persists across long conversations</li>
+            <li><strong>Red teaming</strong>: 3,000+ attack prompts evaluated across model versions</li>
+            <li><strong>Human evaluation</strong>: 4,000 annotations comparing safety vs GPT-3.5 and ChatGPT</li>
+        </ul>
+    </div>
+
+    <!-- Benchmarks -->
+    <div class="section">
+        <h2>📈 Benchmark Performance (70B)</h2>
+        <table class="compare-table">
+            <tr>
+                <th>Benchmark</th>
+                <th>Llama 2 (70B)</th>
+                <th>GPT-3.5</th>
+                <th>MPT (30B)</th>
+            </tr>
+            <tr>
+                <td>MMLU (5-shot)</td>
+                <td><span class="badge-green">68.9%</span></td>
+                <td>70.0%</td>
+                <td>46.9%</td>
+            </tr>
+            <tr>
+                <td>TriviaQA (1-shot)</td>
+                <td><span class="badge-green">85.0%</span></td>
+                <td>—</td>
+                <td>68.6%</td>
+            </tr>
+            <tr>
+                <td>HumanEval (0-shot)</td>
+                <td>29.9%</td>
+                <td><span class="badge-green">48.1%</span></td>
+                <td>25.0%</td>
+            </tr>
+            <tr>
+                <td>GSM8K (8-shot)</td>
+                <td><span class="badge-green">56.8%</span></td>
+                <td>57.1%</td>
+                <td>6.8%</td>
+            </tr>
+        </table>
+    </div>
+
+    <!-- Impact -->
+    <div class="section">
+        <h2>💡 Impact & Legacy</h2>
+        <ul>
+            <li>First open-source LLM with serious commercial license — sparked ecosystem of fine-tuned variants</li>
+            <li>Enabled Mistral, WizardLM, CodeLlama, Orca, and hundreds of community fine-tunes</li>
+            <li>Established blueprint for open RLHF pipelines (SFT → RM → PPO)</li>
+            <li>Led to Llama 3 (2024) with 8B/70B/405B sizes and GPT-4 competitive performance</li>
+        </ul>
+        <div class="tags">
+            <span class="tag">Open Source LLM</span>
+            <span class="tag">RLHF</span>
+            <span class="tag">GQA</span>
+            <span class="tag">SFT</span>
+            <span class="tag">Meta AI</span>
+            <span class="tag">Chat Model</span>
+        </div>
+    </div>
+
+</div>
+<footer>
+    <p>AI Neural Networks Visualized · <a href="../index.html" style="color:#f59e0b">Back to Index</a></p>
+</footer>
+</body>
+</html>

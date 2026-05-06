@@ -4314,6 +4314,80 @@
                 </svg>
             </div>
 
+            <!-- Llama 2 Paper Card -->
+            <div class="network-card" onclick="location.href='papers/llama2.html'">
+                <span class="tag">Meta 2023</span>
+                <h3>Llama 2</h3>
+                <p>Open foundation and fine-tuned chat models. 7B-70B parameters trained on 2T tokens, with RLHF and commercial license.</p>
+                <svg class="preview-svg" viewBox="0 0 300 150">
+                    <text x="150" y="18" fill="#8888aa" font-size="10" text-anchor="middle">Pretrain to SFT to RLHF</text>
+                    <rect x="10" y="35" width="70" height="40" rx="6" fill="rgba(245,158,11,0.3)" stroke="rgba(245,158,11,0.6)" stroke-width="1.5"/>
+                    <text x="45" y="60" fill="#fbbf24" font-size="9" text-anchor="middle">Pretrain</text>
+                    <path d="M 80 55 L 100 55" stroke="#f59e0b" stroke-width="2" marker-end="url(#arrowhead)"/>
+                    <rect x="100" y="35" width="60" height="40" rx="6" fill="rgba(239,68,68,0.3)" stroke="rgba(239,68,68,0.6)" stroke-width="1.5"/>
+                    <text x="130" y="60" fill="#fca5a5" font-size="9" text-anchor="middle">SFT</text>
+                    <path d="M 160 55 L 180 55" stroke="#f59e0b" stroke-width="2" marker-end="url(#arrowhead)"/>
+                    <rect x="180" y="35" width="65" height="40" rx="6" fill="rgba(99,102,241,0.3)" stroke="rgba(99,102,241,0.6)" stroke-width="1.5"/>
+                    <text x="212" y="60" fill="#a78bfa" font-size="9" text-anchor="middle">RLHF</text>
+                    <text x="150" y="105" fill="#a0a0c0" font-size="9" text-anchor="middle">7B - 13B - 70B params</text>
+                    <text x="150" y="122" fill="#8080a0" font-size="8" text-anchor="middle">2T tokens | GQA | 4096 ctx</text>
+                </svg>
+            </div>
+
+            <!-- DeepSeek-R1 Paper Card -->
+            <div class="network-card" onclick="location.href='papers/deepseek-r1.html'">
+                <span class="tag">DeepSeek 2025</span>
+                <h3>DeepSeek-R1</h3>
+                <p>Incentivizing reasoning via pure reinforcement learning. Achieves OpenAI o1-level performance on math and coding with open weights.</p>
+                <svg class="preview-svg" viewBox="0 0 300 150">
+                    <text x="150" y="18" fill="#8888aa" font-size="10" text-anchor="middle">RL-Only Reasoning Training</text>
+                    <circle cx="55" cy="78" r="30" fill="rgba(99,102,241,0.25)" stroke="rgba(99,102,241,0.6)" stroke-width="1.5"/>
+                    <text x="55" y="74" fill="#a78bfa" font-size="8" text-anchor="middle">Base</text>
+                    <text x="55" y="88" fill="#a78bfa" font-size="8" text-anchor="middle">Model</text>
+                    <path d="M 85 78 L 105 78" stroke="#6366f1" stroke-width="2" marker-end="url(#arrowhead)"/>
+                    <rect x="105" y="50" width="90" height="56" rx="8" fill="rgba(168,85,247,0.2)" stroke="rgba(168,85,247,0.6)" stroke-width="1.5"/>
+                    <text x="150" y="72" fill="#c4b5fd" font-size="9" text-anchor="middle">GRPO</text>
+                    <text x="150" y="86" fill="#c4b5fd" font-size="8" text-anchor="middle">Rule Rewards</text>
+                    <text x="150" y="100" fill="#8080c0" font-size="7" text-anchor="middle">No reward model!</text>
+                    <path d="M 195 78 L 215 78" stroke="#a855f7" stroke-width="2" marker-end="url(#arrowhead)"/>
+                    <circle cx="242" cy="78" r="30" fill="rgba(168,85,247,0.3)" stroke="rgba(168,85,247,0.7)" stroke-width="1.5"/>
+                    <text x="242" y="74" fill="#e9d5ff" font-size="8" text-anchor="middle">R1</text>
+                    <text x="242" y="88" fill="#e9d5ff" font-size="7" text-anchor="middle">79.8% AIME</text>
+                </svg>
+            </div>
+
+            <!-- Mixtral Paper Card -->
+            <div class="network-card" onclick="location.href='papers/mixtral.html'">
+                <span class="tag">Mistral 2023</span>
+                <h3>Mixtral 8x7B</h3>
+                <p>Sparse Mixture of Experts LLM. 46.7B total params, only 12.9B active per token. Beats Llama 2 70B with 6x faster inference.</p>
+                <svg class="preview-svg" viewBox="0 0 300 150">
+                    <text x="150" y="18" fill="#8888aa" font-size="10" text-anchor="middle">Sparse MoE: Top-2 of 8 Experts</text>
+                    <rect x="8" y="62" width="42" height="26" rx="5" fill="rgba(16,185,129,0.3)" stroke="rgba(16,185,129,0.6)" stroke-width="1.5"/>
+                    <text x="29" y="79" fill="#34d399" font-size="8" text-anchor="middle">Token</text>
+                    <path d="M 50 75 L 70 75" stroke="#10b981" stroke-width="2" marker-end="url(#arrowhead)"/>
+                    <rect x="70" y="55" width="50" height="40" rx="5" fill="rgba(99,102,241,0.25)" stroke="rgba(99,102,241,0.5)" stroke-width="1.5"/>
+                    <text x="95" y="79" fill="#a78bfa" font-size="8" text-anchor="middle">Router</text>
+                    <rect x="140" y="28" width="48" height="20" rx="4" fill="rgba(16,185,129,0.4)" stroke="rgba(16,185,129,0.8)" stroke-width="1.5"/>
+                    <text x="164" y="42" fill="#fff" font-size="8" text-anchor="middle">E1 Active</text>
+                    <rect x="140" y="54" width="48" height="20" rx="4" fill="rgba(99,102,241,0.15)" stroke="rgba(99,102,241,0.3)" stroke-width="1"/>
+                    <text x="164" y="68" fill="#8080a0" font-size="8" text-anchor="middle">E2</text>
+                    <rect x="140" y="80" width="48" height="20" rx="4" fill="rgba(16,185,129,0.4)" stroke="rgba(16,185,129,0.8)" stroke-width="1.5"/>
+                    <text x="164" y="94" fill="#fff" font-size="8" text-anchor="middle">E3 Active</text>
+                    <rect x="140" y="106" width="48" height="20" rx="4" fill="rgba(99,102,241,0.15)" stroke="rgba(99,102,241,0.3)" stroke-width="1"/>
+                    <text x="164" y="120" fill="#8080a0" font-size="8" text-anchor="middle">E4</text>
+                    <line x1="120" y1="75" x2="140" y2="38" stroke="#4ade80" stroke-width="1" stroke-dasharray="3,2"/>
+                    <line x1="120" y1="75" x2="140" y2="90" stroke="#4ade80" stroke-width="1" stroke-dasharray="3,2"/>
+                    <rect x="200" y="58" width="45" height="34" rx="5" fill="rgba(16,185,129,0.25)" stroke="rgba(16,185,129,0.5)" stroke-width="1.5"/>
+                    <text x="222" y="79" fill="#34d399" font-size="8" text-anchor="middle">Wt Sum</text>
+                    <path d="M 188 38 L 200 68" stroke="#4ade80" stroke-width="1" stroke-dasharray="3,2"/>
+                    <path d="M 188 90 L 200 78" stroke="#4ade80" stroke-width="1" stroke-dasharray="3,2"/>
+                    <path d="M 245 75 L 265 75" stroke="#10b981" stroke-width="2" marker-end="url(#arrowhead)"/>
+                    <rect x="265" y="62" width="28" height="26" rx="5" fill="rgba(16,185,129,0.4)" stroke="rgba(16,185,129,0.7)" stroke-width="1.5"/>
+                    <text x="279" y="79" fill="#fff" font-size="7" text-anchor="middle">Out</text>
+                </svg>
+            </div>
+
             <!-- LSTM Paper Card -->
             <div class="network-card" onclick="location.href='papers/lstm.html'">
                 <span class="tag">Neural Comp 1997</span>

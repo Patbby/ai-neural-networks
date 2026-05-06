@@ -1,0 +1,428 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DeepSeek-R1: Incentivizing Reasoning Capability in LLMs via RL</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: #0a0a0f;
+            color: #e0e0ff;
+            line-height: 1.7;
+        }
+        .bg-animation {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            z-index: -1; opacity: 0.15;
+            background: radial-gradient(ellipse at 20% 50%, #6366f133 0%, transparent 60%),
+                        radial-gradient(ellipse at 80% 20%, #a855f733 0%, transparent 60%),
+                        radial-gradient(ellipse at 60% 80%, #ec489933 0%, transparent 60%);
+        }
+        header {
+            padding: 60px 20px 40px;
+            text-align: center;
+            background: linear-gradient(180deg, rgba(99,102,241,0.12) 0%, transparent 100%);
+            border-bottom: 1px solid rgba(99,102,241,0.2);
+        }
+        .back-btn {
+            display: inline-block;
+            margin-bottom: 30px;
+            color: #a78bfa;
+            text-decoration: none;
+            font-size: 0.9rem;
+            transition: color 0.2s;
+        }
+        .back-btn:hover { color: #c4b5fd; }
+        .paper-badge {
+            display: inline-block;
+            background: linear-gradient(135deg, #6366f1, #a855f7);
+            color: white;
+            padding: 4px 16px;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            letter-spacing: 0.05em;
+            margin-bottom: 16px;
+            text-transform: uppercase;
+        }
+        h1 {
+            font-size: 2.2rem;
+            font-weight: 800;
+            background: linear-gradient(135deg, #6366f1 0%, #a855f7 50%, #ec4899 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 12px;
+            max-width: 900px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+        .meta {
+            color: #a0a0c0;
+            font-size: 0.95rem;
+        }
+        .meta span { margin: 0 12px; }
+        .container { max-width: 960px; margin: 0 auto; padding: 40px 20px 80px; }
+        .section {
+            background: rgba(255,255,255,0.03);
+            border: 1px solid rgba(255,255,255,0.08);
+            border-radius: 16px;
+            padding: 28px 32px;
+            margin-bottom: 28px;
+        }
+        .section h2 {
+            font-size: 1.3rem;
+            font-weight: 700;
+            color: #a78bfa;
+            margin-bottom: 16px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .section p { color: #c8c8e8; margin-bottom: 12px; }
+        .section ul { color: #c8c8e8; padding-left: 20px; }
+        .section li { margin-bottom: 8px; }
+        .highlight {
+            background: rgba(99,102,241,0.1);
+            border-left: 3px solid #6366f1;
+            padding: 12px 18px;
+            border-radius: 0 8px 8px 0;
+            margin: 16px 0;
+            color: #d0d0f0;
+            font-style: italic;
+        }
+
+        /* ===== INTERACTIVE VISUALIZATION ===== */
+        .viz-container {
+            background: rgba(0,0,0,0.3);
+            border-radius: 12px;
+            padding: 24px;
+            margin: 20px 0;
+        }
+        .viz-title {
+            text-align: center;
+            font-size: 0.85rem;
+            color: #8080a0;
+            margin-bottom: 20px;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+        }
+        svg text { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; }
+
+        /* ===== RL TRAINING PIPELINE ===== */
+        .pipeline-steps {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 12px;
+            margin: 16px 0;
+        }
+        .pipeline-step {
+            flex: 1;
+            min-width: 140px;
+            background: rgba(99,102,241,0.08);
+            border: 1px solid rgba(99,102,241,0.3);
+            border-radius: 12px;
+            padding: 16px 12px;
+            text-align: center;
+            position: relative;
+        }
+        .pipeline-step .step-icon { font-size: 1.8rem; margin-bottom: 8px; }
+        .pipeline-step .step-name {
+            font-size: 0.85rem;
+            font-weight: 700;
+            color: #a78bfa;
+            margin-bottom: 4px;
+        }
+        .pipeline-step .step-desc { font-size: 0.75rem; color: #a0a0c0; }
+        .arrow { color: #6366f1; font-size: 1.4rem; flex-shrink: 0; }
+
+        /* ===== COMPARISON TABLE ===== */
+        .compare-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 16px 0;
+            font-size: 0.9rem;
+        }
+        .compare-table th {
+            background: rgba(99,102,241,0.2);
+            color: #a78bfa;
+            padding: 10px 16px;
+            text-align: left;
+            font-weight: 600;
+        }
+        .compare-table td {
+            padding: 10px 16px;
+            border-bottom: 1px solid rgba(255,255,255,0.05);
+            color: #c8c8e8;
+        }
+        .compare-table tr:last-child td { border-bottom: none; }
+        .compare-table tr:hover td { background: rgba(255,255,255,0.02); }
+        .score-bar {
+            display: inline-block;
+            height: 8px;
+            border-radius: 4px;
+            background: linear-gradient(90deg, #6366f1, #a855f7);
+            vertical-align: middle;
+            margin-left: 8px;
+        }
+        .badge-green { color: #4ade80; font-weight: 700; }
+        .badge-blue { color: #60a5fa; font-weight: 700; }
+
+        /* ===== REASONING CHAIN DEMO ===== */
+        .reasoning-demo {
+            background: rgba(0,0,0,0.4);
+            border-radius: 10px;
+            padding: 18px 20px;
+            font-family: 'Courier New', monospace;
+            font-size: 0.82rem;
+            line-height: 1.7;
+            margin: 16px 0;
+            border: 1px solid rgba(99,102,241,0.2);
+        }
+        .think-tag { color: #f59e0b; }
+        .answer-tag { color: #4ade80; }
+        .reasoning-text { color: #a0c8ff; }
+        .answer-text { color: #d0ffd0; }
+
+        /* Tags */
+        .tags { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 12px; }
+        .tag {
+            background: rgba(99,102,241,0.15);
+            border: 1px solid rgba(99,102,241,0.3);
+            color: #a78bfa;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 0.8rem;
+        }
+        .stat-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+            gap: 16px;
+            margin: 16px 0;
+        }
+        .stat-card {
+            background: rgba(99,102,241,0.08);
+            border: 1px solid rgba(99,102,241,0.2);
+            border-radius: 12px;
+            padding: 16px;
+            text-align: center;
+        }
+        .stat-value {
+            font-size: 1.8rem;
+            font-weight: 800;
+            background: linear-gradient(135deg, #6366f1, #a855f7);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        .stat-label { font-size: 0.8rem; color: #8080a0; margin-top: 4px; }
+        footer {
+            text-align: center;
+            padding: 40px 20px;
+            color: #606080;
+            font-size: 0.85rem;
+            border-top: 1px solid rgba(255,255,255,0.05);
+        }
+    </style>
+</head>
+<body>
+<div class="bg-animation"></div>
+
+<header>
+    <a href="../index.html" class="back-btn">← Back to All Papers</a>
+    <div class="paper-badge">🤔 Reasoning · 2025</div>
+    <h1>DeepSeek-R1: Incentivizing Reasoning Capability in LLMs via Reinforcement Learning</h1>
+    <div class="meta">
+        <span>📅 January 2025</span>
+        <span>🏢 DeepSeek AI</span>
+        <span>📄 arXiv:2501.12948</span>
+    </div>
+</header>
+
+<div class="container">
+
+    <!-- Key Stats -->
+    <div class="section">
+        <h2>📊 Key Results</h2>
+        <div class="stat-grid">
+            <div class="stat-card">
+                <div class="stat-value">79.8%</div>
+                <div class="stat-label">AIME 2024</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value">97.3%</div>
+                <div class="stat-label">MATH-500</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value">=o1</div>
+                <div class="stat-label">OpenAI o1 Level</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value">671B</div>
+                <div class="stat-label">Base Model Params</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Abstract -->
+    <div class="section">
+        <h2>📋 Abstract</h2>
+        <p>DeepSeek-R1 introduces a novel approach to incentivize reasoning in large language models through reinforcement learning, achieving performance comparable to OpenAI o1. The key insight is that reasoning capabilities can emerge from RL training <em>without supervised fine-tuning on chain-of-thought data</em>.</p>
+        <div class="highlight">
+            "We first train DeepSeek-R1-Zero — a model that acquires reasoning capabilities through pure RL without any supervised fine-tuning. It naturally develops behaviors like self-verification, reflection, and aha moments."
+        </div>
+    </div>
+
+    <!-- Training Pipeline -->
+    <div class="section">
+        <h2>🔄 Training Pipeline</h2>
+        <p>DeepSeek-R1 uses a two-stage training approach:</p>
+        <div class="pipeline-steps">
+            <div class="pipeline-step">
+                <div class="step-icon">🧠</div>
+                <div class="step-name">Base Model</div>
+                <div class="step-desc">DeepSeek-V3<br>(671B MoE)</div>
+            </div>
+            <div class="arrow">→</div>
+            <div class="pipeline-step">
+                <div class="step-icon">⚡</div>
+                <div class="step-name">Pure RL</div>
+                <div class="step-desc">GRPO with<br>Rule-based rewards</div>
+            </div>
+            <div class="arrow">→</div>
+            <div class="pipeline-step">
+                <div class="step-icon">📝</div>
+                <div class="step-name">Cold Start SFT</div>
+                <div class="step-desc">Small CoT data<br>for readability</div>
+            </div>
+            <div class="arrow">→</div>
+            <div class="pipeline-step">
+                <div class="step-icon">🔁</div>
+                <div class="step-name">Multi-stage RL</div>
+                <div class="step-desc">Reasoning + General<br>alignment</div>
+            </div>
+            <div class="arrow">→</div>
+            <div class="pipeline-step">
+                <div class="step-icon">🏆</div>
+                <div class="step-name">DeepSeek-R1</div>
+                <div class="step-desc">o1-level<br>reasoning</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Key Innovation: GRPO -->
+    <div class="section">
+        <h2>⚙️ Group Relative Policy Optimization (GRPO)</h2>
+        <p>DeepSeek-R1 uses GRPO instead of PPO to reduce memory overhead:</p>
+        <ul>
+            <li><strong>Group sampling</strong>: Sample G outputs per question, use group mean as baseline</li>
+            <li><strong>No critic model</strong>: Eliminates the value network — halves memory usage</li>
+            <li><strong>Rule-based reward</strong>: Accuracy (math/code verifiable) + Format (think tags) — no reward model needed</li>
+            <li><strong>KL penalty</strong>: Prevents over-optimization away from reference policy</li>
+        </ul>
+        <div class="viz-container">
+            <div class="viz-title">GRPO vs PPO Memory Comparison</div>
+            <svg viewBox="0 0 680 160" style="width:100%;max-height:160px">
+                <text x="40" y="30" fill="#a78bfa" font-size="13" font-weight="700">PPO</text>
+                <rect x="40" y="40" width="560" height="28" rx="6" fill="rgba(99,102,241,0.3)" stroke="rgba(99,102,241,0.5)" stroke-width="1"/>
+                <rect x="40" y="40" width="280" height="28" rx="6" fill="rgba(99,102,241,0.6)"/>
+                <text x="55" y="59" fill="white" font-size="11">Policy Model</text>
+                <rect x="325" y="40" width="275" height="28" rx="6" fill="rgba(168,85,247,0.5)"/>
+                <text x="340" y="59" fill="white" font-size="11">Critic Model (Value Network) — Extra Memory</text>
+
+                <text x="40" y="105" fill="#4ade80" font-size="13" font-weight="700">GRPO (DeepSeek-R1)</text>
+                <rect x="40" y="115" width="280" height="28" rx="6" fill="rgba(74,222,128,0.4)" stroke="rgba(74,222,128,0.6)" stroke-width="1"/>
+                <text x="55" y="134" fill="white" font-size="11">Policy Model Only — 50% Less Memory!</text>
+                <text x="330" y="130" fill="#4ade80" font-size="20">✓</text>
+                <text x="350" y="134" fill="#4ade80" font-size="11" font-weight="700">No critic needed</text>
+            </svg>
+        </div>
+    </div>
+
+    <!-- Reasoning Chain Demo -->
+    <div class="section">
+        <h2>💬 Reasoning Chain Format</h2>
+        <p>R1 uses special tags to separate chain-of-thought reasoning from the final answer:</p>
+        <div class="reasoning-demo">
+            <span class="think-tag">&lt;think&gt;</span><br>
+            <span class="reasoning-text">Let me solve this step by step...<br>
+            The problem asks for the sum of integers from 1 to 100.<br>
+            Using the formula n(n+1)/2 where n=100:<br>
+            = 100 × 101 / 2<br>
+            = 10100 / 2<br>
+            = 5050<br>
+            Let me verify: (1+100)×50 = 101×50 = 5050 ✓</span><br>
+            <span class="think-tag">&lt;/think&gt;</span><br><br>
+            <span class="answer-tag">&lt;answer&gt;</span><br>
+            <span class="answer-text">The sum of integers from 1 to 100 is <strong>5050</strong>.</span><br>
+            <span class="answer-tag">&lt;/answer&gt;</span>
+        </div>
+        <p style="font-size:0.85rem; color:#8080a0;">The model is rewarded for correct final answers inside &lt;answer&gt; tags, not for the reasoning process itself — leading to emergent self-correction and reflection behaviors.</p>
+    </div>
+
+    <!-- Benchmark Comparison -->
+    <div class="section">
+        <h2>📈 Benchmark Performance</h2>
+        <table class="compare-table">
+            <tr>
+                <th>Benchmark</th>
+                <th>DeepSeek-R1</th>
+                <th>OpenAI o1</th>
+                <th>Claude 3.5 Sonnet</th>
+            </tr>
+            <tr>
+                <td>AIME 2024</td>
+                <td><span class="badge-green">79.8%</span><span class="score-bar" style="width:80px"></span></td>
+                <td>79.2%</td>
+                <td>16.0%</td>
+            </tr>
+            <tr>
+                <td>MATH-500</td>
+                <td><span class="badge-green">97.3%</span><span class="score-bar" style="width:97px"></span></td>
+                <td>96.4%</td>
+                <td>78.3%</td>
+            </tr>
+            <tr>
+                <td>GPQA Diamond</td>
+                <td><span class="badge-blue">71.5%</span><span class="score-bar" style="width:72px"></span></td>
+                <td>75.7%</td>
+                <td>59.4%</td>
+            </tr>
+            <tr>
+                <td>Codeforces Rating</td>
+                <td><span class="badge-blue">2029</span><span class="score-bar" style="width:75px"></span></td>
+                <td>1891</td>
+                <td>717</td>
+            </tr>
+        </table>
+    </div>
+
+    <!-- Key Contributions -->
+    <div class="section">
+        <h2>💡 Key Contributions</h2>
+        <ul>
+            <li><strong>R1-Zero</strong>: First model to develop chain-of-thought reasoning via pure RL, no SFT needed — "aha moment" phenomenon observed</li>
+            <li><strong>GRPO</strong>: Critic-free policy optimization that scales to 671B parameter models</li>
+            <li><strong>Distillation</strong>: Knowledge distilled into smaller models (1.5B–70B) that outperform much larger counterparts</li>
+            <li><strong>Open weights</strong>: Full model weights released — enabling the open-source community to build on top</li>
+            <li><strong>Cost efficiency</strong>: Training costs ~$5.5M — 30x cheaper than comparable closed models</li>
+        </ul>
+        <div class="tags">
+            <span class="tag">Reinforcement Learning</span>
+            <span class="tag">Chain-of-Thought</span>
+            <span class="tag">GRPO</span>
+            <span class="tag">Reasoning</span>
+            <span class="tag">Open Source</span>
+            <span class="tag">MoE</span>
+        </div>
+    </div>
+
+</div>
+<footer>
+    <p>AI Neural Networks Visualized · <a href="../index.html" style="color:#6366f1">Back to Index</a></p>
+</footer>
+</body>
+</html>
