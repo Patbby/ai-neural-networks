@@ -830,83 +830,6 @@
                 </svg>
             </div>
 
-            <!-- Adam Paper Card -->
-            <div class="network-card" onclick="location.href='papers/adam.html'">
-                <span class="tag">ICLR 2015</span>
-                <h3>Adam Optimizer</h3>
-                <p>A Method for Stochastic Optimization - The adaptive moment estimation algorithm that became the de facto standard optimizer for training deep neural networks with 100,000+ citations.</p>
-                <svg class="preview-svg" viewBox="0 0 300 150">
-                    <defs>
-                        <linearGradient id="adam-grad" x1="0%" y1="0%" x2="100%" y2="0%">
-                            <stop offset="0%" style="stop-color:#6366f1"/>
-                            <stop offset="50%" style="stop-color:#a855f7"/>
-                            <stop offset="100%" style="stop-color:#ec4899"/>
-                        </linearGradient>
-                    </defs>
-                    <!-- Gradient input -->
-                    <rect x="20" y="55" width="45" height="40" fill="none" stroke="#6366f1" stroke-width="2" rx="3"/>
-                    <text x="42" y="78" fill="#fff" font-size="9" text-anchor="middle">∇f(θ)</text>
-                    <!-- Arrow -->
-                    <path d="M65 75 L80 75" stroke="#6366f1" stroke-width="2"/>
-                    <!-- First Moment (m) -->
-                    <rect x="85" y="35" width="50" height="35" fill="rgba(16,185,129,0.3)" stroke="#10b981" stroke-width="2" rx="3"/>
-                    <text x="110" y="52" fill="#fff" font-size="8" text-anchor="middle">mₜ</text>
-                    <text x="110" y="65" fill="#6ee7b7" font-size="6" text-anchor="middle">Momentum</text>
-                    <!-- Second Moment (v) -->
-                    <rect x="85" y="80" width="50" height="35" fill="rgba(245,158,11,0.3)" stroke="#f59e0b" stroke-width="2" rx="3"/>
-                    <text x="110" y="97" fill="#fff" font-size="8" text-anchor="middle">vₜ</text>
-                    <text x="110" y="110" fill="#fbbf24" font-size="6" text-anchor="middle">Variance</text>
-                    <!-- Update equation -->
-                    <rect x="150" y="50" width="100" height="50" fill="rgba(99,102,241,0.2)" stroke="#6366f1" stroke-width="2" rx="5"/>
-                    <text x="200" y="70" fill="#fff" font-size="9" text-anchor="middle">θ = θ - α·m̂/√v̂</text>
-                    <text x="200" y="90" fill="#a5b4fc" font-size="7" text-anchor="middle">Adaptive Update</text>
-                    <!-- Arrows to update -->
-                    <path d="M135 52 L150 62" stroke="#10b981" stroke-width="2"/>
-                    <path d="M135 98 L150 88" stroke="#f59e0b" stroke-width="2"/>
-                </svg>
-            </div>
-
-            <!-- BatchNorm Paper Card -->
-            <div class="network-card" onclick="location.href='papers/batchnorm.html'">
-                <span class="tag">ICML 2015</span>
-                <h3>Batch Normalization</h3>
-                <p>Accelerating Deep Network Training by Reducing Internal Covariate Shift - The technique that revolutionized deep learning by enabling higher learning rates, faster convergence, and training of deeper networks.</p>
-                <svg class="preview-svg" viewBox="0 0 300 150">
-                    <defs>
-                        <linearGradient id="bn-grad" x1="0%" y1="0%" x2="100%" y2="0%">
-                            <stop offset="0%" style="stop-color:#6366f1"/>
-                            <stop offset="50%" style="stop-color:#a855f7"/>
-                            <stop offset="100%" style="stop-color:#ec4899"/>
-                        </linearGradient>
-                    </defs>
-                    <!-- Input -->
-                    <rect x="20" y="55" width="50" height="40" fill="none" stroke="#6366f1" stroke-width="2" rx="3"/>
-                    <text x="45" y="80" fill="#fff" font-size="9" text-anchor="middle">x</text>
-                    <!-- Arrow -->
-                    <path d="M70 75 L85 75" stroke="#6366f1" stroke-width="2"/>
-                    <!-- Mean/Var box -->
-                    <rect x="90" y="35" width="60" height="30" fill="rgba(16,185,129,0.3)" stroke="#10b981" stroke-width="1.5" rx="2"/>
-                    <text x="120" y="52" fill="#fff" font-size="7" text-anchor="middle">μ_B, σ²_B</text>
-                    <text x="120" y="62" fill="#6ee7b7" font-size="6" text-anchor="middle">batch stats</text>
-                    <!-- Arrow -->
-                    <path d="M150 50 L150 65" stroke="#10b981" stroke-width="1.5"/>
-                    <!-- Normalize box -->
-                    <rect x="100" y="70" width="80" height="35" fill="rgba(236,72,153,0.3)" stroke="#ec4899" stroke-width="2" rx="3"/>
-                    <text x="140" y="88" fill="#fff" font-size="8" text-anchor="middle">Normalize</text>
-                    <text x="140" y="100" fill="#fbcfe8" font-size="6" text-anchor="middle">x̂ = (x-μ)/σ</text>
-                    <!-- Scale/Shift -->
-                    <rect x="110" y="112" width="60" height="25" fill="rgba(245,158,11,0.3)" stroke="#f59e0b" stroke-width="1.5" rx="2"/>
-                    <text x="140" y="124" fill="#fff" font-size="7" text-anchor="middle">γ·x̂ + β</text>
-                    <text x="140" y="134" fill="#fbbf24" font-size="6" text-anchor="middle">scale & shift</text>
-                    <!-- Arrow to output -->
-                    <path d="M180 87 L195 87" stroke="#ec4899" stroke-width="2"/>
-                    <!-- Output -->
-                    <rect x="200" y="67" width="50" height="40" fill="rgba(99,102,241,0.3)" stroke="#6366f1" stroke-width="2" rx="3"/>
-                    <text x="225" y="92" fill="#fff" font-size="9" text-anchor="middle">y</text>
-                    <!-- Distributions -->
-                </svg>
-            </div>
-
             <!-- SimCLR Paper Card -->
             <div class="network-card" onclick="location.href='papers/simclr.html'">
                 <span class="tag">ICML 2020</span>
@@ -1209,82 +1132,6 @@
                     <text x="249" y="97" fill="#10b981" font-size="6" text-anchor="middle">Seg</text>
                     <!-- Label -->
                     <text x="150" y="135" fill="#8888aa" font-size="8" text-anchor="middle">Unified Detection + Segmentation</text>
-                </svg>
-            </div>
-
-            <!-- RMSNorm Paper Card -->
-            <div class="network-card" onclick="location.href='papers/rmsnorm.html'">
-                <span class="tag">NeurIPS 2019</span>
-                <h3>RMSNorm</h3>
-                <p>Root Mean Square Layer Normalization - A simplified normalization that removes mean-centering from LayerNorm, offering 7-64% speedup while maintaining comparable performance. Widely adopted in LLaMA, Mistral, and modern LLMs.</p>
-                <svg class="preview-svg" viewBox="0 0 300 150">
-                    <defs>
-                        <linearGradient id="rmsnorm-grad" x1="0%" y1="0%" x2="100%" y2="0%">
-                            <stop offset="0%" style="stop-color:#6366f1"/>
-                            <stop offset="50%" style="stop-color:#a855f7"/>
-                            <stop offset="100%" style="stop-color:#10b981"/>
-                        </linearGradient>
-                        <marker id="rms-arrow" markerWidth="8" markerHeight="6" refX="7" refY="3" orient="auto">
-                            <polygon points="0 0, 8 3, 0 6" fill="#6366f1"/>
-                        </marker>
-                    </defs>
-                    
-                    <!-- Title -->
-                    <text x="150" y="20" fill="#8888aa" font-size="10" text-anchor="middle">RMSNorm: y = γ ⊙ x / RMS(x)</text>
-                    
-                    <!-- Input vector -->
-                    <g transform="translate(20, 45)">
-                        <text x="25" y="-8" fill="#888" font-size="8" text-anchor="middle">Input x</text>
-                        <rect x="0" y="0" width="15" height="25" fill="url(#rmsnorm-grad)" rx="2" opacity="0.9"/>
-                        <rect x="18" y="0" width="15" height="25" fill="url(#rmsnorm-grad)" rx="2" opacity="0.7"/>
-                        <rect x="36" y="0" width="15" height="25" fill="url(#rmsnorm-grad)" rx="2" opacity="0.8"/>
-                        <text x="60" y="15" fill="#6366f1" font-size="8">...</text>
-                    </g>
-                    
-                    <!-- Arrow -->
-                    <path d="M 85 57 L 110 57" stroke="#6366f1" stroke-width="1.5" marker-end="url(#rms-arrow)"/>
-                    
-                    <!-- Square & Mean -->
-                    <g transform="translate(115, 35)">
-                        <rect x="0" y="0" width="50" height="45" fill="rgba(236,72,153,0.2)" stroke="#ec4899" stroke-width="1.5" rx="4"/>
-                        <text x="25" y="18" fill="#fff" font-size="10" text-anchor="middle">x²</text>
-                        <line x1="8" y1="25" x2="42" y2="25" stroke="#ec4899" stroke-width="1"/>
-                        <text x="25" y="38" fill="#ec4899" font-size="8" text-anchor="middle">mean</text>
-                    </g>
-                    
-                    <!-- Arrow -->
-                    <path d="M 170 57 L 190 57" stroke="#f59e0b" stroke-width="1.5" marker-end="url(#rms-arrow)"/>
-                    
-                    <!-- Sqrt -->
-                    <g transform="translate(195, 40)">
-                        <rect x="0" y="0" width="35" height="35" fill="rgba(245,158,11,0.2)" stroke="#f59e0b" stroke-width="1.5" rx="4"/>
-                        <text x="17" y="24" fill="#fff" font-size="14" text-anchor="middle">√</text>
-                    </g>
-                    
-                    <!-- Division -->
-                    <g transform="translate(235, 45)">
-                        <circle cx="12" cy="12" r="12" fill="rgba(16,185,129,0.2)" stroke="#10b981" stroke-width="1.5"/>
-                        <text x="12" y="16" fill="#fff" font-size="12" text-anchor="middle">÷</text>
-                    </g>
-                    
-                    <!-- Scale by gamma -->
-                    <g transform="translate(260, 35)">
-                        <rect x="0" y="0" width="30" height="45" fill="rgba(168,85,247,0.2)" stroke="#a855f7" stroke-width="1.5" rx="4"/>
-                        <text x="15" y="20" fill="#fff" font-size="10" text-anchor="middle">×</text>
-                        <text x="15" y="35" fill="#a855f7" font-size="10" text-anchor="middle">γ</text>
-                    </g>
-                    
-                    <!-- Output -->
-                    <g transform="translate(255, 95)">
-                        <text x="15" y="0" fill="#888" font-size="8" text-anchor="middle">Output</text>
-                        <rect x="0" y="5" width="12" height="20" fill="#10b981" rx="2" opacity="0.9"/>
-                        <rect x="15" y="5" width="12" height="20" fill="#10b981" rx="2" opacity="0.7"/>
-                        <rect x="30" y="5" width="12" height="20" fill="#10b981" rx="2" opacity="0.8"/>
-                    </g>
-                    
-                    <!-- Legend -->
-                    <text x="80" y="130" fill="#666" font-size="7">Speedup: 7-64% vs LayerNorm</text>
-                    <text x="220" y="130" fill="#10b981" font-size="7">LLaMA, Mistral, Gemma</text>
                 </svg>
             </div>
 
@@ -2303,69 +2150,6 @@
                 </svg>
             </div>
 
-            <!-- Gradient Boosting Paper Card -->
-            <div class="network-card" onclick="location.href='papers/gradient-boosting.html'">
-                <span class="tag">The Annals of Statistics 2001</span>
-                <h3>Gradient Boosting Machine</h3>
-                <p>Jerome Friedman's optimization framework that views boosting as gradient descent in function space. Fits weak learners to pseudo-residuals, enabling any differentiable loss function and spawning XGBoost, LightGBM, and CatBoost.</p>
-                <svg class="preview-svg" viewBox="0 0 300 150">
-                    <defs>
-                        <linearGradient id="gbm-grad" x1="0%" y1="0%" x2="100%" y2="0%">
-                            <stop offset="0%" style="stop-color:#00d2ff"/>
-                            <stop offset="100%" style="stop-color:#00ff88"/>
-                        </linearGradient>
-                    </defs>
-                    <!-- Initial model -->
-                    <rect x="20" y="60" width="40" height="30" rx="4" fill="rgba(0,210,255,0.2)" stroke="#00d2ff" stroke-width="1.5"/>
-                    <text x="40" y="80" fill="#00d2ff" font-size="10" text-anchor="middle">F₀</text>
-                    
-                    <!-- Plus -->
-                    <text x="70" y="78" fill="#fff" font-size="14" font-weight="bold">+</text>
-                    
-                    <!-- Residual arrows -->
-                    <path d="M85 50 L85 58" stroke="#ec4899" stroke-width="1.5" marker-end="url(#arrow-res)"/>
-                    <path d="M85 85 L85 93" stroke="#ec4899" stroke-width="1.5" marker-end="url(#arrow-res)"/>
-                    <defs>
-                        <marker id="arrow-res" markerWidth="8" markerHeight="8" refX="7" refY="3" orient="auto">
-                            <polygon points="0 0, 8 3, 0 6" fill="#ec4899"/>
-                        </marker>
-                    </defs>
-                    <text x="100" y="55" fill="#ec4899" font-size="8">−∇L</text>
-                    <text x="100" y="100" fill="#ec4899" font-size="8">−∇L</text>
-                    
-                    <!-- Weak learners (trees) -->
-                    <rect x="90" y="45" width="25" height="20" rx="2" fill="rgba(0,255,136,0.2)" stroke="#00ff88" stroke-width="1.5"/>
-                    <text x="102" y="59" fill="#00ff88" font-size="8" text-anchor="middle">h₁</text>
-                    
-                    <rect x="90" y="80" width="25" height="20" rx="2" fill="rgba(0,255,136,0.2)" stroke="#00ff88" stroke-width="1.5"/>
-                    <text x="102" y="94" fill="#00ff88" font-size="8" text-anchor="middle">h₂</text>
-                    
-                    <!-- Plus signs -->
-                    <text x="125" y="65" fill="#fff" font-size="10">+</text>
-                    <text x="125" y="100" fill="#fff" font-size="10">+</text>
-                    
-                    <!-- More trees dots -->
-                    <circle cx="140" cy="60" r="2" fill="#00ff88"/>
-                    <circle cx="148" cy="60" r="2" fill="#00ff88"/>
-                    <circle cx="156" cy="60" r="2" fill="#00ff88"/>
-                    <circle cx="140" cy="95" r="2" fill="#00ff88"/>
-                    <circle cx="148" cy="95" r="2" fill="#00ff88"/>
-                    <circle cx="156" cy="95" r="2" fill="#00ff88"/>
-                    
-                    <!-- Arrow to final -->
-                    <path d="M170 75 L190 75" stroke="#3a7bd5" stroke-width="2"/>
-                    <polygon points="190,75 185,70 185,80" fill="#3a7bd5"/>
-                    
-                    <!-- Final ensemble -->
-                    <rect x="200" y="55" width="85" height="40" rx="6" fill="rgba(58,123,213,0.2)" stroke="url(#gbm-grad)" stroke-width="2"/>
-                    <text x="242" y="75" fill="#fff" font-size="11" font-weight="bold" text-anchor="middle">Fₘ(x)</text>
-                    <text x="242" y="90" fill="#888" font-size="8" text-anchor="middle">Final Model</text>
-                    
-                    <!-- Formula -->
-                    <text x="150" y="130" fill="#888" font-size="9" text-anchor="middle">Fₘ = F₀ + Σ ν·αₘ·hₘ(x)</text>
-                </svg>
-            </div>
-
             <!-- AdaBoost Paper Card -->
             <div class="network-card" onclick="location.href='papers/adaboost.html'">
                 <span class="tag">ICML 1997</span>
@@ -3068,157 +2852,6 @@
                 </svg>
             </div>
 
-            <!-- RMSNorm Paper Card -->
-            <div class="network-card" onclick="location.href='papers/rmsnorm.html'">
-                <span class="tag">NeurIPS 2019</span>
-                <h3>RMSNorm</h3>
-                <p>Root Mean Square Layer Normalization — A simplified, faster alternative to LayerNorm that removes mean-centering while maintaining training stability. 7-64% speedup with comparable performance. Used in LLaMA, Mistral, and modern LLMs.</p>
-                <svg class="preview-svg" viewBox="0 0 300 150">
-                    <defs>
-                        <linearGradient id="rmsnorm-grad" x1="0%" y1="0%" x2="100%" y2="0%">
-                            <stop offset="0%" style="stop-color:#f59e0b"/>
-                            <stop offset="50%" style="stop-color:#fbbf24"/>
-                            <stop offset="100%" style="stop-color:#10b981"/>
-                        </linearGradient>
-                    </defs>
-                    <!-- Input x -->
-                    <rect x="20" y="60" width="50" height="40" rx="5" fill="rgba(245,158,11,0.2)" stroke="#f59e0b" stroke-width="2"/>
-                    <text x="45" y="80" fill="#fbbf24" font-size="10" text-anchor="middle">x</text>
-                    <text x="45" y="93" fill="#8888aa" font-size="7" text-anchor="middle">[x₁,x₂...]</text>
-                    
-                    <!-- Arrow to RMS -->
-                    <path d="M70 80 L95 80" stroke="#f59e0b" stroke-width="2"/>
-                    
-                    <!-- RMS computation (simplified) -->
-                    <rect x="100" y="55" width="60" height="50" rx="5" fill="rgba(16,185,129,0.2)" stroke="#10b981" stroke-width="2"/>
-                    <text x="130" y="72" fill="#6ee7b7" font-size="8" text-anchor="middle">RMS(x)</text>
-                    <text x="130" y="88" fill="#6ee7b7" font-size="7" text-anchor="middle">√(Σx²/n)</text>
-                    
-                    <!-- Arrow to normalize -->
-                    <path d="M160 80 L185 80" stroke="#10b981" stroke-width="2"/>
-                    
-                    <!-- Normalize and scale -->
-                    <rect x="190" y="55" width="70" height="50" rx="5" fill="rgba(99,102,241,0.2)" stroke="#6366f1" stroke-width="2"/>
-                    <text x="225" y="72" fill="#a5b4fc" font-size="8" text-anchor="middle">x / RMS ⊙ g</text>
-                    <text x="225" y="88" fill="#a5b4fc" font-size="7" text-anchor="middle">scale only</text>
-                    
-                    <!-- Labels -->
-                    <text x="150" y="130" fill="#8888aa" font-size="8" text-anchor="middle">No mean subtraction • No bias • 7-64% faster</text>
-                    <text x="150" y="145" fill="#10b981" font-size="7" text-anchor="middle">Used in LLaMA, Mistral, Gemma</text>
-                </svg>
-            </div>
-
-            <!-- ELMo Paper Card -->
-            <div class="network-card" onclick="location.href='papers/elmo.html'">
-                <span class="tag">NAACL 2018 Best Paper</span>
-                <h3>ELMo</h3>
-                <p>Deep Contextualized Word Representations — The breakthrough that introduced contextualized embeddings, solving the polysemy problem by generating dynamic word vectors from deep bidirectional LSTMs. Each word's representation changes based on its context.</p>
-                <svg class="preview-svg" viewBox="0 0 300 150">
-                    <defs>
-                        <linearGradient id="elmo-grad" x1="0%" y1="0%" x2="100%" y2="0%">
-                            <stop offset="0%" style="stop-color:#6366f1"/>
-                            <stop offset="50%" style="stop-color:#10b981"/>
-                            <stop offset="100%" style="stop-color:#ec4899"/>
-                        </linearGradient>
-                    </defs>
-                    <!-- Input sentence -->
-                    <text x="20" y="25" fill="#8888aa" font-size="8">"I sat by the river bank"</text>
-                    
-                    <!-- Character CNN -->
-                    <rect x="20" y="35" width="50" height="25" rx="3" fill="rgba(99,102,241,0.2)" stroke="#6366f1" stroke-width="1.5"/>
-                    <text x="45" y="52" fill="#a5b4fc" font-size="7" text-anchor="middle">CharCNN</text>
-                    
-                    <!-- Arrows to biLSTM -->
-                    <path d="M45 60 L45 80" stroke="#6366f1" stroke-width="1.5"/>
-                    
-                    <!-- Forward LSTM layers -->
-                    <rect x="15" y="85" width="30" height="20" rx="3" fill="rgba(16,185,129,0.2)" stroke="#10b981" stroke-width="1.5"/>
-                    <text x="30" y="98" fill="#6ee7b7" font-size="6" text-anchor="middle">LSTM→</text>
-                    
-                    <rect x="50" y="85" width="30" height="20" rx="3" fill="rgba(16,185,129,0.3)" stroke="#10b981" stroke-width="1.5"/>
-                    <text x="65" y="98" fill="#6ee7b7" font-size="6" text-anchor="middle">LSTM→</text>
-                    
-                    <!-- Backward LSTM layers -->
-                    <rect x="85" y="85" width="30" height="20" rx="3" fill="rgba(245,158,11,0.2)" stroke="#f59e0b" stroke-width="1.5"/>
-                    <text x="100" y="98" fill="#fbbf24" font-size="6" text-anchor="middle">←LSTM</text>
-                    
-                    <rect x="120" y="85" width="30" height="20" rx="3" fill="rgba(245,158,11,0.3)" stroke="#f59e0b" stroke-width="1.5"/>
-                    <text x="135" y="98" fill="#fbbf24" font-size="6" text-anchor="middle">←LSTM</text>
-                    
-                    <!-- ELMo weighted sum -->
-                    <circle cx="185" cy="95" r="18" fill="rgba(236,72,153,0.2)" stroke="#ec4899" stroke-width="2"/>
-                    <text x="185" y="92" fill="#f9a8d4" font-size="7" text-anchor="middle">ELMo</text>
-                    <text x="185" y="102" fill="#8888aa" font-size="5" text-anchor="middle">Σsⱼhⱼ</text>
-                    
-                    <!-- Arrows to ELMo -->
-                    <path d="M65 105 L167 95" stroke="#6366f1" stroke-width="1"/>
-                    <path d="M135 105 L167 95" stroke="#6366f1" stroke-width="1"/>
-                    
-                    <!-- Output embeddings -->
-                    <rect x="220" y="75" width="70" height="40" rx="5" fill="rgba(236,72,153,0.15)" stroke="#ec4899" stroke-width="2"/>
-                    <text x="255" y="92" fill="#f9a8d4" font-size="8" text-anchor="middle">Contextual</text>
-                    <text x="255" y="106" fill="#f9a8d4" font-size="8" text-anchor="middle">Embedding</text>
-                    
-                    <!-- Arrow to output -->
-                    <path d="M203 95 L220 95" stroke="#ec4899" stroke-width="2"/>
-                    
-                    <!-- Labels -->
-                    <text x="150" y="138" fill="#8888aa" font-size="8" text-anchor="middle">bank(river) ≠ bank(finance) — Context-aware representations</text>
-                    <text x="150" y="148" fill="#10b981" font-size="7" text-anchor="middle">Pre-BERT breakthrough • 6-20% error reduction • NAACL Best Paper</text>
-                </svg>
-            </div>
-
-            <!-- Neural Turing Machines Paper Card -->
-            <div class="network-card" onclick="location.href='papers/neural-turing-machines.html'">
-                <span class="tag">Nature 2014</span>
-                <h3>Neural Turing Machines</h3>
-                <p>Neural network with external memory that can read, write, and access content via attention mechanisms. Extended neural networks with addressable memory, enabling algorithmic learning.</p>
-                <svg class="preview-svg" viewBox="0 0 300 150">
-                    <defs>
-                        <linearGradient id="ntm-grad" x1="0%" y1="0%" x2="100%" y2="0%">
-                            <stop offset="0%" style="stop-color:#6366f1"/>
-                            <stop offset="50%" style="stop-color:#a855f7"/>
-                            <stop offset="100%" style="stop-color:#ec4899"/>
-                        </linearGradient>
-                    </defs>
-                    <!-- Controller (LSTM) -->
-                    <rect x="20" y="50" width="60" height="50" rx="8" fill="rgba(99,102,241,0.3)" stroke="#6366f1" stroke-width="2"/>
-                    <text x="50" y="70" fill="#a5b4fc" font-size="9" text-anchor="middle">LSTM</text>
-                    <text x="50" y="85" fill="#888" font-size="7" text-anchor="middle">Controller</text>
-                    
-                    <!-- Memory Matrix -->
-                    <rect x="100" y="30" width="100" height="90" rx="5" fill="rgba(16,185,129,0.1)" stroke="#10b981" stroke-width="2"/>
-                    <!-- Memory cells grid -->
-                    <line x1="100" y1="52" x2="200" y2="52" stroke="#10b981" stroke-width="0.5" opacity="0.5"/>
-                    <line x1="100" y1="74" x2="200" y2="74" stroke="#10b981" stroke-width="0.5" opacity="0.5"/>
-                    <line x1="100" y1="96" x2="200" y2="96" stroke="#10b981" stroke-width="0.5" opacity="0.5"/>
-                    <line x1="133" y1="30" x2="133" y2="120" stroke="#10b981" stroke-width="0.5" opacity="0.5"/>
-                    <line x1="167" y1="30" x2="167" y2="120" stroke="#10b981" stroke-width="0.5" opacity="0.5"/>
-                    <text x="150" y="25" fill="#10b981" font-size="8" text-anchor="middle">Memory Matrix N×M</text>
-                    
-                    <!-- Read/Write Heads -->
-                    <circle cx="80" cy="55" r="8" fill="rgba(236,72,153,0.3)" stroke="#ec4899" stroke-width="1.5"/>
-                    <text x="80" y="58" fill="#f9a8d4" font-size="5" text-anchor="middle">R</text>
-                    <circle cx="80" cy="95" r="8" fill="rgba(245,158,11,0.3)" stroke="#f59e0b" stroke-width="1.5"/>
-                    <text x="80" y="98" fill="#fbbf24" font-size="5" text-anchor="middle">W</text>
-                    
-                    <!-- Attention arrows -->
-                    <path d="M88 55 L100 45" stroke="#ec4899" stroke-width="1.5"/>
-                    <path d="M88 95 L100 105" stroke="#f59e0b" stroke-width="1.5"/>
-                    
-                    <!-- Output -->
-                    <rect x="220" y="55" width="70" height="40" rx="5" fill="rgba(168,85,247,0.2)" stroke="#a855f7" stroke-width="2"/>
-                    <text x="255" y="75" fill="#d8b4fe" font-size="8" text-anchor="middle">Output</text>
-                    <text x="255" y="88" fill="#d8b4fe" font-size="7" text-anchor="middle">+ Heads</text>
-                    
-                    <!-- Arrows to output -->
-                    <path d="M200 75 L220 75" stroke="#a855f7" stroke-width="1.5"/>
-                    
-                    <!-- Labels -->
-                    <text x="150" y="140" fill="#8888aa" font-size="8" text-anchor="middle">Differentiable memory access • Learn algorithms • Copy, sort, repeat</text>
-                </svg>
-            </div>
-
             <!-- 3D Gaussian Splatting Paper Card -->
             <div class="network-card" onclick="location.href='papers/3d-gaussian-splatting.html'">
                 <span class="tag">SIGGRAPH 2023</span>
@@ -3269,81 +2902,6 @@
                     <!-- Labels -->
                     <text x="150" y="140" fill="#8888aa" font-size="8" text-anchor="middle">Anisotropic 3D Gaussians • Differentiable rasterization • No neural network</text>
                     <text x="150" y="148" fill="#10b981" font-size="7" text-anchor="middle">50-100× faster than NeRF • ~1 min training • Editable point cloud</text>
-                </svg>
-            </div>
-
-            <!-- Neural Turing Machine Paper Card -->
-            <div class="network-card" onclick="location.href='papers/neural-turing-machine.html'">
-                <span class="tag">arXiv 2014</span>
-                <h3>Neural Turing Machine</h3>
-                <p>Neural architecture augmented with external memory - The foundational paper introducing differentiable memory access, enabling neural networks to learn algorithms by reading and writing to an external memory matrix.</p>
-                <svg class="preview-svg" viewBox="0 0 300 150">
-                    <defs>
-                        <linearGradient id="ntm-grad" x1="0%" y1="0%" x2="100%" y2="0%">
-                            <stop offset="0%" style="stop-color:#6366f1"/>
-                            <stop offset="50%" style="stop-color:#a855f7"/>
-                            <stop offset="100%" style="stop-color:#ec4899"/>
-                        </linearGradient>
-                        <marker id="arrow-ntm" markerWidth="8" markerHeight="8" refX="7" refY="3" orient="auto">
-                            <polygon points="0 0, 8 3, 0 6" fill="#6366f1"/>
-                        </marker>
-                    </defs>
-                    <!-- Controller -->
-                    <rect x="110" y="15" width="80" height="35" rx="5" fill="rgba(99,102,241,0.3)" stroke="#6366f1" stroke-width="2"/>
-                    <text x="150" y="32" fill="#fff" font-size="9" text-anchor="middle" font-weight="bold">Controller</text>
-                    <text x="150" y="44" fill="#a0a0cc" font-size="6" text-anchor="middle">LSTM/FF</text>
-                    
-                    <!-- Input -->
-                    <rect x="10" y="20" width="50" height="25" rx="3" fill="none" stroke="#10b981" stroke-width="1.5"/>
-                    <text x="35" y="37" fill="#10b981" font-size="8" text-anchor="middle">Input</text>
-                    <line x1="60" y1="32" x2="110" y2="32" stroke="#6366f1" stroke-width="1.5" marker-end="url(#arrow-ntm)"/>
-                    
-                    <!-- Memory Matrix -->
-                    <rect x="85" y="70" width="130" height="60" rx="5" fill="rgba(236,72,153,0.2)" stroke="#ec4899" stroke-width="2"/>
-                    <text x="150" y="85" fill="#fff" font-size="10" text-anchor="middle" font-weight="bold">Memory M</text>
-                    
-                    <!-- Memory cells -->
-                    <g transform="translate(100, 95)">
-                        <rect x="0" y="0" width="18" height="12" fill="rgba(255,255,255,0.3)" stroke="#fff" stroke-width="0.5" rx="1"/>
-                        <rect x="22" y="0" width="18" height="12" fill="rgba(255,255,255,0.2)" stroke="#fff" stroke-width="0.5" rx="1"/>
-                        <rect x="44" y="0" width="18" height="12" fill="rgba(255,255,255,0.4)" stroke="#fff" stroke-width="0.5" rx="1"/>
-                        <rect x="66" y="0" width="18" height="12" fill="rgba(255,255,255,0.25)" stroke="#fff" stroke-width="0.5" rx="1"/>
-                        <rect x="88" y="0" width="18" height="12" fill="rgba(255,255,255,0.35)" stroke="#fff" stroke-width="0.5" rx="1"/>
-                        
-                        <rect x="0" y="16" width="18" height="12" fill="rgba(255,255,255,0.2)" stroke="#fff" stroke-width="0.5" rx="1"/>
-                        <rect x="22" y="16" width="18" height="12" fill="rgba(255,255,255,0.4)" stroke="#fff" stroke-width="0.5" rx="1"/>
-                        <rect x="44" y="16" width="18" height="12" fill="rgba(255,255,255,0.15)" stroke="#fff" stroke-width="0.5" rx="1"/>
-                        <rect x="66" y="16" width="18" height="12" fill="rgba(255,255,255,0.3)" stroke="#fff" stroke-width="0.5" rx="1"/>
-                        <rect x="88" y="16" width="18" height="12" fill="rgba(255,255,255,0.2)" stroke="#fff" stroke-width="0.5" rx="1"/>
-                    </g>
-                    
-                    <!-- Read Head -->
-                    <rect x="230" y="70" width="60" height="28" rx="4" fill="rgba(245,158,11,0.2)" stroke="#f59e0b" stroke-width="1.5"/>
-                    <text x="260" y="82" fill="#fcd34d" font-size="8" text-anchor="middle" font-weight="bold">Read</text>
-                    <text x="260" y="92" fill="#a0a0cc" font-size="6" text-anchor="middle">wᵣ</text>
-                    <line x1="215" y1="85" x2="230" y2="85" stroke="#f59e0b" stroke-width="1.5" marker-end="url(#arrow-ntm)"/>
-                    
-                    <!-- Write Head -->
-                    <rect x="230" y="108" width="60" height="28" rx="4" fill="rgba(239,68,68,0.2)" stroke="#ef4444" stroke-width="1.5"/>
-                    <text x="260" y="120" fill="#fca5a5" font-size="8" text-anchor="middle" font-weight="bold">Write</text>
-                    <text x="260" y="130" fill="#a0a0cc" font-size="6" text-anchor="middle">wᵤ</text>
-                    <line x1="215" y1="122" x2="230" y2="122" stroke="#ef4444" stroke-width="1.5" marker-end="url(#arrow-ntm)"/>
-                    
-                    <!-- Controller to Memory connections -->
-                    <line x1="150" y1="50" x2="150" y2="70" stroke="#6366f1" stroke-width="1.5" stroke-dasharray="3,2"/>
-                    
-                    <!-- Read output -->
-                    <rect x="240" y="25" width="50" height="22" rx="3" fill="none" stroke="#f59e0b" stroke-width="1.5"/>
-                    <text x="265" y="40" fill="#f59e0b" font-size="8" text-anchor="middle">rₜ</text>
-                    <path d="M260 70 L265 47" stroke="#f59e0b" stroke-width="1" stroke-dasharray="2,2"/>
-                    
-                    <!-- Output -->
-                    <rect x="200" y="15" width="55" height="28" rx="3" fill="none" stroke="#10b981" stroke-width="1.5"/>
-                    <text x="227" y="32" fill="#10b981" font-size="8" text-anchor="middle">Output</text>
-                    <line x1="190" y1="29" x2="200" y2="29" stroke="#10b981" stroke-width="1"/>
-                    
-                    <!-- Labels -->
-                    <text x="150" y="145" fill="#8888aa" font-size="8" text-anchor="middle">External Memory + Read/Write Heads + Content/Location Addressing</text>
                 </svg>
             </div>
 
@@ -3684,74 +3242,6 @@
                     <!-- Legend -->
                     <text x="260" y="125" fill="#10b981" font-size="5" text-anchor="middle">16× speedup</text>
                     <text x="260" y="132" fill="#6366f1" font-size="5" text-anchor="middle">No replay buffer</text>
-                </svg>
-            </div>
-
-            <!-- PPO Paper Card -->
-            <div class="network-card" onclick="location.href='papers/ppo.html'">
-                <span class="tag">arXiv 2017</span>
-                <h3>PPO</h3>
-                <p>Proximal Policy Optimization Algorithms — OpenAI's breakthrough RL algorithm. Simple, scalable, and the foundation of RLHF for ChatGPT. Clipped surrogate objective enables stable, sample-efficient training with multiple epochs per data batch.</p>
-                <svg class="preview-svg" viewBox="0 0 300 150">
-                    <defs>
-                        <linearGradient id="ppo-grad" x1="0%" y1="0%" x2="100%" y2="0%">
-                            <stop offset="0%" style="stop-color:#10b981"/>
-                            <stop offset="50%" style="stop-color:#6366f1"/>
-                            <stop offset="100%" style="stop-color:#a855f7"/>
-                        </linearGradient>
-                        <marker id="ppo-arrow" markerWidth="8" markerHeight="6" refX="7" refY="3" orient="auto">
-                            <polygon points="0 0, 8 3, 0 6" fill="#10b981"/>
-                        </marker>
-                    </defs>
-                    <!-- Title -->
-                    <text x="150" y="12" fill="#8888aa" font-size="8" text-anchor="middle">Clipped Surrogate Objective</text>
-                    
-                    <!-- Input: Trajectory -->
-                    <rect x="10" y="35" width="45" height="35" rx="4" fill="rgba(99,102,241,0.2)" stroke="#6366f1" stroke-width="1.5"/>
-                    <text x="32" y="50" fill="#a5b4fc" font-size="5" text-anchor="middle">Old</text>
-                    <text x="32" y="58" fill="#a5b4fc" font-size="5" text-anchor="middle">Policy</text>
-                    <text x="32" y="66" fill="#8888aa" font-size="4" text-anchor="middle">π_old</text>
-                    
-                    <!-- Arrow -->
-                    <path d="M 60 52 L 80 52" stroke="#6366f1" stroke-width="1.5" marker-end="url(#ppo-arrow)"/>
-                    <text x="70" y="48" fill="#888" font-size="4" text-anchor="middle">data</text>
-                    
-                    <!-- Ratio box -->
-                    <rect x="85" y="35" width="50" height="35" rx="4" fill="rgba(16,185,129,0.2)" stroke="#10b981" stroke-width="1.5"/>
-                    <text x="110" y="50" fill="#10b981" font-size="6" font-weight="bold" text-anchor="middle">r(θ) =</text>
-                    <text x="110" y="58" fill="#10b981" font-size="5" text-anchor="middle">π_θ/π_old</text>
-                    <text x="110" y="66" fill="#6ee7b7" font-size="4" text-anchor="middle">probability ratio</text>
-                    
-                    <!-- Clipping visualization -->
-                    <g transform="translate(145, 40)">
-                        <line x1="0" y1="25" x2="40" y2="25" stroke="#10b981" stroke-width="2"/>
-                        <!-- Clip boundaries -->
-                        <line x1="10" y1="15" x2="10" y2="35" stroke="#f59e0b" stroke-width="1" stroke-dasharray="2,1"/>
-                        <line x1="30" y1="15" x2="30" y2="35" stroke="#f59e0b" stroke-width="1" stroke-dasharray="2,1"/>
-                        <text x="10" y="12" fill="#f59e0b" font-size="4" text-anchor="middle">1-ε</text>
-                        <text x="30" y="12" fill="#f59e0b" font-size="4" text-anchor="middle">1+ε</text>
-                        <text x="20" y="40" fill="#888" font-size="4" text-anchor="middle">clipped</text>
-                    </g>
-                    
-                    <!-- Actor-Critic -->
-                    <rect x="195" y="30" width="45" height="40" rx="4" fill="url(#ppo-grad)" opacity="0.3" stroke="#6366f1" stroke-width="2"/>
-                    <text x="217" y="48" fill="#fff" font-size="6" font-weight="bold" text-anchor="middle">Actor</text>
-                    <text x="217" y="55" fill="#a5b4fc" font-size="5" text-anchor="middle">Critic</text>
-                    <text x="217" y="64" fill="#888" font-size="4" text-anchor="middle">V(s)</text>
-                    
-                    <!-- Update arrow -->
-                    <path d="M 245 50 L 275 50" stroke="#ec4899" stroke-width="2" stroke-dasharray="3,2" marker-end="url(#ppo-arrow)"/>
-                    
-                    <!-- Formula -->
-                    <rect x="60" y="85" width="180" height="50" rx="6" fill="rgba(20,20,35,0.8)" stroke="#6366f1" stroke-width="1"/>
-                    <text x="150" y="100" fill="#fff" font-size="7" font-weight="bold" text-anchor="middle">PPO Objective</text>
-                    <text x="150" y="115" fill="#a5b4fc" font-size="6" text-anchor="middle">L = min(r·A, clip(r,1-ε,1+ε)·A)</text>
-                    <text x="150" y="128" fill="#10b981" font-size="5" text-anchor="middle">Multiple epochs on same data → sample efficient</text>
-                    
-                    <!-- RLHF tag -->
-                    <rect x="245" y="5" width="50" height="18" rx="3" fill="rgba(16,185,129,0.3)" stroke="#10b981" stroke-width="1"/>
-                    <text x="270" y="12" fill="#10b981" font-size="5" font-weight="bold" text-anchor="middle">RLHF 🔥</text>
-                    <text x="270" y="19" fill="#6ee7b7" font-size="4" text-anchor="middle">ChatGPT</text>
                 </svg>
             </div>
 
@@ -4535,24 +4025,6 @@
                 </svg>
             </div>
 
-            <!-- Neural Turing Machine Paper Card -->
-            <div class="network-card" onclick="location.href='papers/ntm.html'">
-                <span class="tag">Nature 2014</span>
-                <h3>Neural Turing Machine</h3>
-                <p>Neural Turing Machines combine neural networks with external memory. Introduces attention-based memory operations for differentiable computing.</p>
-                <svg class="preview-svg" viewBox="0 0 300 150">
-                    <defs>
-                        <linearGradient id="ntm-grad" x1="0%" y1="0%" x2="100%" y2="100%">
-                            <stop offset="0%" style="stop-color:#6366f1"/>
-                            <stop offset="100%" style="stop-color:#6366f188"/>
-                        </linearGradient>
-                    </defs>
-                    <text x="150" y="15" fill="#8888aa" font-size="10" text-anchor="middle">Network Architecture</text>
-                    <circle cx="150" cy="75" r="35" fill="url(#ntm-grad)" opacity="0.6"/>
-                    <text x="150" y="80" fill="#fff" font-size="10" text-anchor="middle">Neural Tur</text>
-                </svg>
-            </div>
-
             <!-- Perceptron Paper Card -->
             <div class="network-card" onclick="location.href='papers/perceptron.html'">
                 <span class="tag">Psych Review 1958</span>
@@ -4872,6 +4344,104 @@
                     <rect x="170" y="30" width="40" height="33" fill="url(#yolo-grad)" opacity="0.3"/>
                     <rect x="210" y="30" width="40" height="33" fill="url(#yolo-grad)" opacity="0.3"/>
                     <text x="150" y="145" fill="#8888aa" font-size="9" text-anchor="middle">Single Shot Detection</text>
+                </svg>
+            </div>
+
+            <!-- GPT-4o Paper Card -->
+            <div class="network-card" onclick="location.href='papers/gpt4o.html'">
+                <span class="tag">OpenAI 2024</span>
+                <h3>GPT-4o</h3>
+                <p>First natively omni-modal LLM from OpenAI — processes text, audio, and image in a single Transformer. Achieves 232ms audio response latency, matching human conversational speed.</p>
+                <svg class="preview-svg" viewBox="0 0 300 150">
+                    <defs>
+                        <linearGradient id="gpt4o-grad" x1="0%" y1="0%" x2="100%" y2="100%">
+                            <stop offset="0%" style="stop-color:#06b6d4"/>
+                            <stop offset="50%" style="stop-color:#6366f1"/>
+                            <stop offset="100%" style="stop-color:#a855f7"/>
+                        </linearGradient>
+                    </defs>
+                    <rect x="10" y="30" width="55" height="30" rx="5" fill="rgba(245,158,11,0.3)" stroke="#f59e0b" stroke-width="1.5"/>
+                    <text x="37" y="47" fill="#fcd34d" font-size="8" text-anchor="middle">Audio</text>
+                    <rect x="10" y="70" width="55" height="30" rx="5" fill="rgba(236,72,153,0.3)" stroke="#ec4899" stroke-width="1.5"/>
+                    <text x="37" y="87" fill="#f9a8d4" font-size="8" text-anchor="middle">Image</text>
+                    <rect x="10" y="110" width="55" height="30" rx="5" fill="rgba(16,185,129,0.3)" stroke="#10b981" stroke-width="1.5"/>
+                    <text x="37" y="127" fill="#6ee7b7" font-size="8" text-anchor="middle">Text</text>
+                    <path d="M65 45 L100 80" stroke="#f59e0b" stroke-width="1" opacity="0.8"/>
+                    <path d="M65 85 L100 85" stroke="#ec4899" stroke-width="1" opacity="0.8"/>
+                    <path d="M65 125 L100 90" stroke="#10b981" stroke-width="1" opacity="0.8"/>
+                    <rect x="100" y="55" width="100" height="60" rx="8" fill="url(#gpt4o-grad)" opacity="0.3" stroke="#06b6d4" stroke-width="2"/>
+                    <text x="150" y="82" fill="#fff" font-size="9" text-anchor="middle" font-weight="bold">GPT-4o</text>
+                    <text x="150" y="97" fill="#a0ddf0" font-size="8" text-anchor="middle">Omni Transformer</text>
+                    <rect x="225" y="65" width="65" height="50" rx="6" fill="rgba(168,85,247,0.2)" stroke="#a855f7" stroke-width="1.5"/>
+                    <text x="257" y="85" fill="#d8b4fe" font-size="8" text-anchor="middle">Any</text>
+                    <text x="257" y="98" fill="#d8b4fe" font-size="8" text-anchor="middle">Modality</text>
+                    <path d="M200 85 L225 85" stroke="#6366f1" stroke-width="1.5"/>
+                    <text x="150" y="140" fill="#8888aa" font-size="8" text-anchor="middle">232ms latency · 128K context · 50+ languages</text>
+                </svg>
+            </div>
+
+            <!-- Gemma Paper Card -->
+            <div class="network-card" onclick="location.href='papers/gemma.html'">
+                <span class="tag">Google 2024</span>
+                <h3>Gemma</h3>
+                <p>Google DeepMind lightweight open-weight LLMs (2B/7B) built on Gemini infrastructure. Outperforms Llama-2 13B at 7B parameters via Multi-Query Attention and GeGLU activations.</p>
+                <svg class="preview-svg" viewBox="0 0 300 150">
+                    <defs>
+                        <linearGradient id="gemma-grad" x1="0%" y1="0%" x2="100%" y2="100%">
+                            <stop offset="0%" style="stop-color:#10b981"/>
+                            <stop offset="100%" style="stop-color:#6366f1"/>
+                        </linearGradient>
+                    </defs>
+                    <rect x="10" y="60" width="50" height="30" rx="4" fill="rgba(16,185,129,0.2)" stroke="#10b981" stroke-width="1.5"/>
+                    <text x="35" y="78" fill="#6ee7b7" font-size="8" text-anchor="middle">Tokens</text>
+                    <path d="M60 75 L80 75" stroke="#10b981" stroke-width="1.5"/>
+                    <rect x="80" y="50" width="50" height="50" rx="5" fill="rgba(245,158,11,0.2)" stroke="#f59e0b" stroke-width="1.5"/>
+                    <text x="105" y="70" fill="#fcd34d" font-size="8" text-anchor="middle">RoPE</text>
+                    <text x="105" y="85" fill="#fcd34d" font-size="7" text-anchor="middle">Emb</text>
+                    <path d="M130 75 L150 75" stroke="#f59e0b" stroke-width="1.5"/>
+                    <rect x="150" y="40" width="65" height="70" rx="6" fill="rgba(99,102,241,0.2)" stroke="#6366f1" stroke-width="2"/>
+                    <text x="182" y="65" fill="#a5b4fc" font-size="9" text-anchor="middle" font-weight="bold">MQA</text>
+                    <text x="182" y="80" fill="#8888aa" font-size="7" text-anchor="middle">Q×N heads</text>
+                    <text x="182" y="93" fill="#8888aa" font-size="7" text-anchor="middle">KV×1 head</text>
+                    <path d="M215 75 L235 75" stroke="#6366f1" stroke-width="1.5"/>
+                    <rect x="235" y="55" width="55" height="40" rx="5" fill="rgba(236,72,153,0.2)" stroke="#ec4899" stroke-width="1.5"/>
+                    <text x="262" y="73" fill="#f9a8d4" font-size="8" text-anchor="middle">GeGLU</text>
+                    <text x="262" y="87" fill="#8888aa" font-size="7" text-anchor="middle">FFN</text>
+                    <text x="150" y="130" fill="#8888aa" font-size="8" text-anchor="middle">2B / 7B · Open weights · 6T tokens · MMLU 64.3%</text>
+                    <text x="150" y="143" fill="#10b981" font-size="7" text-anchor="middle">Beats Llama-2 13B · Gemini infra</text>
+                </svg>
+            </div>
+
+            <!-- Constitutional AI Paper Card -->
+            <div class="network-card" onclick="location.href='papers/constitutional-ai.html'">
+                <span class="tag">Anthropic 2022</span>
+                <h3>Constitutional AI</h3>
+                <p>Trains harmless AI using explicit principles (a "constitution") with AI-generated feedback (RLAIF), eliminating human harm labels. Foundation of Claude's alignment pipeline.</p>
+                <svg class="preview-svg" viewBox="0 0 300 150">
+                    <defs>
+                        <linearGradient id="cai-grad" x1="0%" y1="0%" x2="100%" y2="100%">
+                            <stop offset="0%" style="stop-color:#f59e0b"/>
+                            <stop offset="100%" style="stop-color:#a855f7"/>
+                        </linearGradient>
+                    </defs>
+                    <rect x="110" y="10" width="80" height="28" rx="5" fill="rgba(245,158,11,0.2)" stroke="#f59e0b" stroke-width="1.5" stroke-dasharray="4,2"/>
+                    <text x="150" y="28" fill="#fcd34d" font-size="8" text-anchor="middle">Constitution</text>
+                    <rect x="10" y="55" width="80" height="35" rx="5" fill="rgba(99,102,241,0.2)" stroke="#6366f1" stroke-width="1.5"/>
+                    <text x="50" y="70" fill="#a5b4fc" font-size="8" text-anchor="middle">AI Critique</text>
+                    <text x="50" y="83" fill="#8888aa" font-size="7" text-anchor="middle">and Revise (SFT)</text>
+                    <rect x="105" y="55" width="80" height="35" rx="5" fill="rgba(168,85,247,0.2)" stroke="#a855f7" stroke-width="1.5"/>
+                    <text x="145" y="70" fill="#d8b4fe" font-size="8" text-anchor="middle">AI Feedback</text>
+                    <text x="145" y="83" fill="#8888aa" font-size="7" text-anchor="middle">Reward Model</text>
+                    <rect x="200" y="55" width="80" height="35" rx="5" fill="rgba(16,185,129,0.2)" stroke="#10b981" stroke-width="1.5"/>
+                    <text x="240" y="70" fill="#6ee7b7" font-size="8" text-anchor="middle">PPO Fine-tune</text>
+                    <text x="240" y="83" fill="#8888aa" font-size="7" text-anchor="middle">(RLAIF)</text>
+                    <path d="M150 38 L50 55" stroke="#f59e0b" stroke-width="1" stroke-dasharray="3,2" opacity="0.7"/>
+                    <path d="M150 38 L145 55" stroke="#f59e0b" stroke-width="1" stroke-dasharray="3,2" opacity="0.7"/>
+                    <path d="M90 72 L105 72" stroke="#6366f1" stroke-width="1.5"/>
+                    <path d="M185 72 L200 72" stroke="#a855f7" stroke-width="1.5"/>
+                    <rect x="100" y="110" width="100" height="25" rx="5" fill="url(#cai-grad)" opacity="0.3" stroke="#f59e0b" stroke-width="1"/>
+                    <text x="150" y="126" fill="#fcd34d" font-size="8" text-anchor="middle">Harmless Claude Model</text>
+                    <text x="150" y="143" fill="#8888aa" font-size="7" text-anchor="middle">No human harm labels · Explicit values · RLAIF</text>
                 </svg>
             </div>
 
