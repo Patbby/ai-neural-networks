@@ -1,6 +1,6 @@
 # AI Neural Networks Visualized
 
-🧠 Interactive visualizations of neural network architectures and 106 foundational ML papers
+🧠 Interactive visualizations of neural network architectures and 107 foundational ML papers
 
 **Live Site**: [https://patbby.github.io/ai-neural-networks](https://patbby.github.io/ai-neural-networks)
 
@@ -8,7 +8,7 @@
 
 ## 📊 Collection Stats
 
-- **Total Papers**: 106 foundational works in deep learning
+- **Total Papers**: 107 foundational works in deep learning
 - **Last Updated**: May 8, 2026
 - **Coverage**: CNNs, Transformers, Generative Models, Reinforcement Learning, NLP, Computer Vision, Efficient Inference, Neural Architecture, Memory-Augmented Networks, LLM Alignment, Graph Neural Networks, Classical ML, Multimodal LLMs
 
