@@ -6,6 +6,17 @@
 
 ---
 
+## 🎬 See It In Action
+
+| CNN 卷积核扫描 | GNN 消息传递 | GAT 注意力权重 |
+|:---:|:---:|:---:|
+| ![CNN](assets/demo-cnn.gif) | ![GNN](assets/demo-gnn.gif) | ![GAT](assets/demo-gat.gif) |
+| 卷积核在特征图上滑动，提取局部模式 | 节点聚合邻居消息，更新自身表示 | 不同邻居被赋予不同的注意力权重 |
+
+*All three are pure SVG + SMIL animation — no JS frameworks, no build step.*
+
+---
+
 ## 📊 Collection Stats
 
 - **Total Papers**: 107 foundational works in deep learning
