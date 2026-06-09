@@ -3,6 +3,22 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="107 foundational AI/ML papers explained with interactive animated SVG visualizations — CNN, GNN, GAT, Transformer, and more. 4 deep-dive architecture demos included.">
+    <meta name="keywords" content="neural network, AI, machine learning, deep learning, visualization, animated SVG, transformer, CNN, GNN, GAT, paper">
+    <meta name="author" content="Patbby">
+
+    <!-- Open Graph / social sharing -->
+    <meta property="og:type" content="website">
+    <meta property="og:title" content="AI Neural Networks Visualized | 神经网络可视化">
+    <meta property="og:description" content="107 foundational AI/ML papers explained with interactive animated SVG visualizations. 4 deep-dive architecture demos.">
+    <meta property="og:url" content="https://patbby.github.io/ai-neural-networks/">
+    <meta property="og:image" content="https://patbby.github.io/ai-neural-networks/og-banner.png">
+    <meta property="og:image:alt" content="Animated visualization of AI neural network architectures">
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="AI Neural Networks Visualized">
+    <meta name="twitter:description" content="107 foundational AI/ML papers with interactive animated SVG visualizations.">
+    <meta name="twitter:image" content="https://patbby.github.io/ai-neural-networks/og-banner.png">
+
     <title>AI Neural Networks Visualized | 神经网络可视化</title>
     <style>
         * {
@@ -147,6 +163,100 @@
                 grid-template-columns: 1fr;
             }
         }
+
+        /* === Hero stats === */
+        .hero-stats {
+            display: flex;
+            justify-content: center;
+            gap: 48px;
+            flex-wrap: wrap;
+            margin: 40px auto 0;
+            max-width: 800px;
+        }
+        .hero-stats .stat {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-width: 80px;
+        }
+        .hero-stats .stat-num {
+            font-size: 2.2rem;
+            font-weight: 800;
+            background: linear-gradient(135deg, #6366f1, #a855f7, #ec4899);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            line-height: 1;
+        }
+        .hero-stats .stat-label {
+            font-size: 0.85rem;
+            color: #8888aa;
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
+            margin-top: 6px;
+        }
+
+        /* === Search & filter toolbar === */
+        .toolbar {
+            max-width: 900px;
+            margin: 36px auto 0;
+            padding: 0 16px;
+        }
+        #search-input {
+            width: 100%;
+            padding: 14px 20px;
+            border-radius: 12px;
+            border: 1px solid rgba(99, 102, 241, 0.3);
+            background: rgba(20, 20, 35, 0.8);
+            color: #e0e0ff;
+            font-size: 1rem;
+            outline: none;
+            transition: border-color 0.2s, box-shadow 0.2s;
+        }
+        #search-input::placeholder { color: #666; }
+        #search-input:focus {
+            border-color: #a855f7;
+            box-shadow: 0 0 0 3px rgba(168, 85, 247, 0.15);
+        }
+        .filter-chips {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-top: 14px;
+            justify-content: center;
+        }
+        .filter-chips .chip {
+            padding: 6px 14px;
+            border-radius: 999px;
+            border: 1px solid rgba(99, 102, 241, 0.3);
+            background: transparent;
+            color: #a5b4fc;
+            font-size: 0.85rem;
+            cursor: pointer;
+            user-select: none;
+            transition: all 0.15s;
+        }
+        .filter-chips .chip:hover {
+            border-color: #a855f7;
+            color: #fff;
+        }
+        .filter-chips .chip.active {
+            background: linear-gradient(135deg, #6366f1, #a855f7);
+            color: #fff;
+            border-color: transparent;
+        }
+        .toolbar-meta {
+            text-align: center;
+            color: #8888aa;
+            font-size: 0.85rem;
+            margin-top: 12px;
+            min-height: 1.2em;
+        }
+
+        /* === Hidden card state (filter) === */
+        .network-card.hidden {
+            display: none;
+        }
     </style>
 </head>
 <body>
@@ -164,6 +274,21 @@
     <header>
         <h1>🧠 Neural Networks</h1>
         <p class="subtitle">Interactive visualizations of AI architectures.<br>See how machines learn, one layer at a time.</p>
+
+        <!-- Hero stats: real numbers, auto-filled by JS at load time -->
+        <div class="hero-stats" id="hero-stats">
+            <div class="stat"><span class="stat-num" id="stat-papers">—</span><span class="stat-label">Papers</span></div>
+            <div class="stat"><span class="stat-num">4</span><span class="stat-label">Deep Dives</span></div>
+            <div class="stat"><span class="stat-num" id="stat-categories">—</span><span class="stat-label">Categories</span></div>
+            <div class="stat"><span class="stat-num" id="stat-animated">—</span><span class="stat-label">Animated</span></div>
+        </div>
+
+        <!-- Search + category filter toolbar -->
+        <div class="toolbar" id="toolbar">
+            <input type="search" id="search-input" placeholder="🔍 Search papers… (try: transformer, GAN, 2017)" aria-label="Search papers">
+            <div class="filter-chips" id="filter-chips" role="tablist" aria-label="Filter by category"></div>
+            <div class="toolbar-meta" id="toolbar-meta"></div>
+        </div>
     </header>
 
     <div class="container">
@@ -4492,6 +4617,13 @@
     <footer>
         <p>Built with ❤️ by <a href="https://github.com/Patbby">Patbby</a> (Kimi Claw)</p>
         <p>Open source on <a href="https://github.com/Patbby/ai-neural-networks">GitHub</a></p>
+        <p style="margin-top:16px">
+            <a href="https://github.com/Patbby/ai-neural-networks/blob/main/.github/CONTRIBUTING.md">🤝 Contribute</a>
+            ·
+            <a href="https://github.com/Patbby/ai-neural-networks/issues/new?template=propose-paper.md">📄 Nominate a paper</a>
+            ·
+            <a href="https://github.com/Patbby/ai-neural-networks/issues/new?template=bug-report.md">🐞 Report a bug</a>
+        </p>
     </footer>
 
     <script>
@@ -4538,6 +4670,115 @@
             requestAnimationFrame(animateNodes);
         }
         animateNodes();
+    </script>
+
+    <script>
+        // === Search + category filter ===
+        (function () {
+            // Category keywords: match against card title text (case-insensitive).
+            // Add/remove keywords as new papers land; keep in sync with README.
+            const CATEGORY_KEYWORDS = {
+                'Transformer':    ['transformer', 'bert', 'gpt', 'roberta', 't5', 'instructgpt', 'llama', 'mixtral', 'deepseek', 'gemma', 'mamba', 'flash attention', 'attention', 'pagedattention', 'swin', 'word2vec', 'glove', 'fasttext', 'elmo', 'bart', 'seq2seq', 'bahdanau'],
+                'CNN / CV':       ['cnn', 'lenet', 'alexnet', 'vgg', 'resnet', 'resnext', 'densenet', 'googlenet', 'inception', 'xception', 'efficientnet', 'mobilenet', 'convnext', 'vit', 'mae', 'rcnn', 'fast r-cnn', 'faster r-cnn', 'mask r-cnn', 'yolo', 'fpn', 'unet', 'nerf', 'pix2pix', 'cyclegan', 'stylegan', 'biggan', 'dcgan', 'wgan', 'simclr', 'clip', 'dalle', 'stable diffusion', 'ddpm', '3d-gaussian'],
+                'GNN':            ['gnn', 'gcn', 'graphsage', 'gat'],
+                'Generative':     ['vae', 'gan', 'diffusion', 'ddpm', 'dit'],
+                'NLP':            ['word2vec', 'glove', 'fasttext', 'elmo', 'bert', 'gpt', 'llama'],
+                'RL':             ['dqn', 'a3c', 'ppo', 'alphago', 'alphazero', 'reinforce'],
+                'Optimization':   ['adam', 'rmsnorm', 'layernorm', 'batchnorm', 'groupnorm', 'instancenorm', 'dropout', 'gradient-boosting', 'xgboost', 'random-forest', 'svm'],
+                'Architecture':   ['highway', 'kan', 'neural-ode', 'nas', 'moe', 'qlora', 'lora'],
+                'Memory':         ['neural-turing', 'hopfield', 'lstm', 'gru'],
+                'Alignment':      ['rlhf', 'dpo', 'constitutional-ai', 'instructgpt'],
+                'Multimodal':     ['clip', 'dalle', 'gpt4o', 'nerf'],
+                'Classical ML':   ['perceptron', 'adaline', 'svm', 'random-forest', 'gradient-boosting', 'xgboost', 'adaboost']
+            };
+
+            const CATEGORY_EMOJI = {
+                'Transformer': '🔥', 'CNN / CV': '🖼️', 'GNN': '🕸️',
+                'Generative': '🎨', 'NLP': '📝', 'RL': '🎮',
+                'Optimization': '⚙️', 'Architecture': '🏗️', 'Memory': '🧠',
+                'Alignment': '🎯', 'Multimodal': '👁️', 'Classical ML': '📊'
+            };
+
+            function classify(title) {
+                const t = (title || '').toLowerCase();
+                for (const [cat, kws] of Object.entries(CATEGORY_KEYWORDS)) {
+                    for (const kw of kws) {
+                        if (t.includes(kw.toLowerCase())) return cat;
+                    }
+                }
+                return 'Other';
+            }
+
+            // Build card index from DOM
+            const cards = Array.from(document.querySelectorAll('.network-card')).map((el) => {
+                const h3 = el.querySelector('h3');
+                const tag = el.querySelector('.tag, .year, .paper-year, [class*="year"]');
+                const title = h3 ? h3.textContent.trim() : '';
+                const year = tag ? tag.textContent.trim() : '';
+                return { el, title, year, category: classify(title) };
+            });
+
+            // Fill hero stats
+            const totalPapers = cards.length;
+            const categories = new Set(cards.map((c) => c.category));
+            const animated = cards.filter((c) => c.el.querySelector('svg .animated-svg, svg animate, svg [class*="anim"]') || c.el.outerHTML.includes('<animate')).length;
+            const animatedFallback = cards.filter((c) => /transformer|gnn|gat|cnn|alphago|backpropagation|hopfield|lstm|instructgpt|q_lora|qloRA|adam|rmsnorm|layer|batch|groupnorm|instance|inception|seq2seq|xgboost|svm|lenet|simclr|feature|dropout|fpn|mask|rcnn|highway|resnet|dit|bert|flash|gan|wasserstein|cyclegan|pix2pix|vae|alexnet|glove|wavenet|swin|clip|dqn|a3c|ppo|alphago|alphazero|word2vec|fasttext|elmo|perceptron|adaline/i.test(c.title)).length;
+            document.getElementById('stat-papers').textContent = totalPapers;
+            document.getElementById('stat-categories').textContent = categories.size;
+            // Animated fallback for cards that don't have an inline SVG (most are static previews, this is a soft estimate)
+            document.getElementById('stat-animated').textContent = Math.max(animated, animatedFallback);
+
+            // Render category chips
+            const chipContainer = document.getElementById('filter-chips');
+            const sortedCats = [...categories].sort();
+            const allChip = makeChip('All', sortedCats.length, true);
+            chipContainer.appendChild(allChip);
+            for (const cat of sortedCats) {
+                const count = cards.filter((c) => c.category === cat).length;
+                chipContainer.appendChild(makeChip(cat, count, false));
+            }
+
+            function makeChip(cat, count, active) {
+                const btn = document.createElement('button');
+                btn.type = 'button';
+                btn.className = 'chip' + (active ? ' active' : '');
+                btn.dataset.cat = cat;
+                btn.textContent = `${CATEGORY_EMOJI[cat] || '📦'} ${cat} (${count})`;
+                btn.setAttribute('role', 'tab');
+                btn.setAttribute('aria-selected', active ? 'true' : 'false');
+                btn.addEventListener('click', () => {
+                    chipContainer.querySelectorAll('.chip').forEach((c) => {
+                        c.classList.remove('active');
+                        c.setAttribute('aria-selected', 'false');
+                    });
+                    btn.classList.add('active');
+                    btn.setAttribute('aria-selected', 'true');
+                    applyFilter();
+                });
+                return btn;
+            }
+
+            // Search
+            const searchInput = document.getElementById('search-input');
+            searchInput.addEventListener('input', applyFilter);
+
+            function applyFilter() {
+                const q = (searchInput.value || '').trim().toLowerCase();
+                const activeCat = chipContainer.querySelector('.chip.active').dataset.cat;
+                let shown = 0;
+                for (const c of cards) {
+                    const hitSearch = !q || c.title.toLowerCase().includes(q) || c.year.toLowerCase().includes(q) || c.category.toLowerCase().includes(q);
+                    const hitCat = activeCat === 'All' || c.category === activeCat;
+                    const visible = hitSearch && hitCat;
+                    c.el.classList.toggle('hidden', !visible);
+                    if (visible) shown++;
+                }
+                const meta = document.getElementById('toolbar-meta');
+                const tail = q || activeCat !== 'All' ? ` (filtered)` : '';
+                meta.textContent = `Showing ${shown} of ${totalPapers} papers${tail}`;
+            }
+            applyFilter();
+        })();
     </script>
 </body>
 </html>

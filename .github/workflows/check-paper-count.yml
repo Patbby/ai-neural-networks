@@ -1,0 +1,75 @@
+name: Check paper count
+
+on:
+  push:
+    branches: [main, master]
+    paths:
+      - "papers/**"
+      - "README.md"
+      - "index.html"
+  pull_request:
+    paths:
+      - "papers/**"
+      - "README.md"
+      - "index.html"
+  workflow_dispatch:
+
+jobs:
+  verify-count:
+    name: Verify README "Total Papers" matches papers/ directory
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Count paper HTML files
+        id: count-files
+        run: |
+          # Count only direct HTML files in papers/ (exclude subdirs and hidden)
+          COUNT=$(find papers -maxdepth 1 -type f -name "*.html" | wc -l)
+          echo "papers_count=$COUNT" >> "$GITHUB_OUTPUT"
+          echo "📚 papers/ contains $COUNT HTML files"
+
+      - name: Read claimed count from README
+        id: read-readme
+        run: |
+          CLAIMED=$(grep -oE "Total Papers\*\*: [0-9]+" README.md \
+            | grep -oE "[0-9]+" || echo "0")
+          echo "claimed=$CLAIMED" >> "$GITHUB_OUTPUT"
+          echo "📝 README claims: $CLAIMED"
+
+      - name: Compare
+        run: |
+          FILES="${{ steps.count-files.outputs.papers_count }}"
+          CLAIMED="${{ steps.read-readme.outputs.claimed }}"
+
+          if [ "$FILES" -ne "$CLAIMED" ]; then
+            echo "❌ MISMATCH: papers/ has $FILES HTML files but README says $CLAIMED"
+            echo "Fix one of them so they match."
+            exit 1
+          fi
+
+          echo "✅ Match: $FILES paper files == $CLAIMED in README"
+
+      - name: Count homepage card references
+        id: count-cards
+        run: |
+          # Cards in index.html are rendered via JS, but the slug strings
+          # (papers/<slug>.html) must appear as data/text. Count unique slugs.
+          CARDS=$(grep -oE 'papers/[a-z0-9-]+\.html' index.html \
+            | sort -u | wc -l)
+          echo "card_count=$CARDS" >> "$GITHUB_OUTPUT"
+          echo "🃏 index.html references $CARDS unique paper slugs"
+
+      - name: Verify card count == file count
+        run: |
+          FILES="${{ steps.count-files.outputs.papers_count }}"
+          CARDS="${{ steps.count-cards.outputs.card_count }}"
+
+          if [ "$FILES" -ne "$CARDS" ]; then
+            echo "❌ MISMATCH: $FILES paper files but $CARDS card references on homepage"
+            echo "Some paper file is missing a card in index.html (or vice versa)."
+            exit 1
+          fi
+
+          echo "✅ Match: $FILES paper files == $CARDS homepage card references"
