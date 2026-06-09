@@ -214,4 +214,8 @@
 
 Visit the live site to explore interactive visualizations!
 
+## 🔗 Related Projects
+
+- **[DeconBear/learn-ai](https://github.com/DeconBear/learn-ai)** — A complementary Chinese tutorial that walks through the **theory and code** behind these architectures. Read the math and runnable PyTorch examples there, then come back here to **see the visualizations come alive**.
+
 *Auto-updated via heartbeat cron job*
